@@ -879,6 +879,153 @@ function openGodModeAuthModal() {
   const isLogged = isGodModeActive();
   const user = AppState.godMode.user || {};
 
+  let bodyContent = "";
+
+  if (isLogged) {
+    bodyContent = `
+      <!-- Painel quando JÁ está autenticado no Modo Deus -->
+      <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/60">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full ring-2 ring-amber-400 overflow-hidden bg-amber-200 dark:bg-amber-800 flex items-center justify-center font-bold text-amber-900 dark:text-amber-100 text-sm flex-shrink-0">
+            ${user.picture ? `<img src="${user.picture}" alt="Avatar" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user-astronaut text-xl"></i>`}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">${user.name || "Administrador"}</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400 text-slate-950">Ativo</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300 truncate">${user.email ? maskEmail(user.email) : "Sessão Mestre Conectada"}</p>
+            <p class="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5">⚡ Privilégios totais liberados: você pode alternar a LGPD e revelar alunos.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões de Controle Rápido do Modo Deus -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button 
+          onclick="togglePrivacyMode()" 
+          class="w-full py-3 px-4 rounded-xl text-xs font-bold ${AppState.privacyMode ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20'} flex items-center justify-center gap-2 transition-all"
+        >
+          <i class="fa-solid ${AppState.privacyMode ? 'fa-eye' : 'fa-shield-halved'}"></i>
+          <span>${AppState.privacyMode ? 'Suspender Proteção LGPD' : 'Reativar Proteção LGPD'}</span>
+        </button>
+
+        <button 
+          onclick="logoutGodMode()" 
+          class="w-full py-3 px-4 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 transition-all"
+        >
+          <i class="fa-solid fa-lock"></i>
+          <span>Encerrar & Trancar LGPD</span>
+        </button>
+      </div>
+    `;
+  } else {
+    bodyContent = `
+      <!-- Painel quando NÃO está autenticado (Login Obrigatório) -->
+      <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
+        <div class="flex items-center gap-2 text-indigo-900 dark:text-indigo-200 font-bold">
+          <i class="fa-solid fa-shield-halved text-indigo-600 dark:text-indigo-400 text-sm"></i>
+          <span>Modo LGPD Travado por Segurança</span>
+        </div>
+        <p class="leading-relaxed text-[11px]">
+          Para desativar o mascaramento de CPFs, telefones e endereços no Datashow, autentique-se com sua <strong>conta Google autorizada</strong> ou com suas <strong>credenciais de administrador</strong>.
+        </p>
+      </div>
+
+      <!-- OPÇÃO 1: Login com Usuário e Senha Mestre -->
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-key text-amber-500"></i>
+            <span>1. Login de Administrador</span>
+          </label>
+          <span class="text-[10px] text-amber-700 dark:text-amber-400 font-bold bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
+            Credenciais
+          </span>
+        </div>
+
+        <div class="space-y-2.5">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">USUÁRIO</label>
+            <div class="relative">
+              <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input 
+                type="text" 
+                id="god-login-user" 
+                value=""
+                autocomplete="off"
+                placeholder="Digite seu usuário"
+                class="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
+              >
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">SENHA</label>
+            <div class="relative">
+              <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input 
+                type="password" 
+                id="god-login-pass" 
+                value=""
+                autocomplete="off"
+                placeholder="Digite sua senha"
+                class="w-full pl-9 pr-10 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
+                onkeydown="if(event.key === 'Enter') verifyGodModeCredentials()"
+              >
+              <button 
+                type="button" 
+                onclick="toggleGodPasswordVisibility()" 
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 text-xs"
+                title="Mostrar/Ocultar Senha"
+              >
+                <i id="god-pass-eye-icon" class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button 
+            onclick="verifyGodModeCredentials()" 
+            class="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/25 transition-all flex items-center justify-center gap-2 mt-2"
+          >
+            <i class="fa-solid fa-bolt text-sm"></i>
+            <span>Entrar no Modo Deus</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- OPÇÃO 2: Login com a Conta Google Oficial -->
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-brands fa-google text-indigo-500"></i>
+            <span>2. Autenticação com Conta Google</span>
+          </label>
+          <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
+            Google
+          </span>
+        </div>
+
+        <!-- Container renderizado pelo Google Identity Services -->
+        <div id="google-official-btn" class="flex justify-center w-full min-h-[40px]"></div>
+
+        <!-- Botão oficial Google sem expor e-mail publicamente -->
+        <button 
+          onclick="triggerGoogleDirectLogin()"
+          class="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-sm flex items-center justify-center gap-2.5 transition-all"
+        >
+          <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Entrar com a Conta Google</span>
+        </button>
+      </div>
+    `;
+  }
+
   modalContainer.innerHTML = `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md modal-backdrop fade-in">
       <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-amber-400/40 dark:border-amber-500/30 shadow-2xl overflow-hidden scale-in flex flex-col relative">
@@ -900,7 +1047,7 @@ function openGodModeAuthModal() {
                 </span>
               </div>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Professor Ewerson Dias • Gestão de Mídias Digitais
+                Autenticação de Administrador • Controle de Privacidade
               </p>
             </div>
           </div>
@@ -911,143 +1058,7 @@ function openGodModeAuthModal() {
 
         <!-- Conteúdo do Modal -->
         <div class="px-6 pb-6 space-y-5">
-          \${isLogged ? \`
-            <!-- Painel quando JÁ está autenticado no Modo Deus -->
-            <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/60">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full ring-2 ring-amber-400 overflow-hidden bg-amber-200 dark:bg-amber-800 flex items-center justify-center font-bold text-amber-900 dark:text-amber-100 text-sm flex-shrink-0">
-                  \${user.picture ? \`<img src="\${user.picture}" alt="Avatar" class="w-full h-full object-cover">\` : \`<i class="fa-solid fa-user-astronaut text-xl"></i>\`}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span class="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">\${user.name || "Ewerson Dias"}</span>
-                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400 text-slate-950">Ativo</span>
-                  </div>
-                  <p class="text-xs text-slate-600 dark:text-slate-300 truncate">\${user.email || "diasewerson@gmail.com"}</p>
-                  <p class="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5">⚡ Privilégios totais liberados: você pode ligar/desligar a LGPD e revelar alunos.</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Botões de Controle Rápido do Modo Deus -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button 
-                onclick="togglePrivacyMode()" 
-                class="w-full py-3 px-4 rounded-xl text-xs font-bold \${AppState.privacyMode ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20'} flex items-center justify-center gap-2 transition-all"
-              >
-                <i class="fa-solid \${AppState.privacyMode ? 'fa-eye' : 'fa-shield-halved'}"></i>
-                <span>\${AppState.privacyMode ? 'Suspender Proteção LGPD' : 'Reativar Proteção LGPD'}</span>
-              </button>
-
-              <button 
-                onclick="logoutGodMode()" 
-                class="w-full py-3 px-4 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 transition-all"
-              >
-                <i class="fa-solid fa-lock"></i>
-                <span>Encerrar & Trancar LGPD</span>
-              </button>
-            </div>
-          \` : \`
-            <!-- Painel quando NÃO está autenticado (Login Obrigatório) -->
-            <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
-              <div class="flex items-center gap-2 text-indigo-900 dark:text-indigo-200 font-bold">
-                <i class="fa-solid fa-shield-halved text-indigo-600 dark:text-indigo-400 text-sm"></i>
-                <span>Modo LGPD Travado por Segurança</span>
-              </div>
-              <p class="leading-relaxed text-[11px]">
-                Para desativar o mascaramento de CPFs, telefones e endereços, autentique-se com sua <strong>conta Google autorizada</strong> ou com suas <strong>credenciais mestre</strong>.
-              </p>
-            </div>
-
-            <!-- OPÇÃO 1: Login com Usuário e Senha Mestre -->
-            <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
-              <div class="flex items-center justify-between">
-                <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <i class="fa-solid fa-key text-amber-500"></i>
-                  <span>1. Login Mestre (Usuário & Senha)</span>
-                </label>
-                <span class="text-[10px] text-amber-700 dark:text-amber-400 font-bold bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
-                  Direto
-                </span>
-              </div>
-
-              <div class="space-y-2">
-                <div>
-                  <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">USUÁRIO</label>
-                  <div class="relative">
-                    <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input 
-                      type="text" 
-                      id="god-login-user" 
-                      value="\${AUTHORIZED_GOD_MODE.username}"
-                      placeholder="eupordias"
-                      class="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
-                    >
-                  </div>
-                </div>
-
-                <div>
-                  <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">SENHA MESTRE</label>
-                  <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input 
-                      type="password" 
-                      id="god-login-pass" 
-                      placeholder="Digite a senha mestre"
-                      class="w-full pl-9 pr-10 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
-                      onkeydown="if(event.key === 'Enter') verifyGodModeCredentials()"
-                    >
-                    <button 
-                      type="button" 
-                      onclick="toggleGodPasswordVisibility()" 
-                      class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 text-xs"
-                      title="Mostrar/Ocultar Senha"
-                    >
-                      <i id="god-pass-eye-icon" class="fa-solid fa-eye"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <button 
-                  onclick="verifyGodModeCredentials()" 
-                  class="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/25 transition-all flex items-center justify-center gap-2 mt-2"
-                >
-                  <i class="fa-solid fa-bolt text-sm"></i>
-                  <span>Entrar com Login & Senha</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- OPÇÃO 2: Login com a Conta Google (diasewerson@gmail.com) -->
-            <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
-              <div class="flex items-center justify-between">
-                <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <i class="fa-brands fa-google text-indigo-500"></i>
-                  <span>2. Conta Google Autorizada</span>
-                </label>
-                <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
-                  Google GIS
-                </span>
-              </div>
-
-              <!-- Container renderizado pelo Google Identity Services -->
-              <div id="google-official-btn" class="flex justify-center w-full min-h-[40px]"></div>
-
-              <!-- Botão alternativo com a conta Google específica -->
-              <button 
-                onclick="triggerGoogleDirectLogin()"
-                class="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-sm flex items-center justify-center gap-2.5 transition-all"
-              >
-                <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                <span>Conectar com \${AUTHORIZED_GOD_MODE.googleEmail}</span>
-              </button>
-            </div>
-          \`}
+          ${bodyContent}
         </div>
 
       </div>
@@ -1101,7 +1112,7 @@ function triggerGoogleDirectLogin() {
 }
 
 function loginWithPromptAccount() {
-  const email = prompt("Informe sua conta Google autorizada de Professor / Administrador:", AUTHORIZED_GOD_MODE.googleEmail);
+  const email = prompt("Informe a conta Google autorizada de Administrador:");
   if (email && email.trim()) {
     if (email.trim().toLowerCase() === AUTHORIZED_GOD_MODE.googleEmail.toLowerCase()) {
       loginGodMode({
@@ -1112,7 +1123,7 @@ function loginWithPromptAccount() {
         method: "google_prompt"
       });
     } else {
-      showToast(`Acesso Negado: A conta Google informada (\${email}) não tem privilégios de Modo Deus. Utilize \${AUTHORIZED_GOD_MODE.googleEmail}.`, "error");
+      showToast("Acesso Negado: A conta informada não tem privilégios de Modo Deus.", "error");
     }
   }
 }
