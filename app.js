@@ -751,8 +751,15 @@ function renderHeaderGodModeStatus() {
 }
 
 // -------------------------------------------------------------
-// AUTENTICAÇÃO MESTRE • MODO DEUS VIA GOOGLE
+// AUTENTICAÇÃO MESTRE • MODO DEUS (GOOGLE & CREDENCIAIS)
 // -------------------------------------------------------------
+const AUTHORIZED_GOD_MODE = {
+  username: "eupordias",
+  password: "0318188253158",
+  googleEmail: "diasewerson@gmail.com",
+  teacherName: "Ewerson Dias"
+};
+
 function loginGodMode(userProfile) {
   AppState.godMode = {
     active: true,
@@ -798,42 +805,70 @@ function handleGoogleCredentialResponse(response) {
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
     const profile = JSON.parse(jsonPayload);
-    
-    loginGodMode({
-      name: profile.name || "Professor (Google)",
-      email: profile.email || "professor.google@al.gov.br",
-      picture: profile.picture || "",
-      method: "google_gis",
-      sub: profile.sub
-    });
+    const email = (profile.email || "").toLowerCase().trim();
+
+    if (email === AUTHORIZED_GOD_MODE.googleEmail.toLowerCase()) {
+      loginGodMode({
+        name: profile.name || AUTHORIZED_GOD_MODE.teacherName,
+        email: profile.email,
+        picture: profile.picture || "",
+        method: "google_gis",
+        sub: profile.sub
+      });
+    } else {
+      showToast(`Acesso Negado: A conta Google (${email}) não tem privilégios de Modo Deus. Utilize ${AUTHORIZED_GOD_MODE.googleEmail}.`, "error");
+    }
   } catch (err) {
     console.error("Erro ao decodificar token do Google:", err);
     showToast("Erro ao validar credencial do Google. Tente novamente.", "error");
   }
 }
 
-function verifyEmergencyGodMode() {
-  const inputEl = document.getElementById("god-mode-input");
-  if (!inputEl) return;
-  const value = inputEl.value.trim();
+function verifyGodModeCredentials() {
+  const userEl = document.getElementById("god-login-user");
+  const passEl = document.getElementById("god-login-pass");
+  if (!userEl || !passEl) return;
+  const user = userEl.value.trim();
+  const pass = passEl.value.trim();
 
-  if (!value) {
-    showToast("Por favor, digite seu e-mail Google ou chave mestre.", "warning");
+  if (!user || !pass) {
+    showToast("Por favor, preencha o login e a senha.", "warning");
     return;
   }
 
-  const isMasterKey = value.toLowerCase() === "deus2026" || value.toLowerCase() === "eupordias" || value.toLowerCase() === "admin";
-  const isEmail = value.includes("@");
-
-  if (isMasterKey || isEmail) {
+  if (user.toLowerCase() === AUTHORIZED_GOD_MODE.username.toLowerCase() && pass === AUTHORIZED_GOD_MODE.password) {
     loginGodMode({
-      name: isEmail ? value.split("@")[0] : "Professor Administrador",
-      email: isEmail ? value : "eupordias@gmail.com",
+      name: `${AUTHORIZED_GOD_MODE.teacherName} (Professor)`,
+      email: AUTHORIZED_GOD_MODE.googleEmail,
+      login: AUTHORIZED_GOD_MODE.username,
       picture: "",
-      method: isMasterKey ? "master_key" : "google_email_direct"
+      method: "credentials"
     });
   } else {
-    showToast("Chave ou e-mail inválido. Utilize uma conta Google ou chave mestre.", "error");
+    showToast("Login ou senha incorretos para o Modo Deus.", "error");
+  }
+}
+
+function loginWithAuthorizedGoogleAccount() {
+  loginGodMode({
+    name: `${AUTHORIZED_GOD_MODE.teacherName} (Google)`,
+    email: AUTHORIZED_GOD_MODE.googleEmail,
+    login: AUTHORIZED_GOD_MODE.username,
+    picture: "",
+    method: "google_authorized"
+  });
+}
+
+function toggleGodPasswordVisibility() {
+  const passInput = document.getElementById("god-login-pass");
+  const eyeIcon = document.getElementById("god-pass-eye-icon");
+  if (!passInput || !eyeIcon) return;
+  if (passInput.type === "password") {
+    passInput.type = "text";
+    eyeIcon.className = "fa-solid fa-eye-slash";
+  } else {
+    passInput.type = "password";
+    eyeIcon.className = "fa-solid fa-eye";
   }
 }
 
@@ -865,7 +900,7 @@ function openGodModeAuthModal() {
                 </span>
               </div>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Controle de Privacidade, Desmascaramento & LGPD
+                Professor Ewerson Dias • Gestão de Mídias Digitais
               </p>
             </div>
           </div>
@@ -885,10 +920,10 @@ function openGodModeAuthModal() {
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-1.5">
-                    <span class="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">\${user.name || "Professor Administrador"}</span>
+                    <span class="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">\${user.name || "Ewerson Dias"}</span>
                     <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400 text-slate-950">Ativo</span>
                   </div>
-                  <p class="text-xs text-slate-600 dark:text-slate-300 truncate">\${user.email || "Conta Google Conectada"}</p>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 truncate">\${user.email || "diasewerson@gmail.com"}</p>
                   <p class="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5">⚡ Privilégios totais liberados: você pode ligar/desligar a LGPD e revelar alunos.</p>
                 </div>
               </div>
@@ -914,67 +949,103 @@ function openGodModeAuthModal() {
             </div>
           \` : \`
             <!-- Painel quando NÃO está autenticado (Login Obrigatório) -->
-            <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 space-y-2">
+            <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
               <div class="flex items-center gap-2 text-indigo-900 dark:text-indigo-200 font-bold">
                 <i class="fa-solid fa-shield-halved text-indigo-600 dark:text-indigo-400 text-sm"></i>
-                <span>Regra Permanente de Proteção LGPD</span>
+                <span>Modo LGPD Travado por Segurança</span>
               </div>
               <p class="leading-relaxed text-[11px]">
-                O modo LGPD está <strong>sempre ativo e travado</strong> para proteger os 715 alunos do programa Emprega Mais Alagoas. Para exibir telefones, CPFs e endereços reais no Datashow ou individualmente, é necessário se autenticar com sua <strong>conta Google</strong> no <strong>Modo Deus</strong>.
+                Para desativar o mascaramento de CPFs, telefones e endereços, autentique-se com sua <strong>conta Google autorizada</strong> ou com suas <strong>credenciais mestre</strong>.
               </p>
             </div>
 
-            <!-- OPÇÃO 1: Botão Oficial Google (Google Identity Services) -->
-            <div class="space-y-3">
-              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                1. Autenticar com Conta Google Oficial:
-              </label>
+            <!-- OPÇÃO 1: Login com Usuário e Senha Mestre -->
+            <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-solid fa-key text-amber-500"></i>
+                  <span>1. Login Mestre (Usuário & Senha)</span>
+                </label>
+                <span class="text-[10px] text-amber-700 dark:text-amber-400 font-bold bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
+                  Direto
+                </span>
+              </div>
+
+              <div class="space-y-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">USUÁRIO</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input 
+                      type="text" 
+                      id="god-login-user" 
+                      value="\${AUTHORIZED_GOD_MODE.username}"
+                      placeholder="eupordias"
+                      class="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
+                    >
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">SENHA MESTRE</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input 
+                      type="password" 
+                      id="god-login-pass" 
+                      placeholder="Digite a senha mestre"
+                      class="w-full pl-9 pr-10 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
+                      onkeydown="if(event.key === 'Enter') verifyGodModeCredentials()"
+                    >
+                    <button 
+                      type="button" 
+                      onclick="toggleGodPasswordVisibility()" 
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 text-xs"
+                      title="Mostrar/Ocultar Senha"
+                    >
+                      <i id="god-pass-eye-icon" class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <button 
+                  onclick="verifyGodModeCredentials()" 
+                  class="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/25 transition-all flex items-center justify-center gap-2 mt-2"
+                >
+                  <i class="fa-solid fa-bolt text-sm"></i>
+                  <span>Entrar com Login & Senha</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- OPÇÃO 2: Login com a Conta Google (diasewerson@gmail.com) -->
+            <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-brands fa-google text-indigo-500"></i>
+                  <span>2. Conta Google Autorizada</span>
+                </label>
+                <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
+                  Google GIS
+                </span>
+              </div>
 
               <!-- Container renderizado pelo Google Identity Services -->
-              <div id="google-official-btn" class="flex justify-center w-full min-h-[44px]"></div>
+              <div id="google-official-btn" class="flex justify-center w-full min-h-[40px]"></div>
 
-              <!-- Botão alternativo com estilo oficial Google caso o GIS demore a carregar -->
+              <!-- Botão alternativo com a conta Google específica -->
               <button 
                 onclick="triggerGoogleDirectLogin()"
-                class="w-full py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-sm flex items-center justify-center gap-3 transition-all"
+                class="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-sm flex items-center justify-center gap-2.5 transition-all"
               >
-                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                 </svg>
-                <span>Entrar com a Conta Google (Modo Deus)</span>
+                <span>Conectar com \${AUTHORIZED_GOD_MODE.googleEmail}</span>
               </button>
-            </div>
-
-            <!-- OPÇÃO 2: Verificação Rápida / Sala de Aula Offline -->
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
-              <div class="flex items-center justify-between">
-                <label for="god-mode-input" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-                  2. Acesso Direto / Chave Mestre de Emergência:
-                </label>
-                <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">Uso em Sala de Aula</span>
-              </div>
-              <div class="flex gap-2">
-                <input 
-                  type="text" 
-                  id="god-mode-input" 
-                  placeholder="Seu e-mail Google (ex: eupordias@gmail.com) ou chave"
-                  class="flex-1 px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-                  onkeydown="if(event.key === 'Enter') verifyEmergencyGodMode()"
-                >
-                <button 
-                  onclick="verifyEmergencyGodMode()" 
-                  class="px-4 py-2.5 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20 transition-all flex items-center gap-1.5 flex-shrink-0"
-                >
-                  <i class="fa-solid fa-key"></i>
-                  <span>Validar</span>
-                </button>
-              </div>
-              <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
-                💡 Dica de emergência: Garante acesso imediato caso o polo no interior de Alagoas esteja sem sinal ou com restrição de rede no Google.
-              </p>
             </div>
           \`}
         </div>
@@ -1030,14 +1101,19 @@ function triggerGoogleDirectLogin() {
 }
 
 function loginWithPromptAccount() {
-  const email = prompt("Informe sua conta Google autorizada de Professor / Administrador:", "eupordias@gmail.com");
+  const email = prompt("Informe sua conta Google autorizada de Professor / Administrador:", AUTHORIZED_GOD_MODE.googleEmail);
   if (email && email.trim()) {
-    loginGodMode({
-      name: email.split("@")[0],
-      email: email.trim(),
-      picture: "",
-      method: "google_prompt"
-    });
+    if (email.trim().toLowerCase() === AUTHORIZED_GOD_MODE.googleEmail.toLowerCase()) {
+      loginGodMode({
+        name: `${AUTHORIZED_GOD_MODE.teacherName} (Google)`,
+        email: AUTHORIZED_GOD_MODE.googleEmail,
+        login: AUTHORIZED_GOD_MODE.username,
+        picture: "",
+        method: "google_prompt"
+      });
+    } else {
+      showToast(`Acesso Negado: A conta Google informada (\${email}) não tem privilégios de Modo Deus. Utilize \${AUTHORIZED_GOD_MODE.googleEmail}.`, "error");
+    }
   }
 }
 
