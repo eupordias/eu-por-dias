@@ -26,14 +26,16 @@ const AppState = {
     passingGrade: 7.0,
     recoveryGrade: 5.0,
     darkMode: false,
-    viewMode: "grid", // 'grid' | 'table'
+    viewMode: "grid", // 'grid' | 'table' | 'secure'
     // Integração com Google Sheets API v4
     googleApiKey: "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI",
     googleSpreadsheetId: "",
     googleSheetRange: "A1:Z500",
     lastSyncTime: null
   },
-  currentTab: "students", // 'dashboard' | 'students' | 'grades' | 'reports'
+  currentTab: "students", // 'dashboard' | 'students' | 'grades' | 'reports' | 'about'
+  privacyMode: false, // Camada de Segurança e Proteção LGPD
+  revealedStudentIds: new Set(), // IDs de alunos revelados temporariamente sob demanda
   searchTerm: "",
   filterClassroom: "all",
   filterStatus: "all",
@@ -56,6 +58,86 @@ const AppState = {
     mode: 'merge' // 'merge' | 'replace'
   }
 };
+
+// -------------------------------------------------------------
+// CAMADA DE SEGURANÇA, PRIVACIDADE & LGPD
+// -------------------------------------------------------------
+function maskName(name, isRevealed = false) {
+  if (!name || isRevealed) return name || "";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0];
+  const firstName = parts[0];
+  const lastInitials = parts.slice(1).map(p => p[0].toUpperCase() + ".").join(" ");
+  return `${firstName} ${lastInitials}`;
+}
+
+function maskCpf(cpf, isRevealed = false) {
+  if (!cpf || isRevealed) return cpf || "";
+  const digits = cpf.replace(/\D/g, "");
+  if (digits.length === 11) {
+    return `***.***.${digits.substring(6, 9)}-**`;
+  }
+  return "***.***.***-**";
+}
+
+function maskPhone(phone, isRevealed = false) {
+  if (!phone || isRevealed) return phone || "";
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length >= 10) {
+    const ddd = digits.substring(0, 2);
+    const lastDigits = digits.slice(-2);
+    return `(${ddd}) 9****-**${lastDigits}`;
+  }
+  return "(82) *****-****";
+}
+
+function maskEmail(email, isRevealed = false) {
+  if (!email || isRevealed) return email || "";
+  const parts = email.split("@");
+  if (parts.length === 2) {
+    const user = parts[0];
+    const domain = parts[1];
+    const visibleUser = user.length > 2 ? user.substring(0, 2) + "***" : user[0] + "***";
+    return `${visibleUser}@${domain}`;
+  }
+  return "***@***.com";
+}
+
+function maskAddress(address, isRevealed = false) {
+  if (!address || isRevealed) {
+    return address ? `${address.street || ''} ${address.number || ''}, ${address.neighborhood || ''} - ${address.city || ''}/${address.state || 'AL'}`.trim() : "";
+  }
+  const b = address.neighborhood ? `${address.neighborhood} - ` : "";
+  const c = address.city || "Alagoas";
+  const uf = address.state || "AL";
+  return `${b}${c}/${uf}`;
+}
+
+function togglePrivacyMode() {
+  AppState.privacyMode = !AppState.privacyMode;
+  if (AppState.privacyMode && AppState.settings.viewMode === "grid") {
+    // Mantém a visualização com máscara aplicada
+  }
+  saveDataToStorage();
+  showToast(
+    AppState.privacyMode 
+      ? "🛡️ Modo Seguro LGPD ativado! Dados pessoais mascarados para projeção." 
+      : "Modo Seguro desativado. Dados pessoais visíveis.", 
+    AppState.privacyMode ? "success" : "info"
+  );
+  renderApp();
+}
+
+function toggleRevealStudent(studentId) {
+  if (AppState.revealedStudentIds.has(studentId)) {
+    AppState.revealedStudentIds.delete(studentId);
+    showToast("Dados pessoais do aluno ocultados novamente.", "info");
+  } else {
+    AppState.revealedStudentIds.add(studentId);
+    showToast("Dados pessoais do aluno revelados temporariamente.", "warning");
+  }
+  renderApp();
+}
 
 // Inicialização
 document.addEventListener("DOMContentLoaded", () => {
@@ -699,9 +781,56 @@ function renderStudentsTab(container) {
             >
               <i class="fa-solid fa-list text-sm"></i>
             </button>
+            <button 
+              onclick="setViewMode('secure')" 
+              class="p-2 rounded-lg text-xs font-semibold ${AppState.settings.viewMode === 'secure' ? 'bg-emerald-600 shadow text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
+              title="Visualização Segura (Modo LGPD / Projeção em Sala)"
+            >
+              <i class="fa-solid fa-shield-halved text-sm"></i>
+            </button>
           </div>
+
+          <!-- Botão de Alternância da Camada de Segurança LGPD -->
+          <button 
+            onclick="togglePrivacyMode()" 
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm ${AppState.privacyMode ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-400' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}"
+            title="${AppState.privacyMode ? 'Modo Seguro LGPD Ativado (clique para desativar)' : 'Ativar Modo Seguro LGPD (mascarar dados sensíveis)'}"
+          >
+            <i class="fa-solid ${AppState.privacyMode ? 'fa-shield-halved' : 'fa-lock'}"></i>
+            <span>${AppState.privacyMode ? 'LGPD Ativo' : 'Modo Seguro'}</span>
+          </button>
         </div>
       </div>
+
+      <!-- Banner de Alerta do Modo Seguro / Privacidade -->
+      ${(AppState.privacyMode || AppState.settings.viewMode === 'secure') ? `
+        <div class="p-4 rounded-3xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm fade-in">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg flex-shrink-0 shadow-md shadow-emerald-600/20">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-bold text-xs">Camada de Segurança Ativa (Privacidade & LGPD)</h4>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100 uppercase">
+                  100% Seguro para Sala
+                </span>
+              </div>
+              <p class="text-[11px] text-emerald-800/90 dark:text-emerald-300/90 mt-0.5">
+                Os dados pessoais sensíveis (CPF, WhatsApp, e-mail e endereços) estão mascarados. Esta página pode ser projetada em Datashow, TV ou apresentada sem expor a privacidade dos alunos.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end">
+            <button 
+              onclick="togglePrivacyMode()" 
+              class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-slate-800 shadow-sm transition-all"
+            >
+              ${AppState.privacyMode ? 'Desativar Mascaramento' : 'Ativar Proteção Geral'}
+            </button>
+          </div>
+        </div>
+      ` : ''}
 
       <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
         <span>Exibindo <strong>${filtered.length}</strong> de <strong>${AppState.students.length}</strong> alunos matriculados</span>
@@ -713,7 +842,9 @@ function renderStudentsTab(container) {
       </div>
 
       ${filtered.length === 0 ? renderEmptyState() : (
-        AppState.settings.viewMode === 'grid' ? renderStudentCardsGrid(filtered) : renderStudentTable(filtered)
+        AppState.settings.viewMode === 'secure' ? renderSecureStudentCards(filtered) :
+        AppState.settings.viewMode === 'table' ? renderStudentTable(filtered) : 
+        renderStudentCardsGrid(filtered)
       )}
     </div>
   `;
@@ -739,7 +870,12 @@ function renderStudentCardsGrid(students) {
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       ${students.map(student => {
         const stats = calculateStudentOverallStats(student);
-        const initials = student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+        const isRevealed = AppState.revealedStudentIds.has(student.id) || !AppState.privacyMode;
+        const displayName = maskName(student.name, isRevealed);
+        const displayCpf = maskCpf(student.cpf, isRevealed);
+        const displayPhone = maskPhone(student.contact?.phone, isRevealed);
+        const displayEmail = maskEmail(student.contact?.email, isRevealed);
+        const initials = (student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
         const cleanPhone = (student.contact?.phone || "").replace(/\D/g, "");
         
         let socialUrl = student.socialMedia || "";
@@ -773,10 +909,10 @@ function renderStudentCardsGrid(students) {
                   <div 
                     onclick="openPhotoUploadModal('${student.id}')"
                     class="relative group/avatar w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} flex items-center justify-center text-white font-black text-base shadow-inner flex-shrink-0 cursor-pointer border border-slate-200/80 dark:border-slate-700/80 transition-transform active:scale-95"
-                    title="Clique para adicionar ou trocar a foto de ${student.name}"
+                    title="Clique para adicionar ou trocar a foto de ${displayName}"
                   >
                     ${student.photoUrl ? `
-                      <img src="${student.photoUrl}" alt="${student.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                      <img src="${student.photoUrl}" alt="${displayName}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                       <div class="hidden w-full h-full items-center justify-center">${initials}</div>
                     ` : `
                       <span>${initials}</span>
@@ -798,9 +934,9 @@ function renderStudentCardsGrid(students) {
                     <h3 
                       onclick="openStudentProfileModal('${student.id}')"
                       class="font-bold text-base text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors cursor-pointer line-clamp-1"
-                      title="Ver ficha completa de ${student.name}"
+                      title="Ver ficha de ${displayName}"
                     >
-                      ${student.name}
+                      ${displayName}
                     </h3>
                     <div class="flex items-center flex-wrap gap-1.5 mt-0.5">
                       <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">
@@ -838,19 +974,29 @@ function renderStudentCardsGrid(students) {
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate">
                     <i class="fa-solid fa-id-card text-indigo-500 w-4 text-center"></i>
-                    <span class="font-mono text-[11px]">${student.cpf || 'CPF não informado'}</span>
+                    <span class="font-mono text-[11px]">${displayCpf || 'CPF não informado'}</span>
+                    ${!isRevealed ? `<span class="text-[9px] px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded font-bold">LGPD</span>` : ''}
                   </div>
-                  ${cleanPhone ? `
+                  ${cleanPhone ? (isRevealed ? `
                     <a 
-                      href="https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá ${student.name}! Aqui é o professor do curso de Gestão de Mídias Digitais (Emprega Mais Alagoas).`)}" 
+                      href="https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá ${student.name.split(' ')[0]}! Aqui é o professor do curso de Gestão de Mídias Digitais (Emprega Mais Alagoas).`)}" 
                       target="_blank" 
                       class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] shadow-sm transition-all flex-shrink-0"
                       title="Chamar no WhatsApp"
                     >
                       <i class="fa-brands fa-whatsapp text-xs"></i>
-                      <span>${student.contact?.phone || 'WhatsApp'}</span>
+                      <span>${displayPhone}</span>
                     </a>
                   ` : `
+                    <button 
+                      onclick="toggleRevealStudent('${student.id}')"
+                      class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] transition-all flex-shrink-0"
+                      title="Contato protegido por LGPD. Clique para revelar."
+                    >
+                      <i class="fa-solid fa-lock text-[10px] text-amber-500"></i>
+                      <span>${displayPhone}</span>
+                    </button>
+                  `) : `
                     <span class="text-slate-400 text-[11px] italic">Sem WhatsApp</span>
                   `}
                 </div>
@@ -859,9 +1005,9 @@ function renderStudentCardsGrid(students) {
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate">
                     <i class="fa-solid fa-envelope text-slate-400 w-4 text-center"></i>
-                    <span class="truncate text-[11px]">${student.contact?.email || 'Sem e-mail'}</span>
+                    <span class="truncate text-[11px]">${displayEmail || 'Sem e-mail'}</span>
                   </div>
-                  ${student.contact?.email ? `
+                  ${student.contact?.email && isRevealed ? `
                     <a 
                       href="mailto:${student.contact.email}?subject=${encodeURIComponent(`Emprega Mais Alagoas - Mídias Digitais: ${student.name}`)}"
                       class="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-semibold flex-shrink-0"
@@ -1037,6 +1183,16 @@ function renderStudentCardsGrid(students) {
               </div>
 
               <div class="flex items-center gap-1">
+                ${AppState.privacyMode ? `
+                  <button 
+                    onclick="toggleRevealStudent('${student.id}')"
+                    class="px-2 py-1.5 rounded-xl font-bold text-xs ${isRevealed ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'} flex items-center gap-1 transition-colors"
+                    title="${isRevealed ? 'Ocultar dados pessoais deste aluno' : 'Revelar dados pessoais deste aluno temporariamente'}"
+                  >
+                    <i class="fa-solid ${isRevealed ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                    <span>${isRevealed ? 'Ocultar' : 'Revelar'}</span>
+                  </button>
+                ` : ''}
                 <button 
                   onclick="openStudentModal('${student.id}')"
                   class="w-8 h-8 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
@@ -1081,6 +1237,12 @@ function renderStudentTable(students) {
           <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
             ${students.map(student => {
               const stats = calculateStudentOverallStats(student);
+              const isRevealed = AppState.revealedStudentIds.has(student.id) || !AppState.privacyMode;
+              const displayName = maskName(student.name, isRevealed);
+              const displayCpf = maskCpf(student.cpf, isRevealed);
+              const displayPhone = maskPhone(student.contact?.phone, isRevealed);
+              const displayEmail = maskEmail(student.contact?.email, isRevealed);
+              const displayAddress = maskAddress(student.address, isRevealed);
               const cleanPhone = (student.contact?.phone || "").replace(/\D/g, "");
               return `
                 <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
@@ -1092,20 +1254,20 @@ function renderStudentTable(students) {
                         title="Clique para alterar foto"
                       >
                         ${student.photoUrl ? `
-                          <img src="${student.photoUrl}" alt="${student.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                          <div class="hidden w-full h-full items-center justify-center">${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
+                          <img src="${student.photoUrl}" alt="${displayName}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                          <div class="hidden w-full h-full items-center justify-center">${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
                         ` : `
-                          <span>${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
+                          <span>${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
                         `}
                         <div class="absolute inset-0 bg-slate-900/50 opacity-0 group-hover/tblavatar:opacity-100 transition-opacity flex items-center justify-center text-white text-[8px]">
                           <i class="fa-solid fa-camera"></i>
                         </div>
                       </div>
                       <div>
-                        <span onclick="openStudentProfileModal('${student.id}')" class="font-bold text-slate-900 dark:text-slate-100 block hover:text-indigo-600 cursor-pointer">${student.name}</span>
+                        <span onclick="openStudentProfileModal('${student.id}')" class="font-bold text-slate-900 dark:text-slate-100 block hover:text-indigo-600 cursor-pointer">${displayName}</span>
                         <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
                           <span>${student.id}</span>
-                          ${student.cpf ? `<span>• CPF: ${student.cpf}</span>` : ''}
+                          ${student.cpf ? `<span>• CPF: ${displayCpf}</span>` : ''}
                         </div>
                       </div>
                     </div>
@@ -1118,21 +1280,25 @@ function renderStudentTable(students) {
                   <td class="py-3 px-4">
                     <div class="text-xs space-y-1">
                       <div class="flex items-center gap-2">
-                        <span class="text-slate-700 dark:text-slate-300 font-medium">${student.contact?.phone || '-'}</span>
-                        ${cleanPhone ? `
-                          <a href="https://wa.me/55${cleanPhone}" target="_blank" class="text-emerald-600 hover:text-emerald-700">
+                        <span class="text-slate-700 dark:text-slate-300 font-medium">${displayPhone}</span>
+                        ${cleanPhone ? (isRevealed ? `
+                          <a href="https://wa.me/55${cleanPhone}" target="_blank" class="text-emerald-600 hover:text-emerald-700" title="Chamar no WhatsApp">
                             <i class="fa-brands fa-whatsapp"></i>
                           </a>
-                        ` : ''}
+                        ` : `
+                          <button onclick="toggleRevealStudent('${student.id}')" class="text-amber-500 hover:text-amber-600 text-xs" title="Clique para desbloquear contato">
+                            <i class="fa-solid fa-lock"></i>
+                          </button>
+                        `) : ''}
                       </div>
                       <div class="text-slate-500 dark:text-slate-400 text-[11px] truncate max-w-[180px]">
-                        ${student.contact?.email || ''}
+                        ${displayEmail}
                       </div>
                     </div>
                   </td>
                   <td class="py-3 px-4">
-                    <div class="text-xs text-slate-600 dark:text-slate-300 max-w-[200px] truncate">
-                      ${student.address?.street ? `${student.address.street}, ${student.address.neighborhood || student.address.city}` : '<span class="text-slate-400">Não informado</span>'}
+                    <div class="text-xs text-slate-600 dark:text-slate-300 max-w-[200px] truncate" title="${displayAddress}">
+                      ${displayAddress || '<span class="text-slate-400">Não informado</span>'}
                     </div>
                   </td>
                   <td class="py-3 px-4 text-center">
@@ -1145,16 +1311,25 @@ function renderStudentTable(students) {
                   </td>
                   <td class="py-3 px-4 text-right">
                     <div class="flex items-center justify-end gap-1.5">
-                      <button onclick="openGradesModal('${student.id}')" class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50">
+                      ${AppState.privacyMode ? `
+                        <button 
+                          onclick="toggleRevealStudent('${student.id}')" 
+                          class="p-1.5 rounded-lg ${isRevealed ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50'}"
+                          title="${isRevealed ? 'Ocultar dados deste aluno' : 'Revelar dados deste aluno'}"
+                        >
+                          <i class="fa-solid ${isRevealed ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                        </button>
+                      ` : ''}
+                      <button onclick="openGradesModal('${student.id}')" class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50" title="Notas">
                         <i class="fa-solid fa-pen-to-square"></i>
                       </button>
-                      <button onclick="openBoletimModal('${student.id}')" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100">
+                      <button onclick="openBoletimModal('${student.id}')" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100" title="Boletim">
                         <i class="fa-solid fa-file-invoice"></i>
                       </button>
-                      <button onclick="openStudentModal('${student.id}')" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100">
+                      <button onclick="openStudentModal('${student.id}')" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100" title="Editar">
                         <i class="fa-solid fa-user-pen"></i>
                       </button>
-                      <button onclick="confirmDeleteStudent('${student.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50">
+                      <button onclick="confirmDeleteStudent('${student.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50" title="Excluir">
                         <i class="fa-solid fa-trash-can"></i>
                       </button>
                     </div>
@@ -1165,6 +1340,245 @@ function renderStudentTable(students) {
           </tbody>
         </table>
       </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// VISUALIZAÇÃO SEGURA (MODO LGPD & SALA DE AULA)
+// -------------------------------------------------------------
+function renderSecureStudentCards(students) {
+  return `
+    <div class="space-y-6 fade-in">
+      
+      <!-- Banner Informativo do Modo Seguro -->
+      <div class="p-4 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/90 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-md shadow-emerald-600/20 flex-shrink-0">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-sm">Painel Pedagógico Seguro (Conformidade LGPD)</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100 uppercase">
+                Zero Exposição
+              </span>
+            </div>
+            <p class="text-xs text-emerald-800/90 dark:text-emerald-300/90 mt-0.5">
+              Esta visualização foi desenhada para projeção pública no Datashow/TV da sala de aula. Mostra todos os diagnósticos, notas e competências dos alunos <strong>sem exibir CPFs, números de telefone ou endereços</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button 
+            onclick="exportStudentsToCSV(true)" 
+            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-slate-800 shadow-sm flex items-center gap-1.5 transition-all"
+            title="Exportar planilha segura com dados pessoais mascarados"
+          >
+            <i class="fa-solid fa-file-csv text-emerald-600"></i>
+            <span>Exportar CSV Seguro</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Grade de Cards Pedagógicos Seguros -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        ${students.map(student => {
+          const stats = calculateStudentOverallStats(student);
+          const isRevealed = AppState.revealedStudentIds.has(student.id);
+          const displayName = maskName(student.name, isRevealed);
+          const displayCpf = maskCpf(student.cpf, isRevealed);
+          const displayPhone = maskPhone(student.contact?.phone, isRevealed);
+          const initials = (student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+
+          return `
+            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 relative overflow-hidden">
+              
+              <div>
+                <!-- Topo: Identificação e Status -->
+                <div class="flex items-start justify-between gap-3 mb-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} text-white font-bold flex items-center justify-center text-sm shadow-inner flex-shrink-0">
+                      ${student.photoUrl && !AppState.privacyMode ? `
+                        <img src="${student.photoUrl}" alt="${displayName}" class="w-full h-full object-cover rounded-2xl" />
+                      ` : `
+                        <span>${initials}</span>
+                      `}
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-base text-slate-900 dark:text-slate-100">${displayName}</h3>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 flex items-center gap-1">
+                          <i class="fa-solid fa-shield-halved text-emerald-600"></i> LGPD
+                        </span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <span class="font-mono text-indigo-600 dark:text-indigo-400 font-bold">${student.id}</span>
+                        <span>•</span>
+                        <span><i class="fa-solid fa-location-dot text-indigo-500 mr-1"></i>${student.unitCity || student.classroom}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border ${stats.statusClass}">
+                      <span class="w-1.5 h-1.5 rounded-full ${stats.status === 'Aprovado' ? 'bg-emerald-500' : stats.status === 'Em Recuperação' ? 'bg-amber-500' : stats.status === 'Reprovado' ? 'bg-rose-500' : 'bg-slate-400'}"></span>
+                      ${stats.status}
+                    </span>
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                      Média: <strong class="text-indigo-600 dark:text-indigo-400">${stats.overallAvg.toFixed(1)}</strong>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Perfil Pedagógico & Diagnóstico (Destaque Central) -->
+                <div class="space-y-3">
+                  
+                  <!-- Bloco 1: Diagnóstico dos Desafios (O mais importante para o professor) -->
+                  <div class="p-3.5 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40 text-xs">
+                    <span class="font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5 uppercase text-[10px] mb-1">
+                      <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios ao Produzir Conteúdo:
+                    </span>
+                    <p class="text-slate-700 dark:text-slate-200 italic leading-relaxed">
+                      "${student.challenges || 'Nenhum desafio crítico registrado no formulário inicial.'}"
+                    </p>
+                  </div>
+
+                  <!-- Bloco 2: Motivação e Expectativas -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                    <div class="p-3 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/40">
+                      <span class="font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1 text-[10px] uppercase mb-1">
+                        <i class="fa-solid fa-fire"></i> Motivação para o Curso:
+                      </span>
+                      <p class="text-slate-700 dark:text-slate-300 italic text-[11px] line-clamp-3">
+                        "${student.motivation || 'Qualificação profissional e geração de renda.'}"
+                      </p>
+                    </div>
+
+                    <div class="p-3 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40">
+                      <span class="font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1 text-[10px] uppercase mb-1">
+                        <i class="fa-solid fa-bullseye"></i> Expectativas:
+                      </span>
+                      <p class="text-slate-700 dark:text-slate-300 italic text-[11px] line-clamp-3">
+                        "${student.expectations || 'Aprender estratégias e crescer nas redes sociais.'}"
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Bloco 3: Ferramentas & Bagagem Prévia -->
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                      <span class="text-[10px] uppercase font-bold text-slate-400 block">Profissão / Área</span>
+                      <span class="font-semibold text-slate-800 dark:text-slate-200 truncate block text-[11px]" title="${student.profession || 'Não informada'}">
+                        ${student.profession || 'Não informada'}
+                      </span>
+                    </div>
+
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                      <span class="text-[10px] uppercase font-bold text-slate-400 block">Ferramentas</span>
+                      <span class="font-semibold text-slate-800 dark:text-slate-200 truncate block text-[11px]" title="${student.tools || 'Canva / Nenhuma'}">
+                        ${student.tools || 'Nenhuma'}
+                      </span>
+                    </div>
+
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 sm:col-span-1 col-span-2">
+                      <span class="text-[10px] uppercase font-bold text-slate-400 block">Redes Sociais</span>
+                      <span class="font-semibold text-slate-800 dark:text-slate-200 truncate block text-[11px]" title="${student.frequentNetworks || 'Instagram'}">
+                        ${student.frequentNetworks || 'Instagram'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Bloco 4: Notas dos 7 Módulos de Mídias Digitais -->
+                  <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-xs space-y-2">
+                    <span class="font-bold text-indigo-700 dark:text-indigo-300 text-[10px] uppercase flex items-center justify-between">
+                      <span><i class="fa-solid fa-layer-group mr-1"></i> Desempenho nos Módulos:</span>
+                      <span class="text-slate-500 font-normal">Faltas: ${stats.totalAbsences}</span>
+                    </span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px]">
+                      ${AppState.subjects.slice(0, 4).map(sub => {
+                        const gradeObj = student.grades?.[sub] || { b1: 9.0, b2: 9.0 };
+                        const avg = ((gradeObj.b1 || 0) + (gradeObj.b2 || 0)) / 2;
+                        return `
+                          <div class="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                            <span class="text-[9px] text-slate-400 truncate block">${sub.split(' ')[0]}</span>
+                            <span class="font-bold ${avg >= 7 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600'}">${avg.toFixed(1)}</span>
+                          </div>
+                        `;
+                      }).join("")}
+                    </div>
+                  </div>
+
+                  <!-- Bloco 5: Camada de Proteção de Dados Sensíveis -->
+                  <div class="p-3 rounded-2xl ${isRevealed ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800' : 'bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800'} text-xs space-y-1.5">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-[11px] ${isRevealed ? 'text-amber-800 dark:text-amber-300' : 'text-slate-600 dark:text-slate-300'} flex items-center gap-1.5">
+                        <i class="fa-solid ${isRevealed ? 'fa-triangle-exclamation text-amber-500' : 'fa-lock text-emerald-600'}"></i>
+                        <span>${isRevealed ? 'Dados Pessoais Revelados (Uso Pontual)' : 'Dados Pessoais Protegidos por LGPD'}</span>
+                      </span>
+                      <button 
+                        onclick="toggleRevealStudent('${student.id}')"
+                        class="px-2.5 py-1 rounded-xl text-[10px] font-bold ${isRevealed ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'} transition-all flex items-center gap-1"
+                      >
+                        <i class="fa-solid ${isRevealed ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                        <span>${isRevealed ? 'Ocultar Novamente' : 'Revelar'}</span>
+                      </button>
+                    </div>
+
+                    ${isRevealed ? `
+                      <div class="grid grid-cols-2 gap-2 text-[11px] font-mono pt-1 text-slate-800 dark:text-slate-200">
+                        <div><strong>CPF:</strong> ${student.cpf || 'Não informado'}</div>
+                        <div><strong>WhatsApp:</strong> ${student.contact?.phone || 'Não informado'}</div>
+                        <div class="col-span-2 truncate"><strong>E-mail:</strong> ${student.contact?.email || 'Não informado'}</div>
+                        <div class="col-span-2 truncate"><strong>Endereço:</strong> ${student.address?.street || ''} ${student.address?.number || ''} - ${student.address?.neighborhood || ''}, ${student.address?.city || ''}</div>
+                      </div>
+                    ` : `
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                        CPF (${displayCpf}), WhatsApp (${displayPhone}) e e-mail estão mascarados.
+                      </p>
+                    `}
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Rodapé de Ações Pedagógicas -->
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <button 
+                    onclick="openStudentProfileModal('${student.id}')"
+                    class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-colors flex items-center gap-1.5"
+                    title="Ficha Pedagógica"
+                  >
+                    <i class="fa-solid fa-id-card-clip"></i> Ficha
+                  </button>
+                  <button 
+                    onclick="openGradesModal('${student.id}')"
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5"
+                    title="Lançar Notas"
+                  >
+                    <i class="fa-solid fa-pen-to-square text-amber-500"></i> Notas
+                  </button>
+                  <button 
+                    onclick="openBoletimModal('${student.id}')"
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5"
+                    title="Boletim Escolar"
+                  >
+                    <i class="fa-solid fa-file-invoice text-emerald-500"></i> Boletim
+                  </button>
+                </div>
+
+                <div class="text-[11px] text-slate-400 font-mono">
+                  ${student.unitCity || 'Alagoas'}
+                </div>
+              </div>
+
+            </div>
+          `;
+        }).join("")}
+      </div>
+
     </div>
   `;
 }
@@ -4181,20 +4595,22 @@ function openBoletimModal(studentId) {
 // -------------------------------------------------------------
 // EXPORTAÇÕES E BACKUP
 // -------------------------------------------------------------
-function exportStudentsToCSV() {
+function exportStudentsToCSV(forcePrivacy = false) {
   if (AppState.students.length === 0) {
     showToast("Não há alunos para exportar.", "warning");
     return;
   }
 
+  const usePrivacy = forcePrivacy || AppState.privacyMode || AppState.settings.viewMode === 'secure';
+
   const headers = [
     "Matricula",
     "Data_Inscricao",
-    "Nome Completo",
-    "CPF",
+    usePrivacy ? "Nome (Protegido LGPD)" : "Nome Completo",
+    usePrivacy ? "CPF (Mascarado)" : "CPF",
     "Unidade_Cidade",
-    "Telefone_WhatsApp",
-    "Email",
+    usePrivacy ? "Telefone (Protegido)" : "Telefone_WhatsApp",
+    usePrivacy ? "Email (Protegido)" : "Email",
     "Rede_Social",
     "Profissao_Area",
     "Escolaridade",
@@ -4211,14 +4627,19 @@ function exportStudentsToCSV() {
 
   const rows = AppState.students.map(s => {
     const stats = calculateStudentOverallStats(s);
+    const exportName = usePrivacy ? maskName(s.name) : (s.name || '');
+    const exportCpf = usePrivacy ? maskCpf(s.cpf) : (s.cpf || '');
+    const exportPhone = usePrivacy ? maskPhone(s.contact?.phone) : (s.contact?.phone || '');
+    const exportEmail = usePrivacy ? maskEmail(s.contact?.email) : (s.contact?.email || '');
+
     return [
       `"${s.id || ''}"`,
       `"${s.registrationDate || ''}"`,
-      `"${(s.name || '').replace(/"/g, '""')}"`,
-      `"${s.cpf || ''}"`,
+      `"${exportName.replace(/"/g, '""')}"`,
+      `"${exportCpf}"`,
       `"${(s.unitCity || s.classroom || '').replace(/"/g, '""')}"`,
-      `"${s.contact?.phone || ''}"`,
-      `"${s.contact?.email || ''}"`,
+      `"${exportPhone}"`,
+      `"${exportEmail.replace(/"/g, '""')}"`,
       `"${(s.socialMedia || '').replace(/"/g, '""')}"`,
       `"${(s.profession || '').replace(/"/g, '""')}"`,
       `"${(s.education || '').replace(/"/g, '""')}"`,
@@ -4238,13 +4659,14 @@ function exportStudentsToCSV() {
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
+  const filenameSuffix = usePrivacy ? "LGPD_Seguro" : "Completo";
   link.setAttribute("href", url);
-  link.setAttribute("download", `EuPorDias_EmpregaMaisAlagoas_${new Date().toISOString().slice(0,10)}.csv`);
+  link.setAttribute("download", `EuPorDias_EmpregaMaisAlagoas_${filenameSuffix}_${new Date().toISOString().slice(0,10)}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 
-  showToast("Planilha CSV exportada com sucesso!", "success");
+  showToast(usePrivacy ? "Planilha segura LGPD exportada com sucesso!" : "Planilha CSV exportada com sucesso!", "success");
 }
 
 function exportBackupJSON() {

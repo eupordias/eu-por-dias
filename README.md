@@ -40,9 +40,13 @@ A arquitetura e o design do **Eu Por Dias** não foram escolhidos por acaso. Cad
   3. **Custo Zero Vitalício**: Pode ser hospedado gratuitamente no **GitHub Pages**, Vercel, Netlify ou rodar até mesmo offline em um pendrive ou pasta local via index.html.
   4. **Integração Direta**: Utiliza a **Google Sheets API v4** para puxar diretamente as respostas das planilhas do Google Drive do professor com chave de API segura e sem intermediários.
 
-### 5. 🔒 Privacidade de Dados & Soberania (LGPD)
-* Como o sistema lida com dados sensíveis de cidadãos alagoanos (CPF, telefones pessoais, endereços e notas), esses registros **não são enviados para servidores terceiros de analytics ou bancos de dados na nuvem**.
-* O armazenamento é feito localmente no localStorage do dispositivo do professor, contando com módulo nativo de **Backup e Restauração em JSON**, garantindo total soberania de dados.
+### 5. 🔒 Camada de Segurança LGPD & Projeção Segura em Sala de Aula
+* Como o sistema lida com dados sensíveis de cidadãos alagoanos (CPF, telefones pessoais, e-mails, endereços e notas), foi criada uma **Camada de Proteção e Privacidade LGPD**:
+  * **Modo Seguro Pedagógico (Datashow / TV)**: Modo de exibição específico para ser projetado publicamente na sala de aula. Mostra todos os diagnósticos dos alunos (motivações, desafios, ferramentas conhecidas, expectativas e rendimento), mas **oculta e mascara completamente CPFs (`***.***.123-**`), telefones (`(82) 9****-**45`), e-mails e endereços**.
+  * **Desmascaramento Sob Demanda**: O professor pode clicar no ícone de cadeado/olho de um aluno específico para conferir o dado real quando necessário, sem expor os demais estudantes.
+  * **Chave Geral de Privacidade**: Um botão no topo da tela ativa ou desativa o modo privacidade para qualquer modo de visualização (Grade, Tabela ou Modo Seguro).
+  * **Exportação CSV Anonimizada**: Ao exportar planilhas com a privacidade ativada, os dados pessoais são gerados já mascarados para compartilhamento com parceiros sem infringir a LGPD.
+  * **Zero Envio para Nuvem Terceira**: Os dados ficam estritamente no navegador local do professor, sem rastreadores externos.
 
 ### 6. 📸 Gestão Visual com Fotos, Webcam e Otimização
 * Permite conectar o nome ao rosto do aluno. O sistema possui um módulo completo de fotos com:
@@ -91,7 +95,7 @@ Não requer nenhuma instalação ou comando no terminal (Node, NPM, etc.):
    git clone https://github.com/eupordias/eu-por-dias.git
    `
 2. Abra o arquivo index.html em qualquer navegador web (Google Chrome, Microsoft Edge, Safari, Firefox).
-3. Pronto! O sistema já carrega com a base de dados sincronizada de 639 alunos.
+3. Pronto! O sistema já carrega com a base de dados sincronizada de 715 alunos (725 respostas consolidadas).
 
 ### Opção 2: Publicação Gratuita na Web (GitHub Pages)
 Você pode ter o sistema online para acessar de qualquer computador ou celular:
