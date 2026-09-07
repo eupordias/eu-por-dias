@@ -2137,6 +2137,11 @@ function openStudentProfileModal(studentId) {
   if (!student) return;
 
   const stats = calculateStudentOverallStats(student);
+  const isRevealed = !AppState.privacyMode || AppState.revealedStudentIds.has(student.id);
+  const displayName = maskName(student.name, isRevealed);
+  const displayCpf = maskCpf(student.cpf, isRevealed);
+  const displayPhone = maskPhone(student.contact?.phone, isRevealed);
+  const displayEmail = maskEmail(student.contact?.email, isRevealed);
   const cleanPhone = (student.contact?.phone || "").replace(/\D/g, "");
   const modalContainer = document.getElementById("modal-container");
   if (!modalContainer) return;
@@ -2200,10 +2205,10 @@ function openStudentProfileModal(studentId) {
                 title="Clique para alterar foto"
               >
                 ${student.photoUrl ? `
-                  <img src="${student.photoUrl}" alt="${student.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                  <div class="hidden w-full h-full items-center justify-center">${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
+                  <img src="${student.photoUrl}" alt="${displayName}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                  <div class="hidden w-full h-full items-center justify-center">${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
                 ` : `
-                  <span>${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
+                  <span>${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
                 `}
                 <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover/profavatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[9px] font-bold">
                   <i class="fa-solid fa-camera text-xs mb-0.5"></i>
@@ -2214,13 +2219,24 @@ function openStudentProfileModal(studentId) {
                 </div>
               </div>
               <div>
-                <h1 class="text-xl font-black tracking-tight">${student.name}</h1>
+                <h1 class="text-xl font-black tracking-tight flex items-center gap-2">
+                  <span>${displayName}</span>
+                  ${AppState.privacyMode ? `
+                    <button 
+                      onclick="toggleRevealStudent('${student.id}'); openStudentProfileModal('${student.id}')" 
+                      class="text-sm ${isRevealed ? 'text-indigo-300 hover:text-white' : 'text-amber-300 hover:text-amber-200'} transition-colors no-print"
+                      title="${isRevealed ? 'Ocultar dados (LGPD)' : 'Revelar dados pessoais (Modo Deus)'}"
+                    >
+                      <i class="fa-solid ${isRevealed ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                    </button>
+                  ` : ''}
+                </h1>
                 <div class="flex flex-wrap items-center gap-2 mt-1">
                   <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">
                     <i class="fa-solid fa-location-dot mr-1 text-amber-300"></i>${student.unitCity || student.classroom || 'Alagoas'}
                   </span>
                   <span class="text-xs font-mono text-indigo-200">ID: ${student.id}</span>
-                  ${student.cpf ? `<span class="text-xs font-mono text-amber-300 font-semibold">• CPF: ${student.cpf}</span>` : ''}
+                  ${student.cpf ? `<span class="text-xs font-mono text-amber-300 font-semibold">• CPF: ${displayCpf}</span>` : ''}
                 </div>
               </div>
             </div>
@@ -2244,20 +2260,29 @@ function openStudentProfileModal(studentId) {
               
               <div class="flex items-center justify-between">
                 <span class="text-slate-500">Telefone / WhatsApp:</span>
-                ${cleanPhone ? `
+                ${cleanPhone ? (isRevealed ? `
                   <a href="https://wa.me/55${cleanPhone}" target="_blank" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
-                    <i class="fa-brands fa-whatsapp"></i> ${student.contact?.phone}
+                    <i class="fa-brands fa-whatsapp"></i> ${displayPhone}
                   </a>
-                ` : '<span class="italic text-slate-400">Não informado</span>'}
+                ` : `
+                  <span class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <span>${displayPhone}</span>
+                    <button onclick="toggleRevealStudent('${student.id}'); openStudentProfileModal('${student.id}')" class="text-amber-500 hover:text-amber-600 text-xs" title="Desbloquear contato com Modo Deus">
+                      <i class="fa-solid fa-lock"></i>
+                    </button>
+                  </span>
+                `) : '<span class="italic text-slate-400">Não informado</span>'}
               </div>
 
               <div class="flex items-center justify-between">
                 <span class="text-slate-500">E-mail:</span>
-                ${student.contact?.email ? `
+                ${student.contact?.email ? (isRevealed ? `
                   <a href="mailto:${student.contact.email}" class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline truncate max-w-[200px]">
-                    ${student.contact.email}
+                    ${displayEmail}
                   </a>
-                ` : '<span class="italic text-slate-400">Não informado</span>'}
+                ` : `
+                  <span class="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">${displayEmail}</span>
+                `) : '<span class="italic text-slate-400">Não informado</span>'}
               </div>
 
               <div class="flex items-center justify-between">
@@ -4107,10 +4132,25 @@ function renderGradesTab(container) {
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
               ${filtered.map(student => {
                 const stats = calculateStudentOverallStats(student);
+                const isRevealed = !AppState.privacyMode || AppState.revealedStudentIds.has(student.id);
+                const displayName = maskName(student.name, isRevealed);
                 return `
                   <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                     <td class="py-2.5 px-4 font-semibold text-slate-800 dark:text-slate-200 sticky left-0 bg-white dark:bg-slate-900 z-10 shadow-sm">
-                      <div class="truncate max-w-[190px]" title="${student.name}">${student.name}</div>
+                      <div class="flex items-center justify-between gap-2 max-w-[210px]">
+                        <span class="truncate" title="${isRevealed ? student.name : displayName}">
+                          ${displayName}
+                        </span>
+                        ${AppState.privacyMode ? `
+                          <button 
+                            onclick="toggleRevealStudent('${student.id}')" 
+                            class="p-1 rounded text-[11px] ${isRevealed ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 hover:text-amber-500'} flex-shrink-0 transition-colors"
+                            title="${isRevealed ? 'Ocultar nome completo (LGPD)' : 'Revelar nome completo (Requer Modo Deus)'}"
+                          >
+                            <i class="fa-solid ${isRevealed ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                          </button>
+                        ` : ''}
+                      </div>
                     </td>
                     <td class="py-2.5 px-3">
                       <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 truncate block max-w-[120px]" title="${student.classroom}">
@@ -5452,6 +5492,9 @@ function openGradesModal(studentId, focusSubject = null) {
 
   if (!student.grades) student.grades = {};
 
+  const isRevealed = !AppState.privacyMode || AppState.revealedStudentIds.has(student.id);
+  const displayName = maskName(student.name, isRevealed);
+
   const modalContainer = document.getElementById("modal-container");
   if (!modalContainer) return;
 
@@ -5465,8 +5508,17 @@ function openGradesModal(studentId, focusSubject = null) {
               <i class="fa-solid fa-award"></i>
             </div>
             <div>
-              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
-                Notas do Curso: ${student.name}
+              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <span>Notas do Curso: ${displayName}</span>
+                ${AppState.privacyMode ? `
+                  <button 
+                    onclick="toggleRevealStudent('${student.id}'); openGradesModal('${student.id}', '${focusSubject || ''}')" 
+                    class="text-xs ${isRevealed ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 hover:text-amber-500'} transition-colors ml-1"
+                    title="${isRevealed ? 'Ocultar nome' : 'Revelar nome completo (Modo Deus)'}"
+                  >
+                    <i class="fa-solid ${isRevealed ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                  </button>
+                ` : ''}
               </h2>
               <div class="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
                 <span>Turma: ${student.classroom}</span>
@@ -5640,6 +5692,10 @@ function openBoletimModal(studentId) {
   if (!student) return;
 
   const stats = calculateStudentOverallStats(student);
+  const isRevealed = !AppState.privacyMode || AppState.revealedStudentIds.has(student.id);
+  const displayName = maskName(student.name, isRevealed);
+  const displayCpf = maskCpf(student.cpf, isRevealed);
+
   const modalContainer = document.getElementById("modal-container");
   if (!modalContainer) return;
 
@@ -5676,12 +5732,23 @@ function openBoletimModal(studentId) {
           <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 text-xs">
             <div class="sm:col-span-2">
               <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">Aluno(a)</span>
-              <span class="font-bold text-sm text-slate-900 dark:text-slate-100">${student.name}</span>
+              <span class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                <span>${displayName}</span>
+                ${AppState.privacyMode ? `
+                  <button 
+                    onclick="toggleRevealStudent('${student.id}'); openBoletimModal('${student.id}')" 
+                    class="text-xs ${isRevealed ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 hover:text-amber-500'} transition-colors no-print"
+                    title="${isRevealed ? 'Ocultar nome' : 'Revelar nome completo (Modo Deus)'}"
+                  >
+                    <i class="fa-solid ${isRevealed ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                  </button>
+                ` : ''}
+              </span>
               <span class="block text-[10px] text-slate-400 font-mono">${student.id}</span>
             </div>
             <div>
               <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">CPF</span>
-              <span class="font-mono font-semibold">${student.cpf || 'Não informado'}</span>
+              <span class="font-mono font-semibold">${student.cpf ? displayCpf : 'Não informado'}</span>
             </div>
             <div>
               <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">Turma</span>
