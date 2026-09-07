@@ -33,11 +33,11 @@ const AppState = {
     googleSheetRange: "A1:Z500",
     lastSyncTime: null,
     googleClientId: "",
-    // Integração com Supabase Cloud Database
-    supabaseUrl: "",
-    supabaseAnonKey: "",
-    supabaseConnected: false,
-    lastSupabaseSync: null
+    // Integração com Supabase Cloud Database Oficial
+    supabaseUrl: "https://srnpqboizdnyvetyukhn.supabase.co",
+    supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNybnBxYm9pemRueXZldHl1a2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODQ5MzMsImV4cCI6MjEwNDM2MDkzM30.mntOEcW5EviNL7r7YaZW7APucWLzxNn6Px_SwlJ47IQ",
+    supabaseConnected: true,
+    lastSupabaseSync: "2026-09-07T14:32:00.000Z"
   },
   currentTab: "students", // 'dashboard' | 'students' | 'grades' | 'reports' | 'about'
   privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
@@ -214,6 +214,15 @@ function loadDataFromStorage() {
   AppState.settings.googleApiKey = "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
   AppState.settings.googleSpreadsheetId = "1XoKY-CW5ed3jJVOWD2klYGqCamiESa8_CAkRYLGEmJQ";
   AppState.settings.googleSheetRange = "A1:Z5000";
+
+  // Garantir a conexão com o Supabase Oficial
+  if (!AppState.settings.supabaseUrl) {
+    AppState.settings.supabaseUrl = "https://srnpqboizdnyvetyukhn.supabase.co";
+  }
+  if (!AppState.settings.supabaseAnonKey) {
+    AppState.settings.supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNybnBxYm9pemRueXZldHl1a2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODQ5MzMsImV4cCI6MjEwNDM2MDkzM30.mntOEcW5EviNL7r7YaZW7APucWLzxNn6Px_SwlJ47IQ";
+  }
+  AppState.settings.supabaseConnected = true;
 
   // Restaurar sessão do Modo Deus via Google (se houver na sessionStorage)
   try {
