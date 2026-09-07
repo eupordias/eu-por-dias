@@ -72,11 +72,33 @@ function loadDataFromStorage() {
   const savedClassrooms = localStorage.getItem("eupordias_classrooms");
   const savedSettings = localStorage.getItem("eupordias_settings");
 
-  // Se os dados salvos tiverem menos de 100 alunos ou formato antigo, atualiza com a lista completa dos 639 alunos
   const parsedSaved = savedStudents ? JSON.parse(savedStudents) : [];
-  const needsUpdate = parsedSaved.length < 100 || (parsedSaved.length > 0 && !parsedSaved[0].profession && INITIAL_STUDENTS_DATA.length > 0 && INITIAL_STUDENTS_DATA[0].profession);
+  let currentList = parsedSaved;
+
+  if (!currentList || currentList.length === 0 || currentList.length < 100 || (!currentList[0].profession && INITIAL_STUDENTS_DATA.length > 0 && INITIAL_STUDENTS_DATA[0].profession)) {
+    currentList = [...INITIAL_STUDENTS_DATA];
+  } else if (INITIAL_STUDENTS_DATA && INITIAL_STUDENTS_DATA.length > currentList.length) {
+    // Sincroniza e adiciona novos alunos da planilha atualizada sem sobrescrever fotos ou notas locais
+    const existingMap = new Map();
+    currentList.forEach(s => {
+      const nameKey = (s.name || "").trim().toLowerCase();
+      existingMap.set(nameKey, s);
+      if (s.id) existingMap.set(s.id, s);
+      if (s.cpf) existingMap.set(s.cpf.replace(/\D/g, ""), s);
+    });
+
+    INITIAL_STUDENTS_DATA.forEach(newS => {
+      const nameKey = (newS.name || "").trim().toLowerCase();
+      const cpfKey = newS.cpf ? newS.cpf.replace(/\D/g, "") : null;
+      const match = existingMap.get(nameKey) || (cpfKey ? existingMap.get(cpfKey) : null) || existingMap.get(newS.id);
+      
+      if (!match) {
+        currentList.push(newS);
+      }
+    });
+  }
   
-  AppState.students = needsUpdate ? [...INITIAL_STUDENTS_DATA] : parsedSaved;
+  AppState.students = currentList;
   AppState.subjects = savedSubjects ? JSON.parse(savedSubjects) : [...DEFAULT_SUBJECTS];
   AppState.classrooms = Array.from(new Set([...DEFAULT_CLASSROOMS, ...(savedClassrooms ? JSON.parse(savedClassrooms) : [])])).sort();
   
@@ -87,7 +109,7 @@ function loadDataFromStorage() {
   // Garantir a chave da API e o ID da planilha atualizada
   AppState.settings.googleApiKey = "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
   AppState.settings.googleSpreadsheetId = "1XoKY-CW5ed3jJVOWD2klYGqCamiESa8_CAkRYLGEmJQ";
-  AppState.settings.googleSheetRange = "Respostas ao formulário 1!A1:Z1000";
+  AppState.settings.googleSheetRange = "A1:Z5000";
 
   saveDataToStorage();
 }
@@ -2859,7 +2881,7 @@ function renderAboutTab(container) {
               <i class="fa-solid fa-graduation-cap mr-1"></i> Gestão de Mídias Digitais
             </span>
             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/80 text-white">
-              <i class="fa-solid fa-users mr-1"></i> 639+ Alunos Mapeados
+              <i class="fa-solid fa-users mr-1"></i> ${AppState.students.length || 715}+ Alunos Mapeados
             </span>
           </div>
 
@@ -3002,7 +3024,7 @@ function renderAboutTab(container) {
               2. Privacidade de Dados & LGPD
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Os dados pessoais dos 639 alunos (CPFs, telefones, endereços e notas) permanecem armazenados de forma soberana na máquina local do professor (LocalStorage), 
+              Os dados pessoais dos alunos (atualmente ${AppState.students.length || 715}+ cadastrados, com CPFs, telefones, endereços e notas) permanecem armazenados de forma soberana na máquina local do professor (LocalStorage), 
               sem vazamento para servidores de terceiros e com sistema de backup JSON para migração segura.
             </p>
           </div>
@@ -3152,7 +3174,7 @@ function openAboutModal() {
             </h3>
             <p>
               O sistema foi concebido para o professor do curso de <strong>Gestão de Mídias Digitais</strong> do programa <strong>Emprega Mais Alagoas</strong>. 
-              Ele une a gestão de notas com um <strong>diagnóstico humano profundo</strong> de mais de 639 estudantes alagoanos.
+              Ele une a gestão de notas com um <strong>diagnóstico humano profundo</strong> de mais de ${AppState.students.length || 715} estudantes alagoanos.
             </p>
           </div>
 

@@ -57512,6 +57512,6846 @@ const INITIAL_STUDENTS_DATA = [
                                                         "absences":  0
                                                     }
                    }
+    },
+    {
+        "id":  "ALU-EMA-640",
+        "name":  "Maisa dos Santos Bernabe",
+        "cpf":  "141.929.394-01",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:51:47",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/maisa_bernabe?igsi=MWR3N3pseHFlZzUxZA%3D%3D\u0026utm_source=qr",
+        "profession":  "Nenhuma",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Não lembro",
+        "challenges":  "Um pouco de timidez",
+        "motivation":  "Vejo que é uma área que estar tendo muita oportunidades",
+        "expectations":  "Boa",
+        "contact":  {
+                        "phone":  "(82) 99137-7454",
+                        "email":  "maisabernabe4@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:51:47",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-641",
+        "name":  "Lorrayne Francolino dos Santos",
+        "cpf":  "140.727.054-03",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:54:16",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/loh_francolino18?igsi=am4waDlnM3p2ano2\u0026utm_source=qr",
+        "profession":  "Esteticista e cosmetologa",
+        "education":  "Graduação(cursando)",
+        "frequentNetworks":  "WhatsApp e Instagram",
+        "experience":  "Não",
+        "tools":  "Canva, capcut",
+        "challenges":  "Atrair clientes por meio do conteúdo",
+        "motivation":  "Sinto que falta algo para complementar minha vida pessoal e profissional",
+        "expectations":  "Espero sair com mais conhecimento e já pronta para engrossar no meio da mídia social",
+        "contact":  {
+                        "phone":  "(82) 99929-4861",
+                        "email":  "lorraynesillva2018@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:54:16",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-642",
+        "name":  "Lucas Rafael",
+        "cpf":  "142.625.634-56",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:22:57",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "Di_luca07",
+        "profession":  "Nenhuma no momento",
+        "education":  "Ensino medio",
+        "frequentNetworks":  "Instagram, tiktok",
+        "experience":  "Sim",
+        "tools":  "Tiktok, Instagram",
+        "challenges":  "Manter uma frequência",
+        "motivation":  "Vontade de ganhar dinheiro",
+        "expectations":  "Tenho muitas expectativas",
+        "contact":  {
+                        "phone":  "(82) 99919-8717",
+                        "email":  "cristianepereiradossantos034@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:22:57",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-643",
+        "name":  "Rosa Verônica Miguel da Silva",
+        "cpf":  "051.518.604-02",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião/AL",
+        "unitCity":  "São Sebastião/AL",
+        "registrationDate":  "24/08/2026 19:53:00",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "Instagram: rosaveronica80",
+        "profession":  "Educação",
+        "education":  "Pós-graduação",
+        "frequentNetworks":  "WhatsApp, Instagram",
+        "experience":  "Sim",
+        "tools":  "Instagram, vídeoShow, capCut, canva",
+        "challenges":  "O contratante",
+        "motivation":  "Mais aprendizado e curiosidade",
+        "expectations":  "Muito conhecimento e aprendizagem",
+        "contact":  {
+                        "phone":  "82 996149336",
+                        "email":  "veralima8735@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião/AL",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:53:00",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-644",
+        "name":  "Magno José Oliveira dos Santos",
+        "cpf":  "013.044.434-00",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:01:32",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "@magno10oficial",
+        "profession":  "Educação física",
+        "education":  "Ensino superior incompleto",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Gpt",
+        "challenges":  "Tudo",
+        "motivation":  "Aprender a usar todas ferramentas das redes sociais",
+        "expectations":  "Ter o maior conhecimento possível...",
+        "contact":  {
+                        "phone":  "(82) 98752-6633",
+                        "email":  "magnom1084@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:01:32",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-645",
+        "name":  "Jonathan Gabriel Freitas Silva",
+        "cpf":  "140.956.694-38",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:53:40",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/biel.fxp444?igsi=ODRtN2F0dXY5NDVo\u0026utm_source=qr",
+        "profession":  "Vendendo me de terreno",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram, Facebook, TikTok, kwaii",
+        "experience":  "Já, mas pouca coisa",
+        "tools":  "Canvar, CapCut, Gemini, chat GPT",
+        "challenges":  "Nenhum, falta de conhecimento até o momento!",
+        "motivation":  "Melhorar a minha performance para trabalhar melhor, e receber mais!",
+        "expectations":  "Aprender mais, adquirir conhecimento e ganhar dinheiro com ele",
+        "contact":  {
+                        "phone":  "(82)996101504",
+                        "email":  "gabrielplay272@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:53:40",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-646",
+        "name":  "maria clara vieira regueira",
+        "cpf":  "120.969.554-59",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "são sebastião",
+        "unitCity":  "são sebastião",
+        "registrationDate":  "24/08/2026 19:53:55",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/claravr._?igsi=MXE2dGY2a3NjOGt0bQ%3D%3D\u0026utm_source=qr",
+        "profession":  "estudante",
+        "education":  "ensino superior incompleto",
+        "frequentNetworks":  "instagram",
+        "experience":  "sim",
+        "tools":  "capcut, canva, hypic",
+        "challenges":  "habilidades de edição e de tirar foto",
+        "motivation":  "melhorar minhas habilidades para os meus trabalhos futuros",
+        "expectations":  "muito boas",
+        "contact":  {
+                        "phone":  "(82) 99326-2411",
+                        "email":  "regueiraclarinha@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "são sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:53:55",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-647",
+        "name":  "Ewander Holyfield Alves da Silva",
+        "cpf":  "111.562.214-55",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião Alagoas",
+        "unitCity":  "São Sebastião Alagoas",
+        "registrationDate":  "24/08/2026 19:54:14",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/ewanderholyfield?igsi=MWk2dmo1bTY4bGxndA%3D%3D\u0026utm_source=qr",
+        "profession":  "Assistente administrativo",
+        "education":  "Nível superior incompleto",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Sim",
+        "tools":  "Corel Draw, Canva, CapCut",
+        "challenges":  "Eu produzo, só não sei se faço da forma correta.",
+        "motivation":  "Eu trabalho com designer gráfico informal",
+        "expectations":  "Adquirir conhecimento para viver do digital.",
+        "contact":  {
+                        "phone":  "82 996317019",
+                        "email":  "holyfield2017@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião Alagoas",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:54:14",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-648",
+        "name":  "Laura de Moura Santos Neta",
+        "cpf":  "140.505.554-50",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:54:37",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.tiktok.com/@lr_neta?_r=1\u0026_t=ZS-99A6Wf9FQJQ",
+        "profession":  "Estudando",
+        "education":  "Médio",
+        "frequentNetworks":  "Instagram e TikTok",
+        "experience":  "Não",
+        "tools":  "Gemini, CapCut e gemini",
+        "challenges":  "Falta de público",
+        "motivation":  "Aprendizado e trabalho",
+        "expectations":  "São ótimas",
+        "contact":  {
+                        "phone":  "(82) 99625-4171",
+                        "email":  "socorromouraaa22@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:54:37",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-649",
+        "name":  "Rillary dos Santos",
+        "cpf":  "134.723.554-09",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:55:08",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/hrilllary?igsi=ZTZ0bHJjcGtwZG45",
+        "profession":  "Babá (cuidadora infantil)",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Nem uma",
+        "challenges":  "Todos",
+        "motivation":  "Melhorar o meu currículo",
+        "expectations":  "Aprender o máximo possível",
+        "contact":  {
+                        "phone":  "(82) 99822-3309",
+                        "email":  "santos.hillary0304@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:55:08",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-650",
+        "name":  "Natanael Rodrigues de Almeida",
+        "cpf":  "151.388.744-03",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Não sei",
+        "unitCity":  "Não sei",
+        "registrationDate":  "24/08/2026 19:55:13",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "Tik Tok",
+        "profession":  "Tik Tok",
+        "education":  "Ensino médio",
+        "frequentNetworks":  "Tik Tok CapCup, Instagram",
+        "experience":  "Não",
+        "tools":  "CapCup Tik Tok",
+        "challenges":  "Sabedoria em alguns fatores",
+        "motivation":  "eu gosto",
+        "expectations":  "Ótima expectativa",
+        "contact":  {
+                        "phone":  "(82) 99673-6648",
+                        "email":  "natanaeld7x@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Não sei",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:55:13",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-651",
+        "name":  "Jacielle nogueira da silva",
+        "cpf":  "708.522.204-21",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São sebastião",
+        "unitCity":  "São sebastião",
+        "registrationDate":  "24/08/2026 19:55:41",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/jaciellenote10?igsi=MWM2OGI0d3dndWRpZQ==",
+        "profession":  "pedagoga",
+        "education":  "Graduação",
+        "frequentNetworks":  "Instagram\nWhatsApp\nTikTok",
+        "experience":  "Não",
+        "tools":  "Não",
+        "challenges":  "Tudo",
+        "motivation":  "“Gosto de gravar vídeos, falar, dançar e gosto bastante das redes sociais.”",
+        "expectations":  "“Nenhuma.”",
+        "contact":  {
+                        "phone":  "(82) 99124-7539",
+                        "email":  "jaciellenogueirafaculdade@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:55:41",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-652",
+        "name":  "Daiana Abel Cirilo de Souza",
+        "cpf":  "068.165.964-55",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:55:46",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/daianasouza_yana?igsi=eGx1NXAxcjBmdWU0\u0026utm_source=qr",
+        "profession":  "Pedagogia",
+        "education":  "Nível superior",
+        "frequentNetworks":  "Instagram, tiktok",
+        "experience":  "Não",
+        "tools":  "Canva, IA, CapCut",
+        "challenges":  "Começar a ter conhecimento na área",
+        "motivation":  "Tenho interesse em aprender para ter mais uma renda",
+        "expectations":  "Aprender e tirar dúvidas em relação a mídia",
+        "contact":  {
+                        "phone":  "(82) 99975-9738",
+                        "email":  "daianasouza075@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:55:46",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-653",
+        "name":  "Sabrina Lins Ferreira",
+        "cpf":  "104.544.694-70",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:55:51",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/sabrnnalins?igsi=MXZ6dW13bmRnZ2JzdA%3D%3D\u0026utm_source=qr",
+        "profession":  "Secretária Executiva",
+        "education":  "Superior de tecnologia em Marketing",
+        "frequentNetworks":  "Instagram, Tiktok, Canva, CapCut, Inshot, ChatGPT",
+        "experience":  "Sim",
+        "tools":  "Instagram, Tiktok, Canva, CapCut, Inshot, ChatGPT",
+        "challenges":  "Utilizar os recursos pagos",
+        "motivation":  "Aperfeiçoar conhecimentos",
+        "expectations":  "Conhecimento",
+        "contact":  {
+                        "phone":  "(82) 98709-9820",
+                        "email":  "sabrinalins004@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:55:51",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-654",
+        "name":  "Mylianne Aparecida Almeida da Silva",
+        "cpf":  "118.662.314-48",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:56:01",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "Mylianne Almeida",
+        "profession":  "Agente administrativa",
+        "education":  "Medio",
+        "frequentNetworks":  "Mylianne Almeida",
+        "experience":  "Não",
+        "tools":  "Capicut entre outros",
+        "challenges":  "Vergonha",
+        "motivation":  "Aprender divulgar meus produtos",
+        "expectations":  "Aprender mais",
+        "contact":  {
+                        "phone":  "8299647-4605",
+                        "email":  "myliannealmeida1995@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:56:01",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-655",
+        "name":  "Ennekelli Karine Soares Gerônimo",
+        "cpf":  "100.644.534-05",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:56:17",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/ennekelli?igsi=MXNyZ3F5cDR0NWp4\u0026utm_source=qr",
+        "profession":  "Professora",
+        "education":  "Cursando superior",
+        "frequentNetworks":  "Instagram capcut Kwai",
+        "experience":  "Não",
+        "tools":  "Capcut",
+        "challenges":  "Ainda não produzo",
+        "motivation":  "Aprender sobre mídia social",
+        "expectations":  "Aprender tudo sobre mídia",
+        "contact":  {
+                        "phone":  "(82) 99829-8843",
+                        "email":  "ennekellialedilson@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:56:17",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-656",
+        "name":  "Duyara Rafaella  Alves  Macário Tavares",
+        "cpf":  "105.368.054-66",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São sebastião",
+        "unitCity":  "São sebastião",
+        "registrationDate":  "24/08/2026 19:56:27",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "Duyararafaella",
+        "profession":  "Recepção",
+        "education":  "Médio",
+        "frequentNetworks":  "Wastz",
+        "experience":  "Não",
+        "tools":  "Instagram",
+        "challenges":  "Vergonha",
+        "motivation":  "Trabalho",
+        "expectations":  "Apredizado",
+        "contact":  {
+                        "phone":  "(82) 9962-2211",
+                        "email":  "duyararafaella21@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:56:27",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-657",
+        "name":  "Elizabete Cristina Laurindo dos Santos",
+        "cpf":  "122 602 034 85",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:57:05",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "elizabete_cristina04",
+        "profession":  "Recepção",
+        "education":  "Médio",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Instagram",
+        "challenges":  "Vergonha",
+        "motivation":  "Trabalho",
+        "expectations":  "Aprendizado e desenvolvimento",
+        "contact":  {
+                        "phone":  "(82) 99607-0914",
+                        "email":  "elizabetecristina222304@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:57:05",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-658",
+        "name":  "Larisse Silva de Oliveira Ferro",
+        "cpf":  "116.455.914-17",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:02:45",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "@larisseferropersonal (Instagram/Tiktok)",
+        "profession":  "Profissional de Educação fisica",
+        "education":  "Pós graduação em SAÚDE PUBLICA e EDUCAÇÃO ESPECIAL INCLUSIVA na área de bacharel e licenciatura em educação física",
+        "frequentNetworks":  "Instagran e tiktok",
+        "experience":  "Não",
+        "tools":  "Instagran, tiktok, Facebook, canva, capcut, inshot, Dola, ChatGpt, Gemini",
+        "challenges":  "Tempo e colocar as ideias",
+        "motivation":  "Poderia através das redes sociais alavancar minha carreira de Personal com consultorias online",
+        "expectations":  "Absorver o máximo de conhecimento e colocá-los em prática",
+        "contact":  {
+                        "phone":  "(82) 99613-4833",
+                        "email":  "larisseoliveira2014@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:02:45",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-659",
+        "name":  "Izaquiela Inácio de Melo",
+        "cpf":  "137.827.224-26",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:58:05",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/iza_mello18?igsi=a290MmExNWN1Z2xv\u0026utm_source=qr",
+        "profession":  "Pedagogia",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Não lembro",
+        "challenges":  "Tenho muita vergonha",
+        "motivation":  "Pq vejo que é uma área boa e estar muito em destaque",
+        "expectations":  "As melhores",
+        "contact":  {
+                        "phone":  "(82) 99617-7339",
+                        "email":  "izaamacario5@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:58:05",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-660",
+        "name":  "Fábio Alves dos Santos",
+        "cpf":  "019.823.635-25",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:59:22",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "Fabio8032",
+        "profession":  "Sócio proprietário",
+        "education":  "Ensino medio",
+        "frequentNetworks":  "Canva",
+        "experience":  "Nao",
+        "tools":  "Instagram",
+        "challenges":  "Espontaneidade ao apresentar o produto",
+        "motivation":  "Destravar na hora de apresentar o produto a ser ofertado ao público",
+        "expectations":  "Melhor possível",
+        "contact":  {
+                        "phone":  "(82) 98221-4332",
+                        "email":  "fassalves17@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:59:22",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-661",
+        "name":  "Cezar Riso Marques",
+        "cpf":  "039.896.814-43",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:59:25",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "@cezarmarques77",
+        "profession":  "Cultura",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram, Facebook,e tiktok",
+        "experience":  "Não",
+        "tools":  "Canva, e capcut",
+        "challenges":  "Edição de fotos, video",
+        "motivation":  "Queira fazer postagem e ter uma renda extra",
+        "expectations":  "Boas, espero aprender muito sobre como usar corretamente as redes sociais",
+        "contact":  {
+                        "phone":  "(82) 98860-7982",
+                        "email":  "cezarrm28@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:59:25",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-662",
+        "name":  "Rejane Pereira Lessa",
+        "cpf":  "094.207.664-89",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 19:59:39",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/rejanelessa.estetica?igsi=MTJyenJucmw3M2MxaQ%3D%3D\u0026utm_source=qr",
+        "profession":  "Enfermeira esteticista",
+        "education":  "Pós graduada em estética avançada, enfermagem em dermatologia, urgência e emergência e enfermagem do trabalho",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Canva, Instagram, capcut, tiktok e facebook",
+        "challenges":  "Dificuldade em encontrar um conteúdo que chame a atenção do cliente, dificuldades em gravar conteúdos",
+        "motivation":  "Entender melhor como funciona a gestão de mídias sociais para utilizar como ferramenta de trabalho",
+        "expectations":  "Espero poder entender melhor sobre como funcionam o gerenciamento das mídias sociais e agregar isso tudo  ao meu trabalho para atingir o público específico, conseguir crescer profissionalmente e nas redes sociais, gerando conteúdos bons e que atraiam clientes.",
+        "contact":  {
+                        "phone":  "(82) 98229-1961",
+                        "email":  "enfermeirarejanelessa@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 19:59:39",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-663",
+        "name":  "Jamille maria lira dos Santos",
+        "cpf":  "122.867.434-52",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:01:11",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "Jamillemaria7",
+        "profession":  "Google",
+        "education":  "Ensino médio",
+        "frequentNetworks":  "WhatsApp",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "A criação",
+        "motivation":  "Aprender as mídias",
+        "expectations":  "Ganhar uma renda.",
+        "contact":  {
+                        "phone":  "(82) 99114-6245",
+                        "email":  "jamillemaria63@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:01:11",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-664",
+        "name":  "Jailton da silva",
+        "cpf":  "026.909.134-37",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:01:56",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "Tiktok",
+        "profession":  "Gugo",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Editar",
+        "motivation":  "Aprender",
+        "expectations":  "Ficar atualizado",
+        "contact":  {
+                        "phone":  "(82) 99348-2743",
+                        "email":  "jailtondasilva695@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:01:56",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-665",
+        "name":  "Domingas jacinto dos Santos",
+        "cpf":  "061.018.514-43",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:02:05",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "tiktok.com/@domingasjacinto70",
+        "profession":  "Consultora",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Tiktok",
+        "experience":  "Não",
+        "tools":  "tiktok.com/@domingasjacinto70",
+        "challenges":  "Não tenho ânimo",
+        "motivation":  "Aprende mais",
+        "expectations":  "Aumentar minhas mindias",
+        "contact":  {
+                        "phone":  "(82) 98176-6274",
+                        "email":  "domingasjacinto10@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:02:05",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-666",
+        "name":  "Rikelmy Barbosa da Silva",
+        "cpf":  "107.043.804-98",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:02:20",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/riikelmy_slv?igsi=MTdydDUxanFzZW55Zg%3D%3D\u0026utm_source=qr",
+        "profession":  "Nenhuma no momento",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "WhatsApp, Instagram e tiktok",
+        "experience":  "Tenho algumas contas que eu gerencio, mas nada profissional.",
+        "tools":  "Canva, capcut, hypic, meitu",
+        "challenges":  "As vevez agilidade, dependendo do conteúdo.",
+        "motivation":  "Buscar mais conhecimento, e futuramente poder atuar nessa área.",
+        "expectations":  "Conseguir um grande conhecimento nessa área, para futuramente poder utilizá-lo.",
+        "contact":  {
+                        "phone":  "(82) 99635-5262",
+                        "email":  "rikelmybarbosadasilva3@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:02:20",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-667",
+        "name":  "Diêgo Lucas Pereira da Silva",
+        "cpf":  "128.731.394-98",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:02:28",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/aero.maker_?igsi=aW53MHFmajNqaWJk\u0026utm_source=qr",
+        "profession":  "Diretor Criativo",
+        "education":  "Ensino Médio Completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Sim",
+        "tools":  "CapCut, Photoshop, Lightroom",
+        "challenges":  "Roteiros",
+        "motivation":  "Ter outras opções como base de edição",
+        "expectations":  "Outras perspectivas em gerenciamento de redes",
+        "contact":  {
+                        "phone":  "(82) 99187-8524",
+                        "email":  "diegolucasps@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:02:28",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-668",
+        "name":  "Jaciara Maria de Morais Silva",
+        "cpf":  "143.771.534-63",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião-AL",
+        "unitCity":  "São Sebastião-AL",
+        "registrationDate":  "24/08/2026 20:03:36",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/ja.ci__?igsi=MWxxYTh4d2JvMjlzcQ==",
+        "profession":  "Atendimento ao público",
+        "education":  "Ensino superior em andamento",
+        "frequentNetworks":  "Tiktok e instagram",
+        "experience":  "Sim",
+        "tools":  "canva, gemini, chatgpt, instagram, tiktok, capcut",
+        "challenges":  "Falta de criatividade e timidez",
+        "motivation":  "Querer me desenvolver no meio da internet",
+        "expectations":  "Mais conhecimento a respeito das redes sociais, facilidade em produção de conteúdos para poder começar a trabalhar nesse meio.",
+        "contact":  {
+                        "phone":  "8299600-0567",
+                        "email":  "jaciaramorais6@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião-AL",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:03:36",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-669",
+        "name":  "Weverton Ferreira dos Santos",
+        "cpf":  "509.683.638-06",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São sebastião",
+        "unitCity":  "São sebastião",
+        "registrationDate":  "24/08/2026 20:07:52",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "tokkyofps_3",
+        "profession":  "Não tenho",
+        "education":  "2 ano",
+        "frequentNetworks":  "TikTok é Instagram",
+        "experience":  "Uma vez",
+        "tools":  "Chat gpt, grok IA e capcut",
+        "challenges":  "Ter ideias para cria conteúdo",
+        "motivation":  "Para aprender e foca na ária que eu mais gosto",
+        "expectations":  "Aprender coisas novas, melhorar minhas habilidades e me preparar para trabalhar na área que eu gosto",
+        "contact":  {
+                        "phone":  "82 991932200",
+                        "email":  "whevertonplays@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:07:52",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-670",
+        "name":  "José Adriel de Almeida Oliveira",
+        "cpf":  "143.379.984-70",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "24/08/2026 20:09:20",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "jose_adriel.7",
+        "profession":  "Não tenho",
+        "education":  "2°ano",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Chat gpt, capcut",
+        "challenges":  "ter um pouco de dificuldade de criar conteúdo",
+        "motivation":  "Meu futuro",
+        "expectations":  "Aprender coisas novas e melhorar minhas habilidades",
+        "contact":  {
+                        "phone":  "(82) 98193-8059",
+                        "email":  "adrieljose674@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 24/08/2026 20:09:20",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-671",
+        "name":  "Jocy Dayana Rego dos Santos Almeida",
+        "cpf":  "055.724.974-01",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:48:56",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "@Joyce_1224",
+        "profession":  "Educação",
+        "education":  "Superior completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Celular",
+        "challenges":  "Editar vídeos e fotos",
+        "motivation":  "Ganhar conhecimento na área",
+        "expectations":  "As melhores",
+        "contact":  {
+                        "phone":  "(82) 99924-9306",
+                        "email":  "joycealmeidawsp@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:48:56",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-672",
+        "name":  "Cleyton Jose Santos De Sena",
+        "cpf":  "142.827.834-60",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:49:26",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "Instagram",
+        "profession":  "Gravação",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Ainda não",
+        "tools":  "Canva e capcut",
+        "challenges":  "Baixo uso dos app",
+        "motivation":  "Entender e praticar habilidades nas redes sociais",
+        "expectations":  "Aprofundar o conhecimento",
+        "contact":  {
+                        "phone":  "82 987384166",
+                        "email":  "cleyton.senna770@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:49:26",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-673",
+        "name":  "EDUARDO GABRIEL DA SILVA GARCEZ",
+        "cpf":  "107.849.014-73",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião Alagoas",
+        "unitCity":  "São Sebastião Alagoas",
+        "registrationDate":  "25/08/2026 13:50:38",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/vm.eduardogarcez?igsi=OWprdXVpNmtnaGxs",
+        "profession":  "Videomaker",
+        "education":  "ensino médio completo",
+        "frequentNetworks":  "instagram",
+        "experience":  "sim",
+        "tools":  "canva, cap cut",
+        "challenges":  "as vezes fico sem ideia",
+        "motivation":  "aprendizado",
+        "expectations":  "que eu aprenda coisas novas",
+        "contact":  {
+                        "phone":  "(82) 99414-4017",
+                        "email":  "edugarcezzzz@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião Alagoas",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:50:38",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-674",
+        "name":  "Laura Maria de Sena Santos",
+        "cpf":  "134.983.934-56",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 14:00:45",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/laurasenna300?igsi=bHB6Nzljbm1uNzI=",
+        "profession":  "Auxiliar de saúde bucal",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram e whatsapp",
+        "experience":  "Não",
+        "tools":  "Instagram",
+        "challenges":  "A edição de vídeo e  fotos",
+        "motivation":  "Curiosidade de edição de vídeos fotos e publicação",
+        "expectations":  "Ótimas",
+        "contact":  {
+                        "phone":  "(82) 99121-8743",
+                        "email":  "lauramariasenna06@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 14:00:45",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-675",
+        "name":  "Arthur Inácio de Oliveira",
+        "cpf":  "143.501.434-08",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:51:44",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/lentesdearthur?igsi=eDhrcjJ6NXdsY2hk\u0026utm_source=qr",
+        "profession":  "Fotógrafia e filmeker",
+        "education":  "Estou cursando o 3º ano do Ensino Médio",
+        "frequentNetworks":  "Instagram",
+        "experience":  "ainda não",
+        "tools":  "Cap cut, Canva, Lightroom e outros",
+        "challenges":  "Pouca vendas e falta de interesse ao publi",
+        "motivation":  "Ter um certificado para mostra profissionalismo na área",
+        "expectations":  "Portas abertas para trabalho etc…",
+        "contact":  {
+                        "phone":  "82 99388-2973",
+                        "email":  "arthurof224@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:51:44",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-676",
+        "name":  "Luiz felipe Santos sales",
+        "cpf":  "141.005.804-28",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:53:59",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "714323",
+        "profession":  "Trader",
+        "education":  "Ensino médio",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Não saber onde criar",
+        "motivation":  "Aprender mais sobre mídias",
+        "expectations":  "Aprender a monetizar",
+        "contact":  {
+                        "phone":  "(82) 99616-0086",
+                        "email":  "l.felipe5500@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:53:59",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-677",
+        "name":  "José Samuel correia dos Santos",
+        "cpf":  "147.365.644-31",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:53:33",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "@Samuca.snts",
+        "profession":  "Servidor público",
+        "education":  "Médio",
+        "frequentNetworks":  "Instagram, whatsapp, Facebook",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Falta um pouco de conhecimento, por isso vim fazer o curso",
+        "motivation":  "Adquirir conhecimento e colocar em prática",
+        "expectations":  "Aprender e ter mas conhecimento sobre o assunto",
+        "contact":  {
+                        "phone":  "(82) 99834-9515",
+                        "email":  "samuelcorreia994@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:53:33",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-678",
+        "name":  "Lara Júlia Laurindo Santos",
+        "cpf":  "148.879.424-35",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião al",
+        "unitCity":  "São Sebastião al",
+        "registrationDate":  "25/08/2026 13:54:05",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "@_larlxszz22",
+        "profession":  "Nem uma",
+        "education":  "Nível superior",
+        "frequentNetworks":  "Tiktok , instagram",
+        "experience":  "Não",
+        "tools":  "Não sei",
+        "challenges":  "A vergonha",
+        "motivation":  "Minha mãe",
+        "expectations":  "As melhores possível",
+        "contact":  {
+                        "phone":  "82 99999-6865",
+                        "email":  "laralaurindo73@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião al",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:54:05",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-679",
+        "name":  "Ismaiclivia da Silva Oliveira",
+        "cpf":  "399.467.188-47",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:54:21",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "Meueu_clivia",
+        "profession":  "Desempregada",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram, YouTube.",
+        "experience":  "Não",
+        "tools":  "Nada além do comum",
+        "challenges":  "A escolha",
+        "motivation":  "Uma possibilidade de estabilidade financeira e o bônus de trabalhar numa área criativa",
+        "expectations":  "Conseguir me qualificar para o mercado de trabalho digital",
+        "contact":  {
+                        "phone":  "(82) 99937-5741",
+                        "email":  "cliviasilva234@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:54:21",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-680",
+        "name":  "Evellyn dos Santos Vital",
+        "cpf":  "143.568.064-25",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:55:16",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/evelly_sntts_?igsi=MzEydWZidDNveDRz\u0026utm_source=qr",
+        "profession":  "Nenhuma por enquanto",
+        "education":  "Parei no 1 ano do ensino médio",
+        "frequentNetworks":  "WhatsApp, TikTok e Instagram",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Editar algumas fotos",
+        "motivation":  "Aprender cada vez mais sobre redes e mídias sócias, pois já faço curso de informática",
+        "expectations":  "Que eu aprenda mais do que já sei e que eu possa aprender a fazer oq ainda não tenho conhecimento",
+        "contact":  {
+                        "phone":  "(82) 99625-1839",
+                        "email":  "evellysantos715@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:55:16",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-681",
+        "name":  "Jadinilson Aparecido Barbosa",
+        "cpf":  "335.210.758-00",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:55:33",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/jadinilson.barbosa?igsi=MW12aHRiYmp6M2JkdQ%3D%3D\u0026utm_source=qr",
+        "profession":  "Pastor",
+        "education":  "Médio completo",
+        "frequentNetworks":  "Instagram , Facebook e TikTok",
+        "experience":  "Não",
+        "tools":  "Chat gpt , Canva, Capcut",
+        "challenges":  "Alcançar a monetização",
+        "motivation":  "Conhecimento",
+        "expectations":  "Aplicar esse conhecimento em minhas redes de forma mais profissional",
+        "contact":  {
+                        "phone":  "13 996381523",
+                        "email":  "jajaaparecido280@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:55:33",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-682",
+        "name":  "Laura Beatriz Vital dos Santos",
+        "cpf":  "141.447.334-67",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:57:59",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "lauurabeatriz__",
+        "profession":  "Ultimamente nenhuma",
+        "education":  "Ensino médio",
+        "frequentNetworks":  "Tik tok",
+        "experience":  "Sim",
+        "tools":  "Capcut",
+        "challenges":  "Criatividade",
+        "motivation":  "Para ter mais habilidades",
+        "expectations":  "Acredito que o curso pode me ajudar a desenvolver minhas habilidades, aprender coisas novas e futuramente ter mais oportunidades profissionais nessa área.",
+        "contact":  {
+                        "phone":  "82 9125-6159",
+                        "email":  "vitallaura84@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:57:59",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-683",
+        "name":  "Maria Andressa Ferreira Dos Santos",
+        "cpf":  "142.657.604-81",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:58:04",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "@andressa_ferreira39",
+        "profession":  "Estudante de fonoaudiologia",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Sim",
+        "tools":  "Canva, chatgpt",
+        "challenges":  "Um dos principais desafios é criar conteúdos criativos e atrativos com frequência",
+        "motivation":  "Ter mais conhecimentos na área",
+        "expectations":  "Melhorar meus conhecimentos em redes sociais, e edições.",
+        "contact":  {
+                        "phone":  "(82) 99821-2717",
+                        "email":  "mariaandressaa344@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:58:04",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-684",
+        "name":  "Karla Vitoria dos Santos",
+        "cpf":  "141.329.964-41",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião-AL",
+        "unitCity":  "São Sebastião-AL",
+        "registrationDate":  "25/08/2026 13:58:30",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "Karla_vitoria.a",
+        "profession":  "Desempregada",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram e tiktok",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Não",
+        "motivation":  "Procurando conhecimento",
+        "expectations":  "Aprender alguma coisa",
+        "contact":  {
+                        "phone":  "(82) 99352-8433",
+                        "email":  "karlavitoriasantosamojesus@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião-AL",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:58:30",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-685",
+        "name":  "Emylle Victória Ávila de Melo",
+        "cpf":  "158.868.794-55",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:58:43",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/emylle.avila?igsi=MWNycmF4bWVwMWF5aA%3D%3D\u0026utm_source=qr",
+        "profession":  "Nenhuma",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram e TikTok",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Falar com a câmera",
+        "motivation":  "Entrar no meio de social media",
+        "expectations":  "Entender o meio digital",
+        "contact":  {
+                        "phone":  "+55 82 99807-7332",
+                        "email":  "emylle.ferro02@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:58:43",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-686",
+        "name":  "Lucas Rodrigues Santos",
+        "cpf":  "116.662.874-40",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 13:59:05",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "lucas_rodriguess01",
+        "profession":  "Eu trabalho com vendas online de acessórios para celular e tbm com divulgação",
+        "education":  "Médio completo e cursando faculdade",
+        "frequentNetworks":  "WhatsApp, Instagram, TikTok,Kwai",
+        "experience":  "Não Só com as minhas",
+        "tools":  "Canva,Gpt,CapCut,Instagram",
+        "challenges":  "Poucas visualizações poucos clientes poucos seguidores e sem ideias para fazer conteúdo",
+        "motivation":  "Aprender mais o que ja sei",
+        "expectations":  "Muito Boas e Positivas",
+        "contact":  {
+                        "phone":  "(82) 99823-6129",
+                        "email":  "divulgacoes21@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 13:59:05",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-687",
+        "name":  "Elisangela Barbosa dos Santos",
+        "cpf":  "053.319.914-08",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 14:01:21",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/elisaa_jh?igsi=MTRwb2k4dDV2aGwxYQ==",
+        "profession":  "Técnico de enfermagem",
+        "education":  "Ensino médio",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Nenhum",
+        "tools":  "Nenhuma",
+        "challenges":  "As atualizações",
+        "motivation":  "Me atualiza",
+        "expectations":  "Ficar atualizada",
+        "contact":  {
+                        "phone":  "(82) 99622-9047",
+                        "email":  "elisajh15@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 14:01:21",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-688",
+        "name":  "Paula Michelle Simões Rocha",
+        "cpf":  "317.089.528-10",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 14:01:44",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "@pipokaepipokinha_alegria",
+        "profession":  "Animação de festa infantil",
+        "education":  "Ensino médio incompleto",
+        "frequentNetworks":  "Instagram, tiktok",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "…",
+        "motivation":  "Aprendizado,  experiências, tudo novo .",
+        "expectations":  "Aprender , empreender ,decolar ,reconhecimento.",
+        "contact":  {
+                        "phone":  "(82) 99116-2559",
+                        "email":  "paulasimoes293@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 14:01:44",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-689",
+        "name":  "Ariele",
+        "cpf":  "068.773.634-00",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 14:02:42",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "@estherlacosacessorio",
+        "profession":  "Laceira",
+        "education":  "Superior",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Instagram",
+        "challenges":  "Fotos, vídeo e outros",
+        "motivation":  "Trabalho com laços e quero melhorar meu trabalho no Instagram nas postos e outros",
+        "expectations":  "Quero melhorar no meu trabalho",
+        "contact":  {
+                        "phone":  "(06) 87736-3400",
+                        "email":  "arielearaujo20145@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 14:02:42",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-690",
+        "name":  "Cledja Joaquim Pereira Santos",
+        "cpf":  "142.827.894-09",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "São Sebastião",
+        "unitCity":  "São Sebastião",
+        "registrationDate":  "25/08/2026 14:04:40",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/cledja_pereira18?igsi=M3FsbmZib3F1MTRn",
+        "profession":  "Vendedor",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram, whatsapp, tiktok.",
+        "experience":  "Sim",
+        "tools":  "Edição de vídeos, Produção de imagens e banners",
+        "challenges":  "Edição, as falas na hora da gravação e um pouco de nervoso.",
+        "motivation":  "Preciso de mais conhecimento e desenvolvimento.",
+        "expectations":  "Muito boa",
+        "contact":  {
+                        "phone":  "(82)98739-0710",
+                        "email":  "cledjapereira99@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "São Sebastião",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 25/08/2026 14:04:40",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-691",
+        "name":  "Emanuelly Santos batista",
+        "cpf":  "100.073.254-10",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 15:45:17",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "Emannuellybatista",
+        "profession":  "Gerenciamento de mídias sociais",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram, tiktok e WhatsApp",
+        "experience":  "Não",
+        "tools":  "Canva",
+        "challenges":  "Edições de vídeos",
+        "motivation":  "Pretendo ganhar dinheiro com rede social e aprender coisas novas",
+        "expectations":  "Muito aprendizado",
+        "contact":  {
+                        "phone":  "(82) 99327-1780",
+                        "email":  "mannubatista123@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:45:17",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-692",
+        "name":  "João Paulo Vieira dos Santos",
+        "cpf":  "150.403.104-04",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já penedo",
+        "unitCity":  "Já penedo",
+        "registrationDate":  "31/08/2026 15:52:28",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "@Viieirawxz",
+        "profession":  "Estudante",
+        "education":  "Ensino médio completo, cursando técnico em química",
+        "frequentNetworks":  "Instagram whatsapp",
+        "experience":  "Canva chat gnt, Instagram, Dólar, Gemini",
+        "tools":  "Whatsapp",
+        "challenges":  "Para ser mostrado em vídeo",
+        "motivation":  "Para abrir mas oportunidade",
+        "expectations":  "O mas boa possível",
+        "contact":  {
+                        "phone":  "(82) 98789-7152",
+                        "email":  "vjoaopaulo458@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:52:28",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-693",
+        "name":  "Daniela Araujo da Silva",
+        "cpf":  "093.930.524-09",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já penedo",
+        "unitCity":  "Já penedo",
+        "registrationDate":  "31/08/2026 15:50:37",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/daniela_artsdadanny?igsi=YmFvdDF4dDRkaW1t",
+        "profession":  "Empreendedorismo",
+        "education":  "Médio",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Canva, chat GPT, Gemini,capcut...",
+        "challenges":  "A maioria dos serviços que entregam mais qualidade são Pró.",
+        "motivation":  "Conhecimento na área",
+        "expectations":  "Aprimorar e adquirir mais conhecimento,e trabalhar na área",
+        "contact":  {
+                        "phone":  "(82) 99192-3332",
+                        "email":  "araujodasilvadaniela8@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:50:37",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-694",
+        "name":  "Maria Mayara dos Santos Silva",
+        "cpf":  "141.802.304-37",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "JÁ PENEDO",
+        "unitCity":  "JÁ PENEDO",
+        "registrationDate":  "31/08/2026 15:53:55",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "@mayara_rom4o",
+        "profession":  "Estudante",
+        "education":  "Ensino Superior incompleto",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Sim",
+        "tools":  "Instagram, Canva, Chat gpt, Gemini, Teams, YouTube",
+        "challenges":  "Criação de vídeos",
+        "motivation":  "Aumentar o interesse pelo meio digital e ampliar meus conhecimentos profissionais",
+        "expectations":  "Segurança digital",
+        "contact":  {
+                        "phone":  "(82) 99420-8901",
+                        "email":  "mayararomao357@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "JÁ PENEDO",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:53:55",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-695",
+        "name":  "Haudney Lucas da Silva Dilho",
+        "cpf":  "136.832.864-40",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já - Penedo",
+        "unitCity":  "Já - Penedo",
+        "registrationDate":  "31/08/2026 15:50:45",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/lucas.filho?igsi=cDdic3p4bW93eDVh\u0026utm_source=qr",
+        "profession":  "Entregas/logística",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Facebook, Instagram, WhatsApp, canva",
+        "experience":  "Não",
+        "tools":  "WhatsApp, Instagram, you tube.",
+        "challenges":  "Os principais desafios são ter tempo para criar conteúdos com frequência, encontrar ideias novas e criativas, produzir fotos e vídeos com boa qualidade e conseguir alcançar o público certo e gerar engajamento nas redes sociais",
+        "motivation":  "O que me motivou foi a vontade de aprender a utilizar melhor as redes sociais para divulgar meu trabalho, alcançar mais pessoas, conquistar novos clientes e melhorar a forma como apresento meus produtos e serviços.",
+        "expectations":  "Espero aprender a gerenciar melhor minhas redes sociais, criar conteúdos mais atrativos, aumentar o alcance das minhas publicações e aprender estratégias para divulgar meu trabalho e conquistar mais clientes.",
+        "contact":  {
+                        "phone":  "(82) 99842-4263",
+                        "email":  "juanito.9654@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já - Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:50:45",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-696",
+        "name":  "Clarice Ryane Vieira dos Santos",
+        "cpf":  "141.232.024-03",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 15:50:50",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "ryanestw__",
+        "profession":  "Estudante",
+        "education":  "Fundamental 2",
+        "frequentNetworks":  "Tik Tok",
+        "experience":  "Não",
+        "tools":  "Canva",
+        "challenges":  "Editar",
+        "motivation":  "Para aprender mais",
+        "expectations":  "Aprende e mostra meus conhecimentos",
+        "contact":  {
+                        "phone":  "(82) 99392-4703",
+                        "email":  "clariceryane2011@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:50:50",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-697",
+        "name":  "Daniela Nunes Pinheiro",
+        "cpf":  "073.959.484-24",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "JÁ PENEDO",
+        "unitCity":  "JÁ PENEDO",
+        "registrationDate":  "31/08/2026 15:53:02",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/danyelanuness?igsi=MWEyamdpOGFrcXJoOA==",
+        "profession":  "Estudante",
+        "education":  "Graduando em Gestão de RH",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Chat GPT, Instagram",
+        "challenges":  "O que os vão achar",
+        "motivation":  "Preciso mudar de vida para melhor e vejo que a internet tranforma vidas",
+        "expectations":  "Ser sucesso",
+        "contact":  {
+                        "phone":  "82-991055630",
+                        "email":  "nunesdanyela30@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "JÁ PENEDO",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:53:02",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-698",
+        "name":  "Mateus dos Santos Silva",
+        "cpf":  "712.269.844-01",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já- Penedo",
+        "unitCity":  "Já- Penedo",
+        "registrationDate":  "31/08/2026 15:53:36",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/eumatteus_7?igsi=OGdtdjI3OHdmdjY%3D\u0026utm_source=qr",
+        "profession":  "Estudante",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Sim",
+        "tools":  "Chat GPT, Canva, Gemini",
+        "challenges":  "Tenho muita dificuldade em produzir conteúdos como vídeos , artes entre outras maneiras.",
+        "motivation":  "Amigos e Familiares",
+        "expectations":  "Que seja repleta de conhecimento",
+        "contact":  {
+                        "phone":  "(82) 99837-9696",
+                        "email":  "eumateussilva1@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já- Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:53:36",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-699",
+        "name":  "Gabrielle maria santiago ramos",
+        "cpf":  "107.131.334-73",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "JÁ PENEDO",
+        "unitCity":  "JÁ PENEDO",
+        "registrationDate":  "31/08/2026 15:53:37",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "@gabriellecalumby",
+        "profession":  "estudante",
+        "education":  "atualmente cursando 3ºAno do ensino médio",
+        "frequentNetworks":  "tiktok, instagram, whatsapp",
+        "experience":  "sim",
+        "tools":  "canva, capcut, instagram",
+        "challenges":  "dependendo do que for trabalhar a criatividade",
+        "motivation":  "aprende e buscar conhecimento na área",
+        "expectations":  "aprender novas habilidades e me aperfeiçoar na área que gosto",
+        "contact":  {
+                        "phone":  "(82) 99392-7820",
+                        "email":  "msantiagocalumby@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "JÁ PENEDO",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:53:37",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-700",
+        "name":  "Charliany de Jesus Alcântara",
+        "cpf":  "095.725.314-17",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já penedo",
+        "unitCity":  "Já penedo",
+        "registrationDate":  "31/08/2026 15:56:09",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "@anycharliany",
+        "profession":  "Estudante",
+        "education":  "Ensino médio",
+        "frequentNetworks":  "Instagram",
+        "experience":  "YouTube",
+        "tools":  "Canva",
+        "challenges":  "Não saber a maneira de fazer o correto",
+        "motivation":  "Busca conhecimento",
+        "expectations":  "Obter conhecimento",
+        "contact":  {
+                        "phone":  "(82) 99621-7410",
+                        "email":  "charlianyany@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 15:56:09",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-701",
+        "name":  "José Ricardo Camilo dos Santos",
+        "cpf":  "035.868.214-25",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Sine Penedo Alagoas",
+        "unitCity":  "Sine Penedo Alagoas",
+        "registrationDate":  "31/08/2026 16:03:33",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "ricardo_camilo78",
+        "profession":  "Técnico em Agropecuária",
+        "education":  "Técnico em Agropecuária",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Tik Tok",
+        "challenges":  "Fonte de comando",
+        "motivation":  "Divulgar meu trabalho como líder Comunitário",
+        "expectations":  "Capacitação para obter rentabilidade",
+        "contact":  {
+                        "phone":  "(82) 99124-0066",
+                        "email":  "ricardocamilo652@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Sine Penedo Alagoas",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 16:03:33",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-702",
+        "name":  "Monique Beatriz Pereira Santos",
+        "cpf":  "126.632.524-77",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Penedo",
+        "unitCity":  "Penedo",
+        "registrationDate":  "31/08/2026 20:26:48",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "@monique.fono_",
+        "profession":  "Fonoaudióloga",
+        "education":  "Pós graduação",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Sim",
+        "tools":  "Meta",
+        "challenges":  "Criatividade, plataforma e logística",
+        "motivation":  "Buscar mais conhecimento",
+        "expectations":  "Expectativas altas para Aprender mais sobre as tecnologias e como gerar lucro",
+        "contact":  {
+                        "phone":  "(82) 99356-1287",
+                        "email":  "mbeatriz367@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:26:48",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-703",
+        "name":  "Alane ferreira santos",
+        "cpf":  "153.868.474-81",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Penedo",
+        "unitCity":  "Penedo",
+        "registrationDate":  "31/08/2026 20:26:59",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/alane_ferreira043?igsi=MWJ4djBnYThpMXJ6aQ==",
+        "profession":  "Vendedora externa",
+        "education":  "Superior completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Nenhuma",
+        "motivation":  "A procura da experiência",
+        "expectations":  "Exercer a função de mídias sociais",
+        "contact":  {
+                        "phone":  "(82) 99394-7751",
+                        "email":  "af386317@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:26:59",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-704",
+        "name":  "Layane de Araújo Sa",
+        "cpf":  "128.562.834-97",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 20:27:53",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/laynail_designer?igsi=MW5meGFnYzZ0ZjUwdA%3D%3D\u0026utm_source=qr",
+        "profession":  "Nail Designer",
+        "education":  "Nível médio Completo",
+        "frequentNetworks":  "Sempre",
+        "experience":  "Sim",
+        "tools":  "Instagram",
+        "challenges":  "Vergonha, de fazer vídeos e me comunicar",
+        "motivation":  "A ter uma nova postura, e saber manusear o uso do Instagram",
+        "expectations":  "Ter uma nova visão",
+        "contact":  {
+                        "phone":  "(82) 99396-9872",
+                        "email":  "layanearaujo302@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:27:53",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-705",
+        "name":  "Emanuelly Maximino dos Santos",
+        "cpf":  "126.817.074-71",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 20:31:39",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/m4nuz1ta.videomaker?igsi=MW5saGdkZG56cmNrbQ%3D%3D\u0026utm_source=qr",
+        "profession":  "Social media e Assistente administrativo",
+        "education":  "Nível superior incompleto",
+        "frequentNetworks":  "Instagram é WhatsApp",
+        "experience":  "Sim",
+        "tools":  "Canva, CapCut, figma, Blackmagic cam",
+        "challenges":  "Vergonha/timidez",
+        "motivation":  "Obter mais conhecimento em algo que eu já tenho familiaridade",
+        "expectations":  "Conseguir gerências as mídias de diferentes empreendimentos!",
+        "contact":  {
+                        "phone":  "(82) 98741-0249",
+                        "email":  "emanuelly124eu@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:31:39",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-706",
+        "name":  "Maria Amanda Ribeiro Matos",
+        "cpf":  "111.311.274-39",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 20:28:10",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "Estou no Instagram como @casinha_da_amanda02. Instale o aplicativo para seguir minhas fotos e vídeos. https://www.instagram.com/casinha_da_amanda02?igsi=Y2Z1c3NyZnJvdjdp\u0026utm_source=ig_contact_invite",
+        "profession":  "Dona de casa",
+        "education":  "Ensino médio completo",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Nenhuma",
+        "challenges":  "Edição e editar",
+        "motivation":  "Ter experiência",
+        "expectations":  "Várias",
+        "contact":  {
+                        "phone":  "(82) 98867-4211",
+                        "email":  "ar2808205@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:28:10",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-707",
+        "name":  "José Roberto Dos Santos Filho",
+        "cpf":  "150.290.994-41",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "ja penedo",
+        "unitCity":  "ja penedo",
+        "registrationDate":  "31/08/2026 20:30:49",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/roberto46s_?igsi=cmlqMHN5dWpnaXZ2\u0026utm_source=qr",
+        "profession":  "microempreendedor",
+        "education":  "ensino médio completo",
+        "frequentNetworks":  "instagram e tiktok",
+        "experience":  "Sim",
+        "tools":  "capcut, canva e gemini",
+        "challenges":  "alcance de visibilidade",
+        "motivation":  "interesse em redes sociais",
+        "expectations":  "ganhar experiência na área",
+        "contact":  {
+                        "phone":  "(82) 99186-8840",
+                        "email":  "robertosantosbike6@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "ja penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:30:49",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-708",
+        "name":  "Andressa da Silva Solano Moura",
+        "cpf":  "122.199.037-37",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 20:30:25",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/andressamourabio?igsi=ZzFsbXAwMGppYml1",
+        "profession":  "Gestora",
+        "education":  "Especialização",
+        "frequentNetworks":  "Instagram, WhatsApp e Facebook",
+        "experience":  "Sim",
+        "tools":  "Não utilizo.",
+        "challenges":  "Captação de públicos específicos.",
+        "motivation":  "Administrar melhor a rede social do meu trabalho.",
+        "expectations":  "Aprender o máximo que posso sobre mídias sociais de modo que me alavanque socialmente.",
+        "contact":  {
+                        "phone":  "(82) 98896-1415",
+                        "email":  "andressamoura0722@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:30:25",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-709",
+        "name":  "José Lucas Junior",
+        "cpf":  "111.023.694-89",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 20:30:41",
+        "status":  "Ativo",
+        "avatarColor":  "from-pink-500 to-rose-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://wa.me/qr/FQNNUCNKMVZGO1",
+        "profession":  "Técnico em celulares",
+        "education":  "Médio completo",
+        "frequentNetworks":  "Facebook",
+        "experience":  "Não",
+        "tools":  "Chatgpt,canva (usados para pequenos gerenciamento familiares)",
+        "challenges":  "Estímulo e seguir roteiro",
+        "motivation":  "Desenvolver minhas dificuldades para se tornarem pontos fortes e gerenciar as redes para divulgar meus trabalhos e criar mídia de reforma automotiva.",
+        "expectations":  "Desenvolver e gerenciar de forma a monetizar minha rotina",
+        "contact":  {
+                        "phone":  "(82) 99831-1657",
+                        "email":  "j.lucaspenedomoral@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:30:41",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-710",
+        "name":  "Dandara Moraes Rodrigues",
+        "cpf":  "125.683.194-88",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 20:31:18",
+        "status":  "Ativo",
+        "avatarColor":  "from-emerald-500 to-teal-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.tiktok.com/@dandaramoraees?_r=1\u0026_t=ZS-99M2zbwleB3",
+        "profession":  "Nem uma",
+        "education":  "Cursando o 3 ano",
+        "frequentNetworks":  "Instagram e TikTok",
+        "experience":  "Sim",
+        "tools":  "Nem uma",
+        "challenges":  "Críticas",
+        "motivation":  "Crescer nas redes sociais",
+        "expectations":  "Ainda nem uma",
+        "contact":  {
+                        "phone":  "(82) 99936-8907",
+                        "email":  "dandaramoraes08@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:31:18",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-711",
+        "name":  "Caroline Damares Tavares dos Santos",
+        "cpf":  "144.377.354-98",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já  penedo",
+        "unitCity":  "Já  penedo",
+        "registrationDate":  "31/08/2026 20:31:27",
+        "status":  "Ativo",
+        "avatarColor":  "from-amber-500 to-orange-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/carolinezzw_?igsi=MWR3aDg4ZWN4anJxYg==",
+        "profession":  "Nenhuma",
+        "education":  "Ensino fundamental",
+        "frequentNetworks":  "Instagram",
+        "experience":  "Não",
+        "tools":  "Instagram e tiktok",
+        "challenges":  "Insegurança,vergonha e medo dos julgamentos",
+        "motivation":  "Conhecimento, ter mais aprendizagem com as Internet",
+        "expectations":  "Aprender",
+        "contact":  {
+                        "phone":  "+55 82 9166-1314",
+                        "email":  "damaresc47@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já  penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:31:27",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-712",
+        "name":  "Maria Eduarda dos Santos",
+        "cpf":  "003.727.194-65",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Já Penedo",
+        "unitCity":  "Já Penedo",
+        "registrationDate":  "31/08/2026 20:31:41",
+        "status":  "Ativo",
+        "avatarColor":  "from-violet-500 to-fuchsia-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/m_eduarda.79?igsi=MWRyZXYwY2F5aDU4cg%3D%3D\u0026utm_source=qr",
+        "profession":  "Nenhuma",
+        "education":  "Ensino médio",
+        "frequentNetworks":  "Instagram,WhatsApp e tik tok",
+        "experience":  "Não",
+        "tools":  "Chat GPT  e tik tok",
+        "challenges":  "Vergonha e insegurança",
+        "motivation":  "Conhecimento e experiência",
+        "expectations":  "Aprender mais sobre oque realmente importa na tecnologia",
+        "contact":  {
+                        "phone":  "(79) 99141-8673",
+                        "email":  "dudinhasanttos200808@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Já Penedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:31:41",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-713",
+        "name":  "Davi Barbosa Ferreira",
+        "cpf":  "125.838.184-22",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Ja Aprendendo",
+        "unitCity":  "Ja Aprendendo",
+        "registrationDate":  "31/08/2026 20:31:47",
+        "status":  "Ativo",
+        "avatarColor":  "from-sky-500 to-indigo-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/davibf._?igsi=b215YWI3ZDhlYm1i",
+        "profession":  "Nenhuma ate o momento",
+        "education":  "Finalizando o Ensino Médio",
+        "frequentNetworks":  "Instagram e Tik Tok",
+        "experience":  "Não",
+        "tools":  "Chatgpt, Canva.",
+        "challenges":  "Viralizar",
+        "motivation":  "Em.busca de oportunidades de trabalho e estar em um meio bastante usado diariamente por toda sociedade",
+        "expectations":  "Aprender e aprimorar meu conhecimento",
+        "contact":  {
+                        "phone":  "82 988094262",
+                        "email":  "ferreiradavibarbosa40@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Ja Aprendendo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:31:47",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-714",
+        "name":  "Samara Goes Sales",
+        "cpf":  "073.575.654-67",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "JáPenedo",
+        "unitCity":  "JáPenedo",
+        "registrationDate":  "31/08/2026 20:32:57",
+        "status":  "Ativo",
+        "avatarColor":  "from-indigo-500 to-purple-600",
+        "photoUrl":  "",
+        "socialMedia":  "Samara_goes_",
+        "profession":  "Projetista (projetos arquitetonico), divulgação via Instagran",
+        "education":  "Superior incompleto",
+        "frequentNetworks":  "Instagram, WhatsApp",
+        "experience":  "Apenas minha própria rede quando tinha loja.",
+        "tools":  "Capcup, tiktok, chatgpt",
+        "challenges":  "A parte da comunicação visual, edição de vídeos,",
+        "motivation":  "A vontade de aprender a dominar as redes sociais de forma mais eficiente.",
+        "expectations":  "Aprender a dominar as ferramentas.",
+        "contact":  {
+                        "phone":  "82 99129-9881",
+                        "email":  "samaragoessales@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "JáPenedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:32:57",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
+    },
+    {
+        "id":  "ALU-EMA-715",
+        "name":  "Milena Eduarda Regina da Silva Nunes",
+        "cpf":  "595.092.638-26",
+        "birthDate":  "",
+        "gender":  "NÃ£o especificado",
+        "classroom":  "Japenedo",
+        "unitCity":  "Japenedo",
+        "registrationDate":  "31/08/2026 20:34:11",
+        "status":  "Ativo",
+        "avatarColor":  "from-blue-500 to-cyan-600",
+        "photoUrl":  "",
+        "socialMedia":  "https://www.instagram.com/mylenannuness?igsi=MTMyMG92bGxmZzBveg==",
+        "profession":  "Nenhuma.",
+        "education":  "Fundamental - Anos finais",
+        "frequentNetworks":  "Instagram, tik tok, vsco, whatsapp e pinterest.",
+        "experience":  "Não.",
+        "tools":  "Ainda não utilizei muitas ferramentas profissionais, mas já tenho familiaridade com Instagram, TikTok, Canva e outras ferramentas para criação e publicação de conteúdos.",
+        "challenges":  "Meu principal desafio é ter ideias criativas e diferentes, além de conseguir manter uma frequência de publicações e produzir conteúdos que chamem a atenção do público.",
+        "motivation":  "Tenho interesse em aprender mais sobre redes sociais, criação de conteúdo e marketing digital. Quero desenvolver novas habilidades que possam me ajudar no futuro profissional",
+        "expectations":  "Espero aprender bastante, desenvolver minha criatividade, conhecer novas ferramentas e entender melhor como criar conteúdos de qualidade e gerenciar redes sociais de forma profissional.",
+        "contact":  {
+                        "phone":  "(82)  9647-3208",
+                        "email":  "milenaeduardarsdnunes@gmail.com",
+                        "guardianName":  "",
+                        "guardianKinship":  "ResponsÃ¡vel",
+                        "guardianPhone":  ""
+                    },
+        "address":  {
+                        "cep":  "",
+                        "street":  "",
+                        "number":  "",
+                        "complement":  "",
+                        "neighborhood":  "",
+                        "city":  "Japenedo",
+                        "state":  "AL"
+                    },
+        "notes":  "InscriÃ§Ã£o: 31/08/2026 20:34:11",
+        "grades":  {
+                       "Marketing Digital \u0026 EstratÃ©gia":  {
+                                                                    "b1":  9,
+                                                                    "b2":  9,
+                                                                    "b3":  9.5,
+                                                                    "b4":  9.5,
+                                                                    "absences":  0
+                                                                },
+                       "CriaÃ§Ã£o de ConteÃºdo \u0026 Copywriting":  {
+                                                                         "b1":  9,
+                                                                         "b2":  9.5,
+                                                                         "b3":  9,
+                                                                         "b4":  9.5,
+                                                                         "absences":  0
+                                                                     },
+                       "Design \u0026 Identidade Visual":  {
+                                                               "b1":  8.5,
+                                                               "b2":  9,
+                                                               "b3":  8.5,
+                                                               "b4":  9,
+                                                               "absences":  0
+                                                           },
+                       "EdiÃ§Ã£o de VÃ­deo \u0026 Reels":  {
+                                                               "b1":  9,
+                                                               "b2":  9.5,
+                                                               "b3":  9,
+                                                               "b4":  9.5,
+                                                               "absences":  0
+                                                           },
+                       "TrÃ¡fego Pago \u0026 Meta Ads":  {
+                                                             "b1":  8.5,
+                                                             "b2":  9,
+                                                             "b3":  8.5,
+                                                             "b4":  9,
+                                                             "absences":  0
+                                                         },
+                       "MÃ©tricas \u0026 Analytics":  {
+                                                          "b1":  9,
+                                                          "b2":  9,
+                                                          "b3":  9.5,
+                                                          "b4":  9,
+                                                          "absences":  0
+                                                      },
+                       "Projeto Integrador Final":  {
+                                                        "b1":  9.5,
+                                                        "b2":  10,
+                                                        "b3":  9.5,
+                                                        "b4":  10,
+                                                        "absences":  0
+                                                    }
+                   }
     }
 ];
 
@@ -57530,8 +64370,8 @@ const DEFAULT_CLASSROOMS = [
     "Ad bras antares",
     "AD Brás antares",
     "Adbras",
-    "Adbras - Maceió",
     "ADBras - Maceió",
+    "Adbras - Maceió",
     "Adbrás Alagoas",
     "Adbras antares",
     "ADBRÁS ANTARES",
@@ -57543,8 +64383,8 @@ const DEFAULT_CLASSROOMS = [
     "Arapiraca",
     "Batalha",
     "Batalha-AL",
-    "Benedito bentes",
     "Benedito Bentes",
+    "Benedito bentes",
     "Benedito Bentes - Maceió - Alagoas",
     "Benedito Bentes/ tabuleiro dos Martins",
     "Benedito Bentes/Maceió",
@@ -57553,14 +64393,14 @@ const DEFAULT_CLASSROOMS = [
     "Centro de",
     "Centro Maceió",
     "Cesma",
-    "Cha Preta",
     "Cha preta",
+    "Cha Preta",
     "CHÃ PRETA",
     "Chã preta",
     "Chã Preta",
     "Chã Preta - AL",
-    "Chã preta Al",
     "Chã preta al",
+    "Chã preta Al",
     "Chã Preta- AL",
     "Chã Preta Alagoas",
     "Chã Preta.",
@@ -57568,8 +64408,8 @@ const DEFAULT_CLASSROOMS = [
     "Chã-Preta",
     "Cidade universitária",
     "Cine Porto Calvo",
-    "Delmiro gouveia",
     "Delmiro Gouveia",
+    "Delmiro gouveia",
     "Delmiro Gouveia Alagoas",
     "Farol",
     "Galeria pátio maceió",
@@ -57579,20 +64419,30 @@ const DEFAULT_CLASSROOMS = [
     "Instinto Lúcia Brandao",
     "Instituto  Lúcia Bra6",
     "Instituto Lúcia Brandão",
+    "Já  penedo",
+    "Já - Penedo",
+    "Ja Aprendendo",
     "Já Maceió Shopping",
     "Já- Maceió Shopping",
+    "ja penedo",
+    "JÁ PENEDO",
+    "Já Penedo",
+    "Já penedo",
+    "Já- Penedo",
+    "Japenedo",
+    "JáPenedo",
     "Jaraguá",
     "Jaraguá - Maceió",
     "Jaraguá- Maceió-AL",
+    "Joaquim gomes",
     "Joaquim Gomes",
     "JOAQUIM GOMES",
-    "Joaquim gomes",
     "Joaquim gomes - AL",
     "JOAQUIM GOMES/AL",
     "MACEIO",
     "Maceio",
-    "maceió",
     "Maceió",
+    "maceió",
     "MACEIÓ",
     "Maceió - AL",
     "Maceió - Alagoas",
@@ -57605,16 +64455,16 @@ const DEFAULT_CLASSROOMS = [
     "Maceió alagoas",
     "Maceió Alagoas, Ponta Grossa",
     "Maceio shopping",
-    "Maceió Shopping",
     "Maceió shopping",
+    "Maceió Shopping",
     "Maceió Shopping - Maceió",
     "Maceió, centro",
     "Maceio/AL",
     "Maceió/AL",
     "Maceio-AL",
+    "Maceió-AL",
     "Maceió-al",
     "Maceió-Al",
-    "Maceió-AL",
     "Maceió-AL - Clinica João Fireman",
     "Maceio-Alagoas",
     "Maragogi",
@@ -57623,27 +64473,28 @@ const DEFAULT_CLASSROOMS = [
     "Maribondo",
     "Maribondo-Al",
     "Mas próximo da minha casa",
-    "Messias",
     "messias",
-    "Messias AL",
+    "Messias",
     "Messias Al",
+    "Messias AL",
     "Messias Alagoas",
-    "Messias-Alagoas",
     "Messias-alagoas",
+    "Messias-Alagoas",
     "Murici",
     "não",
     "Nao sei",
+    "Não sei",
     "PARIPUEIRA",
     "Paripueira",
-    "Paripueira AL",
     "Paripueira Al",
+    "Paripueira AL",
     "Paripueira -Al",
     "Paripueira-Al",
     "Paripueira-AL",
     "Paripueria",
     "Pátio Maceió",
-    "Pátio Shopping",
     "Pátio shopping",
+    "Pátio Shopping",
     "PATIO SHOPPING  MACEIÓ",
     "Penedo",
     "Pilar",
@@ -57656,41 +64507,49 @@ const DEFAULT_CLASSROOMS = [
     "Rio Largo Al",
     "Santa Lucia",
     "Santana do Ipanema",
-    "SEDH",
+    "são sebastião",
+    "São sebastião",
+    "São Sebastião",
+    "São Sebastião al",
+    "São Sebastião Alagoas",
+    "São Sebastião/AL",
+    "São Sebastião-AL",
     "Sedh",
+    "SEDH",
     "Shopping patio",
     "Shopping Patio",
-    "Shopping pátio",
     "Shopping Pátio",
+    "Shopping pátio",
     "Shopping Pátio - Benedito Bentes",
     "Shopping pátio ( messias)",
     "Shopping patio benedito bentes",
     "Shopping pátio benedito bentes",
-    "Shopping pátio Maceió",
     "Shopping Pátio Maceió",
+    "Shopping pátio Maceió",
     "Shopping pátio/ Messias-Al",
     "Sim",
     "SINE - Porto Calvo",
     "Sine - PORTO CALVO",
-    "Sine Alagoas",
     "Sine alagoas",
+    "Sine Alagoas",
     "Sine maceió",
     "SINE Maceió",
     "Sine Maceió Shopping",
     "Sine Municipal Arapiraca",
-    "Sine porto calvo",
+    "Sine Penedo Alagoas",
     "Sine Porto Calvo",
-    "SINE Porto Calvo",
     "Sine Porto calvo",
+    "Sine porto calvo",
+    "SINE Porto Calvo",
     "SINE PORTO CALVO co",
     "Sine shopping patio",
     "SINE Shopping Pátio (Cidade Universitária/Tabuleiro)",
     "Sine shopping Pátio Maceió",
     "Sine-Porto calvo",
     "sine-Porto-calvo-al",
-    "União dos palmares",
     "União dos Palmares",
     "União Dos Palmares",
+    "União dos palmares",
     "UNIÃO DOS PALMARES",
     "Uniao Dos Palmares AL",
     "União Dos Palmares- AL",

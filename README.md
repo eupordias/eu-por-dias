@@ -1,4 +1,4 @@
-﻿# 🎓 Eu Por Dias — Gestão Pedagógica, Diagnóstico & Rendimento de Alunos
+# 🎓 Eu Por Dias — Gestão Pedagógica, Diagnóstico & Rendimento de Alunos
 > **Plataforma desenvolvida para o curso de Gestão de Mídias Digitais do Programa Emprega Mais Alagoas**
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
@@ -13,7 +13,7 @@
 
 O **Eu Por Dias** é uma plataforma educacional e administrativa desenvolvida para atender às demandas práticas do professor do programa estadual **Emprega Mais Alagoas**, no curso profissionalizante de **Gestão de Mídias Digitais**.
 
-O sistema centraliza e dá vida aos dados cadastrais, pedagógicos, contatos de emergência e rendimento acadêmico de **mais de 639 estudantes** distribuídos por diversos polos de qualificação profissional em Alagoas (como Maceió, Messias, Delmiro Gouveia, Batalha, Poço das Trincheiras, SEDH, SINE, entre outros).
+O sistema centraliza e dá vida aos dados cadastrais, pedagógicos, contatos de emergência e rendimento acadêmico de **mais de 715 estudantes (725 linhas de formulários)** distribuídos por diversos polos de qualificação profissional em Alagoas (como Maceió, Messias, Delmiro Gouveia, Batalha, Poço das Trincheiras, SEDH, SINE, entre outros).
 
 ---
 
