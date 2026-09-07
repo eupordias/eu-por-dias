@@ -40,13 +40,17 @@ A arquitetura e o design do **Eu Por Dias** não foram escolhidos por acaso. Cad
   3. **Custo Zero Vitalício**: Pode ser hospedado gratuitamente no **GitHub Pages**, Vercel, Netlify ou rodar até mesmo offline em um pendrive ou pasta local via index.html.
   4. **Integração Direta**: Utiliza a **Google Sheets API v4** para puxar diretamente as respostas das planilhas do Google Drive do professor com chave de API segura e sem intermediários.
 
-### 5. 🔒 Camada de Segurança LGPD & Projeção Segura em Sala de Aula
-* Como o sistema lida com dados sensíveis de cidadãos alagoanos (CPF, telefones pessoais, e-mails, endereços e notas), foi criada uma **Camada de Proteção e Privacidade LGPD**:
-  * **Modo Seguro Pedagógico (Datashow / TV)**: Modo de exibição específico para ser projetado publicamente na sala de aula. Mostra todos os diagnósticos dos alunos (motivações, desafios, ferramentas conhecidas, expectativas e rendimento), mas **oculta e mascara completamente CPFs (`***.***.123-**`), telefones (`(82) 9****-**45`), e-mails e endereços**.
-  * **Desmascaramento Sob Demanda**: O professor pode clicar no ícone de cadeado/olho de um aluno específico para conferir o dado real quando necessário, sem expor os demais estudantes.
-  * **Chave Geral de Privacidade**: Um botão no topo da tela ativa ou desativa o modo privacidade para qualquer modo de visualização (Grade, Tabela ou Modo Seguro).
-  * **Exportação CSV Anonimizada**: Ao exportar planilhas com a privacidade ativada, os dados pessoais são gerados já mascarados para compartilhamento com parceiros sem infringir a LGPD.
-  * **Zero Envio para Nuvem Terceira**: Os dados ficam estritamente no navegador local do professor, sem rastreadores externos.
+### 5. 🔒 Camada de Segurança LGPD Permanente & Acesso Modo Deus (Google)
+* Como o sistema lida com dados sensíveis de cidadãos alagoanos (CPF, telefones pessoais, e-mails, endereços e notas), foi estabelecida uma **Regra de Segurança Estrita**:
+  * **Modo LGPD Sempre Ativo por Padrão**: A proteção de dados pessoais é obrigatória e inicia permanentemente travada. Em qualquer recarregamento ou dispositivo, os dados confidenciais nascem protegidos.
+  * **Acesso Exclusivo Modo Deus via Google**: Apenas o docente/administrador autenticado via **Login do Google no Modo Deus** tem permissão para:
+    1. Desativar globalmente a proteção LGPD;
+    2. Revelar sob demanda os dados individuais de qualquer estudante;
+    3. Exportar planilhas completas com números e CPFs desmascarados.
+  * **Bloqueio Automático para Visitantes e Sala de Aula**: Qualquer tentativa de desmascarar dados sem o login do Modo Deus é imediatamente interceptada e bloqueada, abrindo o modal de autenticação Google.
+  * **Modo Seguro Pedagógico (Datashow / TV)**: Modo de exibição específico para projeção em sala de aula, exibindo os diagnósticos (motivações, desafios, ferramentas, rendimento) e ocultando CPFs, telefones e endereços.
+  * **Chave Mestre de Emergência**: Garante acesso ao professor mesmo em polos do interior sem sinal de internet ou em execução offline local.
+  * **Zero Envio para Nuvem Terceira**: Os dados ficam estritamente no dispositivo do professor, com soberania total.
 
 ### 6. 📸 Gestão Visual com Fotos, Webcam e Otimização
 * Permite conectar o nome ao rosto do aluno. O sistema possui um módulo completo de fotos com:

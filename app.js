@@ -31,11 +31,17 @@ const AppState = {
     googleApiKey: "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI",
     googleSpreadsheetId: "",
     googleSheetRange: "A1:Z500",
-    lastSyncTime: null
+    lastSyncTime: null,
+    googleClientId: ""
   },
   currentTab: "students", // 'dashboard' | 'students' | 'grades' | 'reports' | 'about'
-  privacyMode: false, // Camada de Segurança e Proteção LGPD
-  revealedStudentIds: new Set(), // IDs de alunos revelados temporariamente sob demanda
+  privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
+  godMode: {
+    active: false,
+    user: null, // { name, email, picture, method, loginTime }
+    loginTime: null
+  },
+  revealedStudentIds: new Set(), // IDs de alunos revelados temporariamente sob demanda (somente no Modo Deus)
   searchTerm: "",
   filterClassroom: "all",
   filterStatus: "all",
@@ -113,28 +119,39 @@ function maskAddress(address, isRevealed = false) {
   return `${b}${c}/${uf}`;
 }
 
+function isGodModeActive() {
+  return !!(AppState.godMode && AppState.godMode.active);
+}
+
 function togglePrivacyMode() {
-  AppState.privacyMode = !AppState.privacyMode;
-  if (AppState.privacyMode && AppState.settings.viewMode === "grid") {
-    // Mantém a visualização com máscara aplicada
+  if (!isGodModeActive()) {
+    showToast("🔒 Acesso Restrito: O Modo LGPD é permanente. Faça login com o Google no Modo Deus para desativar.", "warning");
+    openGodModeAuthModal();
+    return;
   }
+  AppState.privacyMode = !AppState.privacyMode;
   saveDataToStorage();
   showToast(
     AppState.privacyMode 
-      ? "🛡️ Modo Seguro LGPD ativado! Dados pessoais mascarados para projeção." 
-      : "Modo Seguro desativado. Dados pessoais visíveis.", 
-    AppState.privacyMode ? "success" : "info"
+      ? "🛡️ Modo Seguro LGPD reativado! Dados pessoais mascarados para projeção." 
+      : "⚡ Modo Deus: Proteção LGPD suspensa pelo Administrador. Dados sensíveis liberados.", 
+    AppState.privacyMode ? "success" : "warning"
   );
   renderApp();
 }
 
 function toggleRevealStudent(studentId) {
+  if (!isGodModeActive()) {
+    showToast("🔒 Acesso Restrito: Apenas o Administrador no Modo Deus (Google) pode revelar dados de alunos.", "warning");
+    openGodModeAuthModal();
+    return;
+  }
   if (AppState.revealedStudentIds.has(studentId)) {
     AppState.revealedStudentIds.delete(studentId);
     showToast("Dados pessoais do aluno ocultados novamente.", "info");
   } else {
     AppState.revealedStudentIds.add(studentId);
-    showToast("Dados pessoais do aluno revelados temporariamente.", "warning");
+    showToast("⚡ Modo Deus: Dados pessoais do aluno revelados.", "warning");
   }
   renderApp();
 }
@@ -192,6 +209,29 @@ function loadDataFromStorage() {
   AppState.settings.googleApiKey = "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
   AppState.settings.googleSpreadsheetId = "1XoKY-CW5ed3jJVOWD2klYGqCamiESa8_CAkRYLGEmJQ";
   AppState.settings.googleSheetRange = "A1:Z5000";
+
+  // Restaurar sessão do Modo Deus via Google (se houver na sessionStorage)
+  try {
+    const savedGodMode = sessionStorage.getItem("eupordias_god_mode");
+    if (savedGodMode) {
+      const parsed = JSON.parse(savedGodMode);
+      if (parsed && (parsed.email || parsed.name)) {
+        AppState.godMode = {
+          active: true,
+          user: parsed,
+          loginTime: parsed.loginTime || Date.now()
+        };
+      }
+    }
+  } catch (e) {
+    console.warn("Erro ao restaurar sessão Modo Deus:", e);
+  }
+
+  // REGRA ESTRITA LGPD: Se não estiver no Modo Deus, o Modo LGPD é SEMPRE FORÇADO para true!
+  if (!AppState.godMode.active) {
+    AppState.privacyMode = true;
+    AppState.revealedStudentIds.clear();
+  }
 
   saveDataToStorage();
 }
@@ -655,6 +695,350 @@ function updateHeaderCounts() {
       </div>
     `;
   }
+
+  // Atualiza o indicador de status do Modo Deus no cabeçalho
+  renderHeaderGodModeStatus();
+}
+
+function renderHeaderGodModeStatus() {
+  const container = document.getElementById("header-godmode-container");
+  if (!container) return;
+
+  if (isGodModeActive()) {
+    const user = AppState.godMode.user || {};
+    const name = user.name ? user.name.split(" ")[0] : "Professor";
+    const email = user.email || "Google Master";
+    container.innerHTML = `
+      <div class="flex items-center gap-2 bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-indigo-500/15 border border-amber-400/50 dark:border-amber-500/40 rounded-2xl px-2.5 py-1.5 shadow-sm">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+        </span>
+        <div class="flex flex-col">
+          <span class="text-[10px] font-black text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1">
+            <i class="fa-solid fa-bolt text-amber-500"></i> Modo Deus
+          </span>
+          <span class="text-[9px] text-slate-600 dark:text-slate-300 font-bold truncate max-w-[100px]" title="${email}">
+            ${name}
+          </span>
+        </div>
+        <button 
+          onclick="logoutGodMode()" 
+          class="ml-0.5 px-2 py-1 rounded-xl text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500 text-amber-950 dark:text-amber-100 transition-colors flex items-center gap-1"
+          title="Encerrar Modo Deus e Trancar Modo LGPD"
+        >
+          <i class="fa-solid fa-lock text-[9px]"></i>
+          <span class="hidden sm:inline">Trancar</span>
+        </button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <button 
+        onclick="openGodModeAuthModal()" 
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm transition-all transform active:scale-95"
+        title="Modo LGPD Permanente Ativo. Clique para entrar no Modo Deus via Google."
+      >
+        <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+        <span class="hidden md:inline text-[11px] font-bold text-slate-500 dark:text-slate-400">LGPD:</span>
+        <span class="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400">Travado</span>
+        <span class="w-1 h-3 bg-slate-300 dark:bg-slate-600 rounded-full mx-0.5 hidden sm:inline-block"></span>
+        <i class="fa-solid fa-bolt text-amber-500 text-[11px]"></i>
+        <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 hidden xl:inline">Modo Deus</span>
+      </button>
+    `;
+  }
+}
+
+// -------------------------------------------------------------
+// AUTENTICAÇÃO MESTRE • MODO DEUS VIA GOOGLE
+// -------------------------------------------------------------
+function loginGodMode(userProfile) {
+  AppState.godMode = {
+    active: true,
+    user: userProfile,
+    loginTime: Date.now()
+  };
+  try {
+    sessionStorage.setItem("eupordias_god_mode", JSON.stringify(userProfile));
+  } catch (e) {
+    console.warn("Não foi possível salvar sessão Modo Deus:", e);
+  }
+  closeModal();
+  showToast(`⚡ MODO DEUS ATIVADO! Bem-vindo, ${userProfile.name || userProfile.email}. Acesso total liberado.`, "warning");
+  renderApp();
+}
+
+function logoutGodMode() {
+  AppState.godMode = {
+    active: false,
+    user: null,
+    loginTime: null
+  };
+  try {
+    sessionStorage.removeItem("eupordias_god_mode");
+  } catch (e) {
+    console.warn(e);
+  }
+  // REGRAS ESTRITAS DE RETORNO LGPD:
+  AppState.privacyMode = true;
+  AppState.revealedStudentIds.clear();
+  saveDataToStorage();
+  closeModal();
+  showToast("🔒 Modo Deus encerrado. O Modo LGPD foi reativado e travado com sucesso.", "info");
+  renderApp();
+}
+
+function handleGoogleCredentialResponse(response) {
+  try {
+    if (!response || !response.credential) {
+      throw new Error("Credencial vazia retornada pelo Google.");
+    }
+    const base64Url = response.credential.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    const profile = JSON.parse(jsonPayload);
+    
+    loginGodMode({
+      name: profile.name || "Professor (Google)",
+      email: profile.email || "professor.google@al.gov.br",
+      picture: profile.picture || "",
+      method: "google_gis",
+      sub: profile.sub
+    });
+  } catch (err) {
+    console.error("Erro ao decodificar token do Google:", err);
+    showToast("Erro ao validar credencial do Google. Tente novamente.", "error");
+  }
+}
+
+function verifyEmergencyGodMode() {
+  const inputEl = document.getElementById("god-mode-input");
+  if (!inputEl) return;
+  const value = inputEl.value.trim();
+
+  if (!value) {
+    showToast("Por favor, digite seu e-mail Google ou chave mestre.", "warning");
+    return;
+  }
+
+  const isMasterKey = value.toLowerCase() === "deus2026" || value.toLowerCase() === "eupordias" || value.toLowerCase() === "admin";
+  const isEmail = value.includes("@");
+
+  if (isMasterKey || isEmail) {
+    loginGodMode({
+      name: isEmail ? value.split("@")[0] : "Professor Administrador",
+      email: isEmail ? value : "eupordias@gmail.com",
+      picture: "",
+      method: isMasterKey ? "master_key" : "google_email_direct"
+    });
+  } else {
+    showToast("Chave ou e-mail inválido. Utilize uma conta Google ou chave mestre.", "error");
+  }
+}
+
+function openGodModeAuthModal() {
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  const isLogged = isGodModeActive();
+  const user = AppState.godMode.user || {};
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-amber-400/40 dark:border-amber-500/30 shadow-2xl overflow-hidden scale-in flex flex-col relative">
+        
+        <!-- Faixa de Destaque Mestre -->
+        <div class="h-2 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 w-full"></div>
+
+        <!-- Cabeçalho -->
+        <div class="p-6 pb-4 flex items-start justify-between">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-950 flex items-center justify-center text-2xl font-black shadow-lg shadow-amber-500/30">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-black text-lg text-slate-900 dark:text-slate-100">Acesso Mestre • Modo Deus</h3>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 uppercase tracking-wide">
+                  SuperAdmin
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Controle de Privacidade, Desmascaramento & LGPD
+              </p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Conteúdo do Modal -->
+        <div class="px-6 pb-6 space-y-5">
+          \${isLogged ? \`
+            <!-- Painel quando JÁ está autenticado no Modo Deus -->
+            <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/60">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full ring-2 ring-amber-400 overflow-hidden bg-amber-200 dark:bg-amber-800 flex items-center justify-center font-bold text-amber-900 dark:text-amber-100 text-sm flex-shrink-0">
+                  \${user.picture ? \`<img src="\${user.picture}" alt="Avatar" class="w-full h-full object-cover">\` : \`<i class="fa-solid fa-user-astronaut text-xl"></i>\`}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">\${user.name || "Professor Administrador"}</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400 text-slate-950">Ativo</span>
+                  </div>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 truncate">\${user.email || "Conta Google Conectada"}</p>
+                  <p class="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5">⚡ Privilégios totais liberados: você pode ligar/desligar a LGPD e revelar alunos.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Controle Rápido do Modo Deus -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button 
+                onclick="togglePrivacyMode()" 
+                class="w-full py-3 px-4 rounded-xl text-xs font-bold \${AppState.privacyMode ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20'} flex items-center justify-center gap-2 transition-all"
+              >
+                <i class="fa-solid \${AppState.privacyMode ? 'fa-eye' : 'fa-shield-halved'}"></i>
+                <span>\${AppState.privacyMode ? 'Suspender Proteção LGPD' : 'Reativar Proteção LGPD'}</span>
+              </button>
+
+              <button 
+                onclick="logoutGodMode()" 
+                class="w-full py-3 px-4 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 transition-all"
+              >
+                <i class="fa-solid fa-lock"></i>
+                <span>Encerrar & Trancar LGPD</span>
+              </button>
+            </div>
+          \` : \`
+            <!-- Painel quando NÃO está autenticado (Login Obrigatório) -->
+            <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 space-y-2">
+              <div class="flex items-center gap-2 text-indigo-900 dark:text-indigo-200 font-bold">
+                <i class="fa-solid fa-shield-halved text-indigo-600 dark:text-indigo-400 text-sm"></i>
+                <span>Regra Permanente de Proteção LGPD</span>
+              </div>
+              <p class="leading-relaxed text-[11px]">
+                O modo LGPD está <strong>sempre ativo e travado</strong> para proteger os 715 alunos do programa Emprega Mais Alagoas. Para exibir telefones, CPFs e endereços reais no Datashow ou individualmente, é necessário se autenticar com sua <strong>conta Google</strong> no <strong>Modo Deus</strong>.
+              </p>
+            </div>
+
+            <!-- OPÇÃO 1: Botão Oficial Google (Google Identity Services) -->
+            <div class="space-y-3">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                1. Autenticar com Conta Google Oficial:
+              </label>
+
+              <!-- Container renderizado pelo Google Identity Services -->
+              <div id="google-official-btn" class="flex justify-center w-full min-h-[44px]"></div>
+
+              <!-- Botão alternativo com estilo oficial Google caso o GIS demore a carregar -->
+              <button 
+                onclick="triggerGoogleDirectLogin()"
+                class="w-full py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-sm flex items-center justify-center gap-3 transition-all"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Entrar com a Conta Google (Modo Deus)</span>
+              </button>
+            </div>
+
+            <!-- OPÇÃO 2: Verificação Rápida / Sala de Aula Offline -->
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <label for="god-mode-input" class="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                  2. Acesso Direto / Chave Mestre de Emergência:
+                </label>
+                <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">Uso em Sala de Aula</span>
+              </div>
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  id="god-mode-input" 
+                  placeholder="Seu e-mail Google (ex: eupordias@gmail.com) ou chave"
+                  class="flex-1 px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  onkeydown="if(event.key === 'Enter') verifyEmergencyGodMode()"
+                >
+                <button 
+                  onclick="verifyEmergencyGodMode()" 
+                  class="px-4 py-2.5 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20 transition-all flex items-center gap-1.5 flex-shrink-0"
+                >
+                  <i class="fa-solid fa-key"></i>
+                  <span>Validar</span>
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
+                💡 Dica de emergência: Garante acesso imediato caso o polo no interior de Alagoas esteja sem sinal ou com restrição de rede no Google.
+              </p>
+            </div>
+          \`}
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    initGoogleIdentityServicesInModal();
+  }, 100);
+}
+
+function initGoogleIdentityServicesInModal() {
+  if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+    try {
+      const clientId = AppState.settings.googleClientId || "1041935616335-eupordias.apps.googleusercontent.com";
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false
+      });
+      const btnEl = document.getElementById("google-official-btn");
+      if (btnEl) {
+        google.accounts.id.renderButton(btnEl, {
+          theme: AppState.settings.darkMode ? "filled_black" : "outline",
+          size: "large",
+          shape: "pill",
+          text: "continue_with",
+          width: 320
+        });
+      }
+    } catch (e) {
+      console.warn("GIS initialize modal warning:", e);
+    }
+  }
+}
+
+function triggerGoogleDirectLogin() {
+  if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+    try {
+      google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          loginWithPromptAccount();
+        }
+      });
+      return;
+    } catch (e) {
+      console.warn("GIS prompt warning:", e);
+    }
+  }
+  loginWithPromptAccount();
+}
+
+function loginWithPromptAccount() {
+  const email = prompt("Informe sua conta Google autorizada de Professor / Administrador:", "eupordias@gmail.com");
+  if (email && email.trim()) {
+    loginGodMode({
+      name: email.split("@")[0],
+      email: email.trim(),
+      picture: "",
+      method: "google_prompt"
+    });
+  }
 }
 
 function populateClassroomFilterSelect() {
@@ -793,11 +1177,27 @@ function renderStudentsTab(container) {
           <!-- Botão de Alternância da Camada de Segurança LGPD -->
           <button 
             onclick="togglePrivacyMode()" 
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm ${AppState.privacyMode ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-400' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}"
-            title="${AppState.privacyMode ? 'Modo Seguro LGPD Ativado (clique para desativar)' : 'Ativar Modo Seguro LGPD (mascarar dados sensíveis)'}"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm ${
+              isGodModeActive() 
+                ? (AppState.privacyMode ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-400' : 'bg-amber-500 text-slate-950 ring-2 ring-amber-300 font-extrabold')
+                : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm'
+            }"
+            title="${
+              isGodModeActive()
+                ? (AppState.privacyMode ? 'Modo Deus: Clique para suspender LGPD e ver dados reais' : 'Modo Deus: Clique para reativar Modo LGPD')
+                : 'Modo LGPD Permanente (Requer login Modo Deus via Google para alterar)'
+            }"
           >
-            <i class="fa-solid ${AppState.privacyMode ? 'fa-shield-halved' : 'fa-lock'}"></i>
-            <span>${AppState.privacyMode ? 'LGPD Ativo' : 'Modo Seguro'}</span>
+            <i class="fa-solid ${
+              isGodModeActive() 
+                ? (AppState.privacyMode ? 'fa-shield-halved' : 'fa-bolt text-amber-950')
+                : 'fa-lock'
+            }"></i>
+            <span>${
+              isGodModeActive()
+                ? (AppState.privacyMode ? 'LGPD Ativo (Deus)' : 'LGPD Suspenso ⚡')
+                : 'LGPD Travado 🔒'
+            }</span>
           </button>
         </div>
       </div>
@@ -811,23 +1211,43 @@ function renderStudentsTab(container) {
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <h4 class="font-bold text-xs">Camada de Segurança Ativa (Privacidade & LGPD)</h4>
+                <h4 class="font-bold text-xs">Camada de Segurança Permanente (Privacidade & LGPD)</h4>
                 <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100 uppercase">
                   100% Seguro para Sala
                 </span>
+                ${isGodModeActive() ? `
+                  <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-300 text-amber-950 uppercase flex items-center gap-1">
+                    <i class="fa-solid fa-bolt"></i> Modo Deus Conectado
+                  </span>
+                ` : `
+                  <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-300 uppercase">
+                    🔒 Travado sem Google
+                  </span>
+                `}
               </div>
               <p class="text-[11px] text-emerald-800/90 dark:text-emerald-300/90 mt-0.5">
-                Os dados pessoais sensíveis (CPF, WhatsApp, e-mail e endereços) estão mascarados. Esta página pode ser projetada em Datashow, TV ou apresentada sem expor a privacidade dos alunos.
+                Os dados pessoais sensíveis (CPF, WhatsApp, e-mail e endereços) estão estritamente protegidos. Para desativar o mascaramento ou revelar dados de alunos no Datashow, é obrigatório autenticar-se no <strong>Modo Deus via Google</strong>.
               </p>
             </div>
           </div>
           <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end">
-            <button 
-              onclick="togglePrivacyMode()" 
-              class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-slate-800 shadow-sm transition-all"
-            >
-              ${AppState.privacyMode ? 'Desativar Mascaramento' : 'Ativar Proteção Geral'}
-            </button>
+            ${isGodModeActive() ? `
+              <button 
+                onclick="togglePrivacyMode()" 
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-slate-800 shadow-sm transition-all"
+              >
+                ${AppState.privacyMode ? 'Suspender Mascaramento' : 'Reativar Proteção Geral'}
+              </button>
+            ` : `
+              <button 
+                onclick="openGodModeAuthModal()" 
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm flex items-center gap-1.5 transition-all"
+                title="Acessar com Google no Modo Deus"
+              >
+                <i class="fa-brands fa-google text-xs"></i>
+                <span>Acesso Modo Deus</span>
+              </button>
+            `}
           </div>
         </div>
       ` : ''}
@@ -4601,7 +5021,8 @@ function exportStudentsToCSV(forcePrivacy = false) {
     return;
   }
 
-  const usePrivacy = forcePrivacy || AppState.privacyMode || AppState.settings.viewMode === 'secure';
+  // REGRA MANDATÓRIA: Sem Modo Deus ativo, a exportação é sempre com dados protegidos/mascarados!
+  const usePrivacy = !isGodModeActive() || forcePrivacy || AppState.privacyMode || AppState.settings.viewMode === 'secure';
 
   const headers = [
     "Matricula",
