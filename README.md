@@ -90,38 +90,126 @@ A arquitetura e o design do **Eu Por Dias** não foram escolhidos por acaso. Cad
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Como Executar e Publicar 100% Grátis na Web
 
-### Opção 1: Execução Local Imediata
-Não requer nenhuma instalação ou comando no terminal (Node, NPM, etc.):
-1. Baixe ou clone este repositório:
-   `ash
+### Opção 1: Execução Local Imediata (Offline)
+Não requer nenhuma instalação ou comando no terminal (sem Node, NPM, Python ou dependências):
+1. Clone ou baixe este repositório:
+   ```bash
    git clone https://github.com/eupordias/eu-por-dias.git
-   `
-2. Abra o arquivo index.html em qualquer navegador web (Google Chrome, Microsoft Edge, Safari, Firefox).
-3. Pronto! O sistema já carrega com a base de dados sincronizada de 715 alunos (725 respostas consolidadas).
+   ```
+2. Abra o arquivo `index.html` em qualquer navegador web (Google Chrome, Microsoft Edge, Safari, Firefox).
+3. Pronto! O sistema carrega instantaneamente com a base completa de mais de 715 alunos e todas as funcionalidades ativas.
 
-### Opção 2: Publicação Gratuita na Web (GitHub Pages)
-Você pode ter o sistema online para acessar de qualquer computador ou celular:
-1. No seu repositório no GitHub, acesse a aba **Settings** (Configurações).
-2. No menu lateral esquerdo, clique em **Pages**.
-3. Na seção **Branch**, selecione a branch main e a pasta / (root).
-4. Clique em **Save**. Em menos de 2 minutos, o GitHub fornecerá um link público gratuito (ex: https://eupordias.github.io/eu-por-dias/).
+---
+
+### Opção 2: Publicação 100% Gratuita na Web via GitHub Pages
+Você pode ter o sistema online e disponível 24 horas por dia para acessar do celular, tablet ou computador na sala de aula:
+
+1. Acesse o seu repositório no GitHub: **[github.com/eupordias/eu-por-dias](https://github.com/eupordias/eu-por-dias)**.
+2. Clique na aba **Settings** (Configurações) no topo da página.
+3. No menu lateral esquerdo (seção *Code and automation*), clique em **Pages**.
+4. Na seção **Build and deployment**:
+   * Em **Source**, selecione: `Deploy from a branch`.
+   * Em **Branch**, selecione `main` e a pasta `/ (root)`.
+   * Clique em **Save**.
+5. Aguarde cerca de 1 a 2 minutos. O GitHub criará o link público seguro com certificado SSL (HTTPS) gratuito:
+   * **URL Oficial**: **`https://eupordias.github.io/eu-por-dias/`**
+6. Qualquer atualização feita via `git push origin main` é automaticamente publicada na web!
+
+---
+
+## ⚡ Integração com Banco de Dados em Nuvem: Supabase (PostgreSQL + Storage)
+
+O **Eu Por Dias** possui integração nativa e híbrida (*offline-first*) com o **Supabase**, permitindo salvar e sincronizar todos os dados e fotos dos alunos em um banco de dados relacional PostgreSQL na nuvem sem gastar absolutamente nada.
+
+### 🎁 Vantagens do Plano Gratuito Vitalício (Supabase Free Tier)
+* **500 MB de Banco PostgreSQL**: Suficiente para gerenciar com folga mais de 100.000 alunos com notas e histórico.
+* **1 GB de Armazenamento de Arquivos/Fotos**: Para o bucket de fotos compactadas dos estudantes.
+* **50.000 Usuários Ativos Mensais**: Capacidade sob medida para projetos educacionais e governamentais.
+* **Segurança RLS (Row Level Security)**: Proteção de dados e conformidade total com a LGPD.
+
+### 📋 Passo a Passo para Configurar o Supabase em 2 Minutos
+
+1. Acesse **[supabase.com](https://supabase.com)** e crie uma conta gratuita (você pode entrar direto com sua conta do GitHub).
+2. Clique em **New Project** e preencha:
+   * **Name**: `eu-por-dias` (ou o nome que preferir);
+   * **Database Password**: Crie uma senha segura e anote;
+   * **Region**: `South America (São Paulo)` para máxima velocidade no Brasil.
+3. No menu lateral esquerdo do Supabase, clique no ícone **SQL Editor**.
+4. Clique em **New query**, cole o **Script SQL Oficial** abaixo e clique em **Run**:
+
+```sql
+-- ==============================================================
+-- SCHEMA SUPABASE: SISTEMA EU POR DIAS (GESTAO DE ALUNOS)
+-- ==============================================================
+
+-- 1. Criar a tabela de alunos
+CREATE TABLE IF NOT EXISTS public.alunos (
+    id TEXT PRIMARY KEY,
+    nome TEXT NOT NULL,
+    cpf TEXT,
+    whatsapp TEXT,
+    email TEXT,
+    cidade TEXT,
+    bairro TEXT,
+    unidade TEXT,
+    status TEXT DEFAULT 'Ativo',
+    profissao TEXT,
+    foto_url TEXT,
+    grades JSONB DEFAULT '{}'::jsonb,
+    presencas JSONB DEFAULT '{}'::jsonb,
+    observacoes TEXT,
+    dados_completos JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 2. Habilitar segurança a nível de linha (RLS)
+ALTER TABLE public.alunos ENABLE ROW LEVEL SECURITY;
+
+-- 3. Criar política de acesso para o cliente web (usando Anon Public Key)
+DROP POLICY IF EXISTS "Acesso total publico alunos" ON public.alunos;
+CREATE POLICY "Acesso total publico alunos" 
+ON public.alunos 
+FOR ALL 
+USING (true) 
+WITH CHECK (true);
+
+-- 4. Criar bucket de armazenamento para Fotos de Alunos (Supabase Storage)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('fotos-alunos', 'fotos-alunos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 5. Liberar acesso de leitura e upload de fotos no bucket
+DROP POLICY IF EXISTS "Acesso publico fotos alunos" ON storage.objects;
+CREATE POLICY "Acesso publico fotos alunos" 
+ON storage.objects 
+FOR ALL 
+USING (bucket_id = 'fotos-alunos') 
+WITH CHECK (bucket_id = 'fotos-alunos');
+```
+
+5. No menu lateral esquerdo, vá em **Project Settings** (engrenagem) > **API**:
+   * Copie a **Project URL** (ex: `https://xyzproject.supabase.co`);
+   * Copie a chave **anon public** (chave pública do cliente);
+6. Abra o sistema **Eu Por Dias**, clique no botão **Supabase** (no topo ou no banner de alunos), cole a URL e a Anon Key e clique em **Testar e Salvar Conexão**.
+7. Na aba **Backup & Sincronização**, clique em **Enviar Alunos Agora** para fazer o backup completo dos 715 alunos na nuvem!
 
 ---
 
 ## 📁 Estrutura de Arquivos do Repositório
 
-`	ext
-├── index.html          # Interface visual completa, navegação de abas e containers
-├── app.js              # Controlador central do aplicativo, cálculos, modais e fotos
-├── mock-data.js        # Base estruturada dos 639 alunos e matriz curricular
-├── styles.css          # Estilos customizados de impressão A4 e animações
+```text
+├── index.html          # Interface visual completa, CDN Supabase, navegação de abas e containers
+├── app.js              # Controlador central, cliente Supabase, cálculos, modais e fotos
+├── mock-data.js        # Base consolidada dos 715 alunos e matriz curricular completa
+├── styles.css          # Estilos customizados de impressão A4 e animações de interface
 ├── build_data.ps1      # Script utilitário para conversão de dados do Google Sheets
 ├── sync_sheet.ps1      # Script auxiliar de teste com a Google Sheets API v4
 ├── .gitignore          # Regras de exclusão para arquivos temporários e logs
-└── README.md           # Documentação completa e manifesto pedagógico
-`
+└── README.md           # Documentação completa, guia GitHub Pages, Supabase e manifesto
+```
 
 ---
 

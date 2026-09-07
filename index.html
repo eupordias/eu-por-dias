@@ -41,6 +41,9 @@
   <!-- Google Identity Services (GIS) para Login Modo Deus -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+  <!-- Supabase JS Client Oficial via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- Estilos Customizados -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -86,6 +89,16 @@
           >
             <i class="fa-brands fa-google-drive text-sm"></i>
             <span class="hidden sm:inline">Google Sheets API</span>
+          </button>
+
+          <!-- Botão Supabase Cloud Nuvem -->
+          <button 
+            onclick="openSupabaseModal()" 
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-700/80 hover:bg-emerald-700 text-white shadow-md shadow-emerald-700/20 transition-all transform active:scale-95"
+            title="Banco de Dados em Nuvem Supabase"
+          >
+            <i class="fa-solid fa-cloud text-emerald-300"></i>
+            <span class="hidden sm:inline">Supabase</span>
           </button>
 
           <!-- Botão Novo Aluno Manual -->

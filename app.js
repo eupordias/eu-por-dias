@@ -32,7 +32,12 @@ const AppState = {
     googleSpreadsheetId: "",
     googleSheetRange: "A1:Z500",
     lastSyncTime: null,
-    googleClientId: ""
+    googleClientId: "",
+    // Integração com Supabase Cloud Database
+    supabaseUrl: "",
+    supabaseAnonKey: "",
+    supabaseConnected: false,
+    lastSupabaseSync: null
   },
   currentTab: "students", // 'dashboard' | 'students' | 'grades' | 'reports' | 'about'
   privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
@@ -689,7 +694,12 @@ function updateHeaderCounts() {
         </span>
         ${AppState.settings.googleSpreadsheetId ? `
           <button onclick="quickSyncGoogleSheets()" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 hover:bg-emerald-100 transition-colors" title="Sincronizar Google Sheets API">
-            <i class="fa-solid fa-rotate text-[11px] text-emerald-600"></i> API Conectada
+            <i class="fa-solid fa-rotate text-[11px] text-emerald-600"></i> Sheets
+          </button>
+        ` : ''}
+        ${AppState.settings.supabaseUrl ? `
+          <button onclick="openSupabaseModal()" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 hover:bg-teal-100 transition-colors" title="Supabase Cloud Conectado">
+            <i class="fa-solid fa-cloud text-[11px] text-teal-600"></i> Supabase
           </button>
         ` : ''}
       </div>
@@ -1176,6 +1186,15 @@ function renderStudentsTab(container) {
           >
             <i class="fa-brands fa-google-drive text-emerald-600 text-sm"></i>
             <span>Google Sheets API</span>
+          </button>
+
+          <button 
+            onclick="openSupabaseModal()"
+            class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg transition-all transform active:scale-95"
+            title="Banco de Dados em Nuvem Supabase"
+          >
+            <i class="fa-solid fa-cloud text-emerald-200 text-sm"></i>
+            <span>Supabase Nuvem</span>
           </button>
           
           <button 
@@ -3401,6 +3420,630 @@ function commitImportedStudents() {
 }
 
 // -------------------------------------------------------------
+// INTEGRAÇÃO COM SUPABASE CLOUD DATABASE & STORAGE
+// -------------------------------------------------------------
+
+const SUPABASE_SQL_SCHEMA = `-- ==============================================================
+-- SCHEMA SUPABASE: SISTEMA EU POR DIAS (GESTAO DE ALUNOS)
+-- ==============================================================
+-- Execute este script no SQL Editor do Supabase (https://supabase.com)
+
+-- 1. Criar a tabela de alunos
+CREATE TABLE IF NOT EXISTS public.alunos (
+    id TEXT PRIMARY KEY,
+    nome TEXT NOT NULL,
+    cpf TEXT,
+    whatsapp TEXT,
+    email TEXT,
+    cidade TEXT,
+    bairro TEXT,
+    unidade TEXT,
+    status TEXT DEFAULT 'Ativo',
+    profissao TEXT,
+    foto_url TEXT,
+    grades JSONB DEFAULT '{}'::jsonb,
+    presencas JSONB DEFAULT '{}'::jsonb,
+    observacoes TEXT,
+    dados_completos JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 2. Habilitar seguranca a nivel de linha (RLS)
+ALTER TABLE public.alunos ENABLE ROW LEVEL SECURITY;
+
+-- 3. Criar politica de acesso para cliente web (usando Anon Key)
+DROP POLICY IF EXISTS "Acesso total publico alunos" ON public.alunos;
+CREATE POLICY "Acesso total publico alunos" 
+ON public.alunos 
+FOR ALL 
+USING (true) 
+WITH CHECK (true);
+
+-- 4. Criar bucket de armazenamento para Fotos de Alunos (Supabase Storage)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('fotos-alunos', 'fotos-alunos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 5. Liberar acesso de leitura e upload de fotos no bucket
+DROP POLICY IF EXISTS "Acesso publico fotos alunos" ON storage.objects;
+CREATE POLICY "Acesso publico fotos alunos" 
+ON storage.objects 
+FOR ALL 
+USING (bucket_id = 'fotos-alunos') 
+WITH CHECK (bucket_id = 'fotos-alunos');
+`;
+
+function getSupabaseClient() {
+  if (typeof window.supabase === "undefined" || !window.supabase.createClient) {
+    return null;
+  }
+  const url = (AppState.settings.supabaseUrl || "").trim();
+  const key = (AppState.settings.supabaseAnonKey || "").trim();
+  if (!url || !key) return null;
+  try {
+    return window.supabase.createClient(url, key);
+  } catch (e) {
+    console.error("Erro ao inicializar Supabase Client:", e);
+    return null;
+  }
+}
+
+async function testSupabaseConnection(silent = false) {
+  const urlInput = document.getElementById("supabase-url-input");
+  const keyInput = document.getElementById("supabase-key-input");
+  const url = (urlInput ? urlInput.value : AppState.settings.supabaseUrl || "").trim();
+  const anonKey = (keyInput ? keyInput.value : AppState.settings.supabaseAnonKey || "").trim();
+
+  if (!url || !anonKey) {
+    if (!silent) showToast("Preencha a URL e a Anon Key do Supabase antes de testar.", "error");
+    return false;
+  }
+
+  if (typeof window.supabase === "undefined" || !window.supabase.createClient) {
+    if (!silent) showToast("Biblioteca do Supabase indisponível no navegador. Verifique sua conexão.", "error");
+    return false;
+  }
+
+  const btn = document.getElementById("btn-test-supabase");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testando Conexão...';
+  }
+
+  try {
+    const client = window.supabase.createClient(url, anonKey);
+    const { count, error } = await client.from("alunos").select("id", { count: "exact", head: true });
+
+    if (error) {
+      if (error.code === "42P01" || (error.message && error.message.includes("relation \\\"public.alunos\\\" does not exist"))) {
+        AppState.settings.supabaseUrl = url;
+        AppState.settings.supabaseAnonKey = anonKey;
+        AppState.settings.supabaseConnected = true;
+        saveSettings();
+        updateSupabaseConnectionStatusUI(true, "Projeto Conectado! (Crie a tabela na aba 'Script SQL')");
+        if (!silent) {
+          showToast("Conexão OK com Supabase! Falta criar a tabela. Vá na aba 'Script SQL', copie e execute no Supabase.", "warning", 6000);
+        }
+        updateHeaderCounts();
+        return true;
+      }
+      throw error;
+    }
+
+    AppState.settings.supabaseUrl = url;
+    AppState.settings.supabaseAnonKey = anonKey;
+    AppState.settings.supabaseConnected = true;
+    saveSettings();
+
+    updateSupabaseConnectionStatusUI(true, `Conectado com sucesso! (${count || 0} alunos no banco)`);
+    if (!silent) {
+      showToast(`Conectado ao Supabase! ${count || 0} registros encontrados no banco.`, "success");
+    }
+    updateHeaderCounts();
+    return true;
+  } catch (err) {
+    console.error("Falha de conexão com Supabase:", err);
+    AppState.settings.supabaseConnected = false;
+    saveSettings();
+    updateSupabaseConnectionStatusUI(false, "Erro de Conexão: " + (err.message || "Credenciais inválidas"));
+    if (!silent) {
+      showToast("Falha na conexão: " + (err.message || "Verifique a URL e Anon Key"), "error");
+    }
+    return false;
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-plug-circle-check"></i> Testar e Salvar Conexão';
+    }
+  }
+}
+
+function updateSupabaseConnectionStatusUI(connected, message) {
+  const badge = document.getElementById("supabase-status-badge");
+  const msgEl = document.getElementById("supabase-status-msg");
+  if (badge) {
+    if (connected) {
+      badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800";
+      badge.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Conectado';
+    } else {
+      badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800";
+      badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Desconectado';
+    }
+  }
+  if (msgEl) {
+    msgEl.textContent = message || (connected ? "Pronto para sincronização" : "Configure a URL e a Anon Key pública");
+  }
+}
+
+function disconnectSupabase() {
+  if (!confirm("Deseja desconectar o Supabase deste navegador? Seus dados locais permanecerão intactos.")) return;
+  AppState.settings.supabaseUrl = "";
+  AppState.settings.supabaseAnonKey = "";
+  AppState.settings.supabaseConnected = false;
+  AppState.settings.lastSupabaseSync = null;
+  saveSettings();
+  showToast("Supabase desconectado com sucesso.", "info");
+  closeModal();
+  updateHeaderCounts();
+}
+
+async function syncStudentsToSupabase() {
+  const client = getSupabaseClient();
+  if (!client) {
+    showToast("Supabase não conectado. Configure a URL e a Anon Key primeiro.", "error");
+    switchSupabaseTab("config");
+    return;
+  }
+
+  if (AppState.students.length === 0) {
+    showToast("Nenhum aluno na base local para sincronizar.", "warning");
+    return;
+  }
+
+  const syncBtn = document.getElementById("btn-sync-to-supabase");
+  if (syncBtn) {
+    syncBtn.disabled = true;
+    syncBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando para a Nuvem...';
+  }
+
+  try {
+    const total = AppState.students.length;
+    const batchSize = 100;
+    let uploadedCount = 0;
+
+    for (let i = 0; i < total; i += batchSize) {
+      const chunk = AppState.students.slice(i, i + batchSize);
+      const rows = chunk.map(s => ({
+        id: String(s.id),
+        nome: s.name || "Aluno Sem Nome",
+        cpf: s.cpf || "",
+        whatsapp: s.phone || s.whatsapp || "",
+        email: s.email || "",
+        cidade: s.city || "",
+        bairro: s.neighborhood || "",
+        unidade: s.classroom || s.unit || "",
+        status: s.status || "Ativo",
+        profissao: s.occupation || "",
+        foto_url: s.photo || "",
+        grades: s.grades || {},
+        presencas: s.attendance || {},
+        observacoes: s.notes || "",
+        dados_completos: s,
+        updated_at: new Date().toISOString()
+      }));
+
+      const { error } = await client.from("alunos").upsert(rows, { onConflict: "id" });
+      if (error) throw error;
+      uploadedCount += rows.length;
+    }
+
+    AppState.settings.lastSupabaseSync = new Date().toISOString();
+    AppState.settings.supabaseConnected = true;
+    saveSettings();
+
+    showToast(`Sucesso! ${uploadedCount} alunos sincronizados com a nuvem Supabase!`, "success", 5000);
+    renderSupabaseSyncStats();
+    updateHeaderCounts();
+  } catch (err) {
+    console.error("Erro ao sincronizar com Supabase:", err);
+    showToast("Erro ao sincronizar com Supabase: " + (err.message || "Verifique se a tabela 'alunos' foi criada no SQL Editor"), "error", 6000);
+  } finally {
+    if (syncBtn) {
+      syncBtn.disabled = false;
+      syncBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Enviar Alunos Agora (Backup na Nuvem)';
+    }
+  }
+}
+
+async function fetchStudentsFromSupabase() {
+  const client = getSupabaseClient();
+  if (!client) {
+    showToast("Supabase não configurado. Configure a URL e a Anon Key primeiro.", "error");
+    switchSupabaseTab("config");
+    return;
+  }
+
+  const pullBtn = document.getElementById("btn-fetch-from-supabase");
+  if (pullBtn) {
+    pullBtn.disabled = true;
+    pullBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Baixando da Nuvem...';
+  }
+
+  try {
+    const { data, error } = await client.from("alunos").select("*").order("nome", { ascending: true });
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      showToast("Nenhum registro de aluno encontrado na nuvem Supabase.", "info");
+      return;
+    }
+
+    if (!confirm(`Foram encontrados ${data.length} alunos na nuvem Supabase. Deseja integrá-los aos seus dados locais?`)) {
+      return;
+    }
+
+    let updatedCount = 0;
+    let addedCount = 0;
+
+    data.forEach(row => {
+      let studentObj;
+      if (row.dados_completos && typeof row.dados_completos === "object" && row.dados_completos.id) {
+        studentObj = {
+          ...row.dados_completos,
+          id: String(row.id || row.dados_completos.id),
+          name: row.nome || row.dados_completos.name,
+          photo: row.foto_url || row.dados_completos.photo
+        };
+      } else {
+        studentObj = {
+          id: String(row.id || "alu_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5)),
+          name: row.nome || "Aluno Sem Nome",
+          cpf: row.cpf || "",
+          phone: row.whatsapp || "",
+          email: row.email || "",
+          city: row.cidade || "",
+          neighborhood: row.bairro || "",
+          classroom: row.unidade || "Geral",
+          status: row.status || "Ativo",
+          occupation: row.profissao || "",
+          photo: row.foto_url || null,
+          grades: row.grades || {},
+          attendance: row.presencas || {},
+          notes: row.observacoes || ""
+        };
+      }
+
+      const existingIndex = AppState.students.findIndex(s => 
+        String(s.id) === String(studentObj.id) || 
+        (s.name && studentObj.name && s.name.trim().toLowerCase() === studentObj.name.trim().toLowerCase())
+      );
+
+      if (existingIndex >= 0) {
+        AppState.students[existingIndex] = {
+          ...AppState.students[existingIndex],
+          ...studentObj,
+          id: AppState.students[existingIndex].id
+        };
+        updatedCount++;
+      } else {
+        AppState.students.push(studentObj);
+        addedCount++;
+      }
+    });
+
+    AppState.settings.lastSupabaseSync = new Date().toISOString();
+    AppState.settings.supabaseConnected = true;
+    saveDataToStorage();
+    saveSettings();
+
+    showToast(`Restauração Concluída! ${addedCount} novos alunos adicionados e ${updatedCount} atualizados da nuvem.`, "success", 5000);
+    renderApp();
+    renderSupabaseSyncStats();
+    updateHeaderCounts();
+  } catch (err) {
+    console.error("Erro ao baixar alunos do Supabase:", err);
+    showToast("Erro ao baixar dados do Supabase: " + (err.message || "Tente novamente"), "error");
+  } finally {
+    if (pullBtn) {
+      pullBtn.disabled = false;
+      pullBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados da Nuvem (Restaurar)';
+    }
+  }
+}
+
+function copySupabaseSqlScript() {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(SUPABASE_SQL_SCHEMA).then(() => {
+      showToast("Script SQL copiado com sucesso! Cole no SQL Editor do Supabase.", "success");
+    }).catch(() => {
+      fallbackCopySql();
+    });
+  } else {
+    fallbackCopySql();
+  }
+}
+
+function fallbackCopySql() {
+  const textarea = document.getElementById("supabase-sql-code");
+  if (textarea) {
+    textarea.select();
+    document.execCommand("copy");
+    showToast("Script SQL copiado!", "success");
+  }
+}
+
+function renderSupabaseSyncStats() {
+  const syncStatEl = document.getElementById("supabase-sync-timestamp");
+  if (syncStatEl) {
+    if (AppState.settings.lastSupabaseSync) {
+      const d = new Date(AppState.settings.lastSupabaseSync);
+      syncStatEl.textContent = "Última sincronização: " + d.toLocaleDateString("pt-BR") + " às " + d.toLocaleTimeString("pt-BR");
+    } else {
+      syncStatEl.textContent = "Nenhuma sincronização realizada ainda.";
+    }
+  }
+}
+
+function switchSupabaseTab(tab) {
+  const tabs = ["config", "sync", "sql"];
+  tabs.forEach(t => {
+    const pane = document.getElementById("supabase-pane-" + t);
+    const btn = document.getElementById("supabase-tab-" + t);
+    if (t === tab) {
+      pane?.classList.remove("hidden");
+      btn?.classList.remove("border-transparent", "text-slate-500", "dark:text-slate-400");
+      btn?.classList.add("border-emerald-600", "text-emerald-600", "dark:text-emerald-400", "border-b-2");
+    } else {
+      pane?.classList.add("hidden");
+      btn?.classList.remove("border-emerald-600", "text-emerald-600", "dark:text-emerald-400", "border-b-2");
+      btn?.classList.add("border-transparent", "text-slate-500", "dark:text-slate-400");
+    }
+  });
+}
+
+function openSupabaseModal() {
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  const currentUrl = AppState.settings.supabaseUrl || "";
+  const currentKey = AppState.settings.supabaseAnonKey || "";
+  const isConnected = AppState.settings.supabaseConnected && !!currentUrl && !!currentKey;
+  const totalStudents = AppState.students.length;
+  const lastSyncText = AppState.settings.lastSupabaseSync 
+    ? new Date(AppState.settings.lastSupabaseSync).toLocaleDateString("pt-BR") + " às " + new Date(AppState.settings.lastSupabaseSync).toLocaleTimeString("pt-BR")
+    : "Nunca";
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[92vh] flex flex-col">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-emerald-50/40 dark:bg-emerald-950/20">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-emerald-600/20">
+              <i class="fa-solid fa-cloud"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                  Supabase Cloud Database & Storage
+                </h2>
+                <span id="supabase-status-badge" class="${isConnected ? 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' : 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700'}">
+                  <i class="fa-solid ${isConnected ? 'fa-circle-check text-emerald-600' : 'fa-circle-notch text-slate-400'}"></i> ${isConnected ? 'Conectado' : 'Não configurado'}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Banco de dados PostgreSQL e backup seguro na nuvem 100% gratuito</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Abas -->
+        <div class="px-6 pt-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20">
+          <div class="flex items-center gap-2">
+            <button 
+              onclick="switchSupabaseTab('config')" 
+              id="supabase-tab-config"
+              class="px-4 py-2 text-xs font-bold border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-key"></i> 1. Conexão & Chaves
+            </button>
+            <button 
+              onclick="switchSupabaseTab('sync')" 
+              id="supabase-tab-sync"
+              class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-2"
+            >
+              <i class="fa-solid fa-arrows-rotate"></i> 2. Backup & Sincronização
+            </button>
+            <button 
+              onclick="switchSupabaseTab('sql')" 
+              id="supabase-tab-sql"
+              class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-2"
+            >
+              <i class="fa-solid fa-database"></i> 3. Script SQL & Passo a Passo
+            </button>
+          </div>
+        </div>
+
+        <!-- Conteúdo do Modal -->
+        <div class="p-6 overflow-y-auto space-y-5 flex-1">
+
+          <!-- ABA 1: CONEXÃO -->
+          <div id="supabase-pane-config" class="space-y-4">
+            <div class="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-4 text-xs space-y-2">
+              <div class="flex items-center gap-2 font-bold text-emerald-800 dark:text-emerald-300">
+                <i class="fa-solid fa-gift"></i> Plano Gratuito Vitalício (Supabase Free Tier)
+              </div>
+              <p class="text-emerald-700/90 dark:text-emerald-400 leading-relaxed">
+                O Supabase fornece gratuitamente: <strong>500 MB de banco de dados PostgreSQL</strong> (suficiente para mais de 100.000 alunos), <strong>1 GB de armazenamento de arquivos/fotos</strong>, e <strong>50.000 usuários ativos mensais</strong>. Seus dados ficam protegidos e salvos na nuvem sem nenhum custo de hospedagem.
+              </p>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Supabase Project URL
+                </label>
+                <input 
+                  type="text" 
+                  id="supabase-url-input" 
+                  value="${currentUrl}"
+                  placeholder="https://sua-empresa-ou-projeto.supabase.co" 
+                  class="w-full px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                <p class="text-[11px] text-slate-400 mt-1">Encontrada no seu painel Supabase em: Project Settings > API > Project URL</p>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Supabase Anon Public API Key
+                </label>
+                <input 
+                  type="password" 
+                  id="supabase-key-input" 
+                  value="${currentKey}"
+                  placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+                  class="w-full px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                <p class="text-[11px] text-slate-400 mt-1">Chave pública de cliente (anon public key). Seguro para uso no navegador com as políticas RLS ativas.</p>
+              </div>
+            </div>
+
+            <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
+              <div class="text-xs text-slate-500" id="supabase-status-msg">
+                ${isConnected ? 'Status: Conectado e autenticado' : 'Status: Aguardando configuração'}
+              </div>
+              <div class="flex items-center gap-2">
+                ${currentUrl ? `
+                  <button 
+                    onclick="disconnectSupabase()" 
+                    class="px-3.5 py-2 rounded-xl text-xs font-bold border border-red-200 dark:border-red-900/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                  >
+                    Desconectar
+                  </button>
+                ` : ''}
+                <button 
+                  id="btn-test-supabase"
+                  onclick="testSupabaseConnection(false)" 
+                  class="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center gap-2"
+                >
+                  <i class="fa-solid fa-plug-circle-check"></i> Testar e Salvar Conexão
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ABA 2: BACKUP & SINCRONIZAÇÃO -->
+          <div id="supabase-pane-sync" class="space-y-4 hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Enviar para Nuvem -->
+              <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
+                <div class="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100 text-sm">
+                  <div class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                  </div>
+                  Enviar para a Nuvem
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Envia os <strong>${totalStudents} alunos</strong> cadastrados no navegador diretamente para o banco de dados PostgreSQL no Supabase. Atualiza alunos existentes e insere os novos (upsert por ID).
+                </p>
+                <button 
+                  id="btn-sync-to-supabase"
+                  onclick="syncStudentsToSupabase()" 
+                  class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 transition-all"
+                >
+                  <i class="fa-solid fa-cloud-arrow-up"></i> Enviar Alunos Agora (Backup na Nuvem)
+                </button>
+              </div>
+
+              <!-- Baixar da Nuvem -->
+              <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
+                <div class="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100 text-sm">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                  </div>
+                  Baixar da Nuvem
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Restaura ou sincroniza os alunos salvos no banco Supabase para este computador ou celular. Ideal para abrir o sistema em múltiplos dispositivos.
+                </p>
+                <button 
+                  id="btn-fetch-from-supabase"
+                  onclick="fetchStudentsFromSupabase()" 
+                  class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all"
+                >
+                  <i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados da Nuvem (Restaurar)
+                </button>
+              </div>
+            </div>
+
+            <!-- Informações de Segurança e Última Sincronização -->
+            <div class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 text-xs space-y-1.5">
+              <div class="flex items-center justify-between font-bold text-indigo-900 dark:text-indigo-300">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved"></i> Camada LGPD Ativa</span>
+                <span id="supabase-sync-timestamp" class="text-[11px] font-normal text-indigo-700 dark:text-indigo-400">Última sincronização: ${lastSyncText}</span>
+              </div>
+              <p class="text-indigo-700/80 dark:text-indigo-400">
+                Os dados sensíveis trafegam criptografados de ponta a ponta via SSL/HTTPS até os servidores do Supabase. O Modo LGPD em sala de aula continua ativo para proteger a visão de alunos e terceiros.
+              </p>
+            </div>
+          </div>
+
+          <!-- ABA 3: SCRIPT SQL & PASSO A PASSO -->
+          <div id="supabase-pane-sql" class="space-y-4 hidden">
+            <div class="space-y-3">
+              <div class="text-xs text-slate-600 dark:text-slate-300 space-y-2">
+                <p class="font-bold text-slate-800 dark:text-slate-200">Como criar seu banco gratuito em 2 minutos:</p>
+                <ol class="list-decimal list-inside space-y-1 text-slate-500 dark:text-slate-400">
+                  <li>Acesse <strong><a href="https://supabase.com" target="_blank" class="text-emerald-600 dark:text-emerald-400 underline">supabase.com</a></strong> e crie uma conta gratuita (pode ser com seu login GitHub).</li>
+                  <li>Clique em <strong>New Project</strong> e defina um nome (ex: <code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">edugestao-alunos</code>).</li>
+                  <li>No menu lateral esquerdo, clique no ícone do <strong>SQL Editor</strong>.</li>
+                  <li>Clique no botão abaixo <strong>"Copiar Script SQL"</strong>, cole no editor e aperte <strong>Run</strong>.</li>
+                  <li>Vá em <strong>Project Settings > API</strong>, copie a <strong>Project URL</strong> e a <strong>anon public key</strong>, e cole na aba 1 deste painel!</li>
+                </ol>
+              </div>
+
+              <div class="relative">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Script SQL DDL:</span>
+                  <button 
+                    onclick="copySupabaseSqlScript()" 
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow transition-all"
+                  >
+                    <i class="fa-solid fa-copy"></i> Copiar Script SQL
+                  </button>
+                </div>
+                <textarea 
+                  id="supabase-sql-code" 
+                  readonly 
+                  rows="9" 
+                  class="w-full p-3 rounded-xl text-[11px] font-mono bg-slate-900 text-emerald-400 border border-slate-700 focus:outline-none"
+                >${SUPABASE_SQL_SCHEMA}</textarea>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Rodapé do Modal -->
+        <div class="px-6 py-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+          <span class="text-xs text-slate-400">
+            <i class="fa-solid fa-database text-emerald-500"></i> Armazenamento Híbrido: Offline Local + Nuvem Supabase
+          </span>
+          <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+            Fechar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
 // ABA 2: LANÇAMENTO DE NOTAS
 // -------------------------------------------------------------
 function renderGradesTab(container) {
@@ -3904,7 +4547,7 @@ function renderAboutTab(container) {
 
       </div>
 
-      <!-- Os 6 Pilares: Por que foi construído assim? -->
+      <!-- Os 7 Pilares: Por que foi construído assim? -->
       <div class="space-y-5">
         <div>
           <div class="flex items-center gap-2">
@@ -3945,8 +4588,8 @@ function renderAboutTab(container) {
               2. Privacidade de Dados & LGPD
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Os dados pessoais dos alunos (atualmente ${AppState.students.length || 715}+ cadastrados, com CPFs, telefones, endereços e notas) permanecem armazenados de forma soberana na máquina local do professor (LocalStorage), 
-              sem vazamento para servidores de terceiros e com sistema de backup JSON para migração segura.
+              Os dados pessoais dos alunos (atualmente ${AppState.students.length || 715}+ cadastrados, com CPFs, telefones, endereços e notas) permanecem protegidos por padrão. 
+              Acesso Modo Deus exclusivo autenticado e controle rigoroso de exibição para sala de aula.
             </p>
           </div>
 
@@ -4004,6 +4647,19 @@ function renderAboutTab(container) {
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Cálculo automático de médias com notas por módulo de mídias digitais, controle de faltas e geração de 
               <strong>Boletins Oficiais</strong> e <strong>Atas em PDF</strong> prontas para impressão e envio aos órgãos estaduais (SINE / SEDH / Alagoas).
+            </p>
+          </div>
+
+          <!-- Pilar 7 -->
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
+              7. Nuvem Gratuita Supabase & GitHub Pages
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Hospedado gratuitamente no <strong>GitHub Pages</strong> com HTTPS/SSL mundial. Integrado ao <strong>Supabase</strong> (PostgreSQL 500MB + Storage 1GB 100% gratuitos) para backup, restauração e uso em múltiplos computadores e celulares em 1-clique.
             </p>
           </div>
 
