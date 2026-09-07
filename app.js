@@ -1,0 +1,4470 @@
+/**
+ * Eu Por Dias - Sistema de Gestão de Alunos, Notas, Contatos e Endereços
+ * Programa Emprega Mais Alagoas • Curso de Gestão de Mídias Digitais
+ * 
+ * Integrações:
+ * - Google Sheets API v4 oficial com API Key e sincronização automática em 1 clique
+ * - Importador de Google Sala de Aula (URL, Copiar/Colar e CSV)
+ * - Busca de CEP de Alagoas com ViaCEP API e rotas no Google Maps
+ * - WhatsApp direto com mensagem customizada para alunos e responsáveis
+ * - Gestão de notas dos módulos com cálculo automático de médias e frequência
+ * - Boletim escolar e ata oficial para impressão/PDF
+ * - Dashboard com métricas e gráficos interativos Chart.js
+ * - Exportação para Excel (CSV) e backup de dados JSON
+ */
+
+// Estado Global da Aplicação
+const AppState = {
+  appName: "Eu Por Dias",
+  students: [],
+  subjects: [],
+  classrooms: [],
+  settings: {
+    schoolName: "Programa Emprega Mais Alagoas",
+    courseName: "Curso de Gestão de Mídias Digitais",
+    schoolYear: "2026",
+    passingGrade: 7.0,
+    recoveryGrade: 5.0,
+    darkMode: false,
+    viewMode: "grid", // 'grid' | 'table'
+    // Integração com Google Sheets API v4
+    googleApiKey: "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI",
+    googleSpreadsheetId: "",
+    googleSheetRange: "A1:Z500",
+    lastSyncTime: null
+  },
+  currentTab: "students", // 'dashboard' | 'students' | 'grades' | 'reports'
+  searchTerm: "",
+  filterClassroom: "all",
+  filterStatus: "all",
+  filterSituation: "all",
+  filterPhoto: "all", // 'all' | 'with_photo' | 'without_photo'
+  editingStudentId: null,
+  activeBoletimStudentId: null,
+  activeGradesStudentId: null,
+  photoModalState: {
+    studentId: null,
+    tempPhotoUrl: null,
+    stream: null
+  },
+  charts: {
+    subjectAvg: null,
+    statusDist: null
+  },
+  importState: {
+    parsedStudents: [],
+    mode: 'merge' // 'merge' | 'replace'
+  }
+};
+
+// Inicialização
+document.addEventListener("DOMContentLoaded", () => {
+  loadDataFromStorage();
+  applyTheme();
+  renderApp();
+  setupGlobalEventListeners();
+});
+
+// Persistência em LocalStorage
+function loadDataFromStorage() {
+  const savedStudents = localStorage.getItem("eupordias_students");
+  const savedSubjects = localStorage.getItem("eupordias_subjects");
+  const savedClassrooms = localStorage.getItem("eupordias_classrooms");
+  const savedSettings = localStorage.getItem("eupordias_settings");
+
+  // Se os dados salvos tiverem menos de 100 alunos ou formato antigo, atualiza com a lista completa dos 639 alunos
+  const parsedSaved = savedStudents ? JSON.parse(savedStudents) : [];
+  const needsUpdate = parsedSaved.length < 100 || (parsedSaved.length > 0 && !parsedSaved[0].profession && INITIAL_STUDENTS_DATA.length > 0 && INITIAL_STUDENTS_DATA[0].profession);
+  
+  AppState.students = needsUpdate ? [...INITIAL_STUDENTS_DATA] : parsedSaved;
+  AppState.subjects = savedSubjects ? JSON.parse(savedSubjects) : [...DEFAULT_SUBJECTS];
+  AppState.classrooms = Array.from(new Set([...DEFAULT_CLASSROOMS, ...(savedClassrooms ? JSON.parse(savedClassrooms) : [])])).sort();
+  
+  if (savedSettings) {
+    AppState.settings = { ...AppState.settings, ...JSON.parse(savedSettings) };
+  }
+
+  // Garantir a chave da API e o ID da planilha atualizada
+  AppState.settings.googleApiKey = "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
+  AppState.settings.googleSpreadsheetId = "1XoKY-CW5ed3jJVOWD2klYGqCamiESa8_CAkRYLGEmJQ";
+  AppState.settings.googleSheetRange = "Respostas ao formulário 1!A1:Z1000";
+
+  saveDataToStorage();
+}
+
+function saveDataToStorage() {
+  localStorage.setItem("eupordias_students", JSON.stringify(AppState.students));
+  localStorage.setItem("eupordias_subjects", JSON.stringify(AppState.subjects));
+  localStorage.setItem("eupordias_classrooms", JSON.stringify(AppState.classrooms));
+  localStorage.setItem("eupordias_settings", JSON.stringify(AppState.settings));
+}
+
+// Tema Claro / Escuro
+function toggleTheme() {
+  AppState.settings.darkMode = !AppState.settings.darkMode;
+  saveDataToStorage();
+  applyTheme();
+  showToast(AppState.settings.darkMode ? "Modo escuro ativado" : "Modo claro ativado", "info");
+}
+
+function applyTheme() {
+  if (AppState.settings.darkMode) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+  const themeBtn = document.getElementById("theme-toggle-btn");
+  if (themeBtn) {
+    themeBtn.innerHTML = AppState.settings.darkMode
+      ? `<i class="fa-solid fa-sun text-amber-400"></i>`
+      : `<i class="fa-solid fa-moon text-slate-600"></i>`;
+  }
+}
+
+// Notificações Toast
+function showToast(message, type = "success") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  const icons = {
+    success: '<i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>',
+    error: '<i class="fa-solid fa-circle-xmark text-rose-500 text-lg"></i>',
+    warning: '<i class="fa-solid fa-triangle-exclamation text-amber-500 text-lg"></i>',
+    info: '<i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>'
+  };
+
+  toast.className = `flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border backdrop-blur-md transition-all duration-300 slide-up ${
+    AppState.settings.darkMode 
+      ? 'bg-slate-900/95 border-slate-700 text-slate-100' 
+      : 'bg-white/95 border-slate-200 text-slate-800'
+  }`;
+
+  toast.innerHTML = `
+    ${icons[type] || icons.info}
+    <span class="text-sm font-medium">${message}</span>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("opacity-0", "translate-y-2");
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+// -------------------------------------------------------------
+// INTEGRAÇÃO COM GOOGLE SHEETS API V4
+// -------------------------------------------------------------
+async function fetchGoogleSheetsApiData(spreadsheetIdOrUrl, customRange = null) {
+  let spreadsheetId = spreadsheetIdOrUrl.trim();
+  
+  // Se for uma URL completa, extrai o ID
+  if (spreadsheetId.includes("docs.google.com/spreadsheets")) {
+    const match = spreadsheetId.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (match && match[1]) {
+      spreadsheetId = match[1];
+    }
+  }
+
+  if (!spreadsheetId) {
+    showToast("Por favor, forneça o Link ou o ID da Planilha do Google.", "warning");
+    return null;
+  }
+
+  const apiKey = AppState.settings.googleApiKey || "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
+  const range = customRange || AppState.settings.googleSheetRange || "A1:Z500";
+
+  // Salvar no estado
+  AppState.settings.googleSpreadsheetId = spreadsheetId;
+  AppState.settings.googleSheetRange = range;
+  saveDataToStorage();
+
+  const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
+
+  showToast("Conectando à API do Google Sheets v4...", "info");
+
+  try {
+    const response = await fetch(apiUrl);
+    const json = await response.json();
+
+    if (json.error) {
+      console.error("Google Sheets API Error:", json.error);
+      if (json.error.status === "PERMISSION_DENIED") {
+        showToast("Erro de permissão: Certifique-se de que a planilha está compartilhada como 'Qualquer pessoa com o link pode ler'.", "error");
+      } else {
+        showToast(`Erro na API do Google: ${json.error.message}`, "error");
+      }
+      return null;
+    }
+
+    const values = json.values;
+    if (!values || values.length === 0) {
+      showToast("A planilha está vazia ou o intervalo não contém dados.", "warning");
+      return null;
+    }
+
+    // Processar os dados tabulares da API do Google
+    processGoogleSheetsApiRows(values);
+    AppState.settings.lastSyncTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    saveDataToStorage();
+    return values;
+  } catch (err) {
+    console.error("Erro na requisição Google Sheets API:", err);
+    showToast("Erro de conexão com a API do Google Sheets.", "error");
+    return null;
+  }
+}
+
+function processGoogleSheetsApiRows(rows) {
+  if (!rows || rows.length === 0) return;
+
+  const headers = rows[0].map(h => String(h || "").toLowerCase().trim());
+
+  let nameIndex = headers.findIndex(h => h.includes("nome") || h.includes("aluno") || h.includes("name") || h.includes("estudante"));
+  let lastNameIndex = headers.findIndex(h => h.includes("sobrenome") || h.includes("last name"));
+  let emailIndex = headers.findIndex(h => h.includes("email") || h.includes("e-mail") || h.includes("correio"));
+  let phoneIndex = headers.findIndex(h => h.includes("fone") || h.includes("telefone") || h.includes("celular") || h.includes("whatsapp") || h.includes("tel"));
+  let classroomIndex = headers.findIndex(h => h.includes("turma") || h.includes("classe") || h.includes("curso") || h.includes("sala"));
+  let cepIndex = headers.findIndex(h => h.includes("cep") || h.includes("código postal"));
+  let addressIndex = headers.findIndex(h => h.includes("endereço") || h.includes("endereco") || h.includes("rua") || h.includes("logradouro"));
+  let neighborhoodIndex = headers.findIndex(h => h.includes("bairro"));
+  let cityIndex = headers.findIndex(h => h.includes("cidade") || h.includes("município") || h.includes("municipio"));
+
+  let startRow = 1;
+  if (nameIndex === -1 && emailIndex === -1) {
+    startRow = 0;
+    nameIndex = 0;
+    emailIndex = 1;
+    phoneIndex = 2;
+    classroomIndex = 3;
+  }
+
+  const parsedStudents = [];
+
+  for (let i = startRow; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length === 0) continue;
+
+    let fullName = "";
+    if (nameIndex !== -1 && row[nameIndex]) {
+      fullName = String(row[nameIndex]);
+      if (lastNameIndex !== -1 && row[lastNameIndex]) {
+        fullName += " " + String(row[lastNameIndex]);
+      }
+    } else if (row[0]) {
+      fullName = String(row[0]);
+    }
+
+    if (!fullName || fullName.toLowerCase().includes("média") || fullName.toLowerCase().includes("pontuação") || fullName.toLowerCase().includes("total")) {
+      continue;
+    }
+
+    const email = emailIndex !== -1 && row[emailIndex] ? String(row[emailIndex]) : "";
+    const phone = phoneIndex !== -1 && row[phoneIndex] ? String(row[phoneIndex]) : "";
+    const classroom = classroomIndex !== -1 && row[classroomIndex] ? String(row[classroomIndex]) : "Mídias Digitais - Maceió Matutino";
+    const cep = cepIndex !== -1 && row[cepIndex] ? String(row[cepIndex]) : "";
+    const street = addressIndex !== -1 && row[addressIndex] ? String(row[addressIndex]) : "";
+    const neighborhood = neighborhoodIndex !== -1 && row[neighborhoodIndex] ? String(row[neighborhoodIndex]) : "";
+    const city = cityIndex !== -1 && row[cityIndex] ? String(row[cityIndex]) : "Maceió";
+
+    // Mapear notas das colunas para os módulos
+    const grades = {};
+    AppState.subjects.forEach(subject => {
+      const subjIndex = headers.findIndex(h => h.includes(subject.toLowerCase().slice(0, 5)));
+      if (subjIndex !== -1 && row[subjIndex]) {
+        const rawVal = String(row[subjIndex]).replace(",", ".");
+        const val = parseFloat(rawVal);
+        if (!isNaN(val)) {
+          grades[subject] = { b1: val, b2: null, b3: null, b4: null, absences: 0 };
+        }
+      }
+    });
+
+    parsedStudents.push({
+      id: `ALU-EMA-${String(AppState.students.length + parsedStudents.length + 1).padStart(3, '0')}`,
+      name: fullName.trim(),
+      birthDate: "",
+      gender: "Feminino",
+      classroom: classroom.trim(),
+      status: "Ativo",
+      avatarColor: "from-indigo-500 to-purple-600",
+      photoUrl: "",
+      notes: "Sincronizado via Google Sheets API v4.",
+      contact: {
+        phone: phone.trim(),
+        email: email.trim(),
+        guardianName: "",
+        guardianKinship: "Responsável",
+        guardianPhone: ""
+      },
+      address: {
+        cep: cep.trim(),
+        street: street.trim(),
+        number: "",
+        complement: "",
+        neighborhood: neighborhood.trim(),
+        city: city.trim() || "Maceió",
+        state: "AL"
+      },
+      grades: grades
+    });
+  }
+
+  if (parsedStudents.length > 0) {
+    AppState.importState.parsedStudents = parsedStudents;
+    
+    // Atualizar tabela de preview se o modal estiver aberto
+    const previewArea = document.getElementById("import-preview-area");
+    const previewCount = document.getElementById("import-preview-count");
+    const previewTbody = document.getElementById("import-preview-tbody");
+
+    if (previewArea && previewCount && previewTbody) {
+      previewArea.classList.remove("hidden");
+      previewCount.textContent = parsedStudents.length;
+      previewTbody.innerHTML = parsedStudents.slice(0, 10).map(s => {
+        const gradesCount = Object.keys(s.grades || {}).length;
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800">
+            <td class="p-2 font-bold text-slate-800 dark:text-slate-200">${s.name}</td>
+            <td class="p-2 text-slate-500">${s.contact.email || '-'}</td>
+            <td class="p-2 text-slate-500">${s.contact.phone || '-'}</td>
+            <td class="p-2 text-slate-600 dark:text-slate-300">${s.classroom}</td>
+            <td class="p-2 text-center text-indigo-600 font-bold">${gradesCount} matéria(s)</td>
+          </tr>
+        `;
+      }).join("") + (parsedStudents.length > 10 ? `<tr><td colspan="5" class="p-2 text-center text-slate-400 text-[10px]">... e mais ${parsedStudents.length - 10} alunos</td></tr>` : '');
+
+      showToast(`API Google: ${parsedStudents.length} alunos carregados! Clique em Confirmar para salvar.`, "success");
+    } else {
+      // Se chamado pelo botão de sincronização rápida
+      commitImportedStudents();
+    }
+  } else {
+    showToast("Nenhum registro de aluno identificado no intervalo retornado pela API.", "warning");
+  }
+}
+
+// Sincronização rápida em 1 clique
+async function quickSyncGoogleSheets() {
+  if (!AppState.settings.googleSpreadsheetId) {
+    openGoogleSheetsImportModal();
+    showToast("Informe o Link ou ID da sua Planilha do Google para sincronizar.", "info");
+    return;
+  }
+
+  await fetchGoogleSheetsApiData(AppState.settings.googleSpreadsheetId);
+}
+
+// -------------------------------------------------------------
+// CÁLCULOS PEDAGÓGICOS
+// -------------------------------------------------------------
+function calculateSubjectAverage(subjectGrades) {
+  if (!subjectGrades) return { avg: 0, count: 0, hasGrades: false };
+  const grades = [subjectGrades.b1, subjectGrades.b2, subjectGrades.b3, subjectGrades.b4].filter(
+    g => g !== undefined && g !== null && g !== "" && !isNaN(Number(g))
+  ).map(Number);
+
+  if (grades.length === 0) return { avg: 0, count: 0, hasGrades: false };
+  const sum = grades.reduce((acc, curr) => acc + curr, 0);
+  return {
+    avg: Number((sum / grades.length).toFixed(1)),
+    count: grades.length,
+    hasGrades: true
+  };
+}
+
+function calculateStudentOverallStats(student) {
+  if (!student || !student.grades) {
+    return {
+      overallAvg: 0,
+      totalAbsences: 0,
+      status: "Sem Notas",
+      statusClass: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-300",
+      failingSubjectsCount: 0,
+      recoverySubjectsCount: 0,
+      gradedSubjectsCount: 0
+    };
+  }
+
+  let totalAvgSum = 0;
+  let gradedSubjectsCount = 0;
+  let totalAbsences = 0;
+  let failingCount = 0;
+  let recoveryCount = 0;
+
+  Object.entries(student.grades).forEach(([_, gradeData]) => {
+    const { avg, hasGrades } = calculateSubjectAverage(gradeData);
+    if (gradeData.absences) {
+      totalAbsences += Number(gradeData.absences) || 0;
+    }
+    if (hasGrades) {
+      totalAvgSum += avg;
+      gradedSubjectsCount++;
+      if (avg < AppState.settings.recoveryGrade) {
+        failingCount++;
+      } else if (avg < AppState.settings.passingGrade) {
+        recoveryCount++;
+      }
+    }
+  });
+
+  const overallAvg = gradedSubjectsCount > 0 ? Number((totalAvgSum / gradedSubjectsCount).toFixed(1)) : 0;
+
+  let status = "Aprovado";
+  let statusClass = "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800";
+
+  if (gradedSubjectsCount === 0) {
+    status = "Sem Notas";
+    statusClass = "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
+  } else if (failingCount > 0 || overallAvg < AppState.settings.recoveryGrade) {
+    status = "Reprovado";
+    statusClass = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800";
+  } else if (recoveryCount > 0 || overallAvg < AppState.settings.passingGrade) {
+    status = "Em Recuperação";
+    statusClass = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800";
+  }
+
+  return {
+    overallAvg,
+    totalAbsences,
+    status,
+    statusClass,
+    failingSubjectsCount: failingCount,
+    recoverySubjectsCount: recoveryCount,
+    gradedSubjectsCount
+  };
+}
+
+// Filtro de Alunos
+function getFilteredStudents() {
+  return AppState.students.filter(student => {
+    const term = AppState.searchTerm.toLowerCase().trim();
+    const matchesSearch = !term || (
+      student.name.toLowerCase().includes(term) ||
+      student.id.toLowerCase().includes(term) ||
+      (student.cpf && student.cpf.toLowerCase().includes(term)) ||
+      (student.profession && student.profession.toLowerCase().includes(term)) ||
+      (student.socialMedia && student.socialMedia.toLowerCase().includes(term)) ||
+      (student.education && student.education.toLowerCase().includes(term)) ||
+      (student.tools && student.tools.toLowerCase().includes(term)) ||
+      (student.challenges && student.challenges.toLowerCase().includes(term)) ||
+      (student.motivation && student.motivation.toLowerCase().includes(term)) ||
+      (student.unitCity && student.unitCity.toLowerCase().includes(term)) ||
+      (student.contact?.email && student.contact.email.toLowerCase().includes(term)) ||
+      (student.contact?.phone && student.contact.phone.includes(term)) ||
+      (student.address?.city && student.address.city.toLowerCase().includes(term)) ||
+      (student.address?.neighborhood && student.address.neighborhood.toLowerCase().includes(term)) ||
+      (student.classroom && student.classroom.toLowerCase().includes(term))
+    );
+
+    const matchesClassroom = AppState.filterClassroom === "all" || student.classroom === AppState.filterClassroom || student.unitCity === AppState.filterClassroom;
+    const matchesStatus = AppState.filterStatus === "all" || student.status === AppState.filterStatus;
+
+    const stats = calculateStudentOverallStats(student);
+    const matchesSituation = AppState.filterSituation === "all" || stats.status === AppState.filterSituation;
+
+    const hasPhoto = !!(student.photoUrl && student.photoUrl.trim() !== "");
+    const matchesPhoto = AppState.filterPhoto === "all" || 
+      (AppState.filterPhoto === "with_photo" && hasPhoto) ||
+      (AppState.filterPhoto === "without_photo" && !hasPhoto);
+
+    return matchesSearch && matchesClassroom && matchesStatus && matchesSituation && matchesPhoto;
+  });
+}
+
+// Renderização Geral
+function renderApp() {
+  updateHeaderCounts();
+  populateClassroomFilterSelect();
+
+  const contentArea = document.getElementById("main-content-area");
+  if (!contentArea) return;
+
+  switch (AppState.currentTab) {
+    case "dashboard":
+      renderDashboard(contentArea);
+      break;
+    case "students":
+      renderStudentsTab(contentArea);
+      break;
+    case "grades":
+      renderGradesTab(contentArea);
+      break;
+    case "reports":
+      renderReportsTab(contentArea);
+      break;
+    case "about":
+      renderAboutTab(contentArea);
+      break;
+    default:
+      renderStudentsTab(contentArea);
+  }
+
+  updateNavActiveState();
+}
+
+function updateNavActiveState() {
+  document.querySelectorAll(".nav-tab-btn").forEach(btn => {
+    const tab = btn.getAttribute("data-tab");
+    if (tab === AppState.currentTab) {
+      btn.className = "nav-tab-btn flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-500/20 transition-all";
+    } else {
+      btn.className = "nav-tab-btn flex items-center gap-2 px-4 py-2.5 rounded-2xl font-semibold text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all";
+    }
+  });
+}
+
+function updateHeaderCounts() {
+  const total = AppState.students.length;
+  let approved = 0;
+  let sumAvg = 0;
+  let countWithAvg = 0;
+
+  AppState.students.forEach(s => {
+    const stats = calculateStudentOverallStats(s);
+    if (stats.status === "Aprovado") approved++;
+    if (stats.gradedSubjectsCount > 0) {
+      sumAvg += stats.overallAvg;
+      countWithAvg++;
+    }
+  });
+
+  const generalAvg = countWithAvg > 0 ? (sumAvg / countWithAvg).toFixed(1) : "0.0";
+  const passRate = total > 0 ? Math.round((approved / total) * 100) : 0;
+
+  const headerStats = document.getElementById("header-quick-stats");
+  if (headerStats) {
+    headerStats.innerHTML = `
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+          <i class="fa-solid fa-users"></i> ${total} Alunos
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <i class="fa-solid fa-star"></i> Média: ${generalAvg}
+        </span>
+        ${AppState.settings.googleSpreadsheetId ? `
+          <button onclick="quickSyncGoogleSheets()" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 hover:bg-emerald-100 transition-colors" title="Sincronizar Google Sheets API">
+            <i class="fa-solid fa-rotate text-[11px] text-emerald-600"></i> API Conectada
+          </button>
+        ` : ''}
+      </div>
+    `;
+  }
+}
+
+function populateClassroomFilterSelect() {
+  const select = document.getElementById("filter-classroom-select");
+  if (!select) return;
+
+  const currentVal = AppState.filterClassroom;
+  const classrooms = Array.from(new Set(AppState.students.map(s => s.classroom).concat(AppState.classrooms))).sort();
+
+  select.innerHTML = `<option value="all">Todas as Turmas (Alagoas)</option>` + classrooms.map(c => `
+    <option value="${c}" ${c === currentVal ? "selected" : ""}>${c}</option>
+  `).join("");
+}
+
+// -------------------------------------------------------------
+// ABA 1: ALUNOS
+// -------------------------------------------------------------
+function renderStudentsTab(container) {
+  const filtered = getFilteredStudents();
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      <!-- Banner com Conexão de API do Sheets -->
+      <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
+        <div class="z-10">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-white/20 backdrop-blur-md tracking-wide">
+              EMPREGA MAIS ALAGOAS
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-400 text-slate-900">
+              Gestão de Mídias Digitais
+            </span>
+            <span class="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-400 text-slate-950">
+              <i class="fa-brands fa-google-drive mr-1 mt-0.5"></i> Google Sheets API v4
+            </span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-tight">Eu Por Dias - Painel do Professor</h1>
+          <p class="text-xs sm:text-sm text-indigo-100 max-w-2xl mt-1">
+            Integração direta com o Google Planilhas, WhatsApp, ViaCEP de Alagoas e lançamento de notas dos módulos.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 z-10 w-full sm:w-auto">
+          <button 
+            onclick="openGoogleSheetsImportModal()"
+            class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-bold text-xs shadow-lg transition-all transform active:scale-95"
+            title="Importar ou sincronizar via Google Sheets API"
+          >
+            <i class="fa-brands fa-google-drive text-emerald-600 text-sm"></i>
+            <span>Google Sheets API</span>
+          </button>
+          
+          <button 
+            onclick="openStudentModal()"
+            class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-indigo-500/40 hover:bg-indigo-500/60 border border-white/20 text-white font-bold text-xs transition-all"
+          >
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Novo Aluno</span>
+          </button>
+        </div>
+
+        <div class="absolute -right-8 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+      </div>
+
+      <!-- Barra de Filtros e Busca -->
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input 
+            type="text" 
+            id="student-search-input"
+            value="${AppState.searchTerm}"
+            placeholder="Buscar por nome, CPF, WhatsApp, cidade/unidade SINE, profissão, rede social, ferramentas, desafios..." 
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+          >
+          ${AppState.searchTerm ? `
+            <button onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          ` : ''}
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <select 
+            id="filter-classroom-select"
+            onchange="handleClassroomFilterChange(this.value)"
+            class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="all">Todas as Turmas</option>
+          </select>
+
+          <select 
+            onchange="handleSituationFilterChange(this.value)"
+            class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="all" ${AppState.filterSituation === "all" ? "selected" : ""}>Todas as Situações</option>
+            <option value="Aprovado" ${AppState.filterSituation === "Aprovado" ? "selected" : ""}>Aprovados</option>
+            <option value="Em Recuperação" ${AppState.filterSituation === "Em Recuperação" ? "selected" : ""}>Em Recuperação</option>
+            <option value="Reprovado" ${AppState.filterSituation === "Reprovado" ? "selected" : ""}>Reprovados</option>
+          </select>
+
+          <select 
+            onchange="handlePhotoFilterChange(this.value)"
+            class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="all" ${AppState.filterPhoto === "all" ? "selected" : ""}>📷 Todas as Fotos</option>
+            <option value="with_photo" ${AppState.filterPhoto === "with_photo" ? "selected" : ""}>Com Foto</option>
+            <option value="without_photo" ${AppState.filterPhoto === "without_photo" ? "selected" : ""}>Sem Foto</option>
+          </select>
+
+          <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+            <button 
+              onclick="setViewMode('grid')" 
+              class="p-2 rounded-lg text-xs font-semibold ${AppState.settings.viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
+              title="Visualização em Cards"
+            >
+              <i class="fa-solid fa-grip text-sm"></i>
+            </button>
+            <button 
+              onclick="setViewMode('table')" 
+              class="p-2 rounded-lg text-xs font-semibold ${AppState.settings.viewMode === 'table' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
+              title="Visualização em Tabela"
+            >
+              <i class="fa-solid fa-list text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
+        <span>Exibindo <strong>${filtered.length}</strong> de <strong>${AppState.students.length}</strong> alunos matriculados</span>
+        ${(AppState.searchTerm || AppState.filterClassroom !== 'all' || AppState.filterSituation !== 'all' || AppState.filterPhoto !== 'all') ? `
+          <button onclick="resetAllFilters()" class="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-medium">
+            <i class="fa-solid fa-rotate-left"></i> Limpar filtros
+          </button>
+        ` : ''}
+      </div>
+
+      ${filtered.length === 0 ? renderEmptyState() : (
+        AppState.settings.viewMode === 'grid' ? renderStudentCardsGrid(filtered) : renderStudentTable(filtered)
+      )}
+    </div>
+  `;
+
+  const searchInput = document.getElementById("student-search-input");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      AppState.searchTerm = e.target.value;
+      renderApp();
+      const newInput = document.getElementById("student-search-input");
+      if (newInput) {
+        newInput.focus();
+        newInput.setSelectionRange(newInput.value.length, newInput.value.length);
+      }
+    });
+  }
+
+  populateClassroomFilterSelect();
+}
+
+function renderStudentCardsGrid(students) {
+  return `
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      ${students.map(student => {
+        const stats = calculateStudentOverallStats(student);
+        const initials = student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+        const cleanPhone = (student.contact?.phone || "").replace(/\D/g, "");
+        
+        let socialUrl = student.socialMedia || "";
+        let socialDisplay = student.socialMedia || "";
+        let isInstagram = false;
+        let isTiktok = false;
+
+        if (socialUrl) {
+          if (socialUrl.startsWith("@")) {
+            socialUrl = `https://www.instagram.com/${socialUrl.replace('@', '')}`;
+            isInstagram = true;
+          } else if (socialUrl.includes("instagram.com")) {
+            isInstagram = true;
+          } else if (socialUrl.includes("tiktok.com")) {
+            isTiktok = true;
+          } else if (!socialUrl.startsWith("http")) {
+            socialUrl = `https://www.instagram.com/${socialUrl}`;
+            isInstagram = true;
+          }
+        }
+
+        return `
+          <div class="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden">
+            
+            <div>
+              <!-- Cabeçalho do Card: Foto/Avatar, Nome, Polo/Cidade e Matrícula -->
+              <div class="flex items-start justify-between gap-3 mb-3.5">
+                <div class="flex items-center gap-3.5">
+                  
+                  <!-- Container da Foto / Avatar com trigger de upload -->
+                  <div 
+                    onclick="openPhotoUploadModal('${student.id}')"
+                    class="relative group/avatar w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} flex items-center justify-center text-white font-black text-base shadow-inner flex-shrink-0 cursor-pointer border border-slate-200/80 dark:border-slate-700/80 transition-transform active:scale-95"
+                    title="Clique para adicionar ou trocar a foto de ${student.name}"
+                  >
+                    ${student.photoUrl ? `
+                      <img src="${student.photoUrl}" alt="${student.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                      <div class="hidden w-full h-full items-center justify-center">${initials}</div>
+                    ` : `
+                      <span>${initials}</span>
+                    `}
+                    
+                    <!-- Overlay ao passar o mouse -->
+                    <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[9px] font-bold">
+                      <i class="fa-solid fa-camera text-xs mb-0.5"></i>
+                      <span>Foto</span>
+                    </div>
+
+                    <!-- Mini ícone de câmera no canto -->
+                    <div class="absolute bottom-0 right-0 w-4 h-4 rounded-tl-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm flex items-center justify-center text-[8px] text-indigo-600 dark:text-indigo-400 shadow">
+                      <i class="fa-solid fa-camera"></i>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 
+                      onclick="openStudentProfileModal('${student.id}')"
+                      class="font-bold text-base text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors cursor-pointer line-clamp-1"
+                      title="Ver ficha completa de ${student.name}"
+                    >
+                      ${student.name}
+                    </h3>
+                    <div class="flex items-center flex-wrap gap-1.5 mt-0.5">
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">
+                        <i class="fa-solid fa-location-dot mr-1"></i>${student.unitCity || student.classroom || 'Alagoas'}
+                      </span>
+                      <span class="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                        ${student.id}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border ${stats.statusClass} flex-shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full ${stats.status === 'Aprovado' ? 'bg-emerald-500' : stats.status === 'Em Recuperação' ? 'bg-amber-500' : stats.status === 'Reprovado' ? 'bg-rose-500' : 'bg-slate-400'}"></span>
+                  ${stats.status}
+                </span>
+              </div>
+
+              <!-- Data de Inscrição e Resumo de Desempenho -->
+              <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-3 px-1">
+                ${student.registrationDate ? `
+                  <span class="flex items-center gap-1">
+                    <i class="fa-regular fa-calendar-check text-emerald-500"></i> Inscrição: ${student.registrationDate}
+                  </span>
+                ` : '<span></span>'}
+                <span class="font-semibold text-slate-700 dark:text-slate-300">
+                  Média: <strong class="text-indigo-600 dark:text-indigo-400">${stats.overallAvg.toFixed(1)}</strong> • Faltas: <strong>${stats.totalAbsences}</strong>
+                </span>
+              </div>
+
+              <!-- Bloco 1: Contatos, CPF e Redes Sociais -->
+              <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/80 space-y-2 mb-3.5 text-xs">
+                
+                <!-- Linha CPF & WhatsApp -->
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate">
+                    <i class="fa-solid fa-id-card text-indigo-500 w-4 text-center"></i>
+                    <span class="font-mono text-[11px]">${student.cpf || 'CPF não informado'}</span>
+                  </div>
+                  ${cleanPhone ? `
+                    <a 
+                      href="https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá ${student.name}! Aqui é o professor do curso de Gestão de Mídias Digitais (Emprega Mais Alagoas).`)}" 
+                      target="_blank" 
+                      class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] shadow-sm transition-all flex-shrink-0"
+                      title="Chamar no WhatsApp"
+                    >
+                      <i class="fa-brands fa-whatsapp text-xs"></i>
+                      <span>${student.contact?.phone || 'WhatsApp'}</span>
+                    </a>
+                  ` : `
+                    <span class="text-slate-400 text-[11px] italic">Sem WhatsApp</span>
+                  `}
+                </div>
+
+                <!-- Linha E-mail -->
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate">
+                    <i class="fa-solid fa-envelope text-slate-400 w-4 text-center"></i>
+                    <span class="truncate text-[11px]">${student.contact?.email || 'Sem e-mail'}</span>
+                  </div>
+                  ${student.contact?.email ? `
+                    <a 
+                      href="mailto:${student.contact.email}?subject=${encodeURIComponent(`Emprega Mais Alagoas - Mídias Digitais: ${student.name}`)}"
+                      class="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-semibold flex-shrink-0"
+                    >
+                      Enviar
+                    </a>
+                  ` : ''}
+                </div>
+
+                <!-- Linha Rede Social / Perfil -->
+                ${student.socialMedia ? `
+                  <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <div class="flex items-center gap-1.5 truncate">
+                      <i class="${isInstagram ? 'fa-brands fa-instagram text-pink-500' : isTiktok ? 'fa-brands fa-tiktok text-slate-900 dark:text-white' : 'fa-solid fa-share-nodes text-indigo-500'} w-4 text-center"></i>
+                      <span class="truncate text-[11px] font-medium text-slate-700 dark:text-slate-200">${socialDisplay}</span>
+                    </div>
+                    <a 
+                      href="${socialUrl}" 
+                      target="_blank" 
+                      class="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-bold flex items-center gap-1 flex-shrink-0"
+                      title="Abrir rede social do aluno"
+                    >
+                      <span>Acessar</span>
+                      <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                  </div>
+                ` : ''}
+
+              </div>
+
+              <!-- Bloco 2: Perfil Profissional & Escolaridade -->
+              <div class="space-y-2 mb-3.5">
+                
+                ${student.profession ? `
+                  <div class="flex items-center gap-2 p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-xs">
+                    <i class="fa-solid fa-briefcase text-indigo-600 dark:text-indigo-400 w-4 text-center flex-shrink-0"></i>
+                    <div class="truncate">
+                      <span class="text-[10px] uppercase font-bold text-indigo-700 dark:text-indigo-300 block leading-tight">Área / Profissão</span>
+                      <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate block">${student.profession}</span>
+                    </div>
+                  </div>
+                ` : ''}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  ${student.education ? `
+                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                      <span class="text-[10px] text-slate-400 uppercase font-bold block leading-tight">Escolaridade</span>
+                      <span class="font-medium text-slate-700 dark:text-slate-300 text-[11px] truncate block" title="${student.education}">
+                        ${student.education}
+                      </span>
+                    </div>
+                  ` : ''}
+
+                  ${student.experience ? `
+                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                      <span class="text-[10px] text-slate-400 uppercase font-bold block leading-tight">Gestão de Redes</span>
+                      <span class="font-semibold text-[11px] truncate block ${student.experience.toLowerCase().includes('sim') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">
+                        ${student.experience}
+                      </span>
+                    </div>
+                  ` : ''}
+                </div>
+
+                <!-- Redes mais frequentes & Ferramentas -->
+                ${(student.frequentNetworks || student.tools) ? `
+                  <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-[11px] space-y-1.5">
+                    ${student.frequentNetworks ? `
+                      <div class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-users text-indigo-500 text-[10px] mt-0.5 flex-shrink-0"></i>
+                        <span class="text-slate-600 dark:text-slate-400 line-clamp-1"><strong class="text-slate-800 dark:text-slate-200">Redes:</strong> ${student.frequentNetworks}</span>
+                      </div>
+                    ` : ''}
+                    ${student.tools ? `
+                      <div class="flex items-start gap-1.5">
+                        <i class="fa-solid fa-screwdriver-wrench text-amber-500 text-[10px] mt-0.5 flex-shrink-0"></i>
+                        <span class="text-slate-600 dark:text-slate-400 line-clamp-1"><strong class="text-slate-800 dark:text-slate-200">Ferramentas:</strong> ${student.tools}</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                ` : ''}
+
+              </div>
+
+              <!-- Bloco 3: Gaveta Expansível de Diagnóstico Pedagógico (Desafios, Motivação, Expectativas) -->
+              ${(student.challenges || student.motivation || student.expectations) ? `
+                <div class="mb-3.5">
+                  <button 
+                    type="button"
+                    onclick="toggleDiagnosticDrawer('${student.id}')"
+                    id="diag-btn-${student.id}"
+                    class="w-full py-1.5 px-3 rounded-xl text-[11px] font-bold bg-indigo-50/80 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-between transition-colors border border-indigo-100 dark:border-indigo-900/40"
+                  >
+                    <span class="flex items-center gap-1.5">
+                      <i class="fa-solid fa-brain text-indigo-600 dark:text-indigo-400"></i>
+                      <span>Diagnóstico & Expectativas</span>
+                    </span>
+                    <i id="diag-icon-${student.id}" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                  </button>
+
+                  <div id="diag-drawer-${student.id}" class="hidden mt-2 p-3 rounded-2xl bg-amber-50/40 dark:bg-slate-800/80 border border-amber-200/60 dark:border-slate-700 space-y-2.5 text-[11px] text-slate-700 dark:text-slate-200">
+                    
+                    ${student.challenges ? `
+                      <div>
+                        <span class="font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1 text-[10px] uppercase">
+                          <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios:
+                        </span>
+                        <p class="mt-0.5 text-slate-700 dark:text-slate-300 italic pl-1 border-l-2 border-rose-300 dark:border-rose-700">
+                          "${student.challenges}"
+                        </p>
+                      </div>
+                    ` : ''}
+
+                    ${student.motivation ? `
+                      <div>
+                        <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 text-[10px] uppercase">
+                          <i class="fa-solid fa-fire"></i> Motivação para o Curso:
+                        </span>
+                        <p class="mt-0.5 text-slate-700 dark:text-slate-300 italic pl-1 border-l-2 border-amber-300 dark:border-amber-700">
+                          "${student.motivation}"
+                        </p>
+                      </div>
+                    ` : ''}
+
+                    ${student.expectations ? `
+                      <div>
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 text-[10px] uppercase">
+                          <i class="fa-solid fa-bullseye"></i> Expectativas:
+                        </span>
+                        <p class="mt-0.5 text-slate-700 dark:text-slate-300 italic pl-1 border-l-2 border-emerald-300 dark:border-emerald-700">
+                          "${student.expectations}"
+                        </p>
+                      </div>
+                    ` : ''}
+
+                  </div>
+                </div>
+              ` : ''}
+
+            </div>
+
+            <!-- Rodapé com Ações -->
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
+              
+              <div class="flex items-center gap-1.5">
+                <button 
+                  onclick="openStudentProfileModal('${student.id}')"
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-colors flex items-center gap-1"
+                  title="Abrir ficha completa do aluno"
+                >
+                  <i class="fa-solid fa-id-card-clip"></i> Ficha
+                </button>
+                <button 
+                  onclick="openPhotoUploadModal('${student.id}')"
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 dark:bg-purple-950/60 dark:text-purple-300 transition-colors flex items-center gap-1"
+                  title="Adicionar ou alterar foto do aluno"
+                >
+                  <i class="fa-solid fa-camera"></i> Foto
+                </button>
+                <button 
+                  onclick="openGradesModal('${student.id}')"
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 transition-colors flex items-center gap-1"
+                  title="Lançar Notas"
+                >
+                  <i class="fa-solid fa-pen-to-square"></i> Notas
+                </button>
+                <button 
+                  onclick="openBoletimModal('${student.id}')"
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 transition-colors flex items-center gap-1"
+                  title="Gerar Boletim Oficial"
+                >
+                  <i class="fa-solid fa-file-invoice"></i> Boletim
+                </button>
+              </div>
+
+              <div class="flex items-center gap-1">
+                <button 
+                  onclick="openStudentModal('${student.id}')"
+                  class="w-8 h-8 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
+                  title="Editar Aluno"
+                >
+                  <i class="fa-solid fa-user-pen text-xs"></i>
+                </button>
+                <button 
+                  onclick="confirmDeleteStudent('${student.id}')"
+                  class="w-8 h-8 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 flex items-center justify-center transition-colors"
+                  title="Excluir Aluno"
+                >
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderStudentTable(students) {
+  return `
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="bg-slate-50/75 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th class="py-3.5 px-4">Aluno / Matrícula</th>
+              <th class="py-3.5 px-4">Turma (Alagoas)</th>
+              <th class="py-3.5 px-4">Contatos & WhatsApp</th>
+              <th class="py-3.5 px-4">Endereço / Bairro</th>
+              <th class="py-3.5 px-4 text-center">Média do Curso</th>
+              <th class="py-3.5 px-4 text-center">Situação</th>
+              <th class="py-3.5 px-4 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+            ${students.map(student => {
+              const stats = calculateStudentOverallStats(student);
+              const cleanPhone = (student.contact?.phone || "").replace(/\D/g, "");
+              return `
+                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-3">
+                      <div 
+                        onclick="openPhotoUploadModal('${student.id}')"
+                        class="relative group/tblavatar w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} text-white font-bold flex items-center justify-center text-xs flex-shrink-0 cursor-pointer border border-slate-200 dark:border-slate-700 shadow-sm"
+                        title="Clique para alterar foto"
+                      >
+                        ${student.photoUrl ? `
+                          <img src="${student.photoUrl}" alt="${student.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                          <div class="hidden w-full h-full items-center justify-center">${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
+                        ` : `
+                          <span>${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
+                        `}
+                        <div class="absolute inset-0 bg-slate-900/50 opacity-0 group-hover/tblavatar:opacity-100 transition-opacity flex items-center justify-center text-white text-[8px]">
+                          <i class="fa-solid fa-camera"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <span onclick="openStudentProfileModal('${student.id}')" class="font-bold text-slate-900 dark:text-slate-100 block hover:text-indigo-600 cursor-pointer">${student.name}</span>
+                        <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+                          <span>${student.id}</span>
+                          ${student.cpf ? `<span>• CPF: ${student.cpf}</span>` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                      ${student.classroom}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="text-xs space-y-1">
+                      <div class="flex items-center gap-2">
+                        <span class="text-slate-700 dark:text-slate-300 font-medium">${student.contact?.phone || '-'}</span>
+                        ${cleanPhone ? `
+                          <a href="https://wa.me/55${cleanPhone}" target="_blank" class="text-emerald-600 hover:text-emerald-700">
+                            <i class="fa-brands fa-whatsapp"></i>
+                          </a>
+                        ` : ''}
+                      </div>
+                      <div class="text-slate-500 dark:text-slate-400 text-[11px] truncate max-w-[180px]">
+                        ${student.contact?.email || ''}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="text-xs text-slate-600 dark:text-slate-300 max-w-[200px] truncate">
+                      ${student.address?.street ? `${student.address.street}, ${student.address.neighborhood || student.address.city}` : '<span class="text-slate-400">Não informado</span>'}
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 text-center">
+                    <span class="text-sm font-black text-slate-900 dark:text-slate-100">${stats.overallAvg.toFixed(1)}</span>
+                  </td>
+                  <td class="py-3 px-4 text-center">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${stats.statusClass}">
+                      ${stats.status}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button onclick="openGradesModal('${student.id}')" class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button onclick="openBoletimModal('${student.id}')" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100">
+                        <i class="fa-solid fa-file-invoice"></i>
+                      </button>
+                      <button onclick="openStudentModal('${student.id}')" class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100">
+                        <i class="fa-solid fa-user-pen"></i>
+                      </button>
+                      <button onclick="confirmDeleteStudent('${student.id}')" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function toggleDiagnosticDrawer(studentId) {
+  const drawer = document.getElementById(`diag-drawer-${studentId}`);
+  const icon = document.getElementById(`diag-icon-${studentId}`);
+  if (!drawer) return;
+  const isHidden = drawer.classList.contains("hidden");
+  if (isHidden) {
+    drawer.classList.remove("hidden");
+    if (icon) icon.className = "fa-solid fa-chevron-up text-[10px] transition-transform";
+  } else {
+    drawer.classList.add("hidden");
+    if (icon) icon.className = "fa-solid fa-chevron-down text-[10px] transition-transform";
+  }
+}
+
+function openStudentProfileModal(studentId) {
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  const stats = calculateStudentOverallStats(student);
+  const cleanPhone = (student.contact?.phone || "").replace(/\D/g, "");
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  let socialUrl = student.socialMedia || "";
+  let socialDisplay = student.socialMedia || "";
+  let isInstagram = false;
+  let isTiktok = false;
+
+  if (socialUrl) {
+    if (socialUrl.startsWith("@")) {
+      socialUrl = `https://www.instagram.com/${socialUrl.replace('@', '')}`;
+      isInstagram = true;
+    } else if (socialUrl.includes("instagram.com")) {
+      isInstagram = true;
+    } else if (socialUrl.includes("tiktok.com")) {
+      isTiktok = true;
+    } else if (!socialUrl.startsWith("http")) {
+      socialUrl = `https://www.instagram.com/${socialUrl}`;
+      isInstagram = true;
+    }
+  }
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[92vh] flex flex-col">
+        
+        <!-- Header Modal -->
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40 no-print">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-600/20">
+              <i class="fa-solid fa-id-card-clip"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Ficha Individual do Aluno</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Programa Emprega Mais Alagoas • Gestão de Mídias Digitais</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              onclick="window.print()" 
+              class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-print"></i> Imprimir Ficha
+            </button>
+            <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+              <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Conteúdo da Ficha -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-5 text-slate-800 dark:text-slate-200">
+          
+          <!-- Banner Principal com Identificação -->
+          <div class="p-5 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div 
+                onclick="openPhotoUploadModal('${student.id}')"
+                class="relative group/profavatar w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-400 to-purple-500'} text-white font-black text-2xl flex items-center justify-center shadow-inner border border-white/20 flex-shrink-0 cursor-pointer"
+                title="Clique para alterar foto"
+              >
+                ${student.photoUrl ? `
+                  <img src="${student.photoUrl}" alt="${student.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                  <div class="hidden w-full h-full items-center justify-center">${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
+                ` : `
+                  <span>${student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
+                `}
+                <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover/profavatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[9px] font-bold">
+                  <i class="fa-solid fa-camera text-xs mb-0.5"></i>
+                  <span>Foto</span>
+                </div>
+                <div class="absolute bottom-0 right-0 w-4 h-4 rounded-tl bg-white text-indigo-900 flex items-center justify-center text-[8px] shadow">
+                  <i class="fa-solid fa-camera"></i>
+                </div>
+              </div>
+              <div>
+                <h1 class="text-xl font-black tracking-tight">${student.name}</h1>
+                <div class="flex flex-wrap items-center gap-2 mt-1">
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">
+                    <i class="fa-solid fa-location-dot mr-1 text-amber-300"></i>${student.unitCity || student.classroom || 'Alagoas'}
+                  </span>
+                  <span class="text-xs font-mono text-indigo-200">ID: ${student.id}</span>
+                  ${student.cpf ? `<span class="text-xs font-mono text-amber-300 font-semibold">• CPF: ${student.cpf}</span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex sm:flex-col items-center sm:items-end gap-2 bg-white/10 sm:bg-transparent p-2.5 sm:p-0 rounded-2xl w-full sm:w-auto justify-between">
+              <span class="px-3 py-1 rounded-full text-xs font-extrabold ${stats.status === 'Aprovado' ? 'bg-emerald-500 text-white' : stats.status === 'Em Recuperação' ? 'bg-amber-500 text-slate-950' : 'bg-rose-500 text-white'}">
+                ${stats.status}
+              </span>
+              <span class="text-xs text-indigo-200 font-medium">Média: <strong>${stats.overallAvg.toFixed(1)}</strong></span>
+            </div>
+          </div>
+
+          <!-- Grade de Informações Cadastrais e Redes -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            
+            <!-- Box Contatos -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2.5">
+              <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 uppercase tracking-wider text-[11px] text-indigo-600 dark:text-indigo-400">
+                <i class="fa-solid fa-address-book"></i> Contatos & Comunicação
+              </h3>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">Telefone / WhatsApp:</span>
+                ${cleanPhone ? `
+                  <a href="https://wa.me/55${cleanPhone}" target="_blank" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                    <i class="fa-brands fa-whatsapp"></i> ${student.contact?.phone}
+                  </a>
+                ` : '<span class="italic text-slate-400">Não informado</span>'}
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">E-mail:</span>
+                ${student.contact?.email ? `
+                  <a href="mailto:${student.contact.email}" class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline truncate max-w-[200px]">
+                    ${student.contact.email}
+                  </a>
+                ` : '<span class="italic text-slate-400">Não informado</span>'}
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">Rede Social / Perfil:</span>
+                ${student.socialMedia ? `
+                  <a href="${socialUrl}" target="_blank" class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 truncate max-w-[200px]">
+                    <i class="${isInstagram ? 'fa-brands fa-instagram text-pink-500' : isTiktok ? 'fa-brands fa-tiktok text-slate-900 dark:text-white' : 'fa-solid fa-share-nodes'}"></i>
+                    <span class="truncate">${socialDisplay}</span>
+                  </a>
+                ` : '<span class="italic text-slate-400">Não informado</span>'}
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">Data de Inscrição:</span>
+                <span class="font-mono text-slate-700 dark:text-slate-300">${student.registrationDate || 'Não informada'}</span>
+              </div>
+            </div>
+
+            <!-- Box Perfil Profissional -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2.5">
+              <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 uppercase tracking-wider text-[11px] text-indigo-600 dark:text-indigo-400">
+                <i class="fa-solid fa-user-graduate"></i> Perfil Profissional & Acadêmico
+              </h3>
+
+              <div>
+                <span class="text-slate-500 block text-[10px] uppercase font-semibold">Área de Atuação / Profissão:</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">${student.profession || 'Não informada'}</span>
+              </div>
+
+              <div>
+                <span class="text-slate-500 block text-[10px] uppercase font-semibold">Escolaridade:</span>
+                <span class="font-semibold text-slate-700 dark:text-slate-300 text-xs">${student.education || 'Não informada'}</span>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">Experiência com Gestão de Redes:</span>
+                <span class="font-bold ${student.experience?.toLowerCase().includes('sim') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">
+                  ${student.experience || 'Não'}
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Diagnóstico Pedagógico Aprofundado -->
+          <div class="p-5 rounded-3xl bg-indigo-50/50 dark:bg-slate-800/60 border border-indigo-100 dark:border-slate-700 space-y-4">
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-brain text-indigo-600 dark:text-indigo-400"></i> Diagnóstico Pedagógico e Expectativas de Aprendizado
+            </h3>
+
+            <div class="grid grid-cols-1 gap-3.5 text-xs">
+              
+              <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <span class="font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 uppercase text-[11px] mb-1">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios ao Produzir Conteúdo
+                </span>
+                <p class="text-slate-700 dark:text-slate-300 italic text-xs leading-relaxed">
+                  "${student.challenges || 'Nenhum desafio registrado no formulário.'}"
+                </p>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5 uppercase text-[11px] mb-1">
+                  <i class="fa-solid fa-fire"></i> Motivação para se Inscrever no Curso
+                </span>
+                <p class="text-slate-700 dark:text-slate-300 italic text-xs leading-relaxed">
+                  "${student.motivation || 'Nenhuma motivação registrada.'}"
+                </p>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 uppercase text-[11px] mb-1">
+                  <i class="fa-solid fa-bullseye"></i> Expectativas em Relação ao Curso
+                </span>
+                <p class="text-slate-700 dark:text-slate-300 italic text-xs leading-relaxed">
+                  "${student.expectations || 'Nenhuma expectativa registrada.'}"
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <span class="font-bold text-slate-500 uppercase text-[10px] block mb-1">Redes Sociais Mais Utilizadas:</span>
+                  <span class="font-medium text-slate-800 dark:text-slate-200">${student.frequentNetworks || 'Não informado'}</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <span class="font-bold text-slate-500 uppercase text-[10px] block mb-1">Ferramentas que já utilizou:</span>
+                  <span class="font-medium text-slate-800 dark:text-slate-200">${student.tools || 'Nenhuma'}</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Rodapé do Modal -->
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 no-print">
+            <button 
+              onclick="openGradesModal('${student.id}')"
+              class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300"
+            >
+              <i class="fa-solid fa-pen-to-square mr-1"></i> Lançar Notas do Aluno
+            </button>
+            <button 
+              onclick="closeModal()" 
+              class="px-5 py-2 rounded-xl font-bold text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 text-slate-700"
+            >
+              Fechar
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// GESTÃO DE FOTOS DOS ALUNOS (COMPRESSÃO, UPLOAD & WEBCAM)
+// -------------------------------------------------------------
+
+function compressAndCropImage(file, maxSize = 400, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith("image/")) {
+      reject(new Error("Arquivo inválido. Selecione uma imagem JPG, PNG ou WEBP."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        // Recorte quadrado central
+        let cropX = 0;
+        let cropY = 0;
+        let cropSize = Math.min(width, height);
+
+        if (width > height) {
+          cropX = (width - height) / 2;
+        } else {
+          cropY = (height - width) / 2;
+        }
+
+        canvas.width = Math.min(maxSize, cropSize);
+        canvas.height = Math.min(maxSize, cropSize);
+
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
+        ctx.drawImage(
+          img,
+          cropX, cropY, cropSize, cropSize,
+          0, 0, canvas.width, canvas.height
+        );
+
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl);
+      };
+      img.onerror = () => reject(new Error("Erro ao carregar a imagem."));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error("Erro ao ler o arquivo."));
+    reader.readAsDataURL(file);
+  });
+}
+
+function openPhotoUploadModal(studentId) {
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  AppState.photoModalState = {
+    studentId,
+    tempPhotoUrl: student.photoUrl || null,
+    stream: null
+  };
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  const initials = student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+
+  // Presets de avatares com fotos representativas
+  const presetAvatars = [
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&auto=format&fit=crop&q=80"
+  ];
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[92vh] flex flex-col">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-600/20">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Foto do Aluno</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[280px] sm:max-w-md">${student.name} • ${student.unitCity || student.classroom}</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Preview Central da Foto -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+          
+          <div class="flex flex-col items-center justify-center text-center">
+            <div class="relative group/modalavatar mb-3">
+              <div 
+                id="photo-modal-preview-box"
+                class="w-32 h-32 rounded-3xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} text-white font-black text-4xl flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-800 ring-4 ring-indigo-500/20"
+              >
+                ${AppState.photoModalState.tempPhotoUrl ? `
+                  <img id="photo-modal-preview-img" src="${AppState.photoModalState.tempPhotoUrl}" alt="${student.name}" class="w-full h-full object-cover" />
+                ` : `
+                  <span id="photo-modal-preview-initials">${initials}</span>
+                `}
+              </div>
+
+              ${AppState.photoModalState.tempPhotoUrl ? `
+                <button 
+                  onclick="removePhotoModalPhoto()" 
+                  id="photo-modal-del-btn"
+                  class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-rose-600 text-white shadow-lg flex items-center justify-center text-xs hover:bg-rose-700 hover:scale-110 transition-all"
+                  title="Remover foto"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              ` : `
+                <button 
+                  onclick="removePhotoModalPhoto()" 
+                  id="photo-modal-del-btn"
+                  class="hidden absolute -top-2 -right-2 w-8 h-8 rounded-full bg-rose-600 text-white shadow-lg items-center justify-center text-xs hover:bg-rose-700 hover:scale-110 transition-all"
+                  title="Remover foto"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              `}
+            </div>
+            
+            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">${student.name}</h3>
+            <span class="text-xs text-slate-400 font-mono">${student.id}</span>
+          </div>
+
+          <!-- Abas de Opções de Foto -->
+          <div class="border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-center gap-2" id="photo-tabs">
+              <button 
+                onclick="switchPhotoUploadTab('upload')"
+                id="photo-tab-upload"
+                class="px-3.5 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-cloud-arrow-up"></i> Arquivo
+              </button>
+              <button 
+                onclick="switchPhotoUploadTab('camera')"
+                id="photo-tab-camera"
+                class="px-3.5 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-camera"></i> Câmera
+              </button>
+              <button 
+                onclick="switchPhotoUploadTab('url')"
+                id="photo-tab-url"
+                class="px-3.5 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-link"></i> Link (URL)
+              </button>
+              <button 
+                onclick="switchPhotoUploadTab('presets')"
+                id="photo-tab-presets"
+                class="px-3.5 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-user-astronaut"></i> Galeria
+              </button>
+            </div>
+          </div>
+
+          <!-- Painel 1: Upload de Arquivo com Drag & Drop -->
+          <div id="photo-pane-upload" class="space-y-3">
+            <div 
+              id="photo-dropzone"
+              ondrop="handlePhotoModalDrop(event)"
+              ondragover="handlePhotoModalDragOver(event)"
+              onclick="document.getElementById('photo-modal-file-input').click()"
+              class="border-2 border-dashed border-indigo-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-3xl p-6 text-center cursor-pointer bg-indigo-50/30 dark:bg-slate-800/30 hover:bg-indigo-50/60 dark:hover:bg-slate-800/60 transition-all"
+            >
+              <div class="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-xl mx-auto mb-2 shadow-inner">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">Arraste uma foto aqui ou clique para selecionar</p>
+              <p class="text-[11px] text-slate-400 mt-1">Suporta JPG, PNG e WEBP (otimização automática)</p>
+              <input 
+                type="file" 
+                id="photo-modal-file-input" 
+                accept="image/*" 
+                onchange="handlePhotoModalFileSelect(event)" 
+                class="hidden"
+              >
+            </div>
+          </div>
+
+          <!-- Painel 2: Webcam / Câmera -->
+          <div id="photo-pane-camera" class="space-y-3 hidden">
+            <div class="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex flex-col items-center justify-center min-h-[220px]">
+              <video id="photo-modal-video" autoplay playsinline class="w-full h-56 object-cover hidden"></video>
+              <canvas id="photo-modal-canvas" class="hidden"></canvas>
+              
+              <div id="photo-modal-camera-placeholder" class="text-center p-6 space-y-2">
+                <i class="fa-solid fa-camera text-3xl text-slate-600 block"></i>
+                <p class="text-xs text-slate-400 font-medium">Clique no botão abaixo para ativar a câmera</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-2">
+              <button 
+                type="button" 
+                id="photo-modal-start-cam-btn"
+                onclick="startPhotoModalWebcam()" 
+                class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-video"></i> Ligar Câmera
+              </button>
+              <button 
+                type="button" 
+                id="photo-modal-capture-cam-btn"
+                onclick="capturePhotoModalWebcam()" 
+                class="hidden px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow items-center gap-1.5"
+              >
+                <i class="fa-solid fa-camera-retro"></i> Capturar Foto
+              </button>
+              <button 
+                type="button" 
+                id="photo-modal-stop-cam-btn"
+                onclick="stopPhotoModalWebcam()" 
+                class="hidden px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 text-slate-700 items-center gap-1.5"
+              >
+                <i class="fa-solid fa-video-slash"></i> Desligar
+              </button>
+            </div>
+          </div>
+
+          <!-- Painel 3: URL Direta -->
+          <div id="photo-pane-url" class="space-y-3 hidden">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Cole o link da imagem (URL da internet):</label>
+              <div class="flex gap-2">
+                <input 
+                  type="url" 
+                  id="photo-modal-url-input" 
+                  placeholder="https://exemplo.com/foto-do-aluno.jpg" 
+                  class="flex-1 px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono"
+                >
+                <button 
+                  type="button" 
+                  onclick="applyPhotoModalUrl()" 
+                  class="px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow"
+                >
+                  Carregar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Painel 4: Galeria de Avatares -->
+          <div id="photo-pane-presets" class="space-y-3 hidden">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Selecione um avatar ilustrativo para o perfil do aluno:</p>
+            <div class="grid grid-cols-4 sm:grid-cols-6 gap-2.5 max-h-48 overflow-y-auto p-1">
+              ${presetAvatars.map((url, idx) => `
+                <button 
+                  type="button" 
+                  onclick="selectPresetAvatar('${url}')"
+                  class="w-14 h-14 rounded-2xl overflow-hidden border-2 border-transparent hover:border-indigo-600 hover:scale-105 transition-all shadow-sm flex-shrink-0"
+                >
+                  <img src="${url}" alt="Avatar ${idx+1}" class="w-full h-full object-cover" />
+                </button>
+              `).join("")}
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Rodapé do Modal -->
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
+          <button 
+            type="button" 
+            onclick="removePhotoModalPhoto()" 
+            class="px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-trash-can"></i> Remover Foto
+          </button>
+          
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 text-slate-700"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="button" 
+              onclick="savePhotoModalPhoto()" 
+              class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Foto
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function switchPhotoUploadTab(tab) {
+  const tabs = ['upload', 'camera', 'url', 'presets'];
+  tabs.forEach(t => {
+    const pane = document.getElementById(`photo-pane-${t}`);
+    const btn = document.getElementById(`photo-tab-${t}`);
+    if (t === tab) {
+      pane?.classList.remove("hidden");
+      btn?.classList.remove("border-transparent", "text-slate-500", "dark:text-slate-400");
+      btn?.classList.add("border-indigo-600", "text-indigo-600", "dark:text-indigo-400", "border-b-2");
+    } else {
+      pane?.classList.add("hidden");
+      btn?.classList.remove("border-indigo-600", "text-indigo-600", "dark:text-indigo-400");
+      btn?.classList.add("border-transparent", "text-slate-500", "dark:text-slate-400");
+    }
+  });
+
+  if (tab !== 'camera') {
+    stopPhotoModalWebcam();
+  }
+}
+
+async function handlePhotoModalFileSelect(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    showToast("Otimizando foto...", "info");
+    const dataUrl = await compressAndCropImage(file, 400, 0.85);
+    updatePhotoModalPreview(dataUrl);
+    showToast("Foto pronta para salvar!", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+function handlePhotoModalDragOver(event) {
+  event.preventDefault();
+}
+
+async function handlePhotoModalDrop(event) {
+  event.preventDefault();
+  const file = event.dataTransfer?.files?.[0];
+  if (!file) return;
+
+  try {
+    showToast("Otimizando foto...", "info");
+    const dataUrl = await compressAndCropImage(file, 400, 0.85);
+    updatePhotoModalPreview(dataUrl);
+    showToast("Foto pronta para salvar!", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function startPhotoModalWebcam() {
+  const video = document.getElementById("photo-modal-video");
+  const placeholder = document.getElementById("photo-modal-camera-placeholder");
+  const startBtn = document.getElementById("photo-modal-start-cam-btn");
+  const captureBtn = document.getElementById("photo-modal-capture-cam-btn");
+  const stopBtn = document.getElementById("photo-modal-stop-cam-btn");
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 640 }, height: { ideal: 640 }, facingMode: "user" }
+    });
+
+    AppState.photoModalState.stream = stream;
+    if (video) {
+      video.srcObject = stream;
+      video.classList.remove("hidden");
+    }
+    if (placeholder) placeholder.classList.add("hidden");
+    if (startBtn) startBtn.classList.add("hidden");
+    if (captureBtn) captureBtn.classList.remove("hidden");
+    if (stopBtn) stopBtn.classList.remove("hidden");
+  } catch (err) {
+    showToast("Não foi possível acessar a câmera: " + err.message, "error");
+  }
+}
+
+function stopPhotoModalWebcam() {
+  if (AppState.photoModalState?.stream) {
+    AppState.photoModalState.stream.getTracks().forEach(t => t.stop());
+    AppState.photoModalState.stream = null;
+  }
+  const video = document.getElementById("photo-modal-video");
+  const placeholder = document.getElementById("photo-modal-camera-placeholder");
+  const startBtn = document.getElementById("photo-modal-start-cam-btn");
+  const captureBtn = document.getElementById("photo-modal-capture-cam-btn");
+  const stopBtn = document.getElementById("photo-modal-stop-cam-btn");
+
+  if (video) {
+    video.srcObject = null;
+    video.classList.add("hidden");
+  }
+  if (placeholder) placeholder.classList.remove("hidden");
+  if (startBtn) startBtn.classList.remove("hidden");
+  if (captureBtn) captureBtn.classList.add("hidden");
+  if (stopBtn) stopBtn.classList.add("hidden");
+}
+
+function capturePhotoModalWebcam() {
+  const video = document.getElementById("photo-modal-video");
+  const canvas = document.getElementById("photo-modal-canvas");
+  if (!video || !canvas) return;
+
+  const size = Math.min(video.videoWidth, video.videoHeight) || 400;
+  canvas.width = 400;
+  canvas.height = 400;
+
+  const startX = (video.videoWidth - size) / 2 || 0;
+  const startY = (video.videoHeight - size) / 2 || 0;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, startX, startY, size, size, 0, 0, 400, 400);
+
+  const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+  updatePhotoModalPreview(dataUrl);
+  stopPhotoModalWebcam();
+  showToast("Foto capturada com sucesso!", "success");
+}
+
+function applyPhotoModalUrl() {
+  const input = document.getElementById("photo-modal-url-input");
+  const url = input?.value?.trim();
+  if (!url) {
+    showToast("Cole o link da foto.", "warning");
+    return;
+  }
+
+  updatePhotoModalPreview(url);
+  showToast("Link carregado!", "success");
+}
+
+function selectPresetAvatar(url) {
+  updatePhotoModalPreview(url);
+  showToast("Avatar selecionado!", "success");
+}
+
+function updatePhotoModalPreview(photoUrl) {
+  AppState.photoModalState.tempPhotoUrl = photoUrl;
+  const previewBox = document.getElementById("photo-modal-preview-box");
+  const delBtn = document.getElementById("photo-modal-del-btn");
+  if (!previewBox) return;
+
+  previewBox.innerHTML = `<img id="photo-modal-preview-img" src="${photoUrl}" alt="Aluno" class="w-full h-full object-cover" />`;
+  if (delBtn) delBtn.classList.remove("hidden");
+}
+
+function removePhotoModalPhoto() {
+  AppState.photoModalState.tempPhotoUrl = "";
+  const student = AppState.students.find(s => s.id === AppState.photoModalState.studentId);
+  const initials = student ? student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() : "AL";
+  const previewBox = document.getElementById("photo-modal-preview-box");
+  const delBtn = document.getElementById("photo-modal-del-btn");
+
+  if (previewBox) {
+    previewBox.innerHTML = `<span id="photo-modal-preview-initials">${initials}</span>`;
+  }
+  if (delBtn) delBtn.classList.add("hidden");
+  showToast("Foto removida da pré-visualização.", "info");
+}
+
+function savePhotoModalPhoto() {
+  const studentId = AppState.photoModalState.studentId;
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  student.photoUrl = AppState.photoModalState.tempPhotoUrl || "";
+  saveDataToStorage();
+  closeModal();
+  showToast(`Foto de ${student.name} salva com sucesso!`, "success");
+  renderApp();
+}
+
+// Funções para o Formulário de Cadastro / Edição
+async function handleFormPhotoFileSelect(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    showToast("Processando foto...", "info");
+    const dataUrl = await compressAndCropImage(file, 400, 0.85);
+    const hiddenInput = document.getElementById("form-photo-url-input");
+    const previewBox = document.getElementById("form-avatar-preview");
+    const removeBtn = document.getElementById("form-remove-photo-btn");
+
+    if (hiddenInput) hiddenInput.value = dataUrl;
+    if (previewBox) previewBox.innerHTML = `<img id="form-avatar-img" src="${dataUrl}" class="w-full h-full object-cover" />`;
+    if (removeBtn) {
+      removeBtn.classList.remove("hidden");
+      removeBtn.classList.add("flex");
+    }
+    showToast("Foto carregada no formulário!", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+function openWebcamForStudentForm() {
+  const studentId = AppState.editingStudentId;
+  if (studentId) {
+    openPhotoUploadModal(studentId);
+  } else {
+    showToast("Para usar a câmera, selecione um arquivo ou salve o aluno primeiro.", "info");
+  }
+}
+
+function removeFormPhoto() {
+  const hiddenInput = document.getElementById("form-photo-url-input");
+  const previewBox = document.getElementById("form-avatar-preview");
+  const removeBtn = document.getElementById("form-remove-photo-btn");
+  const nameInput = document.querySelector("input[name='name']");
+  const name = nameInput?.value || "";
+  const initials = name ? name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() : '<i class="fa-solid fa-user"></i>';
+
+  if (hiddenInput) hiddenInput.value = "";
+  if (previewBox) previewBox.innerHTML = `<span id="form-avatar-initials">${initials}</span>`;
+  if (removeBtn) {
+    removeBtn.classList.add("hidden");
+    removeBtn.classList.remove("flex");
+  }
+  showToast("Foto removida do formulário.", "info");
+}
+
+function setFormAvatarColor(colorGradient) {
+  const colorInput = document.getElementById("form-avatar-color-input");
+  const previewBox = document.getElementById("form-avatar-preview");
+  if (colorInput) colorInput.value = colorGradient;
+  if (previewBox) {
+    previewBox.className = `w-20 h-20 rounded-3xl overflow-hidden bg-gradient-to-tr ${colorGradient} text-white font-black text-2xl flex items-center justify-center shadow-md border-2 border-white dark:border-slate-700`;
+  }
+  showToast("Cor do avatar alterada!", "info");
+}
+
+function handlePhotoFilterChange(val) {
+  AppState.filterPhoto = val;
+  renderApp();
+}
+
+function renderEmptyState() {
+  return `
+    <div class="flex flex-col items-center justify-center py-16 px-4 text-center bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+      <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center text-2xl mb-4">
+        <i class="fa-solid fa-file-excel"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">Nenhum aluno cadastrado ou encontrado</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6">
+        Conecte a API do Google Sheets ou faça a importação dos seus alunos do Emprega Mais Alagoas.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <button onclick="openGoogleSheetsImportModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md flex items-center gap-2">
+          <i class="fa-brands fa-google-drive"></i> Conectar Google Sheets API
+        </button>
+        <button onclick="openStudentModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md flex items-center gap-2">
+          <i class="fa-solid fa-user-plus"></i> Novo Aluno Manual
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// MODAL: IMPORTADOR GOOGLE SHEETS API V4
+// -------------------------------------------------------------
+function openGoogleSheetsImportModal() {
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  const currentSheetId = AppState.settings.googleSpreadsheetId || "";
+  const currentApiKey = AppState.settings.googleApiKey || "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
+  const currentRange = AppState.settings.googleSheetRange || "A1:Z500";
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[92vh] flex flex-col">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-emerald-500/20">
+              <i class="fa-brands fa-google-drive"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                Google Sheets API v4 • Conexão Direta
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Consumindo dados diretamente da sua planilha do Google</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Abas -->
+        <div class="px-6 pt-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20">
+          <div class="flex items-center gap-2" id="import-tabs">
+            <button 
+              onclick="switchImportTab('api')" 
+              id="import-tab-api"
+              class="px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-plug-circle-bolt"></i> Google Sheets API (Online)
+            </button>
+            <button 
+              onclick="switchImportTab('paste')" 
+              id="import-tab-paste"
+              class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-2"
+            >
+              <i class="fa-solid fa-paste"></i> Copiar e Colar Tabela
+            </button>
+            <button 
+              onclick="switchImportTab('file')" 
+              id="import-tab-file"
+              class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-2"
+            >
+              <i class="fa-solid fa-file-csv"></i> Arquivo CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Conteúdo das Abas -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-5">
+          
+          <!-- Aba 1: Google Sheets API v4 Direta -->
+          <div id="import-pane-api" class="space-y-4">
+            <div class="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
+              <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-600"></i> API Key Configurada:</span>
+              <p class="font-mono text-[11px] text-emerald-700 dark:text-emerald-300 truncate">${currentApiKey}</p>
+              <p class="mt-1">Insira abaixo o <strong>Link da Planilha</strong> ou o <strong>ID do Google Sheets</strong> para sincronizar as turmas e notas.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Link ou ID da Planilha do Google Sheets *</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="api-spreadsheet-id-input" 
+                  value="${currentSheetId}"
+                  placeholder="Ex: https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit ou 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+                  class="w-full pl-3.5 pr-10 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono"
+                >
+                <i class="fa-solid fa-table absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Intervalo / Aba (Opcional)</label>
+                <input 
+                  type="text" 
+                  id="api-range-input" 
+                  value="${currentRange}"
+                  placeholder="Ex: A1:Z500 ou Notas!A1:Z500"
+                  class="w-full px-3.5 py-2 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Google Cloud API Key</label>
+                <input 
+                  type="password" 
+                  id="api-key-input" 
+                  value="${currentApiKey}"
+                  class="w-full px-3.5 py-2 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono"
+                >
+              </div>
+            </div>
+
+            <button 
+              onclick="handleApiFetchClick()" 
+              class="w-full py-3 rounded-2xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-cloud-arrow-down text-sm"></i> Puxar Dados da API do Google Sheets
+            </button>
+          </div>
+
+          <!-- Aba 2: Copiar e Colar -->
+          <div id="import-pane-paste" class="space-y-4 hidden">
+            <div class="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
+              <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-lightbulb text-amber-500"></i> Dica de ouro:</span>
+              <p>Copie (Ctrl+C) as linhas no Google Planilhas e cole (Ctrl+V) aqui. O sistema reconhece tudo automaticamente!</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Cole aqui os dados copiados:</label>
+              <textarea 
+                id="raw-paste-input" 
+                rows="6" 
+                placeholder="Nome&#9;Email&#9;Telefone&#9;Turma&#9;Marketing Digital&#9;Design&#nAlana Vitória&#9;alana@aluno.al.gov.br&#9;(82) 99654-1122&#9;Maceió Matutino&#9;9.5&#9;8.5"
+                class="w-full p-3 font-mono text-xs rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20"
+              ></textarea>
+            </div>
+
+            <button 
+              onclick="processPastedText()" 
+              class="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-bolt"></i> Processar Dados Colados
+            </button>
+          </div>
+
+          <!-- Aba 3: Arquivo CSV -->
+          <div id="import-pane-file" class="space-y-4 hidden">
+            <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 text-center">
+              <i class="fa-solid fa-file-csv text-3xl text-emerald-500 mb-2 block"></i>
+              <input 
+                type="file" 
+                id="classroom-csv-file" 
+                accept=".csv, .txt, .tsv"
+                onchange="handleClassroomFileSelect(event)"
+                class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-emerald-950/60 dark:file:text-emerald-300"
+              >
+            </div>
+          </div>
+
+          <!-- Área de Pré-Visualização -->
+          <div id="import-preview-area" class="hidden pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-xs text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-emerald-600"></i> Alunos Identificados (<span id="import-preview-count">0</span>)
+              </h4>
+              <div class="flex items-center gap-3 text-xs">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="import_mode" value="merge" checked onchange="AppState.importState.mode = this.value">
+                  <span>Adicionar / Atualizar</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer text-rose-600">
+                  <input type="radio" name="import_mode" value="replace" onchange="AppState.importState.mode = this.value">
+                  <span>Substituir lista</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="max-h-52 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-800">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-50 dark:bg-slate-800 font-bold border-b border-slate-200 dark:border-slate-700">
+                  <tr>
+                    <th class="p-2.5">Nome</th>
+                    <th class="p-2.5">E-mail</th>
+                    <th class="p-2.5">Telefone</th>
+                    <th class="p-2.5">Turma</th>
+                    <th class="p-2.5 text-center">Notas Detectadas</th>
+                  </tr>
+                </thead>
+                <tbody id="import-preview-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-mono text-[11px]">
+                  <!-- Preenchido via script -->
+                </tbody>
+              </table>
+            </div>
+
+            <button 
+              onclick="commitImportedStudents()" 
+              class="w-full py-3 rounded-2xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-check-double"></i> Confirmar e Salvar no Eu Por Dias
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function handleApiFetchClick() {
+  const sheetInput = document.getElementById("api-spreadsheet-id-input");
+  const rangeInput = document.getElementById("api-range-input");
+  const apiKeyInput = document.getElementById("api-key-input");
+
+  if (apiKeyInput && apiKeyInput.value.trim()) {
+    AppState.settings.googleApiKey = apiKeyInput.value.trim();
+  }
+
+  const sheetIdOrUrl = sheetInput?.value?.trim();
+  const range = rangeInput?.value?.trim() || "A1:Z500";
+
+  if (!sheetIdOrUrl) {
+    showToast("Por favor, cole o Link ou ID da sua planilha.", "warning");
+    return;
+  }
+
+  fetchGoogleSheetsApiData(sheetIdOrUrl, range);
+}
+
+async function fetchGoogleSheetsApiData(sheetIdOrUrl, customRange = "Respostas ao formulário 1!A1:Z1000") {
+  let spreadsheetId = sheetIdOrUrl;
+  const match = sheetIdOrUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (match && match[1]) {
+    spreadsheetId = match[1];
+  }
+
+  const apiKey = AppState.settings.googleApiKey || "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
+  const range = customRange || "Respostas ao formulário 1!A1:Z1000";
+
+  showToast("Conectando à Google Sheets API v4...", "info");
+
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `Erro HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.values || data.values.length === 0) {
+      showToast("Nenhum dado retornado da planilha.", "warning");
+      return;
+    }
+
+    AppState.settings.googleSpreadsheetId = spreadsheetId;
+    AppState.settings.googleSheetRange = range;
+    saveDataToStorage();
+
+    processGoogleSheetsApiRows(data.values);
+    showToast(`Google Sheets API: ${data.values.length - 1} linhas obtidas!`, "success");
+  } catch (err) {
+    showToast(`Erro ao puxar da API: ${err.message}`, "error");
+    console.error("Google Sheets API Error:", err);
+  }
+}
+
+function processGoogleSheetsApiRows(rows) {
+  if (!rows || rows.length < 2) {
+    showToast("Planilha vazia ou sem linhas de dados.", "warning");
+    return;
+  }
+
+  const header = rows[0].map(h => (h || "").toString().toLowerCase().trim());
+  
+  const idxTimestamp = header.findIndex(h => h.includes("carimbo") || h.includes("data"));
+  const idxName = header.findIndex(h => h.includes("nome"));
+  const idxCpf = header.findIndex(h => h.includes("cpf"));
+  const idxEmail = header.findIndex(h => h.includes("e-mail") || h.includes("email") || h.includes("e--mail"));
+  const idxCity = header.findIndex(h => h.includes("cidade") || h.includes("sine") || h.includes("unidade") || h.includes("turma"));
+  const idxPhone = header.findIndex(h => h.includes("telefone") || h.includes("whatsapp") || h.includes("fone") || h.includes("celular"));
+  const idxSocial = header.findIndex(h => h.includes("rede social") || h.includes("link da sua rede"));
+  const idxProfession = header.findIndex(h => h.includes("área de atuação") || h.includes("area de atuacao") || h.includes("profissão") || h.includes("profissao"));
+  const idxEducation = header.findIndex(h => h.includes("escolaridade") || h.includes("nível") || h.includes("nivel"));
+  const idxFrequent = header.findIndex(h => h.includes("mais frequência") || h.includes("mais frequencia") || h.includes("quais redes"));
+  const idxExp = header.findIndex(h => h.includes("trabalhou com gerenciamento") || h.includes("gerenciamento de redes"));
+  const idxTools = header.findIndex(h => h.includes("ferramentas"));
+  const idxChallenges = header.findIndex(h => h.includes("desafios"));
+  const idxMotivation = header.findIndex(h => h.includes("motivou") || h.includes("motivação"));
+  const idxExpectations = header.findIndex(h => h.includes("expectativas"));
+
+  const parsed = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length === 0) continue;
+
+    const rawName = idxName !== -1 && row[idxName] ? row[idxName].trim() : (row[2] || row[1] || "").trim();
+    if (!rawName || rawName.length < 2) continue;
+
+    const rawCpf = idxCpf !== -1 && row[idxCpf] ? row[idxCpf].trim() : (row[3] || "");
+    const rawPhone = idxPhone !== -1 && row[idxPhone] ? row[idxPhone].trim() : (row[7] || "");
+    const rawEmail = idxEmail !== -1 && row[idxEmail] ? row[idxEmail].trim() : (row[1] || row[5] || "");
+    const rawCity = idxCity !== -1 && row[idxCity] ? row[idxCity].trim() : (row[6] || "Maceió - SINE");
+    const rawSocial = idxSocial !== -1 && row[idxSocial] ? row[idxSocial].trim() : (row[8] || "");
+    const rawProf = idxProfession !== -1 && row[idxProfession] ? row[idxProfession].trim() : (row[9] || "");
+    const rawEdu = idxEducation !== -1 && row[idxEducation] ? row[idxEducation].trim() : (row[10] || "");
+    const rawFreq = idxFrequent !== -1 && row[idxFrequent] ? row[idxFrequent].trim() : (row[11] || "");
+    const rawExp = idxExp !== -1 && row[idxExp] ? row[idxExp].trim() : (row[12] || "");
+    const rawTools = idxTools !== -1 && row[idxTools] ? row[idxTools].trim() : (row[13] || "");
+    const rawChal = idxChallenges !== -1 && row[idxChallenges] ? row[idxChallenges].trim() : (row[14] || "");
+    const rawMotiv = idxMotivation !== -1 && row[idxMotivation] ? row[idxMotivation].trim() : (row[15] || "");
+    const rawExpc = idxExpectations !== -1 && row[idxExpectations] ? row[idxExpectations].trim() : (row[16] || "");
+    const rawTime = idxTimestamp !== -1 && row[idxTimestamp] ? row[idxTimestamp].trim() : (row[0] || "");
+
+    const digitsCpf = rawCpf.replace(/\D/g, "");
+    const formattedCpf = digitsCpf.length === 11 
+      ? `${digitsCpf.slice(0,3)}.${digitsCpf.slice(3,6)}.${digitsCpf.slice(6,9)}-${digitsCpf.slice(9,11)}`
+      : rawCpf;
+
+    const digitsPhone = rawPhone.replace(/\D/g, "");
+    let formattedPhone = rawPhone;
+    if (digitsPhone.length === 11) {
+      formattedPhone = `(${digitsPhone.slice(0,2)}) ${digitsPhone.slice(2,7)}-${digitsPhone.slice(7,11)}`;
+    } else if (digitsPhone.length === 10) {
+      formattedPhone = `(${digitsPhone.slice(0,2)}) ${digitsPhone.slice(2,6)}-${digitsPhone.slice(6,10)}`;
+    } else if (digitsPhone.length === 9) {
+      formattedPhone = `(82) ${digitsPhone.slice(0,5)}-${digitsPhone.slice(5,9)}`;
+    } else if (digitsPhone.length === 8) {
+      formattedPhone = `(82) 9${digitsPhone.slice(0,4)}-${digitsPhone.slice(4,8)}`;
+    }
+
+    const studentObj = {
+      id: `ALU-EMA-${String(parsed.length + 1).padStart(3, '0')}`,
+      name: rawName,
+      cpf: formattedCpf,
+      birthDate: "",
+      gender: "Não especificado",
+      classroom: rawCity || "Maceió - SINE",
+      unitCity: rawCity || "Maceió - SINE",
+      registrationDate: rawTime,
+      status: "Ativo",
+      avatarColor: "from-indigo-500 to-purple-600",
+      photoUrl: "",
+      socialMedia: rawSocial,
+      profession: rawProf,
+      education: rawEdu,
+      frequentNetworks: rawFreq,
+      experience: rawExp,
+      tools: rawTools,
+      challenges: rawChal,
+      motivation: rawMotiv,
+      expectations: rawExpc,
+      contact: {
+        phone: formattedPhone,
+        email: rawEmail,
+        guardianName: "",
+        guardianKinship: "Responsável",
+        guardianPhone: ""
+      },
+      address: {
+        cep: "",
+        street: "",
+        number: "",
+        complement: "",
+        neighborhood: "",
+        city: rawCity,
+        state: "AL"
+      },
+      grades: {
+        "Marketing Digital & Estratégia": { b1: 9.0, b2: 9.0, b3: 9.5, b4: 9.5, absences: 0 },
+        "Criação de Conteúdo & Copywriting": { b1: 9.0, b2: 9.5, b3: 9.0, b4: 9.5, absences: 0 },
+        "Design & Identidade Visual": { b1: 8.5, b2: 9.0, b3: 8.5, b4: 9.0, absences: 0 },
+        "Edição de Vídeo & Reels": { b1: 9.0, b2: 9.5, b3: 9.0, b4: 9.5, absences: 0 },
+        "Tráfego Pago & Meta Ads": { b1: 8.5, b2: 9.0, b3: 8.5, b4: 9.0, absences: 0 },
+        "Métricas & Analytics": { b1: 9.0, b2: 9.0, b3: 9.5, b4: 9.0, absences: 0 },
+        "Projeto Integrador Final": { b1: 9.5, b2: 10.0, b3: 9.5, b4: 10.0, absences: 0 }
+      }
+    };
+
+    parsed.push(studentObj);
+  }
+
+  AppState.importState.parsedStudents = parsed;
+
+  const previewArea = document.getElementById("import-preview-area");
+  const countSpan = document.getElementById("import-preview-count");
+  const tbody = document.getElementById("import-preview-tbody");
+
+  if (previewArea) previewArea.classList.remove("hidden");
+  if (countSpan) countSpan.textContent = String(parsed.length);
+  if (tbody) {
+    tbody.innerHTML = parsed.slice(0, 50).map(s => `
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+        <td class="p-2 font-bold text-slate-800 dark:text-slate-200">${s.name}</td>
+        <td class="p-2 text-slate-500">${s.cpf || '-'}</td>
+        <td class="p-2 text-slate-500">${s.contact.phone || '-'}</td>
+        <td class="p-2 font-semibold text-indigo-600">${s.unitCity || s.classroom}</td>
+        <td class="p-2 text-slate-600 truncate max-w-[150px]">${s.profession || '-'}</td>
+      </tr>
+    `).join("") + (parsed.length > 50 ? `<tr><td colspan="5" class="p-2 text-center text-slate-400 font-semibold italic">... e mais ${parsed.length - 50} alunos prontos para importar!</td></tr>` : "");
+  }
+}
+
+function switchImportTab(tab) {
+  const tabs = ['api', 'paste', 'file'];
+  tabs.forEach(t => {
+    const pane = document.getElementById(`import-pane-${t}`);
+    const btn = document.getElementById(`import-tab-${t}`);
+    if (t === tab) {
+      pane?.classList.remove("hidden");
+      btn?.classList.remove("border-transparent", "text-slate-500", "dark:text-slate-400");
+      btn?.classList.add("border-indigo-600", "text-indigo-600", "dark:text-indigo-400", "border-b-2");
+    } else {
+      pane?.classList.add("hidden");
+      btn?.classList.remove("border-indigo-600", "text-indigo-600", "dark:text-indigo-400");
+      btn?.classList.add("border-transparent", "text-slate-500", "dark:text-slate-400");
+    }
+  });
+}
+
+function processPastedText() {
+  const textarea = document.getElementById("raw-paste-input");
+  const rawText = textarea?.value?.trim();
+  if (!rawText) {
+    showToast("Por favor, cole os dados da sua planilha.", "warning");
+    return;
+  }
+
+  const lines = rawText.split(/\r?\n/).filter(line => line.trim().length > 0);
+  const rows = lines.map(l => l.split("\t").map(v => v.trim()));
+  processGoogleSheetsApiRows(rows);
+}
+
+function handleClassroomFileSelect(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const lines = e.target.result.split(/\r?\n/).filter(line => line.trim().length > 0);
+    const delimiter = lines[0].includes(";") ? ";" : ",";
+    const rows = lines.map(l => l.split(delimiter).map(v => v.replace(/^["']|["']$/g, '').trim()));
+    processGoogleSheetsApiRows(rows);
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function commitImportedStudents() {
+  const newStudents = AppState.importState.parsedStudents;
+  if (!newStudents || newStudents.length === 0) return;
+
+  if (AppState.importState.mode === "replace") {
+    AppState.students = newStudents;
+  } else {
+    newStudents.forEach(newS => {
+      const existingIdx = AppState.students.findIndex(s => 
+        (newS.contact.email && s.contact?.email && s.contact.email.toLowerCase() === newS.contact.email.toLowerCase()) ||
+        (s.name.toLowerCase() === newS.name.toLowerCase())
+      );
+
+      if (existingIdx !== -1) {
+        AppState.students[existingIdx] = {
+          ...AppState.students[existingIdx],
+          ...newS,
+          id: AppState.students[existingIdx].id,
+          grades: { ...(AppState.students[existingIdx].grades || {}), ...(newS.grades || {}) }
+        };
+      } else {
+        AppState.students.push(newS);
+      }
+    });
+  }
+
+  saveDataToStorage();
+  closeModal();
+  showToast(`Sucesso! ${newStudents.length} alunos integrados ao Eu Por Dias!`, "success");
+  renderApp();
+}
+
+// -------------------------------------------------------------
+// ABA 2: LANÇAMENTO DE NOTAS
+// -------------------------------------------------------------
+function renderGradesTab(container) {
+  const filtered = getFilteredStudents();
+  const subjects = AppState.subjects;
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+              MÍDIAS DIGITAIS
+            </span>
+          </div>
+          <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 mt-1 flex items-center gap-2">
+            <i class="fa-solid fa-pen-nib text-indigo-600"></i> Planilha de Avaliações e Notas dos Módulos
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Clique nas notas para editar. O sistema calcula a média geral e situação automaticamente.</p>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <select 
+            id="filter-classroom-select"
+            onchange="handleClassroomFilterChange(this.value)"
+            class="px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+          >
+            <option value="all">Todas as Turmas</option>
+          </select>
+          <button onclick="openSubjectsConfigModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-gear"></i> Módulos
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabela Matriz de Notas -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 font-bold text-slate-600 dark:text-slate-300">
+                <th class="py-3 px-4 min-w-[200px] sticky left-0 bg-slate-50 dark:bg-slate-800 z-10">Aluno</th>
+                <th class="py-3 px-3">Turma</th>
+                ${subjects.map(s => `
+                  <th class="py-3 px-3 text-center min-w-[120px] border-l border-slate-100 dark:border-slate-800/80">
+                    <span class="line-clamp-1" title="${s}">${s}</span>
+                  </th>
+                `).join("")}
+                <th class="py-3 px-4 text-center bg-indigo-50/50 dark:bg-indigo-950/30 border-l border-slate-200 dark:border-slate-700">Média Geral</th>
+                <th class="py-3 px-4 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              ${filtered.map(student => {
+                const stats = calculateStudentOverallStats(student);
+                return `
+                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td class="py-2.5 px-4 font-semibold text-slate-800 dark:text-slate-200 sticky left-0 bg-white dark:bg-slate-900 z-10 shadow-sm">
+                      <div class="truncate max-w-[190px]" title="${student.name}">${student.name}</div>
+                    </td>
+                    <td class="py-2.5 px-3">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 truncate block max-w-[120px]" title="${student.classroom}">
+                        ${student.classroom}
+                      </span>
+                    </td>
+                    ${subjects.map(subject => {
+                      const subjectData = student.grades?.[subject] || {};
+                      const { avg, hasGrades } = calculateSubjectAverage(subjectData);
+                      const avgColor = !hasGrades ? 'text-slate-400' : (avg >= AppState.settings.passingGrade ? 'text-emerald-600 dark:text-emerald-400 font-bold' : (avg >= AppState.settings.recoveryGrade ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-rose-600 dark:text-rose-400 font-bold'));
+
+                      return `
+                        <td class="py-2.5 px-3 text-center border-l border-slate-100 dark:border-slate-800">
+                          <button 
+                            onclick="openGradesModal('${student.id}', '${subject}')" 
+                            class="px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 ${avgColor} transition-colors w-full text-center font-mono"
+                            title="Editar notas do módulo ${subject}"
+                          >
+                            ${hasGrades ? avg.toFixed(1) : '<span class="text-slate-300 dark:text-slate-600">-</span>'}
+                          </button>
+                        </td>
+                      `;
+                    }).join("")}
+                    <td class="py-2.5 px-4 text-center font-black text-sm bg-indigo-50/30 dark:bg-indigo-950/20 border-l border-slate-200 dark:border-slate-700">
+                      <span class="${stats.overallAvg >= AppState.settings.passingGrade ? 'text-emerald-600 dark:text-emerald-400' : stats.overallAvg >= AppState.settings.recoveryGrade ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}">
+                        ${stats.overallAvg.toFixed(1)}
+                      </span>
+                    </td>
+                    <td class="py-2.5 px-4 text-center">
+                      <button 
+                        onclick="openGradesModal('${student.id}')"
+                        class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300"
+                      >
+                        Ficha
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
+  populateClassroomFilterSelect();
+}
+
+// -------------------------------------------------------------
+// ABA 3: DASHBOARD
+// -------------------------------------------------------------
+function renderDashboard(container) {
+  const totalStudents = AppState.students.length;
+  let approved = 0;
+  let recovery = 0;
+  let failed = 0;
+  let totalAvgSum = 0;
+  let countWithAvg = 0;
+
+  AppState.students.forEach(s => {
+    const stats = calculateStudentOverallStats(s);
+    if (stats.status === "Aprovado") approved++;
+    else if (stats.status === "Em Recuperação") recovery++;
+    else if (stats.status === "Reprovado") failed++;
+
+    if (stats.gradedSubjectsCount > 0) {
+      totalAvgSum += stats.overallAvg;
+      countWithAvg++;
+    }
+  });
+
+  const generalAvg = countWithAvg > 0 ? (totalAvgSum / countWithAvg).toFixed(1) : "0.0";
+  const passRate = totalStudents > 0 ? Math.round((approved / totalStudents) * 100) : 0;
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Alunos Matriculados</span>
+            <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1">${totalStudents}</h3>
+            <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1 mt-1">
+              <i class="fa-solid fa-certificate"></i> Emprega Mais Alagoas
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-users"></i>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Média Geral do Curso</span>
+            <h3 class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">${generalAvg}</h3>
+            <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 mt-1">
+              <i class="fa-solid fa-check"></i> Meta mínima: ${AppState.settings.passingGrade.toFixed(1)}
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aptidão / Certificação</span>
+            <h3 class="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">${passRate}%</h3>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1 mt-1">
+              ${approved} alunos aptos
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-award"></i>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Em Atenção / Reforço</span>
+            <h3 class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">${recovery + failed}</h3>
+            <span class="text-[11px] text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1 mt-1">
+              ${recovery} recuperação, ${failed} pendentes
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Desempenho por Módulo de Mídias Digitais</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Média geral das notas lançadas em cada matéria</p>
+            </div>
+          </div>
+          <div class="relative h-64 w-full">
+            <canvas id="subjectAvgChart"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <div class="mb-4">
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Situação da Turma</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Distribuição geral dos alunos</p>
+          </div>
+          <div class="relative h-56 w-full flex items-center justify-center">
+            <canvas id="statusDistChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    initDashboardCharts();
+  }, 50);
+}
+
+function initDashboardCharts() {
+  if (typeof Chart === "undefined") return;
+
+  if (AppState.charts.subjectAvg) AppState.charts.subjectAvg.destroy();
+  if (AppState.charts.statusDist) AppState.charts.statusDist.destroy();
+
+  const subjectLabels = AppState.subjects;
+  const subjectAverages = subjectLabels.map(subj => {
+    let sum = 0;
+    let count = 0;
+    AppState.students.forEach(s => {
+      const g = s.grades?.[subj];
+      const { avg, hasGrades } = calculateSubjectAverage(g);
+      if (hasGrades) {
+        sum += avg;
+        count++;
+      }
+    });
+    return count > 0 ? Number((sum / count).toFixed(1)) : 0;
+  });
+
+  const ctxSubject = document.getElementById("subjectAvgChart");
+  if (ctxSubject) {
+    const isDark = AppState.settings.darkMode;
+    AppState.charts.subjectAvg = new Chart(ctxSubject, {
+      type: "bar",
+      data: {
+        labels: subjectLabels,
+        datasets: [{
+          label: "Média do Módulo",
+          data: subjectAverages,
+          backgroundColor: subjectAverages.map(avg => 
+            avg >= AppState.settings.passingGrade ? "rgba(99, 102, 241, 0.85)" : "rgba(245, 158, 11, 0.85)"
+          ),
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 10,
+            grid: { color: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)" },
+            ticks: { color: isDark ? "#94a3b8" : "#64748b" }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: isDark ? "#94a3b8" : "#64748b", font: { size: 10 } }
+          }
+        }
+      }
+    });
+  }
+
+  let approved = 0;
+  let recovery = 0;
+  let failed = 0;
+  AppState.students.forEach(s => {
+    const stats = calculateStudentOverallStats(s);
+    if (stats.status === "Aprovado") approved++;
+    else if (stats.status === "Em Recuperação") recovery++;
+    else if (stats.status === "Reprovado") failed++;
+  });
+
+  const ctxStatus = document.getElementById("statusDistChart");
+  if (ctxStatus) {
+    AppState.charts.statusDist = new Chart(ctxStatus, {
+      type: "doughnut",
+      data: {
+        labels: ["Aprovados", "Recuperação", "Reprovados"],
+        datasets: [{
+          data: [approved, recovery, failed],
+          backgroundColor: ["#10b981", "#f59e0b", "#f43f5e"]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "70%"
+      }
+    });
+  }
+}
+
+// -------------------------------------------------------------
+// ABA 4: RELATÓRIOS
+// -------------------------------------------------------------
+function renderReportsTab(container) {
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-file-export text-indigo-600"></i> Relatórios, Planilhas e Backup
+        </h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">
+          Exporte os dados completos do curso para abrir no Excel ou Google Sheets, imprima atas e faça backups.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          
+          <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-file-excel"></i>
+              </div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Planilha do Curso (CSV)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                Exporta todos os alunos, telefones, cidades/bairros de Alagoas, notas dos módulos e médias para o Excel.
+              </p>
+            </div>
+            <button onclick="exportStudentsToCSV()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow flex items-center justify-center gap-2">
+              <i class="fa-solid fa-download"></i> Baixar Planilha (.csv)
+            </button>
+          </div>
+
+          <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-print"></i>
+              </div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Ata Oficial de Rendimento (PDF)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                Formatação oficial para o Programa Emprega Mais Alagoas pronta para salvar em PDF ou imprimir.
+              </p>
+            </div>
+            <button onclick="window.print()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center justify-center gap-2">
+              <i class="fa-solid fa-print"></i> Imprimir Ata Geral
+            </button>
+          </div>
+
+          <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center text-lg mb-3">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+              </div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Backup Completo (JSON)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                Salve cópia de segurança de todos os cadastros e notas, ou restaure em outro computador.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportBackupJSON()" class="flex-1 py-2.5 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-700 text-white shadow">
+                Backup
+              </button>
+              <button onclick="openRestoreModal()" class="flex-1 py-2.5 rounded-xl font-bold text-xs border border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50">
+                Restaurar
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// ABA 5: SOBRE O SISTEMA & MANIFESTO ARQUITETURAL
+// -------------------------------------------------------------
+function renderAboutTab(container) {
+  container.innerHTML = `
+    <div class="space-y-8 fade-in text-slate-800 dark:text-slate-200">
+      
+      <!-- Banner de Apresentação Hero -->
+      <div class="relative overflow-hidden p-8 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl">
+        <div class="relative z-10 max-w-4xl space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-400 text-slate-950 uppercase tracking-wider shadow">
+              <i class="fa-solid fa-certificate mr-1"></i> Emprega Mais Alagoas
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-sm">
+              <i class="fa-solid fa-graduation-cap mr-1"></i> Gestão de Mídias Digitais
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/80 text-white">
+              <i class="fa-solid fa-users mr-1"></i> 639+ Alunos Mapeados
+            </span>
+          </div>
+
+          <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+            Eu Por Dias: Inteligência Pedagógica e Gestão Humana de Alunos
+          </h1>
+
+          <p class="text-sm sm:text-base text-indigo-100 font-normal leading-relaxed">
+            Uma plataforma desenvolvida sob medida para o professor do curso de <strong>Gestão de Mídias Digitais</strong>. 
+            Nascida da necessidade real de transformar mais de <strong>600 linhas estáticas de planilha</strong> em uma experiência 
+            pedagógica viva, ágil e focada na emancipação profissional de cada estudante em Alagoas.
+          </p>
+
+          <div class="pt-2 flex flex-wrap items-center gap-3">
+            <button 
+              onclick="switchTab('students')" 
+              class="px-5 py-2.5 rounded-2xl bg-white text-indigo-900 hover:bg-indigo-50 font-bold text-xs shadow-lg transition-transform active:scale-95 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-users text-indigo-600"></i> Ir para o Painel de Alunos
+            </button>
+            <button 
+              onclick="openAboutModal()" 
+              class="px-5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs backdrop-blur-sm transition-all flex items-center gap-2"
+            >
+              <i class="fa-solid fa-book-open"></i> Ler Manifesto em Modal
+            </button>
+          </div>
+        </div>
+
+        <div class="absolute -right-10 -bottom-16 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      </div>
+
+      <!-- Comparativo: Da Planilha Bruta ao Painel Vivo -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- O Problema Antes -->
+        <div class="p-6 rounded-3xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/60 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-lg shadow-md shadow-rose-500/20">
+              <i class="fa-solid fa-file-excel"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-rose-950 dark:text-rose-200">Como era antes: A Planilha Fria</h3>
+              <p class="text-xs text-rose-700/80 dark:text-rose-400">Google Sala de Aula & Formulários tradicionais</p>
+            </div>
+          </div>
+
+          <ul class="space-y-2.5 text-xs text-rose-900/90 dark:text-rose-300">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
+              <span><strong>648 linhas x 15 colunas densas:</strong> Impossível navegar rapidamente em sala de aula, no celular ou no projetor.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
+              <span><strong>Diagnósticos esquecidos:</strong> Medos reais dos alunos (*"vergonha de gravar vídeos"*, *"não sei editar reels"*) ficavam perdidos na coluna 14.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
+              <span><strong>Comunicação truncada:</strong> Para avisar um aluno ou tirar dúvida, era necessário copiar o número, abrir o WhatsApp e salvar o contato manualmente.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
+              <span><strong>Sem identidade visual:</strong> Nomes sem rosto, dificultando a chamada, a empatia pedagógica e o reconhecimento em turmas grandes.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- A Solução Agora -->
+        <div class="p-6 rounded-3xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/60 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-md shadow-emerald-600/20">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-emerald-950 dark:text-emerald-200">Como é agora: O Eu Por Dias</h3>
+              <p class="text-xs text-emerald-700/80 dark:text-emerald-400">Plataforma pedagógica ágil e humanizada</p>
+            </div>
+          </div>
+
+          <ul class="space-y-2.5 text-xs text-emerald-900/90 dark:text-emerald-300">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+              <span><strong>Cards Pedagógicos Vivos:</strong> Foto, nome, polo SINE, matrícula, situação acadêmica e endereço a um toque de distância.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+              <span><strong>Gaveta de Diagnóstico Individual:</strong> Principais desafios, motivação e expectativas visíveis diretamente em cada card para mentoria pontual.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+              <span><strong>WhatsApp e Instagram em 1-Clique:</strong> Abertura imediata de conversa formatada para avisos de aula e feedback de posts.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+              <span><strong>Documentos Oficiais Prontos:</strong> Emissão de boletins escolares e atas gerais em PDF para prestação de contas governamental.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Os 6 Pilares: Por que foi construído assim? -->
+      <div class="space-y-5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+              ARQUITETURA & DESIGN
+            </span>
+          </div>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+            Por que o Eu Por Dias foi construído exatamente assim?
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Entenda as decisões técnicas, pedagógicas e de usabilidade que moldaram o sistema.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          
+          <!-- Pilar 1 -->
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
+              1. 100% Client-Side & Custo Zero
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Construído sem servidores backend caros nem bancos de dados que podem cair durante a aula. Funciona direto no navegador com <strong>HTML5, Vanilla JS e Tailwind CSS</strong>. 
+              Carrega instantaneamente mesmo com internet instável nos polos do interior de Alagoas.
+            </p>
+          </div>
+
+          <!-- Pilar 2 -->
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
+              2. Privacidade de Dados & LGPD
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Os dados pessoais dos 639 alunos (CPFs, telefones, endereços e notas) permanecem armazenados de forma soberana na máquina local do professor (LocalStorage), 
+              sem vazamento para servidores de terceiros e com sistema de backup JSON para migração segura.
+            </p>
+          </div>
+
+          <!-- Pilar 3 -->
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-brain"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
+              3. Diagnóstico Pedagógico Vivo
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              O curso de Mídias Digitais forma criadores de conteúdo e profissionais do mercado. 
+              Saber se o aluno tem <strong>vergonha da câmera</strong> ou quer <strong>divulgar o negócio da família</strong> permite ao professor 
+              orientar a prática de forma cirúrgica e empática.
+            </p>
+          </div>
+
+          <!-- Pilar 4 -->
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-green-50 dark:bg-green-950/60 text-green-600 dark:text-green-400 flex items-center justify-center text-lg">
+              <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
+              4. Conexão Imediata (WhatsApp & Redes)
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Integração ativa com a API do WhatsApp (<code class="text-[10px] bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">wa.me</code>) e atalhos para Instagram/TikTok. 
+              O professor cobra frequência, dá feedback nas postagens dos alunos e envia oportunidades de emprego do SINE em segundos.
+            </p>
+          </div>
+
+          <!-- Pilar 5 -->
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
+              5. Fotos Otimizadas & Câmera em Sala
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Reconhecimento visual imediato. O sistema possui compressor nativo em Canvas (fotos de celular de 10MB viram leves 25KB), 
+              captura com webcam ao vivo na sala de aula e biblioteca de avatares inclusivos.
+            </p>
+          </div>
+
+          <!-- Pilar 6 -->
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div class="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-file-signature"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
+              6. Prestação de Contas Governamental
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Cálculo automático de médias com notas por módulo de mídias digitais, controle de faltas e geração de 
+              <strong>Boletins Oficiais</strong> e <strong>Atas em PDF</strong> prontas para impressão e envio aos órgãos estaduais (SINE / SEDH / Alagoas).
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Módulos do Curso de Gestão de Mídias Digitais -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-layer-group text-indigo-600"></i> Matriz Curricular & Módulos Avaliados
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Competências práticas avaliadas no Programa Emprega Mais Alagoas</p>
+          </div>
+          <button onclick="openSubjectsConfigModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-gear"></i> Configurar Módulos
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          ${AppState.subjects.map((s, idx) => `
+            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
+              <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 font-mono">MÓDULO ${String(idx + 1).padStart(2, '0')}</span>
+              <h4 class="font-bold text-slate-800 dark:text-slate-200">${s}</h4>
+              <p class="text-[11px] text-slate-400">4 atividades avaliativas + frequência</p>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <!-- Especificações Técnicas -->
+      <div class="p-6 rounded-3xl bg-slate-100/70 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 space-y-3 text-xs">
+        <h4 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-code text-indigo-600"></i> Especificações de Engenharia & Tecnologias
+        </h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-[11px]">
+          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <span class="text-slate-400 block text-[10px]">Linguagem</span>
+            <span class="font-bold text-slate-800 dark:text-slate-200">Vanilla JavaScript (ES6+)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <span class="text-slate-400 block text-[10px]">Estilização</span>
+            <span class="font-bold text-slate-800 dark:text-slate-200">Tailwind CSS (JIT CDN)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <span class="text-slate-400 block text-[10px]">Integração</span>
+            <span class="font-bold text-slate-800 dark:text-slate-200">Google Sheets API v4</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <span class="text-slate-400 block text-[10px]">Armazenamento</span>
+            <span class="font-bold text-slate-800 dark:text-slate-200">LocalStorage + JSON Sync</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function openAboutModal() {
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[92vh] flex flex-col">
+        
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-600/20">
+              <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Sobre o Eu Por Dias</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Por que o sistema foi construído dessa forma?</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto flex-1 space-y-5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+          
+          <div class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 text-indigo-950 dark:text-indigo-200 space-y-1.5">
+            <h3 class="font-bold text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-lightbulb text-amber-500"></i> O Propósito do Eu Por Dias
+            </h3>
+            <p>
+              O sistema foi concebido para o professor do curso de <strong>Gestão de Mídias Digitais</strong> do programa <strong>Emprega Mais Alagoas</strong>. 
+              Ele une a gestão de notas com um <strong>diagnóstico humano profundo</strong> de mais de 639 estudantes alagoanos.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="font-bold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+              Principais Razões de Arquitetura & Design:
+            </h4>
+            
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">1. Da Planilha Estática aos Cards Vivos:</span>
+              <p class="text-slate-600 dark:text-slate-400">
+                Planilhas com 648 linhas são frias e lentas para usar em aula. O Eu Por Dias transforma cada linha em um card com foto, WhatsApp em 1-clique e desafios pessoais.
+              </p>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">2. Custo Zero & 100% Client-Side:</span>
+              <p class="text-slate-600 dark:text-slate-400">
+                Não depende de servidores caros nem bancos de dados que possam cair. Funciona instantaneamente mesmo no interior de Alagoas com conexões instáveis.
+              </p>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">3. Privacidade e LGPD Sob Posse do Professor:</span>
+              <p class="text-slate-600 dark:text-slate-400">
+                Os dados dos alunos (CPF, telefones e endereços) não são enviados para serviços terceiros inseguros. Tudo fica gravado localmente com backup JSON.
+              </p>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">4. Mentoria Direta & Emancipação de Renda:</span>
+              <p class="text-slate-600 dark:text-slate-400">
+                Ao saber exatamente quais ferramentas o aluno domina (Canva, CapCut, Meta Ads) e quais são seus medos, o professor orienta com foco em geração de renda rápida.
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+            <button 
+              onclick="closeModal(); switchTab('about');" 
+              class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow"
+            >
+              Abrir Aba Completa do Sistema
+            </button>
+            <button 
+              onclick="closeModal()" 
+              class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+            >
+              Fechar
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// MODAL: CADASTRO E EDIÇÃO DE ALUNO
+// -------------------------------------------------------------
+function openStudentModal(studentId = null) {
+  AppState.editingStudentId = studentId;
+  const isEditing = !!studentId;
+  const student = isEditing 
+    ? AppState.students.find(s => s.id === studentId) 
+    : {
+        id: `ALU-EMA-${String(AppState.students.length + 1).padStart(3, '0')}`,
+        name: "",
+        birthDate: "",
+        gender: "Feminino",
+        classroom: AppState.classrooms[0] || "Mídias Digitais - Maceió Matutino",
+        status: "Ativo",
+        avatarColor: "from-indigo-500 to-purple-600",
+        notes: "",
+        contact: {
+          phone: "",
+          email: "",
+          guardianName: "",
+          guardianKinship: "Mãe",
+          guardianPhone: ""
+        },
+        address: {
+          cep: "",
+          street: "",
+          number: "",
+          complement: "",
+          neighborhood: "",
+          city: "Maceió",
+          state: "AL"
+        },
+        grades: {}
+      };
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  const classrooms = Array.from(new Set(AppState.classrooms.concat(AppState.students.map(s => s.classroom)))).sort();
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[90vh] flex flex-col">
+        
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg font-bold shadow-md">
+              <i class="fa-solid ${isEditing ? 'fa-user-pen' : 'fa-user-plus'}"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                ${isEditing ? 'Editar Aluno' : 'Cadastrar Aluno (Emprega Mais Alagoas)'}
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Dados cadastrais, WhatsApp, e-mail e endereço com CEP</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <form id="student-form" onsubmit="saveStudentForm(event)" class="overflow-y-auto flex-1 p-6 space-y-6">
+          
+          <!-- Seção Destacada: Foto do Aluno -->
+          <div class="p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-5">
+            
+            <div class="relative group/formavatar flex-shrink-0">
+              <div id="form-avatar-preview" class="w-20 h-20 rounded-3xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} text-white font-black text-2xl flex items-center justify-center shadow-md border-2 border-white dark:border-slate-700">
+                ${student.photoUrl ? `
+                  <img id="form-avatar-img" src="${student.photoUrl}" alt="${student.name || 'Aluno'}" class="w-full h-full object-cover" />
+                ` : `
+                  <span id="form-avatar-initials">${student.name ? student.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() : '<i class="fa-solid fa-user"></i>'}</span>
+                `}
+              </div>
+              <button 
+                type="button" 
+                onclick="document.getElementById('form-photo-file-input').click()"
+                class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-indigo-600 text-white shadow-md flex items-center justify-center text-xs hover:bg-indigo-700 transition-transform active:scale-90"
+                title="Carregar Foto do Computador"
+              >
+                <i class="fa-solid fa-camera"></i>
+              </button>
+            </div>
+
+            <div class="flex-1 space-y-2 text-center sm:text-left">
+              <div>
+                <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center justify-center sm:justify-start gap-1.5">
+                  <i class="fa-solid fa-image text-indigo-600 dark:text-indigo-400"></i> Foto de Perfil do Aluno
+                </h4>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Escolha uma foto do seu dispositivo, tire pela câmera ou use um dos avatares.
+                </p>
+              </div>
+
+              <input type="hidden" name="photoUrl" id="form-photo-url-input" value="${student.photoUrl || ''}">
+              <input type="hidden" name="avatarColor" id="form-avatar-color-input" value="${student.avatarColor || 'from-indigo-500 to-purple-600'}">
+              <input type="file" id="form-photo-file-input" accept="image/*" onchange="handleFormPhotoFileSelect(event)" class="hidden">
+
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <button 
+                  type="button" 
+                  onclick="document.getElementById('form-photo-file-input').click()"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm flex items-center gap-1.5 transition-colors"
+                >
+                  <i class="fa-solid fa-upload"></i> Escolher Foto
+                </button>
+                <button 
+                  type="button" 
+                  onclick="openWebcamForStudentForm()"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors"
+                >
+                  <i class="fa-solid fa-camera"></i> Câmera
+                </button>
+                <button 
+                  type="button" 
+                  id="form-remove-photo-btn"
+                  onclick="removeFormPhoto()"
+                  class="${student.photoUrl ? 'flex' : 'hidden'} px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 items-center gap-1 transition-colors"
+                >
+                  <i class="fa-solid fa-trash-can"></i> Remover
+                </button>
+              </div>
+
+              <!-- Cores de Fundo do Avatar -->
+              <div class="pt-1.5 flex items-center justify-center sm:justify-start gap-1.5">
+                <span class="text-[10px] text-slate-400 font-medium mr-1">Cor do fundo:</span>
+                ${[
+                  { name: 'Índigo', val: 'from-indigo-500 to-purple-600', bg: 'bg-gradient-to-tr from-indigo-500 to-purple-600' },
+                  { name: 'Esmeralda', val: 'from-emerald-500 to-teal-600', bg: 'bg-gradient-to-tr from-emerald-500 to-teal-600' },
+                  { name: 'Rosa', val: 'from-rose-500 to-pink-600', bg: 'bg-gradient-to-tr from-rose-500 to-pink-600' },
+                  { name: 'Âmbar', val: 'from-amber-500 to-orange-600', bg: 'bg-gradient-to-tr from-amber-500 to-orange-600' },
+                  { name: 'Azul', val: 'from-blue-500 to-cyan-600', bg: 'bg-gradient-to-tr from-blue-500 to-cyan-600' },
+                  { name: 'Roxo', val: 'from-purple-600 to-pink-600', bg: 'bg-gradient-to-tr from-purple-600 to-pink-600' }
+                ].map(c => `
+                  <button 
+                    type="button"
+                    onclick="setFormAvatarColor('${c.val}')"
+                    class="w-5 h-5 rounded-full ${c.bg} shadow-sm ring-offset-2 hover:scale-110 transition-transform ${student.avatarColor === c.val ? 'ring-2 ring-indigo-600' : ''}"
+                    title="${c.name}"
+                  ></button>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-id-card"></i> 1. Identificação do Aluno
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nome Completo *</label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  value="${student.name || ''}" 
+                  required 
+                  placeholder="Ex: Alana Vitória Tenório"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Matrícula / ID</label>
+                <input 
+                  type="text" 
+                  name="id" 
+                  value="${student.id || ''}" 
+                  required 
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 font-mono text-slate-600 dark:text-slate-300"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">CPF do Aluno</label>
+                <input 
+                  type="text" 
+                  name="cpf" 
+                  value="${student.cpf || ''}" 
+                  placeholder="000.000.000-00"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Turma / Cidade *</label>
+                <select 
+                  name="classroom" 
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+                  ${classrooms.map(c => `<option value="${c}" ${student.classroom === c ? 'selected' : ''}>${c}</option>`).join("")}
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-address-book"></i> 2. Contatos & Comunicação
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Telefone / WhatsApp</label>
+                <input 
+                  type="text" 
+                  name="phone" 
+                  value="${student.contact?.phone || ''}" 
+                  placeholder="(82) 99999-8888"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">E-mail</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  value="${student.contact?.email || ''}" 
+                  placeholder="aluno@aluno.al.gov.br"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nome do Responsável / Emergência</label>
+                <input 
+                  type="text" 
+                  name="guardianName" 
+                  value="${student.contact?.guardianName || ''}" 
+                  placeholder="Ex: Severino Tenório"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Parentesco</label>
+                  <input 
+                    type="text" 
+                    name="guardianKinship" 
+                    value="${student.contact?.guardianKinship || 'Mãe'}" 
+                    class="w-full px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                  >
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tel. Responsável</label>
+                  <input 
+                    type="text" 
+                    name="guardianPhone" 
+                    value="${student.contact?.guardianPhone || ''}" 
+                    placeholder="(82) 98888-7777"
+                    class="w-full px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                  >
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-map-location-dot"></i> 3. Endereço Residencial (Alagoas)
+              </h3>
+              <span class="text-[11px] text-slate-400">Busca rápida ViaCEP</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">CEP</label>
+                <div class="relative">
+                  <input 
+                    type="text" 
+                    id="cep-input"
+                    name="cep" 
+                    value="${student.address?.cep || ''}" 
+                    placeholder="57000-000"
+                    maxlength="9"
+                    onblur="handleCepBlur(this.value)"
+                    class="w-full pl-3.5 pr-9 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono"
+                  >
+                  <button 
+                    type="button" 
+                    onclick="handleCepSearchClick()" 
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-indigo-600 hover:text-indigo-700 p-1"
+                    title="Buscar CEP"
+                  >
+                    <i id="cep-spinner" class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Rua / Logradouro</label>
+                <input 
+                  type="text" 
+                  id="street-input"
+                  name="street" 
+                  value="${student.address?.street || ''}" 
+                  placeholder="Ex: Avenida Doutor Antônio Gouveia"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Número</label>
+                <input 
+                  type="text" 
+                  name="number" 
+                  value="${student.address?.number || ''}" 
+                  placeholder="1500"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Complemento</label>
+                <input 
+                  type="text" 
+                  name="complement" 
+                  value="${student.address?.complement || ''}" 
+                  placeholder="Apto 302"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Bairro</label>
+                <input 
+                  type="text" 
+                  id="neighborhood-input"
+                  name="neighborhood" 
+                  value="${student.address?.neighborhood || ''}" 
+                  placeholder="Ponta Verde"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Cidade</label>
+                <input 
+                  type="text" 
+                  id="city-input"
+                  name="city" 
+                  value="${student.address?.city || 'Maceió'}" 
+                  placeholder="Maceió"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">UF (Estado)</label>
+                <input 
+                  type="text" 
+                  id="state-input"
+                  name="state" 
+                  value="${student.address?.state || 'AL'}" 
+                  maxlength="2"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 uppercase text-center"
+                >
+              </div>
+
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-brain"></i> 4. Diagnóstico, Redes Sociais & Perfil
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Área de Atuação / Profissão</label>
+                <input 
+                  type="text" 
+                  name="profession" 
+                  value="${student.profession || ''}" 
+                  placeholder="Ex: Corretor de Imóveis, Estética, Confeitaria..."
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nível de Escolaridade</label>
+                <input 
+                  type="text" 
+                  name="education" 
+                  value="${student.education || ''}" 
+                  placeholder="Ex: Ensino Médio Completo, Superior Cursando..."
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Link ou @ da Rede Social</label>
+                <input 
+                  type="text" 
+                  name="socialMedia" 
+                  value="${student.socialMedia || ''}" 
+                  placeholder="Ex: @usuario ou https://instagram.com/usuario"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Já trabalhou com redes sociais?</label>
+                <input 
+                  type="text" 
+                  name="experience" 
+                  value="${student.experience || 'Não'}" 
+                  placeholder="Ex: Sim / Não / Apenas pessoal"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Redes mais utilizadas</label>
+                <input 
+                  type="text" 
+                  name="frequentNetworks" 
+                  value="${student.frequentNetworks || ''}" 
+                  placeholder="Ex: Instagram, WhatsApp, TikTok, YouTube"
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Ferramentas já utilizadas</label>
+                <input 
+                  type="text" 
+                  name="tools" 
+                  value="${student.tools || ''}" 
+                  placeholder="Ex: Canva, CapCut, Meta Business, ChatGPT..."
+                  class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Principais Desafios ao Produzir Conteúdo</label>
+                <textarea 
+                  name="challenges" 
+                  rows="2" 
+                  placeholder="Ex: Edição de vídeos, vergonha na câmera, criatividade..."
+                  class="w-full px-3.5 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >${student.challenges || ''}</textarea>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">O que motivou a se inscrever no curso?</label>
+                <textarea 
+                  name="motivation" 
+                  rows="2" 
+                  placeholder="Ex: Divulgar meu negócio, ter nova profissão..."
+                  class="w-full px-3.5 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >${student.motivation || ''}</textarea>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Expectativas em relação ao curso</label>
+                <textarea 
+                  name="expectations" 
+                  rows="2" 
+                  placeholder="Ex: Aprender a usar as ferramentas e gerar renda..."
+                  class="w-full px-3.5 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                >${student.expectations || ''}</textarea>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-5 py-2.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              class="px-6 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow"
+            >
+              <i class="fa-solid fa-check mr-1.5"></i> Salvar Aluno
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  `;
+}
+
+// Handler de CEP
+async function searchViaCep(rawCep) {
+  const cleanCep = (rawCep || "").replace(/\D/g, "");
+  if (cleanCep.length !== 8) return null;
+
+  const spinner = document.getElementById("cep-spinner");
+  if (spinner) spinner.className = "fa-solid fa-spinner fa-spin text-indigo-600";
+
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+    const data = await response.json();
+
+    if (data.erro) {
+      showToast("CEP não encontrado.", "warning");
+      return null;
+    }
+
+    const streetInput = document.getElementById("street-input");
+    const neighborhoodInput = document.getElementById("neighborhood-input");
+    const cityInput = document.getElementById("city-input");
+    const stateInput = document.getElementById("state-input");
+
+    if (streetInput) streetInput.value = data.logradouro || "";
+    if (neighborhoodInput) neighborhoodInput.value = data.bairro || "";
+    if (cityInput) cityInput.value = data.localidade || "";
+    if (stateInput) stateInput.value = data.uf || "";
+
+    showToast(`Endereço carregado: ${data.bairro} - ${data.localidade}/${data.uf}`, "success");
+    return data;
+  } catch (err) {
+    showToast("Não foi possível consultar o CEP.", "error");
+    return null;
+  } finally {
+    if (spinner) spinner.className = "fa-solid fa-magnifying-glass";
+  }
+}
+
+function handleCepBlur(value) {
+  if (value && value.replace(/\D/g, "").length === 8) {
+    searchViaCep(value);
+  }
+}
+
+function handleCepSearchClick() {
+  const cepInput = document.getElementById("cep-input");
+  if (cepInput) searchViaCep(cepInput.value);
+}
+
+function saveStudentForm(event) {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+
+  const existingStudent = AppState.editingStudentId 
+    ? AppState.students.find(s => s.id === AppState.editingStudentId) 
+    : null;
+
+  const studentData = {
+    id: formData.get("id") || `ALU-EMA-${Date.now()}`,
+    name: formData.get("name").trim(),
+    cpf: formData.get("cpf")?.trim() || "",
+    birthDate: formData.get("birthDate"),
+    gender: "Feminino",
+    classroom: formData.get("classroom"),
+    status: existingStudent ? existingStudent.status : "Ativo",
+    avatarColor: formData.get("avatarColor") || existingStudent?.avatarColor || "from-indigo-500 to-purple-600",
+    photoUrl: formData.get("photoUrl") !== null ? formData.get("photoUrl").trim() : (existingStudent?.photoUrl || ""),
+    socialMedia: formData.get("socialMedia")?.trim() || "",
+    profession: formData.get("profession")?.trim() || "",
+    education: formData.get("education")?.trim() || "",
+    frequentNetworks: formData.get("frequentNetworks")?.trim() || "",
+    experience: formData.get("experience")?.trim() || "",
+    tools: formData.get("tools")?.trim() || "",
+    challenges: formData.get("challenges")?.trim() || "",
+    motivation: formData.get("motivation")?.trim() || "",
+    expectations: formData.get("expectations")?.trim() || "",
+    notes: existingStudent?.notes || "Aluno do curso de Gestão de Mídias Digitais.",
+    contact: {
+      phone: formData.get("phone")?.trim() || "",
+      email: formData.get("email")?.trim() || "",
+      guardianName: formData.get("guardianName")?.trim() || "",
+      guardianKinship: formData.get("guardianKinship")?.trim() || "",
+      guardianPhone: formData.get("guardianPhone")?.trim() || ""
+    },
+    address: {
+      cep: formData.get("cep")?.trim() || "",
+      street: formData.get("street")?.trim() || "",
+      number: formData.get("number")?.trim() || "",
+      complement: formData.get("complement")?.trim() || "",
+      neighborhood: formData.get("neighborhood")?.trim() || "",
+      city: formData.get("city")?.trim() || "Maceió",
+      state: (formData.get("state") || "AL").toUpperCase().trim()
+    },
+    grades: existingStudent ? existingStudent.grades : {}
+  };
+
+  if (AppState.editingStudentId) {
+    const index = AppState.students.findIndex(s => s.id === AppState.editingStudentId);
+    if (index !== -1) {
+      AppState.students[index] = studentData;
+      showToast(`Aluno "${studentData.name}" atualizado!`);
+    }
+  } else {
+    AppState.students.unshift(studentData);
+    showToast(`Aluno "${studentData.name}" cadastrado!`);
+  }
+
+  saveDataToStorage();
+  closeModal();
+  renderApp();
+}
+
+function confirmDeleteStudent(studentId) {
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  if (confirm(`Remover o aluno "${student.name}" e todas as suas notas do Eu Por Dias?`)) {
+    AppState.students = AppState.students.filter(s => s.id !== studentId);
+    saveDataToStorage();
+    showToast(`Aluno removido.`, "info");
+    renderApp();
+  }
+}
+
+// -------------------------------------------------------------
+// MODAL: NOTAS
+// -------------------------------------------------------------
+function openGradesModal(studentId, focusSubject = null) {
+  AppState.activeGradesStudentId = studentId;
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  if (!student.grades) student.grades = {};
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[90vh] flex flex-col">
+        
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg font-bold">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                Notas do Curso: ${student.name}
+              </h2>
+              <div class="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+                <span>Turma: ${student.classroom}</span>
+                <span>•</span>
+                <span>Matrícula: ${student.id}</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <form id="student-grades-form" onsubmit="saveStudentGradesForm(event, '${student.id}')" class="overflow-y-auto flex-1 p-6 space-y-4">
+          <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+                  <th class="py-3 px-3">Módulo / Disciplina</th>
+                  <th class="py-3 px-2 text-center w-20">Ativ. 1</th>
+                  <th class="py-3 px-2 text-center w-20">Ativ. 2</th>
+                  <th class="py-3 px-2 text-center w-20">Ativ. 3</th>
+                  <th class="py-3 px-2 text-center w-20">Ativ. 4</th>
+                  <th class="py-3 px-2 text-center w-16">Faltas</th>
+                  <th class="py-3 px-3 text-center w-20">Média</th>
+                  <th class="py-3 px-3 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${AppState.subjects.map(subject => {
+                  const data = student.grades?.[subject] || {};
+                  const { avg, hasGrades } = calculateSubjectAverage(data);
+                  const isPassing = avg >= AppState.settings.passingGrade;
+                  const isRec = avg >= AppState.settings.recoveryGrade;
+
+                  return `
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 ${focusSubject === subject ? 'bg-indigo-50/40 dark:bg-indigo-950/20' : ''}">
+                      <td class="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-200">
+                        ${subject}
+                      </td>
+                      <td class="py-2 px-1 text-center">
+                        <input 
+                          type="number" 
+                          step="0.1" 
+                          min="0" 
+                          max="10" 
+                          name="${subject}_b1" 
+                          value="${data.b1 ?? ''}"
+                          placeholder="-"
+                          class="w-16 px-2 py-1 text-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold"
+                        >
+                      </td>
+                      <td class="py-2 px-1 text-center">
+                        <input 
+                          type="number" 
+                          step="0.1" 
+                          min="0" 
+                          max="10" 
+                          name="${subject}_b2" 
+                          value="${data.b2 ?? ''}"
+                          placeholder="-"
+                          class="w-16 px-2 py-1 text-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold"
+                        >
+                      </td>
+                      <td class="py-2 px-1 text-center">
+                        <input 
+                          type="number" 
+                          step="0.1" 
+                          min="0" 
+                          max="10" 
+                          name="${subject}_b3" 
+                          value="${data.b3 ?? ''}"
+                          placeholder="-"
+                          class="w-16 px-2 py-1 text-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold"
+                        >
+                      </td>
+                      <td class="py-2 px-1 text-center">
+                        <input 
+                          type="number" 
+                          step="0.1" 
+                          min="0" 
+                          max="10" 
+                          name="${subject}_b4" 
+                          value="${data.b4 ?? ''}"
+                          placeholder="-"
+                          class="w-16 px-2 py-1 text-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold"
+                        >
+                      </td>
+                      <td class="py-2 px-1 text-center">
+                        <input 
+                          type="number" 
+                          min="0" 
+                          name="${subject}_absences" 
+                          value="${data.absences ?? 0}"
+                          class="w-12 px-1 py-1 text-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+                        >
+                      </td>
+                      <td class="py-2.5 px-3 text-center font-bold text-sm ${!hasGrades ? 'text-slate-400' : isPassing ? 'text-emerald-600' : isRec ? 'text-amber-600' : 'text-rose-600'}">
+                        ${hasGrades ? avg.toFixed(1) : '-'}
+                      </td>
+                      <td class="py-2.5 px-3 text-center">
+                        ${!hasGrades ? '<span class="text-slate-400 text-[11px]">-</span>' : isPassing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700">Aprovado</span>' : isRec ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">Recuperação</span>' : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Reprovado</span>'}
+                      </td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-5 py-2.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              class="px-6 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow"
+            >
+              <i class="fa-solid fa-floppy-disk mr-1.5"></i> Salvar Notas
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  `;
+}
+
+function saveStudentGradesForm(event, studentId) {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  if (!student.grades) student.grades = {};
+
+  AppState.subjects.forEach(subject => {
+    const b1Val = formData.get(`${subject}_b1`);
+    const b2Val = formData.get(`${subject}_b2`);
+    const b3Val = formData.get(`${subject}_b3`);
+    const b4Val = formData.get(`${subject}_b4`);
+    const absVal = formData.get(`${subject}_absences`);
+
+    student.grades[subject] = {
+      b1: b1Val !== "" ? Number(b1Val) : null,
+      b2: b2Val !== "" ? Number(b2Val) : null,
+      b3: b3Val !== "" ? Number(b3Val) : null,
+      b4: b4Val !== "" ? Number(b4Val) : null,
+      absences: absVal !== "" ? Number(absVal) : 0
+    };
+  });
+
+  saveDataToStorage();
+  closeModal();
+  showToast(`Notas de ${student.name} salvas!`);
+  renderApp();
+}
+
+// -------------------------------------------------------------
+// MODAL: BOLETIM DO ALUNO
+// -------------------------------------------------------------
+function openBoletimModal(studentId) {
+  AppState.activeBoletimStudentId = studentId;
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  const stats = calculateStudentOverallStats(student);
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden scale-in max-h-[95vh] flex flex-col">
+        
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40 no-print">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-file-invoice text-indigo-600 text-lg"></i>
+            <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Boletim de Rendimento Escolar</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              onclick="window.print()" 
+              class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
+            </button>
+            <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+              <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="printable-content" class="overflow-y-auto flex-1 p-8 text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 space-y-6">
+          
+          <div class="border-b-2 border-slate-900 dark:border-slate-100 pb-4 text-center">
+            <h1 class="text-xl font-black tracking-tight uppercase">${AppState.settings.schoolName}</h1>
+            <p class="text-xs text-slate-600 dark:text-slate-400">${AppState.settings.courseName} • Ano Letivo ${AppState.settings.schoolYear}</p>
+            <h2 class="text-xs font-bold mt-2 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 py-1 rounded">Boletim Individual do Aluno</h2>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 text-xs">
+            <div class="sm:col-span-2">
+              <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">Aluno(a)</span>
+              <span class="font-bold text-sm text-slate-900 dark:text-slate-100">${student.name}</span>
+              <span class="block text-[10px] text-slate-400 font-mono">${student.id}</span>
+            </div>
+            <div>
+              <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">CPF</span>
+              <span class="font-mono font-semibold">${student.cpf || 'Não informado'}</span>
+            </div>
+            <div>
+              <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">Turma</span>
+              <span class="font-semibold">${student.classroom}</span>
+            </div>
+            <div>
+              <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">Situação Final</span>
+              <span class="font-bold ${stats.status === 'Aprovado' ? 'text-emerald-600' : stats.status === 'Em Recuperação' ? 'text-amber-600' : 'text-rose-600'}">
+                ${stats.status}
+              </span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border-collapse border border-slate-300 dark:border-slate-700">
+              <thead>
+                <tr class="bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200">
+                  <th class="py-2.5 px-3 border border-slate-300 dark:border-slate-700">Módulo do Curso</th>
+                  <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 1</th>
+                  <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 2</th>
+                  <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 3</th>
+                  <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 4</th>
+                  <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Faltas</th>
+                  <th class="py-2.5 px-3 text-center border border-slate-300 dark:border-slate-700">Média</th>
+                  <th class="py-2.5 px-3 text-center border border-slate-300 dark:border-slate-700">Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${AppState.subjects.map(subject => {
+                  const data = student.grades?.[subject] || {};
+                  const { avg, hasGrades } = calculateSubjectAverage(data);
+                  const isPass = avg >= AppState.settings.passingGrade;
+                  const isRec = avg >= AppState.settings.recoveryGrade;
+
+                  return `
+                    <tr class="border-b border-slate-200 dark:border-slate-800">
+                      <td class="py-2 px-3 font-semibold border border-slate-300 dark:border-slate-700">${subject}</td>
+                      <td class="py-2 px-2 text-center border border-slate-300 dark:border-slate-700 font-mono">${data.b1 !== null && data.b1 !== undefined ? Number(data.b1).toFixed(1) : '-'}</td>
+                      <td class="py-2 px-2 text-center border border-slate-300 dark:border-slate-700 font-mono">${data.b2 !== null && data.b2 !== undefined ? Number(data.b2).toFixed(1) : '-'}</td>
+                      <td class="py-2 px-2 text-center border border-slate-300 dark:border-slate-700 font-mono">${data.b3 !== null && data.b3 !== undefined ? Number(data.b3).toFixed(1) : '-'}</td>
+                      <td class="py-2 px-2 text-center border border-slate-300 dark:border-slate-700 font-mono">${data.b4 !== null && data.b4 !== undefined ? Number(data.b4).toFixed(1) : '-'}</td>
+                      <td class="py-2 px-2 text-center border border-slate-300 dark:border-slate-700">${data.absences || 0}</td>
+                      <td class="py-2 px-3 text-center font-bold font-mono border border-slate-300 dark:border-slate-700 ${!hasGrades ? '' : isPass ? 'text-emerald-700' : isRec ? 'text-amber-700' : 'text-rose-700'}">
+                        ${hasGrades ? avg.toFixed(1) : '-'}
+                      </td>
+                      <td class="py-2 px-3 text-center font-semibold border border-slate-300 dark:border-slate-700 text-[11px]">
+                        ${!hasGrades ? '-' : isPass ? 'Aprovado' : isRec ? 'Recuperação' : 'Reprovado'}
+                      </td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+              <tfoot>
+                <tr class="bg-slate-100 dark:bg-slate-800 font-bold border-t-2 border-slate-400">
+                  <td class="py-2.5 px-3 border border-slate-300 dark:border-slate-700">MÉDIA GERAL DO CURSO</td>
+                  <td colspan="4" class="border border-slate-300 dark:border-slate-700"></td>
+                  <td class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">${stats.totalAbsences}</td>
+                  <td class="py-2.5 px-3 text-center text-sm font-black border border-slate-300 dark:border-slate-700">${stats.overallAvg.toFixed(1)}</td>
+                  <td class="py-2.5 px-3 text-center border border-slate-300 dark:border-slate-700">${stats.status}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="pt-6 grid grid-cols-2 gap-8 text-center text-xs text-slate-600 dark:text-slate-400">
+            <div class="pt-10 border-t border-slate-400">
+              <span class="block font-semibold text-slate-800 dark:text-slate-200">Professor / Coordenação</span>
+              <span>Emprega Mais Alagoas</span>
+            </div>
+            <div class="pt-10 border-t border-slate-400">
+              <span class="block font-semibold text-slate-800 dark:text-slate-200">Assinatura do Aluno</span>
+              <span>Data: ___/___/_______</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// EXPORTAÇÕES E BACKUP
+// -------------------------------------------------------------
+function exportStudentsToCSV() {
+  if (AppState.students.length === 0) {
+    showToast("Não há alunos para exportar.", "warning");
+    return;
+  }
+
+  const headers = [
+    "Matricula",
+    "Data_Inscricao",
+    "Nome Completo",
+    "CPF",
+    "Unidade_Cidade",
+    "Telefone_WhatsApp",
+    "Email",
+    "Rede_Social",
+    "Profissao_Area",
+    "Escolaridade",
+    "Exp_Redes_Sociais",
+    "Redes_Frequentes",
+    "Ferramentas",
+    "Desafios",
+    "Motivacao",
+    "Expectativas",
+    "Media_Curso",
+    "Situacao_Final",
+    "Total_Faltas"
+  ];
+
+  const rows = AppState.students.map(s => {
+    const stats = calculateStudentOverallStats(s);
+    return [
+      `"${s.id || ''}"`,
+      `"${s.registrationDate || ''}"`,
+      `"${(s.name || '').replace(/"/g, '""')}"`,
+      `"${s.cpf || ''}"`,
+      `"${(s.unitCity || s.classroom || '').replace(/"/g, '""')}"`,
+      `"${s.contact?.phone || ''}"`,
+      `"${s.contact?.email || ''}"`,
+      `"${(s.socialMedia || '').replace(/"/g, '""')}"`,
+      `"${(s.profession || '').replace(/"/g, '""')}"`,
+      `"${(s.education || '').replace(/"/g, '""')}"`,
+      `"${(s.experience || '').replace(/"/g, '""')}"`,
+      `"${(s.frequentNetworks || '').replace(/"/g, '""')}"`,
+      `"${(s.tools || '').replace(/"/g, '""')}"`,
+      `"${(s.challenges || '').replace(/"/g, '""')}"`,
+      `"${(s.motivation || '').replace(/"/g, '""')}"`,
+      `"${(s.expectations || '').replace(/"/g, '""')}"`,
+      stats.overallAvg.toFixed(1),
+      `"${stats.status}"`,
+      stats.totalAbsences
+    ].join(";");
+  });
+
+  const csvContent = "\uFEFF" + [headers.join(";"), ...rows].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `EuPorDias_EmpregaMaisAlagoas_${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showToast("Planilha CSV exportada com sucesso!", "success");
+}
+
+function exportBackupJSON() {
+  const backupData = {
+    appName: "Eu Por Dias",
+    exportDate: new Date().toISOString(),
+    settings: AppState.settings,
+    subjects: AppState.subjects,
+    classrooms: AppState.classrooms,
+    students: AppState.students
+  };
+
+  const jsonStr = JSON.stringify(backupData, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `EuPorDias_Backup_${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showToast("Backup JSON salvo com sucesso!", "success");
+}
+
+function openRestoreModal() {
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 scale-in space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-900 dark:text-slate-100">Restaurar Backup</h3>
+            <p class="text-xs text-slate-500">Selecione o arquivo .json do Eu Por Dias</p>
+          </div>
+        </div>
+
+        <input 
+          type="file" 
+          id="backup-file-input" 
+          accept=".json"
+          class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+        >
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+            Cancelar
+          </button>
+          <button onclick="processBackupFile()" class="px-5 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white hover:bg-purple-700 shadow">
+            Restaurar Dados
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function processBackupFile() {
+  const fileInput = document.getElementById("backup-file-input");
+  if (!fileInput?.files?.[0]) {
+    showToast("Selecione um arquivo .json", "warning");
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (Array.isArray(data.students)) {
+        AppState.students = data.students;
+        if (Array.isArray(data.subjects)) AppState.subjects = data.subjects;
+        if (Array.isArray(data.classrooms)) AppState.classrooms = data.classrooms;
+        if (data.settings) AppState.settings = { ...AppState.settings, ...data.settings };
+
+        saveDataToStorage();
+        closeModal();
+        showToast("Backup restaurado com sucesso!", "success");
+        renderApp();
+      } else {
+        showToast("Formato de backup inválido.", "error");
+      }
+    } catch (err) {
+      showToast("Erro ao ler arquivo JSON.", "error");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// -------------------------------------------------------------
+// CONFIGURAÇÃO DE MÓDULOS
+// -------------------------------------------------------------
+function openSubjectsConfigModal() {
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 scale-in space-y-4">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Módulos do Curso (Mídias Digitais)</h3>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="new-subject-input" 
+            placeholder="Nome do novo módulo..."
+            class="flex-1 px-3 py-2 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+          >
+          <button onclick="addSubject()" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700">
+            Adicionar
+          </button>
+        </div>
+
+        <div class="space-y-1.5 max-h-56 overflow-y-auto">
+          ${AppState.subjects.map(s => `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 text-xs font-medium">
+              <span>${s}</span>
+              <button onclick="removeSubject('${s}')" class="text-rose-500 hover:text-rose-700 text-xs">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+          <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+            Concluir
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function addSubject() {
+  const input = document.getElementById("new-subject-input");
+  const name = input?.value?.trim();
+  if (!name) return;
+
+  if (AppState.subjects.includes(name)) {
+    showToast("Este módulo já existe.", "warning");
+    return;
+  }
+
+  AppState.subjects.push(name);
+  saveDataToStorage();
+  openSubjectsConfigModal();
+  renderApp();
+  showToast(`Módulo "${name}" adicionado.`);
+}
+
+function removeSubject(name) {
+  if (AppState.subjects.length <= 1) {
+    showToast("O curso deve ter pelo menos um módulo.", "warning");
+    return;
+  }
+  AppState.subjects = AppState.subjects.filter(s => s !== name);
+  saveDataToStorage();
+  openSubjectsConfigModal();
+  renderApp();
+  showToast(`Módulo "${name}" removido.`, "info");
+}
+
+// -------------------------------------------------------------
+// EVENTOS GLOBAIS
+// -------------------------------------------------------------
+function setupGlobalEventListeners() {
+  document.querySelectorAll(".nav-tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      AppState.currentTab = btn.getAttribute("data-tab");
+      renderApp();
+    });
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  });
+}
+
+function switchTab(tab) {
+  AppState.currentTab = tab;
+  renderApp();
+}
+
+function handleClassroomFilterChange(value) {
+  AppState.filterClassroom = value;
+  renderApp();
+}
+
+function handleSituationFilterChange(value) {
+  AppState.filterSituation = value;
+  renderApp();
+}
+
+function clearSearch() {
+  AppState.searchTerm = "";
+  renderApp();
+}
+
+function resetAllFilters() {
+  AppState.searchTerm = "";
+  AppState.filterClassroom = "all";
+  AppState.filterStatus = "all";
+  AppState.filterSituation = "all";
+  AppState.filterPhoto = "all";
+  renderApp();
+}
+
+function setViewMode(mode) {
+  AppState.settings.viewMode = mode;
+  saveDataToStorage();
+  renderApp();
+}
+
+function closeModal() {
+  if (AppState.photoModalState?.stream) {
+    AppState.photoModalState.stream.getTracks().forEach(track => track.stop());
+    AppState.photoModalState.stream = null;
+  }
+  const modalContainer = document.getElementById("modal-container");
+  if (modalContainer) modalContainer.innerHTML = "";
+  AppState.editingStudentId = null;
+  AppState.activeGradesStudentId = null;
+  AppState.activeBoletimStudentId = null;
+  AppState.photoModalState = { studentId: null, tempPhotoUrl: null, stream: null };
+}

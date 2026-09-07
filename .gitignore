@@ -1,0 +1,22 @@
+﻿# Logs e Arquivos Temporarios
+*.log
+temp*
+test_*
+*.tmp
+
+# Ambientes e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema Operacional
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Scratch e Scripts de Teste
+scratch/
+check_syntax.ps1
+find_backtick.ps1
+test_edge.ps1

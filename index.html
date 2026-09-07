@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eu Por Dias - Gestão de Alunos • Emprega Mais Alagoas</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- FontAwesome 6 & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js para Dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Estilos Customizados -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col antialiased transition-colors duration-200">
+
+  <!-- TOPO / HEADER DO EU POR DIAS -->
+  <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-4">
+        
+        <!-- Logo e Nome do Sistema -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-black shadow-lg shadow-indigo-500/25 flex-shrink-0">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-black text-base tracking-tight text-slate-900 dark:text-white">Eu Por Dias</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-400 text-slate-900 shadow-sm">
+                Emprega Mais AL
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
+              Gestão de Mídias Digitais • Notas, Contatos & Endereços
+            </p>
+          </div>
+        </div>
+
+        <!-- Estatísticas Rápidas no Topo -->
+        <div id="header-quick-stats" class="hidden md:flex items-center">
+          <!-- Preenchido via JavaScript -->
+        </div>
+
+        <!-- Ações do Cabeçalho -->
+        <div class="flex items-center gap-2">
+          
+          <!-- Botão Google Sheets API Rápido -->
+          <button 
+            onclick="openGoogleSheetsImportModal()" 
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/25 transition-all transform active:scale-95"
+            title="Sincronizar com a Google Sheets API v4"
+          >
+            <i class="fa-brands fa-google-drive text-sm"></i>
+            <span class="hidden sm:inline">Google Sheets API</span>
+          </button>
+
+          <!-- Botão Novo Aluno Manual -->
+          <button 
+            onclick="openStudentModal()" 
+            class="hidden lg:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95"
+          >
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Novo Aluno</span>
+          </button>
+
+          <!-- Exportar CSV Rápido -->
+          <button 
+            onclick="exportStudentsToCSV()" 
+            class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Exportar Planilha Excel (CSV)"
+          >
+            <i class="fa-solid fa-file-excel text-emerald-600 text-base"></i>
+          </button>
+
+          <!-- Alternar Tema Claro/Escuro -->
+          <button 
+            id="theme-toggle-btn"
+            onclick="toggleTheme()" 
+            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
+            title="Alternar Tema"
+          >
+            <i class="fa-solid fa-moon"></i>
+          </button>
+
+          <!-- Botão Sobre / Por que o sistema foi construído assim -->
+          <button 
+            onclick="openAboutModal()" 
+            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition-colors"
+            title="Sobre o Sistema • Por que foi construído assim?"
+          >
+            <i class="fa-solid fa-circle-question text-base"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Navegação de Abas -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 dark:border-slate-800/80">
+      <nav class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <button 
+          data-tab="students"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+        >
+          <i class="fa-solid fa-users"></i>
+          <span>Alunos & Contatos</span>
+        </button>
+
+        <button 
+          data-tab="grades"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <i class="fa-solid fa-pen-nib"></i>
+          <span>Notas dos Módulos</span>
+        </button>
+
+        <button 
+          data-tab="dashboard"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard & Estatísticas</span>
+        </button>
+
+        <button 
+          data-tab="reports"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <i class="fa-solid fa-file-export"></i>
+          <span>Relatórios & Backup</span>
+        </button>
+
+        <button 
+          data-tab="about"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <i class="fa-solid fa-lightbulb"></i>
+          <span>Sobre o Sistema & Manifesto</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div id="main-content-area">
+      <!-- Injetado dinamicamente pelo app.js -->
+    </div>
+  </main>
+
+  <!-- RODAPÉ DA PÁGINA -->
+  <footer class="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 py-4 mt-auto text-xs text-slate-500 dark:text-slate-400 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-shield-halved text-indigo-500"></i>
+        <span><strong>Eu Por Dias</strong> • Programa Emprega Mais Alagoas (Mídias Digitais)</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openAboutModal()" class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center gap-1">
+          <i class="fa-solid fa-circle-info"></i> Por que o sistema foi construído assim?
+        </button>
+        <span>•</span>
+        <span>Busca de CEP via <strong>ViaCEP</strong></span>
+        <span>•</span>
+        <span>Atalho direto para <strong>WhatsApp</strong></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CONTAINER DE TOASTS FLUTUANTES -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full">
+    <!-- Injetado dinamicamente -->
+  </div>
+
+  <!-- CONTAINER DE MODAIS -->
+  <div id="modal-container">
+    <!-- Injetado dinamicamente -->
+  </div>
+
+  <!-- SCRIPTS DO SISTEMA -->
+  <script src="mock-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
