@@ -1311,9 +1311,95 @@ function populateClassroomFilterSelect() {
 }
 
 // -------------------------------------------------------------
+// HELPER: TELA DE RESTRIÇÃO DE ACESSO POR CPF CADASTRADO
+// -------------------------------------------------------------
+function renderTabAccessRestriction(container, tabKey) {
+  const tabConfigs = {
+    students: {
+      title: "Regra de Acesso: Alunos e Contatos",
+      description: "Para consultar a listagem de discentes, informações de contato, endereços e fichas individuais da turma, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso seguro à sua ficha cadastral individual e aos dados oficiais da sua matrícula.",
+      profInfo: "Acesso irrestrito à listagem completa de alunos, contatos via WhatsApp, filtros por turma e edição de dados."
+    },
+    grades: {
+      title: "Regra de Acesso: Notas dos Módulos",
+      description: "Para visualizar boletins, médias parciais e lançamentos de avaliações dos 7 módulos do curso, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso exclusivo às suas notas individuais, médias ponderadas, situação acadêmica e envio do boletim por e-mail.",
+      profInfo: "Lançamento e edição de notas de todos os alunos, cálculo automático de médias e atas de avaliação."
+    },
+    reports: {
+      title: "Regra de Acesso: Relatórios e Backup",
+      description: "Para acessar as planilhas oficiais do curso, exportações completas, atas escolares e backups na nuvem, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso ao seu Boletim Individual Oficial, histórico de notas dos 7 módulos e ficha cadastral.",
+      profInfo: "Acesso irrestrito a planilhas completas (CSV), backups JSON do sistema e atas gerais de rendimento."
+    },
+    forum: {
+      title: "Regra de Acesso: Fórum & Chat ao Vivo",
+      description: "Para participar das discussões da turma, enviar mensagens no chat em tempo real e interagir com colegas e docentes, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Participação nas salas de chat, envio de dúvidas sobre os módulos e interação com foto de perfil cadastrada.",
+      profInfo: "Criação de novos tópicos com anexos multimídia (foto, PDF, link, vídeo), moderação de salas e comunicados oficiais."
+    }
+  };
+
+  const config = tabConfigs[tabKey] || tabConfigs.reports;
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in max-w-2xl mx-auto py-8">
+      <div class="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl text-center space-y-5">
+        <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl mx-auto shadow-inner">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        
+        <div class="space-y-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
+            <i class="fa-solid fa-lock"></i> Área de Acesso Restrito
+          </span>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">${config.title}</h2>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg mx-auto">
+            ${config.description}
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-left text-xs space-y-2">
+          <div class="flex items-start gap-2.5">
+            <i class="fa-solid fa-user-graduate text-indigo-600 mt-0.5"></i>
+            <div>
+              <strong class="text-slate-800 dark:text-slate-200">Alunos Matriculados:</strong>
+              <p class="text-slate-500 text-[11px]">${config.alunoInfo}</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+            <i class="fa-solid fa-chalkboard-user text-emerald-600 mt-0.5"></i>
+            <div>
+              <strong class="text-slate-800 dark:text-slate-200">Professores e Coordenação:</strong>
+              <p class="text-slate-500 text-[11px]">${config.profInfo}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button 
+            onclick="openCpfLoginModal('${tabKey}')" 
+            class="px-8 py-3.5 rounded-2xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30 transition-all transform active:scale-95 inline-flex items-center gap-2"
+          >
+            <i class="fa-solid fa-id-card"></i> Entrar com CPF Cadastrado
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
 // ABA 1: ALUNOS
 // -------------------------------------------------------------
 function renderStudentsTab(container) {
+  // REGRA DE ACESSO: Exige identificação por CPF
+  if (!AppState.currentUser) {
+    renderTabAccessRestriction(container, 'students');
+    return;
+  }
+
   const filtered = getFilteredStudents();
 
   container.innerHTML = `
@@ -4255,6 +4341,12 @@ function openSupabaseModal() {
 // ABA 2: LANÇAMENTO DE NOTAS
 // -------------------------------------------------------------
 function renderGradesTab(container) {
+  // REGRA DE ACESSO: Exige identificação por CPF
+  if (!AppState.currentUser) {
+    renderTabAccessRestriction(container, 'grades');
+    return;
+  }
+
   const filtered = getFilteredStudents();
   const subjects = AppState.subjects;
 
@@ -4604,51 +4696,7 @@ function initDashboardCharts() {
 function renderReportsTab(container) {
   // REGRA DE ACESSO: Exige autenticação por CPF cadastrado
   if (!AppState.currentUser) {
-    container.innerHTML = `
-      <div class="space-y-6 fade-in max-w-2xl mx-auto py-8">
-        <div class="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl text-center space-y-5">
-          <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl mx-auto shadow-inner">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          
-          <div class="space-y-2">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
-              <i class="fa-solid fa-lock"></i> Área de Acesso Restrito
-            </span>
-            <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Regra de Acesso: Relatórios e Backup</h2>
-            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg mx-auto">
-              Para acessar as planilhas oficiais do curso, exportações completas, atas escolares e backups na nuvem, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.
-            </p>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-left text-xs space-y-2">
-            <div class="flex items-start gap-2.5">
-              <i class="fa-solid fa-user-graduate text-indigo-600 mt-0.5"></i>
-              <div>
-                <strong class="text-slate-800 dark:text-slate-200">Alunos Matriculados:</strong>
-                <p class="text-slate-500 text-[11px]">Acesso ao seu Boletim Individual Oficial, histórico de notas dos 7 módulos e ficha cadastral.</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
-              <i class="fa-solid fa-chalkboard-user text-emerald-600 mt-0.5"></i>
-              <div>
-                <strong class="text-slate-800 dark:text-slate-200">Professores e Coordenação:</strong>
-                <p class="text-slate-500 text-[11px]">Acesso irrestrito a planilhas completas (CSV), backups JSON do sistema e atas gerais de rendimento.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-2">
-            <button 
-              onclick="openCpfLoginModal('reports')" 
-              class="px-8 py-3.5 rounded-2xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30 transition-all transform active:scale-95 inline-flex items-center gap-2"
-            >
-              <i class="fa-solid fa-id-card"></i> Entrar com CPF Cadastrado
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
+    renderTabAccessRestriction(container, 'reports');
     return;
   }
 
@@ -7514,6 +7562,12 @@ function isUserEligibleToPost() {
 }
 
 function renderForumTab(container) {
+  // REGRA DE ACESSO: Exige identificação por CPF
+  if (!AppState.currentUser) {
+    renderTabAccessRestriction(container, 'forum');
+    return;
+  }
+
   const eligibility = isUserEligibleToPost();
   const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
 
