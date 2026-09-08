@@ -117,42 +117,55 @@
               </div>
 
               <!-- Item 1: Google Sheets API -->
-              <button 
-                onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
-                class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3 group"
-              >
-                <div class="flex items-center gap-2.5">
+              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-2 group">
+                <div onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" class="flex items-center gap-2.5 flex-1 cursor-pointer">
                   <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
                     <i class="fa-brands fa-google-drive"></i>
                   </div>
                   <div>
                     <strong class="block font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Google Sheets API</strong>
-                    <span class="block text-[10px] text-slate-400">Importar da planilha oficial</span>
+                    <span class="block text-[10px] text-slate-400">Planilha Oficial • Importar / Configurar</span>
                   </div>
                 </div>
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60">
-                  Sheets
-                </span>
-              </button>
+                <div class="flex items-center gap-1">
+                  <button 
+                    type="button" 
+                    onclick="closeIntegrationsSubmenu(); quickSyncGoogleSheets();" 
+                    class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-1 transition-all"
+                    title="Sincronizar dados da planilha agora"
+                  >
+                    <i class="fa-solid fa-rotate text-[9px]"></i> Sincronizar
+                  </button>
+                  <button 
+                    type="button" 
+                    onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                    title="Configurações da planilha"
+                  >
+                    <i class="fa-solid fa-gear text-[11px]"></i>
+                  </button>
+                </div>
+              </div>
 
               <!-- Item 2: Supabase Cloud -->
-              <button 
-                onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
-                class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3 group"
-              >
-                <div class="flex items-center gap-2.5">
+              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-2 group">
+                <div onclick="closeIntegrationsSubmenu(); openSupabaseModal();" class="flex items-center gap-2.5 flex-1 cursor-pointer">
                   <div class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
                     <i class="fa-solid fa-cloud"></i>
                   </div>
                   <div>
                     <strong class="block font-bold text-slate-800 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Supabase Cloud</strong>
-                    <span class="block text-[10px] text-slate-400">Banco de dados em nuvem</span>
+                    <span class="block text-[10px] text-slate-400">Banco de Dados em Nuvem (PostgreSQL)</span>
                   </div>
                 </div>
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-900/60">
-                  Nuvem
-                </span>
-              </button>
+                <button 
+                  type="button" 
+                  onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 transition-all flex items-center gap-1"
+                >
+                  <i class="fa-solid fa-cloud-arrow-up text-[9px]"></i> Conectar
+                </button>
+              </div>
 
               <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
 

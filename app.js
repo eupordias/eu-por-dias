@@ -767,23 +767,13 @@ function updateHeaderCounts() {
   const headerStats = document.getElementById("header-quick-stats");
   if (headerStats) {
     headerStats.innerHTML = `
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
           <i class="fa-solid fa-users"></i> ${total} Alunos
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
           <i class="fa-solid fa-star"></i> Média: ${generalAvg}
         </span>
-        ${AppState.settings.googleSpreadsheetId ? `
-          <button onclick="quickSyncGoogleSheets()" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 hover:bg-emerald-100 transition-colors" title="Sincronizar Google Sheets API">
-            <i class="fa-solid fa-rotate text-[11px] text-emerald-600"></i> Sheets
-          </button>
-        ` : ''}
-        ${AppState.settings.supabaseUrl ? `
-          <button onclick="openSupabaseModal()" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 hover:bg-teal-100 transition-colors" title="Supabase Cloud Conectado">
-            <i class="fa-solid fa-cloud text-[11px] text-teal-600"></i> Supabase
-          </button>
-        ` : ''}
       </div>
     `;
   }
