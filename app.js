@@ -7819,9 +7819,21 @@ function renderForumTopicDetail(topicId) {
           <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
             ${topic.module || 'Módulo do Curso'}
           </span>
-          <span class="text-xs text-slate-400">
-            Criado em ${new Date(topic.createdAt).toLocaleString('pt-BR')}
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">
+              Criado em ${new Date(topic.createdAt).toLocaleString('pt-BR')}
+            </span>
+            ${AppState.currentUser && AppState.currentUser.role === 'professor' ? `
+              <button 
+                type="button" 
+                onclick="deleteForumTopic('${topic.id}')" 
+                class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-bold border border-rose-200/60 dark:border-rose-800/60 flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                title="Moderação Docente: Excluir este tópico"
+              >
+                <i class="fa-solid fa-trash-can"></i> Excluir Tópico
+              </button>
+            ` : ''}
+          </div>
         </div>
 
         <h1 class="text-xl font-bold text-slate-900 dark:text-slate-100 leading-snug">
@@ -7899,27 +7911,48 @@ function renderForumTopicDetail(topicId) {
             <p class="text-xs text-slate-500 dark:text-slate-400 italic text-center py-6">
               Nenhuma resposta postada ainda. Seja o primeiro a participar!
             </p>
-          ` : topic.comments.map(c => `
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 flex items-start gap-3 text-xs">
-              <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 flex-shrink-0">
-                <img src="${c.authorPhoto || 'https://via.placeholder.com/80'}" alt="${c.authorName}" class="w-full h-full object-cover">
-              </div>
-              <div class="flex-1 space-y-1 min-w-0">
-                <div class="flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-slate-900 dark:text-slate-100">${c.authorName}</span>
-                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${c.authorRole === 'professor' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
-                      ${c.authorRole === 'professor' ? 'Docente' : 'Aluno'}
-                    </span>
-                  </div>
-                  <span class="text-[10px] text-slate-400">${new Date(c.createdAt).toLocaleString('pt-BR')}</span>
+          ` : topic.comments.map((c, cIdx) => {
+            const isMeComment = AppState.currentUser && (
+              (AppState.currentUser.name && AppState.currentUser.name === c.authorName) ||
+              (AppState.currentUser.id && AppState.currentUser.id === c.authorId)
+            );
+            const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
+            const canModerate = isProf || isMeComment;
+
+            return `
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 flex items-start gap-3 text-xs group">
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 flex-shrink-0">
+                  <img src="${c.authorPhoto || 'https://via.placeholder.com/80'}" alt="${c.authorName}" class="w-full h-full object-cover">
                 </div>
-                <p class="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                  ${c.text}
-                </p>
+                <div class="flex-1 space-y-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-slate-900 dark:text-slate-100">${c.authorName}</span>
+                      <span class="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${c.authorRole === 'professor' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                        ${c.authorRole === 'professor' ? 'Docente' : 'Aluno'}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[10px] text-slate-400">${new Date(c.createdAt).toLocaleString('pt-BR')}</span>
+                      ${canModerate ? `
+                        <button 
+                          type="button"
+                          onclick="deleteTopicComment('${topic.id}', ${cIdx})" 
+                          class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 text-slate-400 hover:text-rose-500 transition-all text-xs p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                          title="${isProf && !isMeComment ? 'Moderação Docente: Apagar comentário' : 'Apagar meu comentário'}"
+                        >
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                  <p class="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                    ${c.text}
+                  </p>
+                </div>
               </div>
-            </div>
-          `).join("")}
+            `;
+          }).join("")}
         </div>
 
       </div>
@@ -8032,6 +8065,68 @@ function submitTopicComment(topicId) {
   if (contentArea) renderForumTab(contentArea);
 }
 
+function deleteTopicComment(topicId, commentIndex) {
+  if (!AppState.currentUser) {
+    showToast("Você precisa estar logado para moderar comentários.", "warning");
+    return;
+  }
+
+  const topic = AppState.forumTopics.find(t => t.id === topicId);
+  if (!topic || !topic.comments || !topic.comments[commentIndex]) {
+    showToast("Comentário não encontrado.", "error");
+    return;
+  }
+
+  const comment = topic.comments[commentIndex];
+  const isProf = AppState.currentUser.role === "professor";
+  const isAuthor = (AppState.currentUser.name && AppState.currentUser.name === comment.authorName) ||
+                   (AppState.currentUser.id && AppState.currentUser.id === comment.authorId);
+
+  if (!isProf && !isAuthor) {
+    showToast("Apenas o docente ou o próprio autor podem moderar este comentário.", "error");
+    return;
+  }
+
+  const confirmMsg = isProf && !isAuthor
+    ? `[Moderação Docente]\nDeseja realmente excluir a resposta de "${comment.authorName}"?`
+    : `Deseja realmente apagar sua resposta?`;
+
+  if (!confirm(confirmMsg)) {
+    return;
+  }
+
+  topic.comments.splice(commentIndex, 1);
+  saveForumDataToStorage();
+
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+
+  showToast(isProf && !isAuthor ? "Resposta moderada e excluída pelo docente." : "Resposta apagada com sucesso.", "success");
+}
+
+function deleteForumTopic(topicId) {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores podem excluir tópicos do fórum.", "error");
+    return;
+  }
+
+  const topic = AppState.forumTopics.find(t => t.id === topicId);
+  if (!topic) {
+    showToast("Tópico não encontrado.", "error");
+    return;
+  }
+
+  if (!confirm(`[Moderação Docente]\nDeseja realmente excluir o tópico "${topic.title}" e todas as suas respostas? Esta ação não pode ser desfeita.`)) {
+    return;
+  }
+
+  AppState.forumTopics = AppState.forumTopics.filter(t => t.id !== topicId);
+  saveForumDataToStorage();
+
+  closeForumTopic();
+  showToast("Tópico excluído com sucesso pelo docente.", "success");
+}
+
 // Sub-aba: Chat ao Vivo da Turma (Design Moderno Discord / Telegram)
 function formatChatMessageTime(isoStr) {
   try {
@@ -8096,6 +8191,21 @@ function renderForumChatContent() {
               ${escapeHtml(AppState.currentUser.name.split(' ')[0])} (${AppState.currentUser.role === 'professor' ? 'Docente' : 'Aluno'})
             </span>
           ` : ''}
+          ${AppState.currentUser && AppState.currentUser.role === 'professor' ? `
+            <span class="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold flex items-center gap-1.5 border border-amber-200/60 dark:border-amber-800/60 text-[11px] shadow-xs">
+              <i class="fa-solid fa-shield-halved text-amber-500"></i> Moderação Docente Ativa
+            </span>
+            ${AppState.forumMessages.length > 0 ? `
+              <button 
+                type="button" 
+                onclick="clearAllChatMessages()" 
+                class="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-[11px] font-bold flex items-center gap-1 border border-rose-200/60 dark:border-rose-800/60 transition-all cursor-pointer shadow-xs"
+                title="Limpar todas as mensagens do chat da turma (Exclusivo Docente)"
+              >
+                <i class="fa-solid fa-broom"></i> Limpar Chat
+              </button>
+            ` : ''}
+          ` : ''}
         </div>
       </div>
 
@@ -8114,6 +8224,7 @@ function renderForumChatContent() {
             (AppState.currentUser.name && AppState.currentUser.name === m.authorName) ||
             (AppState.currentUser.id && AppState.currentUser.id === m.authorId)
           );
+          const currentIsProf = AppState.currentUser && AppState.currentUser.role === 'professor';
           const isProf = m.authorRole === 'professor';
           const timeStr = formatChatMessageTime(m.createdAt);
           const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.authorName || 'U')}&background=${isProf ? 'f59e0b' : '6366f1'}&color=fff`;
@@ -8121,7 +8232,19 @@ function renderForumChatContent() {
 
           if (isMe) {
             return `
-              <div class="flex items-end justify-end gap-2.5 group transition-all">
+              <div class="flex items-end justify-end gap-2 group transition-all relative">
+                <!-- Botão de Moderação / Apagar para o autor da mensagem (Aluno ou Professor) -->
+                <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center self-center mr-1">
+                  <button 
+                    type="button" 
+                    onclick="deleteChatMessage('${m.id}')" 
+                    class="w-7 h-7 rounded-xl bg-white/90 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/80 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-xs shadow-xs cursor-pointer transition-colors" 
+                    title="Apagar minha mensagem do chat"
+                  >
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+
                 <div class="flex flex-col items-end max-w-[85%] sm:max-w-[70%]">
                   <div class="flex items-center gap-1.5 mb-1 px-1">
                     <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${timeStr}</span>
@@ -8142,7 +8265,7 @@ function renderForumChatContent() {
             `;
           } else {
             return `
-              <div class="flex items-end justify-start gap-2.5 group transition-all">
+              <div class="flex items-end justify-start gap-2 group transition-all relative">
                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden ring-2 ${isProf ? 'ring-amber-500 ring-offset-2 dark:ring-offset-slate-900 shadow-amber-500/20' : 'ring-slate-300 dark:ring-slate-700 ring-offset-2 dark:ring-offset-slate-900'} flex-shrink-0 shadow-sm">
                   <img src="${photoUrl}" alt="${escapeHtml(m.authorName)}" onerror="this.src='${fallbackAvatar}'" class="w-full h-full object-cover">
                 </div>
@@ -8164,6 +8287,21 @@ function renderForumChatContent() {
                     ${escapeHtml(m.text)}
                   </div>
                 </div>
+
+                <!-- Botão de Moderação Exclusivo para Docente (quando a mensagem é de outro usuário) -->
+                ${currentIsProf ? `
+                  <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center self-center ml-1">
+                    <button 
+                      type="button" 
+                      onclick="deleteChatMessage('${m.id}')" 
+                      class="px-2 py-1 rounded-xl bg-amber-50 hover:bg-rose-100 dark:bg-amber-950/40 dark:hover:bg-rose-950/60 text-amber-700 dark:text-amber-400 hover:text-rose-600 dark:hover:text-rose-400 border border-amber-200/80 dark:border-amber-800/60 flex items-center gap-1 text-[11px] font-bold transition-all shadow-xs cursor-pointer" 
+                      title="Moderação Docente: Apagar mensagem da turma"
+                    >
+                      <i class="fa-solid fa-shield-xmark text-rose-500"></i>
+                      <span class="hidden sm:inline">Moderar</span>
+                    </button>
+                  </div>
+                ` : ''}
               </div>
             `;
           }
@@ -8245,6 +8383,75 @@ function handleLiveChatSubmit(e) {
   if (contentArea) renderForumTab(contentArea);
 
   setTimeout(scrollChatToBottom, 60);
+}
+
+// -------------------------------------------------------------
+// MODERAÇÃO DE MENSAGENS DO CHAT AO VIVO
+// -------------------------------------------------------------
+function deleteChatMessage(messageId) {
+  if (!AppState.currentUser) {
+    showToast("Você precisa estar logado para moderar mensagens.", "warning");
+    return;
+  }
+
+  const msgIndex = AppState.forumMessages.findIndex(m => m.id === messageId);
+  if (msgIndex === -1) {
+    showToast("Mensagem não encontrada.", "error");
+    return;
+  }
+
+  const msg = AppState.forumMessages[msgIndex];
+  const isProf = AppState.currentUser.role === "professor";
+  const isAuthor = (AppState.currentUser.name && AppState.currentUser.name === msg.authorName) ||
+                   (AppState.currentUser.id && AppState.currentUser.id === msg.authorId);
+
+  // Regra de Moderação:
+  // - O usuário 'professor' pode moderar e apagar qualquer mensagem do chat da turma.
+  // - O usuário 'aluno' pode moderar/apagar apenas o seu próprio post/mensagem no chat.
+  if (!isProf && !isAuthor) {
+    showToast("Apenas o docente ou o próprio autor podem moderar esta mensagem.", "error");
+    return;
+  }
+
+  const confirmMsg = isProf && !isAuthor
+    ? `[Moderação Docente]\nDeseja realmente excluir a mensagem de "${msg.authorName}" do chat da turma?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`
+    : `Deseja realmente apagar sua mensagem do chat?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`;
+
+  if (!confirm(confirmMsg)) {
+    return;
+  }
+
+  AppState.forumMessages.splice(msgIndex, 1);
+  saveForumDataToStorage();
+
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+
+  showToast(isProf && !isAuthor ? "Mensagem moderada e excluída pelo docente." : "Sua mensagem foi apagada com sucesso.", "success");
+}
+
+function clearAllChatMessages() {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores têm permissão para limpar o chat.", "error");
+    return;
+  }
+
+  if (AppState.forumMessages.length === 0) {
+    showToast("O chat já está vazio.", "info");
+    return;
+  }
+
+  if (!confirm(`Atenção Professor(a): Deseja realmente excluir TODAS as ${AppState.forumMessages.length} mensagens do chat da turma? Esta ação não pode ser desfeita.`)) {
+    return;
+  }
+
+  AppState.forumMessages = [];
+  saveForumDataToStorage();
+
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+
+  showToast("Chat da turma limpo com sucesso.", "success");
 }
 
 // Modal para Criação de Novo Tópico com 4 Tipos de Anexos
