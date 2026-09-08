@@ -169,6 +169,30 @@ document.addEventListener("DOMContentLoaded", () => {
   setupGlobalEventListeners();
 });
 
+// Normalização e autocura de nomes de módulos (garante acentuação perfeita PT-BR e corrige codificações corrompidas)
+function normalizeSubjectName(str) {
+  if (!str || typeof str !== "string") return str || "";
+  const s = str.trim().replace(/\\u0026/g, "&");
+
+  if (s === "Marketing Digital & Estratégia") return "Marketing Digital & Estratégia";
+  if (s === "Criação de Conteúdo & Copywriting") return "Criação de Conteúdo & Copywriting";
+  if (s === "Design & Identidade Visual") return "Design & Identidade Visual";
+  if (s === "Edição de Vídeo & Reels") return "Edição de Vídeo & Reels";
+  if (s === "Tráfego Pago & Meta Ads") return "Tráfego Pago & Meta Ads";
+  if (s === "Métricas & Analytics") return "Métricas & Analytics";
+  if (s === "Projeto Integrador Final") return "Projeto Integrador Final";
+
+  if (/Estrat/i.test(s)) return "Marketing Digital & Estratégia";
+  if (/Conte|Copywriting/i.test(s)) return "Criação de Conteúdo & Copywriting";
+  if (/Identidade|Design/i.test(s)) return "Design & Identidade Visual";
+  if (/Reels|V[ií\xAD\u00ED]deo|Edi/i.test(s)) return "Edição de Vídeo & Reels";
+  if (/Tr[aá\u00E1]fego|Meta Ads/i.test(s)) return "Tráfego Pago & Meta Ads";
+  if (/M[eé\u00E9]tricas|Analytics/i.test(s)) return "Métricas & Analytics";
+  if (/Integrador/i.test(s)) return "Projeto Integrador Final";
+
+  return s;
+}
+
 // Persistência em LocalStorage
 function loadDataFromStorage() {
   const savedStudents = localStorage.getItem("eupordias_students");
@@ -202,8 +226,32 @@ function loadDataFromStorage() {
     });
   }
   
+  // Normalizar e higienizar nomes de módulos (garante acentuação perfeita e cura dados herdados de cache)
+  const rawSubjects = savedSubjects ? JSON.parse(savedSubjects) : [...DEFAULT_SUBJECTS];
+  AppState.subjects = Array.from(new Set(rawSubjects.map(normalizeSubjectName)));
+  if (AppState.subjects.length === 0) {
+    AppState.subjects = [...DEFAULT_SUBJECTS];
+  }
+  try {
+    localStorage.setItem("eupordias_subjects", JSON.stringify(AppState.subjects));
+  } catch (e) {}
+
+  // Normalizar as chaves de notas de todos os alunos locais
+  currentList.forEach(s => {
+    if (s.grades && typeof s.grades === "object") {
+      const sanitizedGrades = {};
+      Object.entries(s.grades).forEach(([subjKey, gradeData]) => {
+        sanitizedGrades[normalizeSubjectName(subjKey)] = gradeData;
+      });
+      s.grades = sanitizedGrades;
+    }
+  });
+
   AppState.students = currentList;
-  AppState.subjects = savedSubjects ? JSON.parse(savedSubjects) : [...DEFAULT_SUBJECTS];
+  try {
+    localStorage.setItem("eupordias_students", JSON.stringify(currentList));
+  } catch (e) {}
+
   AppState.classrooms = Array.from(new Set([...DEFAULT_CLASSROOMS, ...(savedClassrooms ? JSON.parse(savedClassrooms) : [])])).sort();
   
   if (savedSettings) {
@@ -3648,24 +3696,30 @@ async function syncStudentsToSupabase() {
 
     for (let i = 0; i < total; i += batchSize) {
       const chunk = AppState.students.slice(i, i + batchSize);
-      const rows = chunk.map(s => ({
-        id: String(s.id),
-        nome: s.name || "Aluno Sem Nome",
-        cpf: s.cpf || "",
-        whatsapp: s.phone || s.whatsapp || "",
-        email: s.email || "",
-        cidade: s.city || "",
-        bairro: s.neighborhood || "",
-        unidade: s.classroom || s.unit || "",
-        status: s.status || "Ativo",
-        profissao: s.occupation || "",
-        foto_url: s.photo || "",
-        grades: s.grades || {},
-        presencas: s.attendance || {},
-        observacoes: s.notes || "",
-        dados_completos: s,
-        updated_at: new Date().toISOString()
-      }));
+      const rows = chunk.map(s => {
+        const cleanGrades = {};
+        Object.entries(s.grades || {}).forEach(([k, v]) => {
+          cleanGrades[normalizeSubjectName(k)] = v;
+        });
+        return {
+          id: String(s.id),
+          nome: s.name || "Aluno Sem Nome",
+          cpf: s.cpf || "",
+          whatsapp: s.phone || s.whatsapp || "",
+          email: s.email || "",
+          cidade: s.city || "",
+          bairro: s.neighborhood || "",
+          unidade: s.classroom || s.unit || "",
+          status: s.status || "Ativo",
+          profissao: s.occupation || "",
+          foto_url: s.photo || "",
+          grades: cleanGrades,
+          presencas: s.attendance || {},
+          observacoes: s.notes || "",
+          dados_completos: { ...s, grades: cleanGrades },
+          updated_at: new Date().toISOString()
+        };
+      });
 
       const { error } = await client.from("alunos").upsert(rows, { onConflict: "id" });
       if (error) throw error;
@@ -3746,6 +3800,14 @@ async function fetchStudentsFromSupabase() {
           attendance: row.presencas || {},
           notes: row.observacoes || ""
         };
+      }
+
+      if (studentObj.grades && typeof studentObj.grades === "object") {
+        const cleanGrades = {};
+        Object.entries(studentObj.grades).forEach(([k, v]) => {
+          cleanGrades[normalizeSubjectName(k)] = v;
+        });
+        studentObj.grades = cleanGrades;
       }
 
       const existingIndex = AppState.students.findIndex(s => 
