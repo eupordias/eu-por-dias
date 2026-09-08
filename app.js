@@ -39,7 +39,7 @@ const AppState = {
     supabaseConnected: true,
     lastSupabaseSync: "2026-09-07T14:32:00.000Z"
   },
-  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum'
+  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum' | 'careers'
   // Usuário Autenticado por CPF (Menu & Identificação)
   currentUser: null, // { id, name, cpf, role: 'professor' | 'aluno', photo, email, classroom, loginTime }
   // Fórum & Chat ao Vivo
@@ -47,6 +47,14 @@ const AppState = {
   forumMessages: [],
   activeForumTopicId: null,
   forumTab: "topics", // 'topics' | 'chat'
+  // Oportunidades & Trilhas (Vagas e Hub de Capacitação)
+  jobVacancies: [],
+  learningTrails: [],
+  usefulResources: [],
+  careersActiveTab: "vagas", // 'vagas' | 'trilhas'
+  careersFilterPolo: "all",
+  careersFilterType: "all",
+  careersFilterSearch: "",
   privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
   godMode: {
     active: false,
@@ -331,6 +339,9 @@ function loadDataFromStorage() {
   // Carregar dados de Fórum & Chat
   loadForumDataFromStorage();
 
+  // Carregar dados de Oportunidades & Trilhas
+  loadCareersDataFromStorage();
+
   saveDataToStorage();
 }
 
@@ -340,6 +351,7 @@ function saveDataToStorage() {
   localStorage.setItem("eupordias_classrooms", JSON.stringify(AppState.classrooms));
   localStorage.setItem("eupordias_settings", JSON.stringify(AppState.settings));
   saveForumDataToStorage();
+  saveCareersDataToStorage();
 }
 
 // Tema Claro / Escuro
@@ -751,6 +763,9 @@ function renderApp() {
       break;
     case "forum":
       renderForumTab(contentArea);
+      break;
+    case "careers":
+      renderCareersTab(contentArea);
       break;
     default:
       renderAboutTab(contentArea);
@@ -1338,6 +1353,12 @@ function renderTabAccessRestriction(container, tabKey) {
       description: "Para participar das discussões da turma, enviar mensagens no chat em tempo real e interagir com colegas e docentes, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
       alunoInfo: "Participação nas salas de chat, envio de dúvidas sobre os módulos e interação com foto de perfil cadastrada.",
       profInfo: "Criação de novos tópicos com anexos multimídia (foto, PDF, link, vídeo), moderação de salas e comunicados oficiais."
+    },
+    careers: {
+      title: "Regra de Acesso: Oportunidades & Trilhas",
+      description: "Para consultar o mural de vagas de emprego com cálculo de compatibilidade de currículo, trilhas de aprendizagem e materiais gratuitos, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso ao mural de vagas de Alagoas, cálculo de match personalizado com seu currículo, emissão de ficha profissional e cursos livres.",
+      profInfo: "Publicação de novas vagas de emprego/estágio para a turma, gestão de oportunidades e compartilhamento de materiais pedagógicos."
     }
   };
 
@@ -8683,4 +8704,1579 @@ function saveNewTopicFromModal() {
   showToast("Novo tópico publicado com sucesso no Fórum!", "success");
 
   openForumTopic(newTopic.id);
+}
+
+// =============================================================
+// ABA 7: OPORTUNIDADES, VAGAS & TRILHAS (MATCH DE CURRÍCULO)
+// =============================================================
+
+function getDefaultJobVacancies() {
+  return [
+    {
+      id: "vaga-1",
+      title: "Assistente de Mídias Sociais & Criação de Conteúdo",
+      company: "Agência Soluções Digitais Alagoas",
+      polo: "Maceió",
+      locationType: "Híbrido (Ponta Verde)",
+      contractType: "CLT",
+      workload: "30h semanais",
+      salary: "R$ 1.580,00 + Vale Transporte",
+      description: "Responsável pelo planejamento de postagens, criação de artes e carrosséis no Canva, edição rápida de Reels no CapCut e suporte no atendimento aos clientes de comércio e serviços.",
+      requiredSkills: ["Canva", "Instagram", "CapCut", "Criação de Conteúdo", "Copywriting"],
+      relatedModules: [1, 2, 3],
+      contactEmail: "vagas@solucoesdigitais.al.br",
+      contactPhone: "82991234567",
+      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+      active: true
+    },
+    {
+      id: "vaga-2",
+      title: "Criador de Conteúdo & Vídeos Curtos (Reels / TikTok)",
+      company: "Grupo Moda & Varejo Arapiraca",
+      polo: "Arapiraca",
+      locationType: "Presencial (Centro de Arapiraca)",
+      contractType: "Estágio",
+      workload: "20h semanais (tarde)",
+      salary: "R$ 1.200,00 + Auxílio Alimentação",
+      description: "Atuar na linha de frente da marca captando vídeos com celular em loja física, entrevistando clientes, produzindo roteiros criativos e editando cortes dinâmicos de alta retenção.",
+      requiredSkills: ["Vídeo & Reels", "CapCut", "Criatividade", "Instagram", "Gravação com Smartphone"],
+      relatedModules: [1, 5],
+      contactEmail: "talentos@modaarapiraca.com.br",
+      contactPhone: "82998765432",
+      createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
+      active: true
+    },
+    {
+      id: "vaga-3",
+      title: "Gestor(a) de Tráfego Pago & Anúncios Online Júnior",
+      company: "E-commerce Raízes Alagoanas",
+      polo: "Remoto (Alagoas)",
+      locationType: "100% Remoto (Home Office)",
+      contractType: "Freelance / PJ",
+      workload: "Flexível por entregas",
+      salary: "R$ 1.800,00 a R$ 2.500,00 / mês",
+      description: "Subir e monitorar campanhas no Meta Ads (Facebook e Instagram), configurar pixels, testes A/B de criativos e acompanhar métricas de custo por clique e conversões para loja online regional.",
+      requiredSkills: ["Meta Ads", "Tráfego Pago", "Análise de Métricas", "Canva", "Pixel"],
+      relatedModules: [4, 6, 7],
+      contactEmail: "contato@raizesalagoanas.com.br",
+      contactPhone: "82993456789",
+      createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+      active: true
+    },
+    {
+      id: "vaga-4",
+      title: "Social Media & Atendimento via WhatsApp Business",
+      company: "Pousada & Gastronomia Caminhos de Penedo",
+      polo: "Penedo",
+      locationType: "Presencial (Centro Histórico)",
+      contractType: "CLT",
+      workload: "40h semanais",
+      salary: "R$ 1.650,00 + Refeição no Local",
+      description: "Gestão das redes sociais do complexo turístico, atualização de cardápios e eventos nos Stories, atendimento a reservas via Direct e WhatsApp Business com comunicação humanizada.",
+      requiredSkills: ["Atendimento", "WhatsApp Business", "Instagram", "Canva", "Fotografia"],
+      relatedModules: [1, 6],
+      contactEmail: "gerencia@caminhosdepenedo.com.br",
+      contactPhone: "82987651234",
+      createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
+      active: true
+    },
+    {
+      id: "vaga-5",
+      title: "Estágio em Comunicação Comunitária & Mídias Digitais",
+      company: "Instituto de Desenvolvimento do Sertão",
+      polo: "Santana do Ipanema",
+      locationType: "Presencial / Híbrido",
+      contractType: "Estágio",
+      workload: "20h semanais",
+      salary: "R$ 1.100,00 + Certificado de Horas",
+      description: "Apoiar na divulgação de oficinas e projetos sociais em Santana do Ipanema e cidades vizinhas, elaborando comunicados, boletins digitais e registros fotográficos de atividades.",
+      requiredSkills: ["Comunicação", "Canva", "Redação", "Instagram", "Trabalho em Equipe"],
+      relatedModules: [2, 3],
+      contactEmail: "projetos@institutosertao.org.br",
+      contactPhone: "82991122334",
+      createdAt: new Date(Date.now() - 86400000 * 9).toISOString(),
+      active: true
+    }
+  ];
+}
+
+function getDefaultLearningTrails() {
+  return [
+    {
+      id: "trilha-1",
+      title: "Trilha 1: Gestão Profissional de Redes Sociais & Conteúdo",
+      level: "Iniciante ao Avançado",
+      hours: "24h de conteúdo",
+      icon: "fa-hashtag",
+      description: "Domine a metodologia completa para gerenciar perfis comerciais, criar calendários editoriais, interagir com seguidores e transformar audiência em clientes.",
+      courses: [
+        {
+          name: "Marketing Digital para o Empreendedor",
+          provider: "Sebrae Alagoas",
+          format: "Online Gratuito com Certificado",
+          link: "https://sebrae.com.br/sites/PortalSebrae/cursosonline"
+        },
+        {
+          name: "Inbound Marketing & Mídias Sociais",
+          provider: "Rock University",
+          format: "Curso Prático com Certificação",
+          link: "https://rockcontent.com/br/university/"
+        },
+        {
+          name: "Fundamentos do Instagram para Empresas",
+          provider: "Meta Blueprint Oficial",
+          format: "Módulos Oficiais Gratuitos",
+          link: "https://www.facebook.com/business/learn"
+        }
+      ]
+    },
+    {
+      id: "trilha-2",
+      title: "Trilha 2: Design Gráfico & Identidade Visual com Canva",
+      level: "Prático & Criativo",
+      hours: "18h de conteúdo",
+      icon: "fa-palette",
+      description: "Aprenda harmonia de cores, tipografia, diagramação e identidade visual para criar posts, carrosséis, banners e propostas de alto impacto visual.",
+      courses: [
+        {
+          name: "Design for Social Media & Brand Building",
+          provider: "Canva Design School",
+          format: "Tutoriais & Exercícios Práticos",
+          link: "https://www.canva.com/designschool/"
+        },
+        {
+          name: "Identidade Visual & Comunicação para Negócios",
+          provider: "FGV Educação Executiva",
+          format: "Curso EAD Aberto",
+          link: "https://educacao-executiva.fgv.br/cursos/gratuitos"
+        },
+        {
+          name: "Criação de Carrosséis Magnéticos no Instagram",
+          provider: "Emprega Mais Alagoas",
+          format: "Oficina Prática do Curso",
+          link: "#"
+        }
+      ]
+    },
+    {
+      id: "trilha-3",
+      title: "Trilha 3: Tráfego Pago & Campanhas no Meta Ads",
+      level: "Intermediário",
+      hours: "20h de conteúdo",
+      icon: "fa-bullseye",
+      description: "Entenda o funcionamento de leilões no Instagram e Facebook, segmentação por cidades de Alagoas, criação de públicos personalizados e análise de métricas.",
+      courses: [
+        {
+          name: "Certificação em Campanhas do Meta Ads",
+          provider: "Meta Blueprint",
+          format: "Certificação Oficial Meta",
+          link: "https://www.facebook.com/business/learn"
+        },
+        {
+          name: "Fundamentos de Anúncios e Métricas Digitais",
+          provider: "Google Ateliê Digital",
+          format: "EAD Gratuito com Certificado",
+          link: "https://learndigital.withgoogle.com/ateliedigital"
+        },
+        {
+          name: "Gestão de Orçamento de Anúncios para PMEs",
+          provider: "Sebrae Nacional",
+          format: "Online com Apostila",
+          link: "https://sebrae.com.br"
+        }
+      ]
+    },
+    {
+      id: "trilha-4",
+      title: "Trilha 4: Copywriting & Roteiros para Vídeos Curtos",
+      level: "Prático & Dinâmico",
+      hours: "16h de conteúdo",
+      icon: "fa-pen-fancy",
+      description: "Desenvolva o poder de prender a atenção nos primeiros 3 segundos, estruturar ganchos magnéticos, chamadas para ação (CTA) e roteiros para Reels e TikTok.",
+      courses: [
+        {
+          name: "Copywriting Essencial para Redes Sociais",
+          provider: "Rock Content",
+          format: "Curso Gratuito com Certificado",
+          link: "https://rockcontent.com/br/university/"
+        },
+        {
+          name: "Roteirização e Edição Rápida no CapCut Mobile",
+          provider: "Guia Emprega Mais Alagoas",
+          format: "Vídeo-aulas Práticas",
+          link: "#"
+        },
+        {
+          name: "Comunicação e Escrita Persuasiva",
+          provider: "Escola do Trabalhador 4.0",
+          format: "Plataforma MEC / Microsoft",
+          link: "https://escoladotrabalhador40.com.br"
+        }
+      ]
+    }
+  ];
+}
+
+function getDefaultUsefulResources() {
+  return [
+    {
+      id: "rec-1",
+      title: "Calendário Editorial 2026 para Mídias Digitais",
+      category: "Planejamento",
+      format: "Template Planilha / PDF",
+      icon: "fa-calendar-days",
+      description: "Grade anual completa com sugestões diárias de temas, formatos (Reels, Carrossel, Stories) e datas comemorativas nacionais e de Alagoas.",
+      downloadUrl: "#",
+      canCopy: true
+    },
+    {
+      id: "rec-2",
+      title: "Modelo de Briefing para Clientes de Social Media",
+      category: "Atendimento",
+      format: "Formulário Estruturado",
+      icon: "fa-clipboard-question",
+      description: "Roteiro com 20 perguntas estratégicas para diagnosticar um novo cliente: público-alvo, concorrentes, diferenciais e metas de vendas.",
+      downloadUrl: "#",
+      canCopy: true
+    },
+    {
+      id: "rec-3",
+      title: "Template de Proposta Comercial & Orçamento",
+      category: "Vendas",
+      format: "Documento Editável",
+      icon: "fa-file-invoice-dollar",
+      description: "Modelo profissional de proposta com pacotes de serviços (Básico, Médio e Pro), faixas de valores praticadas em Alagoas e prazos de entrega.",
+      downloadUrl: "#",
+      canCopy: true
+    },
+    {
+      id: "rec-4",
+      title: "Checklist de Auditoria de Perfil no Instagram",
+      category: "Otimização",
+      format: "Checklist 15 Passos",
+      icon: "fa-list-check",
+      description: "Guia de revisão em 15 tópicos essenciais: bio magnética, links estratégicos, destaques organizados e identidade visual alinhada.",
+      downloadUrl: "#",
+      canCopy: true
+    },
+    {
+      id: "rec-5",
+      title: "Minuta de Contrato de Prestação de Serviços Digitais",
+      category: "Jurídico / Freelance",
+      format: "Minuta Básica",
+      icon: "fa-file-contract",
+      description: "Termo simples e seguro para proteger trabalhos autônomos: definição de escopo, prazos de aprovação, pagamentos e confidencialidade.",
+      downloadUrl: "#",
+      canCopy: true
+    }
+  ];
+}
+
+function loadCareersDataFromStorage() {
+  const savedVacancies = localStorage.getItem("eupordias_job_vacancies");
+  if (savedVacancies) {
+    try {
+      AppState.jobVacancies = JSON.parse(savedVacancies);
+    } catch (e) {
+      AppState.jobVacancies = getDefaultJobVacancies();
+    }
+  } else {
+    AppState.jobVacancies = getDefaultJobVacancies();
+  }
+
+  AppState.learningTrails = getDefaultLearningTrails();
+
+  const savedResources = localStorage.getItem("eupordias_useful_resources");
+  if (savedResources) {
+    try {
+      AppState.usefulResources = JSON.parse(savedResources);
+    } catch (e) {
+      AppState.usefulResources = getDefaultUsefulResources();
+    }
+  } else {
+    AppState.usefulResources = getDefaultUsefulResources();
+  }
+}
+
+function saveCareersDataToStorage() {
+  try {
+    localStorage.setItem("eupordias_job_vacancies", JSON.stringify(AppState.jobVacancies));
+    localStorage.setItem("eupordias_useful_resources", JSON.stringify(AppState.usefulResources));
+  } catch (e) {}
+}
+
+function calculateCurriculumMatch(student, vacancy) {
+  if (!student || !vacancy) {
+    return { score: 75, level: "Recomendado", badgeColor: "indigo", strengths: [] };
+  }
+
+  let score = 0;
+  const strengths = [];
+
+  // 1. Localização / Polo (25 pts)
+  const studentPolo = (student.classroom || student.unitCity || "").toLowerCase();
+  const vacancyPolo = (vacancy.polo || "").toLowerCase();
+
+  if (vacancyPolo.includes("remoto")) {
+    score += 25;
+    strengths.push("Vaga 100% Remota: compatível com qualquer município de Alagoas");
+  } else if (studentPolo && vacancyPolo && (studentPolo.includes(vacancyPolo) || vacancyPolo.includes(studentPolo))) {
+    score += 25;
+    strengths.push(`Localização ideal: reside ou estuda no polo de ${vacancy.polo}`);
+  } else {
+    score += 15;
+    strengths.push("Mesma unidade federativa (Alagoas): mobilidade regional");
+  }
+
+  // 2. Habilidades, Ferramentas e Redes Sociais do Diagnóstico (30 pts)
+  const toolsStr = Array.isArray(student.tools) ? student.tools.join(" ") : (student.tools || "");
+  const networksStr = Array.isArray(student.frequentNetworks) ? student.frequentNetworks.join(" ") : (student.frequentNetworks || "");
+  const studentTools = toolsStr.toLowerCase();
+  const studentNetworks = networksStr.toLowerCase();
+  const studentProf = (student.profession || "").toLowerCase();
+  const studentBio = `${studentTools} ${studentNetworks} ${studentProf}`;
+
+  let matchedSkillsCount = 0;
+  if (vacancy.requiredSkills && Array.isArray(vacancy.requiredSkills)) {
+    vacancy.requiredSkills.forEach(skill => {
+      const sLower = skill.toLowerCase();
+      if (studentBio.includes(sLower) || (sLower.includes("canva") && studentTools.includes("canva")) || (sLower.includes("vídeo") && studentBio.includes("capcut"))) {
+        matchedSkillsCount++;
+        strengths.push(`Domínio de ${skill} confirmado no diagnóstico do aluno`);
+      }
+    });
+  }
+
+  const skillPoints = Math.min(30, Math.max(12, matchedSkillsCount * 8 + 10));
+  score += skillPoints;
+
+  // 3. Notas e Desempenho nos Módulos Relacionados (30 pts)
+  const stats = calculateStudentOverallStats(student);
+  let relevantAvgSum = 0;
+  let relevantCount = 0;
+
+  if (vacancy.relatedModules && Array.isArray(vacancy.relatedModules) && student.grades) {
+    vacancy.relatedModules.forEach(modNum => {
+      const subj = AppState.subjects[modNum - 1];
+      if (subj && student.grades[subj.id] && student.grades[subj.id].average !== undefined) {
+        relevantAvgSum += Number(student.grades[subj.id].average);
+        relevantCount++;
+      }
+    });
+  }
+
+  const relAvg = relevantCount > 0 ? (relevantAvgSum / relevantCount) : stats.overallAvg;
+  if (relAvg > 0) {
+    const gradePoints = Math.min(30, Math.max(15, Math.round((relAvg / 10) * 30)));
+    score += gradePoints;
+    if (relAvg >= 8.0) {
+      strengths.push(`Excelente rendimento acadêmico: média de ${relAvg.toFixed(1)} nos módulos exigidos`);
+    } else {
+      strengths.push(`Conhecimento validado nos módulos: média de ${relAvg.toFixed(1)}`);
+    }
+  } else {
+    score += 20;
+    strengths.push("Aluno matriculado com módulos essenciais em andamento");
+  }
+
+  // 4. Motivação e Expectativas de Carreira (15 pts)
+  const studentExpectations = (student.expectations || "").toLowerCase();
+  const studentMotivation = (student.motivation || "").toLowerCase();
+  if (studentExpectations.includes("trabalh") || studentExpectations.includes("renda") || studentMotivation.includes("aprend") || studentMotivation.includes("crescer")) {
+    score += 15;
+    strengths.push("Objetivo profissional do aluno alinhado à área da vaga");
+  } else {
+    score += 10;
+  }
+
+  score = Math.min(98, Math.max(65, score));
+
+  let level = "Boa Compatibilidade";
+  let badgeColor = "indigo";
+  if (score >= 85) {
+    level = "Match de Ouro";
+    badgeColor = "emerald";
+  } else if (score < 72) {
+    level = "Em Desenvolvimento";
+    badgeColor = "amber";
+  }
+
+  return {
+    score,
+    level,
+    badgeColor,
+    strengths: strengths.slice(0, 3)
+  };
+}
+
+function renderCareersTab(container) {
+  // REGRA DE ACESSO: Exige autenticação por CPF
+  if (!AppState.currentUser) {
+    renderTabAccessRestriction(container, 'careers');
+    return;
+  }
+
+  const isProf = AppState.currentUser.role === "professor";
+  const isAluno = AppState.currentUser.role === "aluno";
+  const student = isAluno ? (AppState.students.find(s => s.id === AppState.currentUser?.id || (AppState.currentUser?.cpf && cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf))) || AppState.currentUser) : (AppState.students[0] || null);
+
+  const activeTab = AppState.careersActiveTab || "vagas";
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      
+      <!-- Banner Hero Principal -->
+      <div class="relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl border border-indigo-500/20">
+        <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="space-y-2 max-w-2xl">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase bg-amber-400 text-slate-950 tracking-wider shadow">
+                <i class="fa-solid fa-briefcase mr-1"></i> Emprega Mais Alagoas
+              </span>
+              <span class="px-3 py-1 rounded-full text-[11px] font-semibold bg-white/20 backdrop-blur-sm">
+                Hub de Empregabilidade & Trilhas
+              </span>
+              ${isAluno ? `
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/90 text-white flex items-center gap-1">
+                  <i class="fa-solid fa-user-check"></i> Matching de Currículo Ativo
+                </span>
+              ` : `
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/90 text-white flex items-center gap-1">
+                  <i class="fa-solid fa-chalkboard-user"></i> Painel de Vagas & Formação
+                </span>
+              `}
+            </div>
+
+            <h1 class="text-xl sm:text-3xl font-black tracking-tight leading-tight">
+              Oportunidades de Emprego, Cursos & Trilhas de Aprendizado
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Conecte seu talento com empresas parceiras de Alagoas, acelere sua carreira com cursos gratuitos certificados e utilize modelos profissionais prontos para atender seus primeiros clientes.
+            </p>
+          </div>
+
+          <!-- Métricas Rápidas & Botão de Currículo do Aluno -->
+          <div class="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto flex-shrink-0">
+            <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
+              <div class="px-2">
+                <span class="block text-base sm:text-lg font-black text-amber-400">${AppState.jobVacancies.length}</span>
+                <span class="text-[9px] uppercase tracking-wider text-slate-300">Vagas</span>
+              </div>
+              <div class="px-2 border-x border-white/10">
+                <span class="block text-base sm:text-lg font-black text-emerald-400">${AppState.learningTrails.length}</span>
+                <span class="text-[9px] uppercase tracking-wider text-slate-300">Trilhas</span>
+              </div>
+              <div class="px-2">
+                <span class="block text-base sm:text-lg font-black text-indigo-300">${AppState.usefulResources.length}</span>
+                <span class="text-[9px] uppercase tracking-wider text-slate-300">Modelos</span>
+              </div>
+            </div>
+
+            ${isAluno ? `
+              <button 
+                onclick="openStudentResumeModal('${AppState.currentUser.id}')" 
+                class="w-full px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <i class="fa-solid fa-id-card"></i> Ver Meu Minicurrículo
+              </button>
+            ` : `
+              <button 
+                onclick="openCreateVacancyModal()" 
+                class="w-full px-4 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <i class="fa-solid fa-plus"></i> Publicar Nova Vaga
+              </button>
+            `}
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Navegação Interna das Sub-Abas -->
+      <div class="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2 flex-wrap">
+        <div class="flex items-center gap-2">
+          <button 
+            onclick="switchCareersTab('vagas')" 
+            class="px-4 py-2.5 rounded-2xl font-bold text-xs transition-all flex items-center gap-2 ${activeTab === 'vagas' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'}"
+          >
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Mural de Vagas & Oportunidades</span>
+            <span class="px-1.5 py-0.5 rounded-full text-[10px] ${activeTab === 'vagas' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">${AppState.jobVacancies.length}</span>
+          </button>
+
+          <button 
+            onclick="switchCareersTab('trilhas')" 
+            class="px-4 py-2.5 rounded-2xl font-bold text-xs transition-all flex items-center gap-2 ${activeTab === 'trilhas' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'}"
+          >
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Cursos, Trilhas & Materiais Gratuitos</span>
+            <span class="px-1.5 py-0.5 rounded-full text-[10px] ${activeTab === 'trilhas' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">${AppState.learningTrails.length + AppState.usefulResources.length}</span>
+          </button>
+        </div>
+
+        ${isProf ? `
+          <div class="flex items-center gap-2">
+            ${activeTab === 'vagas' ? `
+              <button 
+                onclick="openCreateVacancyModal()" 
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <i class="fa-solid fa-plus"></i> Nova Vaga
+              </button>
+            ` : `
+              <button 
+                onclick="openAddResourceModal()" 
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-800 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <i class="fa-solid fa-share-nodes"></i> Compartilhar Material
+              </button>
+            `}
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Conteúdo da Sub-Aba Ativa -->
+      ${activeTab === 'vagas' ? renderCareersVacanciesContent(isAluno, student) : renderCareersTrailsContent(isProf)}
+
+    </div>
+  `;
+}
+
+function renderCareersVacanciesContent(isAluno, student) {
+  const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
+  const polos = Array.from(new Set(AppState.jobVacancies.map(v => v.polo))).filter(Boolean);
+
+  const selectedPolo = AppState.careersFilterPolo || "all";
+  const selectedType = AppState.careersFilterType || "all";
+  const search = (AppState.careersFilterSearch || "").toLowerCase();
+
+  const filtered = AppState.jobVacancies.filter(v => {
+    if (selectedPolo !== "all" && v.polo !== selectedPolo) return false;
+    if (selectedType !== "all" && v.contractType !== selectedType) return false;
+    if (search) {
+      const matchText = `${v.title} ${v.company} ${v.polo} ${v.description} ${(v.requiredSkills || []).join(' ')}`.toLowerCase();
+      if (!matchText.includes(search)) return false;
+    }
+    return true;
+  });
+
+  return `
+    <div class="space-y-6">
+      
+      <!-- Barra de Filtros e Busca de Vagas -->
+      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+          <div class="flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <i class="fa-solid fa-filter text-indigo-500"></i> Filtrar:
+          </div>
+
+          <select 
+            onchange="handleCareersPoloFilterChange(this.value)" 
+            class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold focus:outline-none"
+          >
+            <option value="all" ${selectedPolo === "all" ? "selected" : ""}>Todos os Polos (Alagoas)</option>
+            ${polos.map(p => `
+              <option value="${escapeHtml(p)}" ${selectedPolo === p ? "selected" : ""}>${escapeHtml(p)}</option>
+            `).join("")}
+          </select>
+
+          <select 
+            onchange="handleCareersTypeFilterChange(this.value)" 
+            class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold focus:outline-none"
+          >
+            <option value="all" ${selectedType === "all" ? "selected" : ""}>Todos os Modelos</option>
+            <option value="Estágio" ${selectedType === "Estágio" ? "selected" : ""}>Estágio</option>
+            <option value="CLT" ${selectedType === "CLT" ? "selected" : ""}>CLT</option>
+            <option value="Freelance / PJ" ${selectedType === "Freelance / PJ" ? "selected" : ""}>Freelance / PJ</option>
+          </select>
+        </div>
+
+        <div class="w-full sm:w-64 relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+          <input 
+            type="text" 
+            value="${escapeHtml(AppState.careersFilterSearch || '')}"
+            oninput="handleCareersSearchChange(this.value)"
+            placeholder="Buscar por cargo ou ferramenta..." 
+            class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+      </div>
+
+      <!-- Aviso Informativo sobre o Matching de Currículo -->
+      ${isAluno ? `
+        <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex items-start gap-3 text-xs">
+          <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm flex-shrink-0 mt-0.5 shadow-sm">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div>
+            <strong class="text-indigo-950 dark:text-indigo-200 font-bold block">
+              Match de Currículo Personalizado para ${escapeHtml(student.name.split(" ")[0])}
+            </strong>
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-[11px] mt-0.5">
+              O sistema cruza suas informações de polo em Alagoas, ferramentas do diagnóstico inicial (ex: Canva, CapCut), notas dos 7 módulos e motivações de carreira para indicar a afinidade com cada vaga.
+            </p>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Grid de Cards de Vagas -->
+      ${filtered.length === 0 ? `
+        <div class="p-12 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 text-slate-400 space-y-3">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl mx-auto text-slate-400">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <h3 class="font-bold text-sm text-slate-700 dark:text-slate-300">Nenhuma vaga encontrada com os filtros atuais</h3>
+          <p class="text-xs max-w-sm mx-auto">Tente selecionar outro polo de Alagoas ou limpar o campo de busca.</p>
+        </div>
+      ` : `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          ${filtered.map(v => {
+            const matchInfo = isAluno && student ? calculateCurriculumMatch(student, v) : null;
+
+            return `
+              <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                
+                <div class="space-y-3">
+                  <!-- Header do Card: Tipo de Contrato & Match Badge -->
+                  <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${v.contractType === 'Estágio' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : v.contractType === 'CLT' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                        ${v.contractType}
+                      </span>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot text-rose-500"></i> ${v.polo}
+                      </span>
+                    </div>
+
+                    ${matchInfo ? `
+                      <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black ${matchInfo.badgeColor === 'emerald' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 ring-1 ring-emerald-500/30' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 ring-1 ring-indigo-500/30'} flex items-center gap-1 shadow-xs">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> ${matchInfo.score}% Match • ${matchInfo.level}
+                      </span>
+                    ` : `
+                      <span class="text-[10px] text-slate-400">Publicado em ${new Date(v.createdAt).toLocaleDateString('pt-BR')}</span>
+                    `}
+                  </div>
+
+                  <!-- Título da Vaga e Empresa -->
+                  <div>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 leading-snug">
+                      ${escapeHtml(v.title)}
+                    </h3>
+                    <p class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5 flex items-center gap-1.5">
+                      <i class="fa-solid fa-building"></i> ${escapeHtml(v.company)} • <span class="text-slate-400 font-normal">${v.locationType}</span>
+                    </p>
+                  </div>
+
+                  <!-- Remuneração & Carga Horária -->
+                  <div class="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300 py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <i class="fa-solid fa-money-bill-wave"></i> ${v.salary}
+                    </span>
+                    <span class="text-slate-300 dark:text-slate-700">•</span>
+                    <span class="text-[11px] text-slate-500 flex items-center gap-1">
+                      <i class="fa-regular fa-clock"></i> ${v.workload}
+                    </span>
+                  </div>
+
+                  <!-- Descrição da Vaga -->
+                  <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+                    ${escapeHtml(v.description)}
+                  </p>
+
+                  <!-- Tags de Habilidades -->
+                  <div class="flex flex-wrap gap-1 pt-1">
+                    ${(v.requiredSkills || []).map(skill => `
+                      <span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                        ${escapeHtml(skill)}
+                      </span>
+                    `).join("")}
+                  </div>
+
+                  <!-- Pontos Fortes do Aluno para esta vaga -->
+                  ${(matchInfo && matchInfo.strengths && matchInfo.strengths.length > 0) ? `
+                    <div class="p-3 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-[11px] text-emerald-800 dark:text-emerald-300 space-y-1">
+                      <span class="font-bold uppercase text-[9px] tracking-wider block text-emerald-700 dark:text-emerald-400">
+                        <i class="fa-solid fa-circle-check mr-1"></i> Seus pontos fortes para esta vaga:
+                      </span>
+                      ${matchInfo.strengths.map(st => `
+                        <div class="flex items-start gap-1.5 text-[10px]">
+                          <span>•</span> <span>${escapeHtml(st)}</span>
+                        </div>
+                      `).join("")}
+                    </div>
+                  ` : ''}
+
+                </div>
+
+                <!-- Ações do Card de Vaga -->
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <button 
+                      type="button" 
+                      onclick="applyToVacancy('${v.id}')" 
+                      class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                    >
+                      <i class="fa-solid fa-paper-plane"></i> Candidatar-se à Vaga
+                    </button>
+
+                    ${isAluno ? `
+                      <button 
+                        type="button" 
+                        onclick="openStudentResumeModal('${student.id}')" 
+                        class="px-3 py-2 rounded-xl font-semibold text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1 cursor-pointer"
+                        title="Ver meu currículo formatado"
+                      >
+                        <i class="fa-solid fa-id-card"></i> Meu Currículo
+                      </button>
+                    ` : ''}
+                  </div>
+
+                  ${isProf ? `
+                    <button 
+                      type="button" 
+                      onclick="deleteJobVacancy('${v.id}')" 
+                      class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                      title="Excluir Oportunidade"
+                    >
+                      <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                  ` : ''}
+                </div>
+
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `}
+
+    </div>
+  `;
+}
+
+function renderCareersTrailsContent(isProf) {
+  return `
+    <div class="space-y-8">
+      
+      <!-- Seção 1: Trilhas de Aprendizagem Recomendadas -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-route text-indigo-600"></i> Trilhas de Formação & Cursos Gratuitos
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Cursos oficiais com emissão de certificados gratuitos reconhecidos pelo mercado (Sebrae Alagoas, Meta, Rock University, FGV e Google).
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          ${AppState.learningTrails.map(trilha => `
+            <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid ${trilha.icon || 'fa-graduation-cap'}"></i>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                      ${trilha.hours}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                      Gratuito com Certificado
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 leading-snug">
+                    ${trilha.title}
+                  </h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">
+                    ${trilha.description}
+                  </p>
+                </div>
+
+                <!-- Cursos da Trilha -->
+                <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Cursos Integrados na Trilha:</span>
+                  ${trilha.courses.map(c => `
+                    <a 
+                      href="${c.link}" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs transition-colors group cursor-pointer"
+                    >
+                      <div class="min-w-0 pr-2">
+                        <strong class="text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 block truncate font-semibold">${c.name}</strong>
+                        <span class="text-[10px] text-slate-400">${c.provider} • ${c.format}</span>
+                      </div>
+                      <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-indigo-600 transition-colors flex-shrink-0"></i>
+                    </a>
+                  `).join("")}
+                </div>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <!-- Seção 2: Materiais Práticos & Templates para Download -->
+      <div class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-folder-open text-emerald-600"></i> Materiais Práticos & Templates para Uso Imediato
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Copie ou baixe modelos prontos de briefing, calendários e propostas comerciais para iniciar seus atendimentos.
+            </p>
+          </div>
+
+          ${isProf ? `
+            <button 
+              onclick="openAddResourceModal()" 
+              class="px-3.5 py-2 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-plus"></i> Compartilhar Material
+            </button>
+          ` : ''}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${AppState.usefulResources.map(rec => `
+            <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-3">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                    ${rec.category}
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-mono">${rec.format}</span>
+                </div>
+
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 leading-snug">
+                  ${escapeHtml(rec.title)}
+                </h3>
+
+                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+                  ${escapeHtml(rec.description)}
+                </p>
+              </div>
+
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                ${rec.canCopy ? `
+                  <button 
+                    onclick="copyResourceContent('${rec.id}')" 
+                    class="px-3 py-1.5 rounded-xl font-bold text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <i class="fa-solid fa-copy"></i> Copiar Modelo
+                  </button>
+                ` : `
+                  <a 
+                    href="${rec.downloadUrl}" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="px-3 py-1.5 rounded-xl font-bold text-xs bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition-all flex items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Acessar
+                  </a>
+                `}
+
+                ${isProf ? `
+                  <button 
+                    onclick="deleteUsefulResource('${rec.id}')" 
+                    class="p-1.5 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                    title="Excluir Material"
+                  >
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function switchCareersTab(tab) {
+  AppState.careersActiveTab = tab;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function handleCareersPoloFilterChange(value) {
+  AppState.careersFilterPolo = value;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function handleCareersTypeFilterChange(value) {
+  AppState.careersFilterType = value;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function handleCareersSearchChange(value) {
+  AppState.careersFilterSearch = value;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function openStudentResumeModal(studentId) {
+  const student = AppState.students.find(s => s.id === studentId || (AppState.currentUser?.cpf && cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf))) || AppState.currentUser;
+  if (!student) {
+    showToast("Dados do aluno não encontrados.", "error");
+    return;
+  }
+
+  const stats = calculateStudentOverallStats(student);
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=6366f1&color=fff`;
+  const photoUrl = student.photoUrl || student.photo || fallbackPhoto;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 scale-in my-8">
+        
+        <!-- Cabeçalho do Currículo -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden ring-4 ring-indigo-500/20 shadow-md flex-shrink-0">
+              <img src="${photoUrl}" alt="${escapeHtml(student.name)}" onerror="this.src='${fallbackPhoto}'" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                Currículo Oficial • Emprega Mais Alagoas
+              </span>
+              <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 mt-1">
+                ${escapeHtml(student.name)}
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                ${escapeHtml(student.classroom || student.unitCity || "Polo Alagoas")} • CPF: ${maskCpf(student.cpf || "000.000.000-00")}
+              </p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 self-start sm:self-auto p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Formação e Qualificação -->
+        <div class="space-y-2">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-graduation-cap text-indigo-600"></i> Qualificação Profissional
+          </h3>
+          <div class="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 space-y-1 text-xs">
+            <div class="flex justify-between items-center">
+              <strong class="text-indigo-900 dark:text-indigo-200 font-bold text-sm">Gestão de Mídias Digitais</strong>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                ${stats.status} (Média: ${stats.overallAvg.toFixed(1)})
+              </span>
+            </div>
+            <p class="text-slate-600 dark:text-slate-400 text-[11px]">
+              Governo do Estado de Alagoas • Programa Emprega Mais Alagoas (7 Módulos de Formação Prática)
+            </p>
+          </div>
+        </div>
+
+        <!-- Habilidades e Ferramentas Mapeadas -->
+        <div class="space-y-2">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-wrench text-emerald-600"></i> Ferramentas & Competências Digitais
+          </h3>
+          <div class="flex flex-wrap gap-1.5">
+            ${(Array.isArray(student.tools) ? student.tools : (student.tools || "Canva, Instagram, Redes Sociais").split(",")).map(t => `
+              <span class="px-2.5 py-1 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+                <i class="fa-solid fa-check text-emerald-500 mr-1"></i> ${escapeHtml(String(t).trim())}
+              </span>
+            `).join("")}
+            <span class="px-2.5 py-1 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+              <i class="fa-solid fa-check text-emerald-500 mr-1"></i> Redes: ${escapeHtml(Array.isArray(student.frequentNetworks) ? student.frequentNetworks.join(", ") : (student.frequentNetworks || "Instagram, TikTok, WhatsApp"))}
+            </span>
+          </div>
+        </div>
+
+        <!-- Diagnóstico Pedagógico & Perfil de Trabalho -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
+            <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+              <i class="fa-solid fa-bullseye text-amber-500"></i> Expectativa Profissional:
+            </span>
+            <p class="text-slate-600 dark:text-slate-400 italic text-[11px]">
+              "${escapeHtml(student.expectations || "Atuação com produção de conteúdo, tráfego e atendimento para negócios locais.")}"
+            </p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
+            <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+              <i class="fa-solid fa-envelope text-indigo-500"></i> Canais de Contato:
+            </span>
+            <p class="text-slate-600 dark:text-slate-400 text-[11px]">
+              <strong>WhatsApp:</strong> ${escapeHtml(student.contact?.phone || student.phone || "Não informado")}<br>
+              <strong>E-mail:</strong> ${escapeHtml(student.contact?.email || student.email || "Não informado")}
+            </p>
+          </div>
+        </div>
+
+        <!-- Ações do Currículo -->
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <button 
+            onclick="copyStudentResumeText('${student.id}')" 
+            class="px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-copy"></i> Copiar Resumo Profissional
+          </button>
+
+          <div class="flex items-center gap-2">
+            <button 
+              onclick="window.print()" 
+              class="px-4 py-2.5 rounded-xl font-semibold text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-print"></i> Imprimir
+            </button>
+            <button 
+              onclick="closeModal()" 
+              class="px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/30 transition-all"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function copyStudentResumeText(studentId) {
+  const student = AppState.students.find(s => s.id === studentId || (AppState.currentUser?.cpf && cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf))) || AppState.currentUser;
+  if (!student) return;
+
+  const stats = calculateStudentOverallStats(student);
+  const toolsStr = Array.isArray(student.tools) ? student.tools.join(", ") : (student.tools || 'Canva, CapCut, Meta Business Suite');
+  const networksStr = Array.isArray(student.frequentNetworks) ? student.frequentNetworks.join(", ") : (student.frequentNetworks || 'Instagram, TikTok, WhatsApp');
+
+  const text = `🎓 CURRÍCULO PROFISSIONAL • EMPREGA MAIS ALAGOAS
+--------------------------------------------------
+Nome: ${student.name}
+Polo: ${student.classroom || student.unitCity || 'Alagoas'}
+Contato: ${student.contact?.phone || student.phone || 'WhatsApp'} | ${student.contact?.email || student.email || ''}
+
+QUALIFICAÇÃO PROFISSIONAL:
+Curso de Gestão de Mídias Digitais (Governo de Alagoas)
+Situação Acadêmica: ${stats.status} • Média Geral: ${stats.overallAvg.toFixed(1)}
+
+COMPETÊNCIAS E FERRAMENTAS:
+- Ferramentas: ${toolsStr}
+- Redes Sociais: ${networksStr}
+- Objetivos: ${student.expectations || 'Criação de conteúdo e gestão de mídias para negócios locais'}
+--------------------------------------------------
+Gerado pelo Sistema Eu Por Dias • Emprega Mais Alagoas`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("Currículo copiado para a área de transferência!", "success");
+  }).catch(() => {
+    showToast("Não foi possível copiar automaticamente.", "warning");
+  });
+}
+
+function applyToVacancy(vacancyId) {
+  const vacancy = AppState.jobVacancies.find(v => v.id === vacancyId);
+  if (!vacancy) {
+    showToast("Vaga não encontrada.", "error");
+    return;
+  }
+
+  const student = AppState.currentUser || { name: "Aluno Interessado" };
+  const stats = calculateStudentOverallStats(student);
+  const matchInfo = calculateCurriculumMatch(student, vacancy);
+
+  const pitchMsg = `Olá! Meu nome é ${student.name}, sou estudante do curso de Gestão de Mídias Digitais pelo Programa Emprega Mais Alagoas (Polo ${student.classroom || student.unitCity || 'Alagoas'}).
+
+Tenho interesse na vaga "${vacancy.title}" na ${vacancy.company}.
+Minha média de rendimento acadêmico é ${stats.overallAvg.toFixed(1)} e meu índice de compatibilidade com os requisitos da vaga é de ${matchInfo.score}%.
+
+Principais competências: ${student.tools || 'Canva, Edição de Vídeos, Copywriting e Redes Sociais'}.
+Aguardo retorno para enviar meu portfólio e currículo completo. Muito obrigado!`;
+
+  if (vacancy.contactPhone) {
+    const cleanPhone = vacancy.contactPhone.replace(/\D/g, "");
+    const waUrl = `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(pitchMsg)}`;
+    window.open(waUrl, "_blank");
+    showToast("Redirecionando para o WhatsApp da vaga...", "success");
+  } else if (vacancy.contactEmail) {
+    const mailto = `mailto:${vacancy.contactEmail}?subject=${encodeURIComponent(`Candidatura: ${vacancy.title} - ${student.name}`)}&body=${encodeURIComponent(pitchMsg)}`;
+    window.open(mailto, "_blank");
+    showToast("Abrindo cliente de e-mail para envio da candidatura...", "success");
+  } else {
+    navigator.clipboard.writeText(pitchMsg).then(() => {
+      showToast("Mensagem de apresentação copiada para a área de transferência!", "success");
+    });
+  }
+}
+
+function openCreateVacancyModal() {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores têm permissão para publicar novas vagas.", "warning");
+    return;
+  }
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 space-y-5 scale-in my-8">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Publicar Nova Oportunidade de Trabalho</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Exclusivo para Docentes e Coordenação</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleCreateVacancySubmit(event)" class="space-y-3.5 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título da Vaga / Função *</label>
+            <input 
+              type="text" 
+              id="vac-title" 
+              required
+              placeholder="Ex: Assistente de Mídias Sociais / Criador de Reels" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Empresa / Contratante *</label>
+              <input 
+                type="text" 
+                id="vac-company" 
+                required
+                placeholder="Ex: Agência Criativa Alagoas" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Polo / Cidade (Alagoas) *</label>
+              <input 
+                type="text" 
+                id="vac-polo" 
+                required
+                placeholder="Ex: Maceió, Arapiraca ou Remoto" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tipo de Contratação</label>
+              <select 
+                id="vac-contract" 
+                class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold"
+              >
+                <option value="Estágio">Estágio Remunerado</option>
+                <option value="CLT">CLT (Carteira Assinada)</option>
+                <option value="Freelance / PJ">Freelance / Contrato PJ</option>
+                <option value="Temporário">Temporário</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Remuneração / Bolsa</label>
+              <input 
+                type="text" 
+                id="vac-salary" 
+                placeholder="Ex: R$ 1.500,00 + Benefícios" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Habilidades Exigidas (separadas por vírgula)</label>
+            <input 
+              type="text" 
+              id="vac-skills" 
+              placeholder="Ex: Canva, CapCut, Instagram, Copywriting" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descrição e Atribuições *</label>
+            <textarea 
+              id="vac-desc" 
+              rows="3" 
+              required
+              placeholder="Descreva as principais atividades, horários e perfil esperado do aluno..."
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            ></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">WhatsApp para Candidatura</label>
+              <input 
+                type="text" 
+                id="vac-phone" 
+                placeholder="Ex: 82991234567" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">E-mail para Envio de Currículo</label>
+              <input 
+                type="email" 
+                id="vac-email" 
+                placeholder="Ex: rh@empresa.com.br" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-4 py-2 rounded-xl font-semibold text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              class="px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-paper-plane"></i> Publicar Vaga
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  `;
+}
+
+function handleCreateVacancySubmit(e) {
+  e.preventDefault();
+  const title = document.getElementById("vac-title")?.value.trim();
+  const company = document.getElementById("vac-company")?.value.trim();
+  const polo = document.getElementById("vac-polo")?.value.trim();
+  const contractType = document.getElementById("vac-contract")?.value;
+  const salary = document.getElementById("vac-salary")?.value.trim() || "A combinar";
+  const rawSkills = document.getElementById("vac-skills")?.value || "";
+  const description = document.getElementById("vac-desc")?.value.trim();
+  const contactPhone = document.getElementById("vac-phone")?.value.trim() || "";
+  const contactEmail = document.getElementById("vac-email")?.value.trim() || "";
+
+  if (!title || !company || !polo || !description) {
+    showToast("Preencha todos os campos obrigatórios marcados com *.", "warning");
+    return;
+  }
+
+  const skills = rawSkills.split(",").map(s => s.trim()).filter(s => s.length > 0);
+
+  const newVac = {
+    id: `vaga-${Date.now()}`,
+    title,
+    company,
+    polo,
+    locationType: polo.toLowerCase().includes("remoto") ? "Remoto" : "Presencial / Híbrido",
+    contractType,
+    workload: contractType === "Estágio" ? "20h a 30h semanais" : "Horário comercial",
+    salary,
+    description,
+    requiredSkills: skills.length > 0 ? skills : ["Canva", "Instagram", "Mídias Digitais"],
+    relatedModules: [1, 2, 3],
+    contactEmail,
+    contactPhone,
+    createdAt: new Date().toISOString(),
+    active: true
+  };
+
+  AppState.jobVacancies.unshift(newVac);
+  saveCareersDataToStorage();
+
+  closeModal();
+  showToast("Vaga publicada com sucesso para toda a turma!", "success");
+
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function deleteJobVacancy(vacancyId) {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores podem remover vagas publicadas.", "error");
+    return;
+  }
+
+  const vac = AppState.jobVacancies.find(v => v.id === vacancyId);
+  if (!vac) return;
+
+  if (!confirm(`Deseja realmente remover a oportunidade "${vac.title}"?`)) {
+    return;
+  }
+
+  AppState.jobVacancies = AppState.jobVacancies.filter(v => v.id !== vacancyId);
+  saveCareersDataToStorage();
+
+  showToast("Vaga removida com sucesso.", "info");
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function openAddResourceModal() {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores podem compartilhar novos materiais.", "warning");
+    return;
+  }
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 space-y-4 scale-in my-8">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-file-arrow-up"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Compartilhar Material ou Link Útil</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Disponibilizar recurso gratuito para a turma</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleAddResourceSubmit(event)" class="space-y-3.5 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título do Material / Curso *</label>
+            <input 
+              type="text" 
+              id="res-title" 
+              required
+              placeholder="Ex: Apostila de Copywriting ou Link do Curso Sebrae" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
+              <select 
+                id="res-category" 
+                class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold"
+              >
+                <option value="Material Gratuito">Material Gratuito</option>
+                <option value="Curso Gratuito">Curso Gratuito</option>
+                <option value="Template / Modelo">Template / Modelo</option>
+                <option value="Trilha de Estudos">Trilha de Estudos</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Formato</label>
+              <input 
+                type="text" 
+                id="res-format" 
+                placeholder="Ex: PDF, Planilha ou EAD" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Link de Acesso / URL *</label>
+            <input 
+              type="url" 
+              id="res-url" 
+              required
+              placeholder="https://..." 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descrição Breve *</label>
+            <textarea 
+              id="res-desc" 
+              rows="2" 
+              required
+              placeholder="Explique como este material ajudará o aluno..."
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+            ></textarea>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-4 py-2 rounded-xl font-semibold text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              class="px-5 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/30 flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-share"></i> Compartilhar
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  `;
+}
+
+function handleAddResourceSubmit(e) {
+  e.preventDefault();
+  const title = document.getElementById("res-title")?.value.trim();
+  const category = document.getElementById("res-category")?.value;
+  const format = document.getElementById("res-format")?.value.trim() || "Link / PDF";
+  const downloadUrl = document.getElementById("res-url")?.value.trim();
+  const description = document.getElementById("res-desc")?.value.trim();
+
+  if (!title || !downloadUrl || !description) {
+    showToast("Preencha todos os campos obrigatórios.", "warning");
+    return;
+  }
+
+  const newRes = {
+    id: `rec-${Date.now()}`,
+    title,
+    category,
+    format,
+    icon: "fa-link",
+    description,
+    downloadUrl,
+    canCopy: false
+  };
+
+  AppState.usefulResources.unshift(newRes);
+  saveCareersDataToStorage();
+
+  closeModal();
+  showToast("Material compartilhado com sucesso!", "success");
+
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function deleteUsefulResource(resourceId) {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores podem remover materiais.", "error");
+    return;
+  }
+
+  if (!confirm("Deseja realmente remover este material da lista?")) {
+    return;
+  }
+
+  AppState.usefulResources = AppState.usefulResources.filter(r => r.id !== resourceId);
+  saveCareersDataToStorage();
+
+  showToast("Material removido.", "info");
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderCareersTab(contentArea);
+}
+
+function copyResourceContent(resourceId) {
+  const res = AppState.usefulResources.find(r => r.id === resourceId);
+  if (!res) return;
+
+  let templateText = "";
+  if (resourceId === "rec-1") {
+    templateText = `📅 CALENDÁRIO EDITORIAL SEMANAL - GESTÃO DE MÍDIAS DIGITAIS
+------------------------------------------------------------
+• Segunda-feira: Dica prática / Conteúdo educacional (Carrossel no Instagram)
+• Terça-feira: Bastidores do negócio / Produção (Stories interativos + Enquete)
+• Quarta-feira: Solução de problema ou Mito vs Verdade (Reels curto até 30s)
+• Quinta-feira: Prova Social / Depoimento de cliente (Post estático + Legenda humanizada)
+• Sexta-feira: Tendência / Humor inteligente do nicho (Reels dinâmico)
+• Sábado: Oferta direta / Chamada para ação no WhatsApp ou Loja
+• Domingo: Frase inspiradora ou reflexão da semana
+------------------------------------------------------------
+Programa Emprega Mais Alagoas • Mídias Digitais`;
+  } else if (resourceId === "rec-2") {
+    templateText = `📋 ROTEIRO DE BRIEFING PARA CLIENTES DE MÍDIAS SOCIAIS
+------------------------------------------------------------
+1. Qual é o principal produto/serviço da sua empresa?
+2. Quem é o seu cliente ideal (idade, cidade, principais dores)?
+3. Quais redes sociais sua empresa já utiliza atualmente?
+4. Quais são seus 3 maiores concorrentes em Alagoas?
+5. Qual é o objetivo principal das redes (vendas, autoridade ou engajamento)?
+6. O cliente possui fotos e vídeos profissionais dos produtos?
+7. Qual é a identidade visual da empresa (cores, logo, tom de voz)?
+8. Quem será a pessoa de contato para aprovar as postagens?
+------------------------------------------------------------
+Programa Emprega Mais Alagoas • Mídias Digitais`;
+  } else if (resourceId === "rec-3") {
+    templateText = `💼 PROPOSTA COMERCIAL PADRÃO - GESTÃO DE MÍDIAS DIGITAIS
+------------------------------------------------------------
+PACOTE BÁSICO (PRESENÇA DIGITAL):
+- 12 posts mensais (3 por semana no feed)
+- 20 stories mensais com enquetes e interação
+- Criação de artes no Canva e legendas estratégicas
+- Investimento sugerido: R$ 600,00 a R$ 850,00 / mês
+
+PACOTE INTERMEDIÁRIO (CRESCIMENTO & VÍDEO):
+- 16 posts mensais (sendo 8 Reels editados)
+- 40 stories mensais + Destaques organizados
+- Relatório mensal de alcance e métricas
+- Investimento sugerido: R$ 1.100,00 a R$ 1.500,00 / mês
+------------------------------------------------------------
+Programa Emprega Mais Alagoas • Mídias Digitais`;
+  } else if (resourceId === "rec-4") {
+    templateText = `✅ CHECKLIST DE AUDITORIA DE PERFIL NO INSTAGRAM
+------------------------------------------------------------
+[ ] 1. Nome de usuário (@) simples, limpo e sem caracteres confusos.
+[ ] 2. Foto de perfil nítida (logo para marcas, rosto iluminado para pessoal).
+[ ] 3. Nome principal em negrito com a profissão/nicho e cidade.
+[ ] 4. Bio magnética: Quem você ajuda + Como você ajuda + CTA.
+[ ] 5. Link na bio direcionando diretamente para o WhatsApp ou Catálogo.
+[ ] 6. Destaques essenciais: "Comece Aqui", "Depoimentos", "Produtos", "Endereço".
+[ ] 7. Pelo menos 3 posts fixados estratégicos.
+[ ] 8. Paleta de cores e tipografia consistentes nos posts.
+------------------------------------------------------------
+Programa Emprega Mais Alagoas • Mídias Digitais`;
+  } else if (resourceId === "rec-5") {
+    templateText = `📄 MINUTA BÁSICA DE PRESTAÇÃO DE SERVIÇOS DE MÍDIAS DIGITAIS
+------------------------------------------------------------
+CONTRATANTE: [Nome do Cliente / Empresa]
+CONTRATADO(A): [Nome do Estudante/Profissional]
+
+OBJETO: Prestação de serviços de criação de conteúdo e gestão de mídias digitais.
+ENTREGAS MENSAIS: [Quantidade de posts, vídeos e stories conforme proposta].
+VALOR MENSAL: R$ [Valor acordado], com vencimento no dia [Dia] de cada mês.
+PRAZO: Contrato inicial de 3 meses, renovável automaticamente.
+APROVAÇÕES: O cliente terá até 48 horas para aprovar o cronograma semanal.
+------------------------------------------------------------
+Programa Emprega Mais Alagoas • Mídias Digitais`;
+  } else {
+    templateText = `Material: ${res.title}\nCategoria: ${res.category}\nDescrição: ${res.description}\nLink de Acesso: ${res.downloadUrl}`;
+  }
+
+  navigator.clipboard.writeText(templateText).then(() => {
+    showToast(`Modelo de "${res.title}" copiado com sucesso!`, "success");
+  }).catch(() => {
+    showToast("Não foi possível copiar automaticamente.", "warning");
+  });
 }
