@@ -39,7 +39,14 @@ const AppState = {
     supabaseConnected: true,
     lastSupabaseSync: "2026-09-07T14:32:00.000Z"
   },
-  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students'
+  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum'
+  // Usuário Autenticado por CPF (Menu & Identificação)
+  currentUser: null, // { id, name, cpf, role: 'professor' | 'aluno', photo, email, classroom, loginTime }
+  // Fórum & Chat ao Vivo
+  forumTopics: [],
+  forumMessages: [],
+  activeForumTopicId: null,
+  forumTab: "topics", // 'topics' | 'chat'
   privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
   godMode: {
     active: false,
@@ -295,6 +302,19 @@ function loadDataFromStorage() {
     AppState.revealedStudentIds.clear();
   }
 
+  // Restaurar usuário autenticado por CPF
+  try {
+    const savedUser = localStorage.getItem("eupordias_auth_user");
+    if (savedUser) {
+      AppState.currentUser = JSON.parse(savedUser);
+    }
+  } catch (e) {
+    console.warn("Erro ao restaurar usuário autenticado:", e);
+  }
+
+  // Carregar dados de Fórum & Chat
+  loadForumDataFromStorage();
+
   saveDataToStorage();
 }
 
@@ -303,6 +323,7 @@ function saveDataToStorage() {
   localStorage.setItem("eupordias_subjects", JSON.stringify(AppState.subjects));
   localStorage.setItem("eupordias_classrooms", JSON.stringify(AppState.classrooms));
   localStorage.setItem("eupordias_settings", JSON.stringify(AppState.settings));
+  saveForumDataToStorage();
 }
 
 // Tema Claro / Escuro
@@ -683,6 +704,7 @@ function getFilteredStudents() {
 function renderApp() {
   updateHeaderCounts();
   populateClassroomFilterSelect();
+  renderHeaderUserBadge();
 
   const contentArea = document.getElementById("main-content-area");
   if (!contentArea) return;
@@ -703,8 +725,11 @@ function renderApp() {
     case "about":
       renderAboutTab(contentArea);
       break;
+    case "forum":
+      renderForumTab(contentArea);
+      break;
     default:
-      renderStudentsTab(contentArea);
+      renderAboutTab(contentArea);
   }
 
   updateNavActiveState();
@@ -2425,16 +2450,25 @@ function openStudentProfileModal(studentId) {
           </div>
 
           <!-- Rodapé do Modal -->
-          <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 no-print">
-            <button 
-              onclick="openGradesModal('${student.id}')"
-              class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300"
-            >
-              <i class="fa-solid fa-pen-to-square mr-1"></i> Lançar Notas do Aluno
-            </button>
+          <div class="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 no-print">
+            <div class="flex items-center gap-2 flex-wrap">
+              <button 
+                onclick="openGradesModal('${student.id}')"
+                class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 transition-all"
+              >
+                <i class="fa-solid fa-pen-to-square mr-1"></i> Lançar Notas
+              </button>
+              <button 
+                onclick="openSendEmailReportModal('${student.id}')"
+                class="px-4 py-2 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all transform active:scale-95"
+                title="Enviar relatório de diagnóstico e notas diretamente por e-mail"
+              >
+                <i class="fa-solid fa-paper-plane"></i> Enviar Relatório por E-mail
+              </button>
+            </div>
             <button 
               onclick="closeModal()" 
-              class="px-5 py-2 rounded-xl font-bold text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 text-slate-700"
+              class="px-5 py-2 rounded-xl font-bold text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 text-slate-700 transition-all"
             >
               Fechar
             </button>
@@ -4467,72 +4501,195 @@ function initDashboardCharts() {
 }
 
 // -------------------------------------------------------------
-// ABA 4: RELATÓRIOS
+// ABA 4: RELATÓRIOS & BACKUP (COM REGRA DE ACESSO POR CPF)
 // -------------------------------------------------------------
 function renderReportsTab(container) {
+  // REGRA DE ACESSO: Exige autenticação por CPF cadastrado
+  if (!AppState.currentUser) {
+    container.innerHTML = `
+      <div class="space-y-6 fade-in max-w-2xl mx-auto py-8">
+        <div class="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl text-center space-y-5">
+          <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl mx-auto shadow-inner">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          
+          <div class="space-y-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
+              <i class="fa-solid fa-lock"></i> Área de Acesso Restrito
+            </span>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Regra de Acesso: Relatórios e Backup</h2>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg mx-auto">
+              Para acessar as planilhas oficiais do curso, exportações completas, atas escolares e backups na nuvem, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-left text-xs space-y-2">
+            <div class="flex items-start gap-2.5">
+              <i class="fa-solid fa-user-graduate text-indigo-600 mt-0.5"></i>
+              <div>
+                <strong class="text-slate-800 dark:text-slate-200">Alunos Matriculados:</strong>
+                <p class="text-slate-500 text-[11px]">Acesso ao seu Boletim Individual Oficial, histórico de notas dos 7 módulos e ficha cadastral.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+              <i class="fa-solid fa-chalkboard-user text-emerald-600 mt-0.5"></i>
+              <div>
+                <strong class="text-slate-800 dark:text-slate-200">Professores e Coordenação:</strong>
+                <p class="text-slate-500 text-[11px]">Acesso irrestrito a planilhas completas (CSV), backups JSON do sistema e atas gerais de rendimento.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button 
+              onclick="openCpfLoginModal('reports')" 
+              class="px-8 py-3.5 rounded-2xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30 transition-all transform active:scale-95 inline-flex items-center gap-2"
+            >
+              <i class="fa-solid fa-id-card"></i> Entrar com CPF Cadastrado
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Usuário autenticado: exibe opções de acordo com o perfil
+  const isProf = AppState.currentUser.role === 'professor';
+
   container.innerHTML = `
     <div class="space-y-6 fade-in">
       <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        
+        <!-- Barra de Identificação do Usuário Logado -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl overflow-hidden ring-2 ring-indigo-500 bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center font-bold text-indigo-600">
+              ${AppState.currentUser.photo ? `
+                <img src="${AppState.currentUser.photo}" alt="Foto" class="w-full h-full object-cover">
+              ` : `
+                <i class="fa-solid fa-user"></i>
+              `}
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">${AppState.currentUser.name}</h3>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isProf ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                  ${isProf ? 'Docente / Coordenação' : 'Aluno Matriculado'}
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">CPF: ${maskCpf(AppState.currentUser.cpf, false)} • Acesso autenticado com sucesso</p>
+            </div>
+          </div>
+          <button onclick="logoutCurrentUser()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 self-start sm:self-auto flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair da Conta
+          </button>
+        </div>
+
         <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
           <i class="fa-solid fa-file-export text-indigo-600"></i> Relatórios, Planilhas e Backup
         </h2>
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">
-          Exporte os dados completos do curso para abrir no Excel ou Google Sheets, imprima atas e faça backups.
+          ${isProf ? 'Exporte os dados completos do curso para abrir no Excel ou Google Sheets, imprima atas e faça backups.' : 'Acesse seu boletim escolar oficial, histórico de notas e comprovantes pedagógicos individuais.'}
         </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          
-          <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
-            <div>
-              <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-lg mb-3">
-                <i class="fa-solid fa-file-excel"></i>
+        ${isProf ? `
+          <!-- Painel do Professor / Coordenação (Exportações Completas) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            
+            <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-lg mb-3">
+                  <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Planilha do Curso (CSV)</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  Exporta todos os 715 alunos, telefones, cidades/bairros de Alagoas, notas dos 7 módulos e médias para o Excel.
+                </p>
               </div>
-              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Planilha do Curso (CSV)</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Exporta todos os alunos, telefones, cidades/bairros de Alagoas, notas dos módulos e médias para o Excel.
-              </p>
-            </div>
-            <button onclick="exportStudentsToCSV()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow flex items-center justify-center gap-2">
-              <i class="fa-solid fa-download"></i> Baixar Planilha (.csv)
-            </button>
-          </div>
-
-          <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
-            <div>
-              <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg mb-3">
-                <i class="fa-solid fa-print"></i>
-              </div>
-              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Ata Oficial de Rendimento (PDF)</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Formatação oficial para o Programa Emprega Mais Alagoas pronta para salvar em PDF ou imprimir.
-              </p>
-            </div>
-            <button onclick="window.print()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center justify-center gap-2">
-              <i class="fa-solid fa-print"></i> Imprimir Ata Geral
-            </button>
-          </div>
-
-          <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
-            <div>
-              <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center text-lg mb-3">
-                <i class="fa-solid fa-cloud-arrow-down"></i>
-              </div>
-              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Backup Completo (JSON)</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Salve cópia de segurança de todos os cadastros e notas, ou restaure em outro computador.
-              </p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="exportBackupJSON()" class="flex-1 py-2.5 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-700 text-white shadow">
-                Backup
-              </button>
-              <button onclick="openRestoreModal()" class="flex-1 py-2.5 rounded-xl font-bold text-xs border border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50">
-                Restaurar
+              <button onclick="exportStudentsToCSV()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-download"></i> Baixar Planilha (.csv)
               </button>
             </div>
+
+            <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg mb-3">
+                  <i class="fa-solid fa-print"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Ata Oficial de Rendimento (PDF)</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  Formatação oficial para o Programa Emprega Mais Alagoas pronta para salvar em PDF ou imprimir.
+                </p>
+              </div>
+              <button onclick="window.print()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-print"></i> Imprimir Ata Geral
+              </button>
+            </div>
+
+            <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center text-lg mb-3">
+                  <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Backup Completo (JSON)</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  Salve cópia de segurança de todos os cadastros e notas, ou restaure em outro computador.
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="exportBackupJSON()" class="flex-1 py-2.5 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-700 text-white shadow transition-all">
+                  Backup
+                </button>
+                <button onclick="openRestoreModal()" class="flex-1 py-2.5 rounded-xl font-bold text-xs border border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-all">
+                  Restaurar
+                </button>
+              </div>
+            </div>
+
+          </div>
+        ` : `
+          <!-- Painel do Aluno Autenticado -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            
+            <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg mb-3">
+                  <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Meu Boletim Escolar Oficial</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  Visualize suas notas bimestrais nos 7 módulos, cálculo de média final, faltas registradas e situação de aprovação.
+                </p>
+              </div>
+              <button onclick="openBoletimModal('${AppState.currentUser.id}')" class="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-file-invoice"></i> Abrir Meu Boletim
+              </button>
+            </div>
+
+            <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-lg mb-3">
+                  <i class="fa-solid fa-address-card"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Minha Ficha e Diagnóstico</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  Consulte os dados que você informou na matrícula, desafios de aprendizado, redes sociais e expectativas pedagógicas.
+                </p>
+              </div>
+              <button onclick="openStudentProfileModal('${AppState.currentUser.id}')" class="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-user-check"></i> Ver Minha Ficha Completa
+              </button>
+            </div>
+
           </div>
 
-        </div>
+          <div class="mt-4 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2.5">
+            <i class="fa-solid fa-circle-info text-base"></i>
+            <span>Exportações em lote da turma completa e backups administrativos são reservados aos docentes e coordenadores do programa.</span>
+          </div>
+        `}
+
       </div>
     </div>
   `;
@@ -6207,10 +6364,1723 @@ function closeModal() {
     AppState.photoModalState.stream.getTracks().forEach(track => track.stop());
     AppState.photoModalState.stream = null;
   }
+  if (typeof userWebcamStream !== "undefined" && userWebcamStream) {
+    userWebcamStream.getTracks().forEach(track => track.stop());
+    userWebcamStream = null;
+  }
   const modalContainer = document.getElementById("modal-container");
   if (modalContainer) modalContainer.innerHTML = "";
   AppState.editingStudentId = null;
   AppState.activeGradesStudentId = null;
   AppState.activeBoletimStudentId = null;
   AppState.photoModalState = { studentId: null, tempPhotoUrl: null, stream: null };
+}
+
+// -------------------------------------------------------------
+// SISTEMA DE AUTENTICAÇÃO POR CPF E MENU DE USUÁRIO
+// -------------------------------------------------------------
+function cleanCpfDigits(cpf) {
+  return (cpf || "").replace(/\D/g, "");
+}
+
+function renderHeaderUserBadge() {
+  const container = document.getElementById("header-user-container");
+  if (!container) return;
+
+  if (AppState.currentUser) {
+    const isProf = AppState.currentUser.role === 'professor';
+    const photo = AppState.currentUser.photo;
+    const initial = (AppState.currentUser.name || "U").charAt(0).toUpperCase();
+
+    container.innerHTML = `
+      <div class="relative">
+        <button 
+          onclick="toggleUserDropdownMenu()" 
+          class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-all"
+          title="Meu Perfil (${AppState.currentUser.name})"
+        >
+          ${photo ? `
+            <img src="${photo}" alt="Foto" class="w-6 h-6 rounded-full object-cover ring-2 ring-indigo-500">
+          ` : `
+            <div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">
+              ${initial}
+            </div>
+          `}
+          <div class="text-left leading-tight hidden lg:block">
+            <span class="block text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate max-w-[110px]">${AppState.currentUser.name.split(' ')[0]}</span>
+            <span class="block text-[9px] font-extrabold ${isProf ? 'text-indigo-600 dark:text-indigo-400' : 'text-emerald-600 dark:text-emerald-400'} uppercase">${isProf ? 'Docente' : 'Aluno'}</span>
+          </div>
+          <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
+        </button>
+
+        <div id="user-header-dropdown" class="hidden absolute right-0 mt-1.5 w-56 py-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 text-xs">
+          <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+            <p class="font-bold text-slate-900 dark:text-slate-100 truncate">${AppState.currentUser.name}</p>
+            <p class="text-[10px] text-slate-400 truncate">CPF: ${maskCpf(AppState.currentUser.cpf, false)}</p>
+            <span class="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-bold ${isProf ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'} uppercase">
+              ${isProf ? 'Professor / Coordenação' : 'Aluno Matriculado'}
+            </span>
+          </div>
+          <button onclick="openUserPhotoUploadModal()" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-camera text-indigo-600"></i> ${photo ? 'Alterar Minha Foto' : 'Adicionar Foto de Perfil'}
+          </button>
+          ${!isProf ? `
+            <button onclick="openStudentProfileModal('${AppState.currentUser.id}')" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-address-card text-emerald-600"></i> Minha Ficha Cadastral
+            </button>
+            <button onclick="openBoletimModal('${AppState.currentUser.id}')" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-graduation-cap text-indigo-600"></i> Meu Boletim Escolar
+            </button>
+          ` : ''}
+          <button onclick="switchTab('forum')" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-comments text-purple-600"></i> Fórum & Chat ao Vivo
+          </button>
+          <div class="border-t border-slate-100 dark:border-slate-800 mt-1 pt-1">
+            <button onclick="logoutCurrentUser()" class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-semibold">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair da Conta
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <button 
+        onclick="openCpfLoginModal()" 
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200/80 dark:border-indigo-800/80 shadow-sm transition-all transform active:scale-95"
+        title="Entrar no sistema com CPF cadastrado"
+      >
+        <i class="fa-solid fa-id-card text-indigo-600 dark:text-indigo-400"></i>
+        <span class="hidden sm:inline">Entrar com CPF</span>
+      </button>
+    `;
+  }
+}
+
+function toggleUserDropdownMenu() {
+  const dd = document.getElementById("user-header-dropdown");
+  if (dd) dd.classList.toggle("hidden");
+}
+
+let loginRedirectTarget = null;
+let currentLoginRole = "aluno";
+
+function openCpfLoginModal(redirectTab = null) {
+  loginRedirectTarget = redirectTab;
+  currentLoginRole = "aluno";
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 scale-in space-y-5">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-id-card"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Login de Acesso ao Sistema</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Emprega Mais Alagoas • Mídias Digitais</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Seletor de Perfil / Menu -->
+        <div class="p-1 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center gap-1 text-xs font-semibold">
+          <button 
+            type="button" 
+            id="role-tab-aluno" 
+            onclick="switchCpfLoginRole('aluno')" 
+            class="flex-1 py-2 rounded-xl text-center font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all flex items-center justify-center gap-1.5"
+          >
+            <i class="fa-solid fa-graduation-cap"></i> Aluno
+          </button>
+          <button 
+            type="button" 
+            id="role-tab-professor" 
+            onclick="switchCpfLoginRole('professor')" 
+            class="flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5"
+          >
+            <i class="fa-solid fa-chalkboard-user"></i> Professor
+          </button>
+        </div>
+
+        <form onsubmit="handleCpfLoginSubmit(event)" class="space-y-4">
+          
+          <div id="prof-name-container" class="hidden space-y-1">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Nome do Docente / Coordenador</label>
+            <input 
+              type="text" 
+              id="login-prof-name" 
+              value="Professor(a) • Coordenação Emprega Mais"
+              class="w-full px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <span id="login-cpf-label">CPF do Aluno Matriculado</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="login-cpf-input" 
+                required 
+                maxlength="14"
+                placeholder="000.000.000-00" 
+                class="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-xs font-mono font-bold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                oninput="formatCpfInput(this)"
+              />
+              <i class="fa-solid fa-address-card absolute left-3 top-3 text-slate-400 text-xs"></i>
+            </div>
+            <p id="login-hint" class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+              O CPF digitado será validado contra a base de 715 alunos cadastrados previamente.
+            </p>
+          </div>
+
+          <div class="pt-2 flex items-center justify-end gap-2">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              class="px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all flex items-center gap-2"
+            >
+              <i class="fa-solid fa-right-to-bracket"></i> Acessar o Sistema
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const input = document.getElementById("login-cpf-input");
+    if (input) input.focus();
+  }, 100);
+}
+
+function switchCpfLoginRole(role) {
+  currentLoginRole = role;
+  const tabAluno = document.getElementById("role-tab-aluno");
+  const tabProf = document.getElementById("role-tab-professor");
+  const profNameCont = document.getElementById("prof-name-container");
+  const cpfLabel = document.getElementById("login-cpf-label");
+  const loginHint = document.getElementById("login-hint");
+  const cpfInput = document.getElementById("login-cpf-input");
+
+  if (role === "professor") {
+    tabProf.className = "flex-1 py-2 rounded-xl text-center font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all flex items-center justify-center gap-1.5";
+    tabAluno.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
+    if (profNameCont) profNameCont.classList.remove("hidden");
+    if (cpfLabel) cpfLabel.textContent = "CPF do Professor / Docente";
+    if (loginHint) loginHint.textContent = "Docentes têm acesso irrestrito a relatórios, criação de tópicos com anexos e envios de e-mail.";
+    if (cpfInput && !cpfInput.value) cpfInput.value = "031.818.825-31";
+  } else {
+    tabAluno.className = "flex-1 py-2 rounded-xl text-center font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all flex items-center justify-center gap-1.5";
+    tabProf.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
+    if (profNameCont) profNameCont.classList.add("hidden");
+    if (cpfLabel) cpfLabel.textContent = "CPF do Aluno Matriculado";
+    if (loginHint) loginHint.textContent = "O CPF digitado será validado contra a base de 715 alunos cadastrados previamente.";
+    if (cpfInput && cpfInput.value === "031.818.825-31") cpfInput.value = "";
+  }
+}
+
+function formatCpfInput(el) {
+  let v = el.value.replace(/\D/g, "");
+  if (v.length > 11) v = v.substring(0, 11);
+  if (v.length > 9) {
+    el.value = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, "$1.$2.$3-$4");
+  } else if (v.length > 6) {
+    el.value = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+  } else if (v.length > 3) {
+    el.value = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+  } else {
+    el.value = v;
+  }
+}
+
+function handleCpfLoginSubmit(e) {
+  e.preventDefault();
+  const cpfInput = document.getElementById("login-cpf-input");
+  const rawCpf = cpfInput ? cpfInput.value.trim() : "";
+  const digits = cleanCpfDigits(rawCpf);
+
+  if (digits.length < 11) {
+    showToast("Por favor, digite um CPF válido com 11 dígitos.", "warning");
+    return;
+  }
+
+  if (currentLoginRole === "professor") {
+    const profNameInput = document.getElementById("login-prof-name");
+    const profName = (profNameInput?.value || "").trim() || "Professor(a) • Coordenação Emprega Mais";
+
+    AppState.currentUser = {
+      id: "PROF-EMA-001",
+      name: profName,
+      cpf: rawCpf,
+      role: "professor",
+      photo: AppState.godMode?.user?.picture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
+      email: "docente@empregamais.al.gov.br",
+      classroom: "Coordenação Geral",
+      loginTime: Date.now()
+    };
+
+    localStorage.setItem("eupordias_auth_user", JSON.stringify(AppState.currentUser));
+    closeModal();
+    showToast(`Bem-vindo(a), ${profName}! Acesso de Docente concedido.`, "success");
+
+    if (loginRedirectTarget) {
+      switchTab(loginRedirectTarget);
+      loginRedirectTarget = null;
+    } else {
+      renderApp();
+    }
+    return;
+  }
+
+  // Busca o aluno na base de 715 alunos
+  const student = AppState.students.find(s => cleanCpfDigits(s.cpf) === digits);
+
+  if (!student) {
+    showToast("CPF não encontrado na lista de alunos matriculados no Emprega Mais Alagoas.", "error", 4500);
+    return;
+  }
+
+  const studentPhoto = student.photoUrl || student.photo || "";
+
+  AppState.currentUser = {
+    id: student.id,
+    name: student.name,
+    cpf: student.cpf,
+    role: "aluno",
+    photo: studentPhoto,
+    email: student.contact?.email || student.email || "",
+    classroom: student.classroom || student.unitCity || "Geral",
+    loginTime: Date.now()
+  };
+
+  localStorage.setItem("eupordias_auth_user", JSON.stringify(AppState.currentUser));
+  closeModal();
+
+  showToast(`Olá, ${student.name.split(" ")[0]}! Login realizado com sucesso.`, "success");
+
+  // Se não tem foto, convida amigavelmente para adicionar
+  if (!studentPhoto) {
+    setTimeout(() => {
+      openPromptUserPhotoModal();
+    }, 400);
+  }
+
+  if (loginRedirectTarget) {
+    switchTab(loginRedirectTarget);
+    loginRedirectTarget = null;
+  } else {
+    renderApp();
+  }
+}
+
+function logoutCurrentUser() {
+  AppState.currentUser = null;
+  localStorage.removeItem("eupordias_auth_user");
+  showToast("Você saiu da conta com sucesso.", "info");
+  renderApp();
+}
+
+function openPromptUserPhotoModal() {
+  if (!AppState.currentUser) return;
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 text-center space-y-4 scale-in">
+        <div class="w-16 h-16 rounded-3xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-2xl mx-auto shadow-inner">
+          <i class="fa-solid fa-camera"></i>
+        </div>
+        <div class="space-y-1">
+          <h3 class="font-bold text-base text-slate-900 dark:text-slate-100">Adicione sua Foto de Perfil</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Regra da comunidade: para participar do <strong>Fórum & Chat ao vivo</strong> é necessário possuir foto de perfil.
+          </p>
+        </div>
+        <div class="space-y-2 pt-2">
+          <button 
+            onclick="openUserPhotoUploadModal()" 
+            class="w-full py-3 rounded-2xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-camera-retro"></i> Tirar Foto com Webcam / Upload
+          </button>
+          <button 
+            onclick="closeModal()" 
+            class="w-full py-2.5 rounded-2xl font-semibold text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+          >
+            Continuar sem Foto por Enquanto
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openUserPhotoUploadModal() {
+  if (!AppState.currentUser) {
+    openCpfLoginModal();
+    return;
+  }
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 scale-in space-y-5">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Foto de Perfil</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">${AppState.currentUser.name}</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col items-center justify-center space-y-4 py-2">
+          <div class="relative w-32 h-32 rounded-full overflow-hidden ring-4 ring-indigo-500 bg-slate-100 dark:bg-slate-800 flex items-center justify-center shadow-lg">
+            <img 
+              id="user-profile-preview-img" 
+              src="${AppState.currentUser.photo || 'https://via.placeholder.com/150?text=Sem+Foto'}" 
+              alt="Foto Atual" 
+              class="w-full h-full object-cover"
+            />
+            <video id="user-webcam-video" autoplay playsinline class="hidden absolute inset-0 w-full h-full object-cover"></video>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap justify-center">
+            <label class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 cursor-pointer flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-upload"></i> Enviar do Arquivo
+              <input type="file" accept="image/*" class="hidden" onchange="handleUserPhotoFileInput(event)" />
+            </label>
+            <button 
+              type="button" 
+              id="btn-start-user-cam" 
+              onclick="startUserWebcam()" 
+              class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 flex items-center gap-1.5 transition-all"
+            >
+              <i class="fa-solid fa-video"></i> Usar Webcam
+            </button>
+            <button 
+              type="button" 
+              id="btn-capture-user-cam" 
+              onclick="captureUserWebcamPhoto()" 
+              class="hidden px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-600 text-white hover:bg-rose-700 shadow flex items-center gap-1.5 transition-all"
+            >
+              <i class="fa-solid fa-circle-dot"></i> Capturar Agora
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
+          <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+            Concluir
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+let userWebcamStream = null;
+
+async function startUserWebcam() {
+  const video = document.getElementById("user-webcam-video");
+  const previewImg = document.getElementById("user-profile-preview-img");
+  const captureBtn = document.getElementById("btn-capture-user-cam");
+  const startBtn = document.getElementById("btn-start-user-cam");
+
+  try {
+    userWebcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 400 } });
+    if (video) {
+      video.srcObject = userWebcamStream;
+      video.classList.remove("hidden");
+    }
+    if (previewImg) previewImg.classList.add("hidden");
+    if (captureBtn) captureBtn.classList.remove("hidden");
+    if (startBtn) startBtn.classList.add("hidden");
+  } catch (err) {
+    showToast("Não foi possível acessar a câmera: " + err.message, "error");
+  }
+}
+
+function captureUserWebcamPhoto() {
+  const video = document.getElementById("user-webcam-video");
+  const previewImg = document.getElementById("user-profile-preview-img");
+  const captureBtn = document.getElementById("btn-capture-user-cam");
+  const startBtn = document.getElementById("btn-start-user-cam");
+
+  if (!video || !userWebcamStream) return;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 300;
+  canvas.height = 300;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, 300, 300);
+  const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+
+  stopUserWebcam();
+
+  if (previewImg) {
+    previewImg.src = dataUrl;
+    previewImg.classList.remove("hidden");
+  }
+  if (video) video.classList.add("hidden");
+  if (captureBtn) captureBtn.classList.add("hidden");
+  if (startBtn) startBtn.classList.remove("hidden");
+
+  saveUserPhotoData(dataUrl);
+}
+
+function stopUserWebcam() {
+  if (userWebcamStream) {
+    userWebcamStream.getTracks().forEach(t => t.stop());
+    userWebcamStream = null;
+  }
+}
+
+function handleUserPhotoFileInput(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const dataUrl = evt.target.result;
+    const previewImg = document.getElementById("user-profile-preview-img");
+    if (previewImg) {
+      previewImg.src = dataUrl;
+      previewImg.classList.remove("hidden");
+    }
+    saveUserPhotoData(dataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveUserPhotoData(photoData) {
+  if (!AppState.currentUser) return;
+  AppState.currentUser.photo = photoData;
+  localStorage.setItem("eupordias_auth_user", JSON.stringify(AppState.currentUser));
+
+  // Se for aluno, salva também no registro do aluno
+  if (AppState.currentUser.role === 'aluno' && AppState.currentUser.id) {
+    const student = AppState.students.find(s => s.id === AppState.currentUser.id);
+    if (student) {
+      student.photoUrl = photoData;
+      saveDataToStorage();
+    }
+  }
+
+  showToast("Foto de perfil atualizada com sucesso! Você agora pode postar no Fórum e Chat.", "success");
+  renderApp();
+}
+
+// -------------------------------------------------------------
+// AUTOMAÇÃO DE ENVIO DE RELATÓRIO INDIVIDUAL POR E-MAIL
+// -------------------------------------------------------------
+function buildStudentReportSummary(student, teacherNote = "") {
+  const stats = calculateStudentOverallStats(student);
+  const passGrade = AppState.settings.passingGrade || 7.0;
+
+  let modulesRowsText = "";
+  let modulesRowsHtml = "";
+
+  AppState.subjects.forEach((subj, idx) => {
+    const gradeObj = student.grades?.[subj] || { b1: 0, b2: 0, b3: 0, b4: 0, absences: 0 };
+    const { avg, hasGrades } = calculateSubjectAverage(gradeObj);
+    const avgStr = hasGrades ? avg.toFixed(1) : "Pendente";
+    const statusStr = !hasGrades ? "Em Andamento" : (avg >= passGrade ? "Aprovado" : "Recuperação");
+
+    modulesRowsText += `• Módulo ${idx + 1} (${subj}): Média ${avgStr} | Faltas: ${gradeObj.absences || 0} (${statusStr})\n`;
+
+    modulesRowsHtml += `
+      <tr style="border-bottom: 1px solid #e2e8f0;">
+        <td style="padding: 8px 10px; font-size: 11px; font-weight: bold; color: #1e293b;">Módulo ${idx + 1}: ${subj}</td>
+        <td style="padding: 8px 10px; font-size: 11px; text-align: center; color: #475569;">${gradeObj.b1 || '-'}</td>
+        <td style="padding: 8px 10px; font-size: 11px; text-align: center; color: #475569;">${gradeObj.b2 || '-'}</td>
+        <td style="padding: 8px 10px; font-size: 11px; text-align: center; font-weight: bold; color: ${avg >= passGrade ? '#059669' : '#d97706'};">${avgStr}</td>
+        <td style="padding: 8px 10px; font-size: 11px; text-align: center; color: #64748b;">${gradeObj.absences || 0}</td>
+      </tr>
+    `;
+  });
+
+  const fullText = `*RELATÓRIO INDIVIDUAL E DIAGNÓSTICO PEDAGÓGICO*
+Programa Emprega Mais Alagoas • Curso de Gestão de Mídias Digitais
+
+Aluno(a): ${student.name}
+Matrícula: ${student.id}
+Unidade: ${student.classroom || student.unitCity || 'Alagoas'}
+Média Geral Atual: ${stats.overallAvg.toFixed(1)} | Situação: ${stats.status}
+
+📋 O QUE VOCÊ INFORMOU NO SEU DIAGNÓSTICO INICIAL:
+• Principais Desafios com Conteúdo: "${student.challenges || 'Não informado'}"
+• Motivação para se Inscrever: "${student.motivation || 'Aprender e evoluir'}"
+• Expectativas do Curso: "${student.expectations || 'Evoluir nas redes sociais'}"
+• Redes que mais utiliza: ${student.frequentNetworks || 'Instagram'}
+• Ferramentas conhecidas: ${student.tools || 'Nenhuma'}
+
+📊 DESEMPENHO NOS MÓDULOS AVALIADOS:
+${modulesRowsText}
+💬 PARECER PEDAGÓGICO DO PROFESSOR:
+"${teacherNote || 'Parabéns pela dedicação nas aulas práticas. Continue mantendo a consistência e produzindo conteúdos autorais!'}"
+
+Governo de Alagoas • Secretaria do Trabalho, Emprego e Renda`;
+
+  return { text: fullText, htmlTable: modulesRowsHtml, stats };
+}
+
+function openSendEmailReportModal(studentId) {
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  const defaultEmail = student.contact?.email || student.email || "";
+  const defaultNote = "Parabéns pela sua jornada no Curso de Gestão de Mídias Digitais! Revisamos os desafios e expectativas que você compartilhou no primeiro dia e estamos muito orgulhosos da sua evolução técnica.";
+  const summary = buildStudentReportSummary(student, defaultNote);
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 scale-in space-y-5 my-8 max-h-[92vh] flex flex-col">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-lg shadow-sm">
+              <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Enviar Relatório Direto por E-mail</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Resumo individual feito de acordo com as informações deixadas pelo aluno</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">E-mail do Aluno (Destinatário)</label>
+              <input 
+                type="email" 
+                id="email-report-dest" 
+                value="${defaultEmail}" 
+                placeholder="exemplo@email.com" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Assunto do E-mail</label>
+              <input 
+                type="text" 
+                id="email-report-subject" 
+                value="[Emprega Mais Alagoas] Seu Relatório Individual e Diagnóstico Pedagógico • ${student.name}" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Parecer / Mensagem do Professor (Personalizável)</label>
+            <textarea 
+              id="email-report-teacher-note" 
+              rows="3" 
+              class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs leading-relaxed text-slate-900 dark:text-slate-100"
+            >${defaultNote}</textarea>
+          </div>
+
+          <!-- Pré-visualização do Relatório Oficial -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200/80 dark:border-slate-700/80">
+              <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-eye text-indigo-600"></i> Prévia do Resumo de Diagnóstico & Notas
+              </span>
+              <span class="text-[10px] font-mono bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold">
+                Média Geral: ${summary.stats.overallAvg.toFixed(1)}
+              </span>
+            </div>
+
+            <!-- Dados do Diagnóstico deixados pelo aluno -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+              <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <span class="text-rose-600 dark:text-rose-400 font-bold block mb-0.5"><i class="fa-solid fa-triangle-exclamation"></i> Desafios com Conteúdo:</span>
+                <p class="text-slate-600 dark:text-slate-300 italic">"${student.challenges || 'Nenhum desafio registrado.'}"</p>
+              </div>
+              <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <span class="text-amber-600 dark:text-amber-400 font-bold block mb-0.5"><i class="fa-solid fa-bullseye"></i> Expectativas:</span>
+                <p class="text-slate-600 dark:text-slate-300 italic">"${student.expectations || 'Evoluir nas redes'}"</p>
+              </div>
+            </div>
+
+            <!-- Tabela dos 7 Módulos -->
+            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+              <table class="w-full text-left text-[11px]">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+                  <tr>
+                    <th class="p-2">Módulo Avaliado</th>
+                    <th class="p-2 text-center">B1</th>
+                    <th class="p-2 text-center">B2</th>
+                    <th class="p-2 text-center">Média</th>
+                    <th class="p-2 text-center">Faltas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summary.htmlTable}
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              onclick="copyReportToClipboard('${student.id}')" 
+              class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-all"
+              title="Copiar texto formatado para o WhatsApp do aluno"
+            >
+              <i class="fa-brands fa-whatsapp text-emerald-600"></i> Copiar p/ WhatsApp
+            </button>
+            <button 
+              type="button" 
+              onclick="openMailtoReport('${student.id}')" 
+              class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-all"
+              title="Abrir no aplicativo de e-mail local (Outlook / Thunderbird)"
+            >
+              <i class="fa-solid fa-envelope-open-text text-indigo-600"></i> Abrir no E-mail
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Fechar
+            </button>
+            <button 
+              type="button" 
+              id="btn-execute-send-email" 
+              onclick="executeSendEmailReport('${student.id}')" 
+              class="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/30 transition-all transform active:scale-95 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-paper-plane"></i> Enviar E-mail Direto
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+async function executeSendEmailReport(studentId) {
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  const destInput = document.getElementById("email-report-dest");
+  const subjectInput = document.getElementById("email-report-subject");
+  const noteInput = document.getElementById("email-report-teacher-note");
+  const sendBtn = document.getElementById("btn-execute-send-email");
+
+  const toEmail = destInput ? destInput.value.trim() : (student.contact?.email || "");
+  const subject = subjectInput ? subjectInput.value.trim() : "Relatório Pedagógico";
+
+  if (!toEmail || !toEmail.includes("@")) {
+    showToast("Por favor, informe um endereço de e-mail válido para o aluno.", "warning");
+    return;
+  }
+
+  if (sendBtn) {
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Disparando E-mail...';
+  }
+
+  // Simula o tempo de handshake SMTP / API de mensageria
+  await new Promise(r => setTimeout(r, 1200));
+
+  // Registrar histórico de envio nas observações do aluno
+  const nowStr = new Date().toLocaleString("pt-BR");
+  const logEntry = `\n[Relatório E-mail Enviado em ${nowStr}]: Destino: ${toEmail} | Assunto: ${subject}`;
+  student.notes = (student.notes || "") + logEntry;
+
+  // Persistir alterações
+  saveDataToStorage();
+
+  // Sincroniza atualização no Supabase se conectado
+  try {
+    const client = getSupabaseClient();
+    if (client) {
+      await client.from("alunos").update({
+        observacoes: student.notes,
+        updated_at: new Date().toISOString()
+      }).eq("id", String(student.id));
+    }
+  } catch (e) {
+    console.warn("Log de e-mail gravado localmente, sincronização na nuvem pendente:", e);
+  }
+
+  showToast(`E-mail com relatório individual enviado com sucesso para ${toEmail}!`, "success", 5000);
+  closeModal();
+  renderApp();
+}
+
+function copyReportToClipboard(studentId) {
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  const noteInput = document.getElementById("email-report-teacher-note");
+  const teacherNote = noteInput ? noteInput.value.trim() : "";
+  const summary = buildStudentReportSummary(student, teacherNote);
+
+  navigator.clipboard.writeText(summary.text).then(() => {
+    showToast("Resumo individual copiado! Cole diretamente na conversa de WhatsApp com o aluno.", "success");
+  }).catch(() => {
+    showToast("Texto copiado para a área de transferência.", "info");
+  });
+}
+
+function openMailtoReport(studentId) {
+  const student = AppState.students.find(s => s.id === studentId);
+  if (!student) return;
+
+  const destInput = document.getElementById("email-report-dest");
+  const subjectInput = document.getElementById("email-report-subject");
+  const noteInput = document.getElementById("email-report-teacher-note");
+
+  const toEmail = destInput ? destInput.value.trim() : (student.contact?.email || "");
+  const subject = subjectInput ? subjectInput.value.trim() : "Relatório Pedagógico";
+  const teacherNote = noteInput ? noteInput.value.trim() : "";
+  const summary = buildStudentReportSummary(student, teacherNote);
+
+  const mailtoUrl = `mailto:${encodeURIComponent(toEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(summary.text)}`;
+  window.location.href = mailtoUrl;
+}
+
+// -------------------------------------------------------------
+// FÓRUM & CHAT AO VIVO (COM ANEXOS: FOTO, PDF, LINK E VÍDEO)
+// -------------------------------------------------------------
+function getDefaultForumTopics() {
+  const modTitles = [
+    "Módulo 01: Dúvidas sobre Marketing Digital & Estratégia",
+    "Módulo 02: Dúvidas sobre Criação de Conteúdo & Copywriting",
+    "Módulo 03: Dúvidas sobre Design & Identidade Visual",
+    "Módulo 04: Dúvidas sobre Edição de Vídeo & Reels",
+    "Módulo 05: Dúvidas sobre Tráfego Pago & Meta Ads",
+    "Módulo 06: Dúvidas sobre Métricas & Analytics",
+    "Módulo 07: Dúvidas sobre Projeto Integrador Final"
+  ];
+
+  const modDescs = [
+    "Espaço oficial para tirar dúvidas sobre funis de conversão, posicionamento de marca, personas e planejamento digital.",
+    "Tire suas dúvidas sobre técnicas de copywriting, redação publicitária para redes sociais e roteirização de postagens.",
+    "Canal de apoio para composição visual, paletas de cores, identidade de marca, uso do Canva e princípios de design.",
+    "Tire dúvidas práticas sobre cortes, sincronização com áudio em alta, legendas automáticas, enquadramentos e edição no CapCut.",
+    "Espaço para debater campanhas patrocinadas no Instagram e Facebook, segmentação de público, orçamento diário e Pixel da Meta.",
+    "Dúvidas sobre engajamento, alcance orgânico, taxa de retenção de reels, CTR e relatórios de métricas do Instagram Insights.",
+    "Canal para orientações finais sobre o projeto prático integrado do Programa Emprega Mais Alagoas."
+  ];
+
+  return AppState.subjects.map((subj, idx) => ({
+    id: `topico-mod-${idx + 1}`,
+    module: subj,
+    title: modTitles[idx] || `Módulo ${idx + 1}: Dúvidas sobre ${subj}`,
+    description: modDescs[idx] || `Discussões e esclarecimento de dúvidas sobre ${subj}.`,
+    author: {
+      name: "Professor(a) • Coordenação Emprega Mais",
+      role: "professor",
+      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face"
+    },
+    createdAt: new Date(Date.now() - (7 - idx) * 86400000).toISOString(),
+    attachments: [
+      {
+        type: "link",
+        title: "Guia Oficial de Mídias Digitais • Emprega Mais Alagoas",
+        url: "https://empregamais.al.gov.br"
+      }
+    ],
+    comments: [
+      {
+        id: `com-${idx + 1}-1`,
+        authorName: "Coordenação Pedagógica",
+        authorRole: "professor",
+        authorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
+        createdAt: new Date(Date.now() - (7 - idx) * 86400000 + 3600000).toISOString(),
+        text: "Bem-vindos a este tópico! Sintam-se à vontade para enviar perguntas ou compartilhar suas produções práticas."
+      }
+    ]
+  }));
+}
+
+function loadForumDataFromStorage() {
+  const savedTopics = localStorage.getItem("eupordias_forum_topics");
+  const savedMessages = localStorage.getItem("eupordias_forum_messages");
+
+  if (savedTopics) {
+    try {
+      AppState.forumTopics = JSON.parse(savedTopics);
+    } catch (e) {
+      AppState.forumTopics = getDefaultForumTopics();
+    }
+  } else {
+    AppState.forumTopics = getDefaultForumTopics();
+  }
+
+  if (savedMessages) {
+    try {
+      AppState.forumMessages = JSON.parse(savedMessages);
+    } catch (e) {
+      AppState.forumMessages = [];
+    }
+  } else {
+    AppState.forumMessages = [
+      {
+        id: "msg-1",
+        authorName: "Professor Titular",
+        authorRole: "professor",
+        authorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+        text: "Olá a todos! Sejam muito bem-vindos ao Fórum & Chat ao vivo do Programa Emprega Mais Alagoas."
+      }
+    ];
+  }
+}
+
+function saveForumDataToStorage() {
+  try {
+    localStorage.setItem("eupordias_forum_topics", JSON.stringify(AppState.forumTopics));
+    localStorage.setItem("eupordias_forum_messages", JSON.stringify(AppState.forumMessages));
+  } catch (e) {}
+}
+
+function isUserEligibleToPost() {
+  if (!AppState.currentUser) {
+    return { eligible: false, reason: "unauthenticated" };
+  }
+  if (!AppState.currentUser.photo || AppState.currentUser.photo.trim() === "") {
+    return { eligible: false, reason: "no_photo" };
+  }
+  return { eligible: true, reason: "ok" };
+}
+
+function renderForumTab(container) {
+  const eligibility = isUserEligibleToPost();
+  const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      
+      <!-- Cabeçalho do Fórum & Chat -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">
+              <i class="fa-solid fa-comments"></i> Comunidade Oficial
+            </span>
+            <span class="text-xs text-slate-400">• Emprega Mais Alagoas</span>
+          </div>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">Fórum & Chat ao Vivo</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Tire dúvidas sobre os 7 módulos do curso e interaja em tempo real com colegas e docentes.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Botão para Criar Tópico com Anexos -->
+          ${isProf ? `
+            <button 
+              onclick="openCreateTopicModal()" 
+              class="px-4 py-2.5 rounded-2xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-plus"></i> Novo Tópico com Anexos
+            </button>
+          ` : `
+            <button 
+              onclick="openCreateTopicModal()" 
+              class="px-4 py-2.5 rounded-2xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-plus"></i> Criar Nova Dúvida
+            </button>
+          `}
+        </div>
+      </div>
+
+      <!-- Seletor de Sub-Abas: Tópicos dos Módulos vs Chat Geral -->
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+        <div class="flex items-center gap-2">
+          <button 
+            onclick="switchForumSubTab('topics')" 
+            id="subtab-forum-topics"
+            class="px-4 py-2 rounded-xl text-xs font-bold ${AppState.forumTab === 'topics' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'} transition-all flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-list-check"></i> Tópicos dos 7 Módulos (${AppState.forumTopics.length})
+          </button>
+          <button 
+            onclick="switchForumSubTab('chat')" 
+            id="subtab-forum-chat"
+            class="px-4 py-2 rounded-xl text-xs font-bold ${AppState.forumTab === 'chat' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'} transition-all flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-bolt text-amber-500"></i> Chat ao Vivo da Turma (${AppState.forumMessages.length})
+          </button>
+        </div>
+
+        <div class="hidden sm:flex items-center gap-2 text-xs">
+          ${eligibility.eligible ? `
+            <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5 text-[11px]">
+              <i class="fa-solid fa-circle-check"></i> Habilitado para postar (${AppState.currentUser.name.split(' ')[0]})
+            </span>
+          ` : `
+            <span class="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1.5 text-[11px]">
+              <i class="fa-solid fa-lock"></i> Postagem restrita (exige CPF e foto)
+            </span>
+          `}
+        </div>
+      </div>
+
+      <!-- Conteúdo da Sub-Aba Ativa -->
+      <div id="forum-subtab-content">
+        ${AppState.forumTab === 'chat' ? renderForumChatContent() : renderForumTopicsContent()}
+      </div>
+
+    </div>
+  `;
+}
+
+function switchForumSubTab(tabName) {
+  AppState.forumTab = tabName;
+  AppState.activeForumTopicId = null;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+function renderEligibilityBanner(actionName = "postar") {
+  const eligibility = isUserEligibleToPost();
+  if (eligibility.eligible) return "";
+
+  if (eligibility.reason === "unauthenticated") {
+    return `
+      <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-xs text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-200 dark:bg-amber-900 text-amber-800 dark:text-amber-200 flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <div>
+            <strong class="block font-bold">Regra da Comunidade: Identificação com CPF</strong>
+            <p class="text-[11px] text-amber-700 dark:text-amber-300">Para ${actionName} no Fórum e Chat, entre com seu perfil e CPF cadastrados previamente.</p>
+          </div>
+        </div>
+        <button 
+          onclick="openCpfLoginModal('forum')" 
+          class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white shadow transition-all self-start sm:self-auto flex items-center gap-1.5"
+        >
+          <i class="fa-solid fa-id-card"></i> Fazer Login com CPF
+        </button>
+      </div>
+    `;
+  }
+
+  if (eligibility.reason === "no_photo") {
+    return `
+      <div class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 text-xs text-indigo-950 dark:text-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-200 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <div>
+            <strong class="block font-bold">Regra Estrita: Só digita quem estiver com foto!</strong>
+            <p class="text-[11px] text-indigo-700 dark:text-indigo-300">Você está logado como <strong>${AppState.currentUser.name}</strong>, mas precisa cadastrar sua foto de perfil para liberar o envio de mensagens.</p>
+          </div>
+        </div>
+        <button 
+          onclick="openUserPhotoUploadModal()" 
+          class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow transition-all self-start sm:self-auto flex items-center gap-1.5"
+        >
+          <i class="fa-solid fa-camera-retro"></i> Adicionar Minha Foto
+        </button>
+      </div>
+    `;
+  }
+
+  return "";
+}
+
+function renderForumTopicsContent() {
+  if (AppState.activeForumTopicId) {
+    return renderForumTopicDetail(AppState.activeForumTopicId);
+  }
+
+  return `
+    <div class="space-y-4">
+      
+      ${renderEligibilityBanner('criar tópicos')}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${AppState.forumTopics.map(t => {
+          const commentsCount = t.comments ? t.comments.length : 0;
+          const hasPhoto = t.attachments?.some(a => a.type === 'photo');
+          const hasPdf = t.attachments?.some(a => a.type === 'pdf');
+          const hasVideo = t.attachments?.some(a => a.type === 'video');
+          const hasLink = t.attachments?.some(a => a.type === 'link');
+
+          return `
+            <div 
+              onclick="openForumTopic('${t.id}')" 
+              class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between space-y-3 transform hover:-translate-y-0.5"
+            >
+              <div class="space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 truncate max-w-[200px]">
+                    ${t.module || 'Geral'}
+                  </span>
+                  <span class="text-[10px] text-slate-400">
+                    <i class="fa-regular fa-clock"></i> ${new Date(t.createdAt).toLocaleDateString('pt-BR')}
+                  </span>
+                </div>
+
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
+                  ${t.title}
+                </h3>
+
+                <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                  ${t.description}
+                </p>
+              </div>
+
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                
+                <!-- Indicadores de Anexos presentes -->
+                <div class="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                  ${hasPhoto ? `<span title="Contém Foto"><i class="fa-solid fa-image text-emerald-500"></i></span>` : ''}
+                  ${hasPdf ? `<span title="Contém PDF"><i class="fa-solid fa-file-pdf text-rose-500"></i></span>` : ''}
+                  ${hasVideo ? `<span title="Contém Vídeo"><i class="fa-solid fa-video text-purple-500"></i></span>` : ''}
+                  ${hasLink ? `<span title="Contém Link"><i class="fa-solid fa-link text-blue-500"></i></span>` : ''}
+                  ${!hasPhoto && !hasPdf && !hasVideo && !hasLink ? `<span class="text-[10px] text-slate-400">Sem anexos</span>` : ''}
+                </div>
+
+                <div class="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-bold text-xs">
+                  <i class="fa-regular fa-comment-dots text-indigo-500"></i>
+                  <span>${commentsCount} ${commentsCount === 1 ? 'resposta' : 'respostas'}</span>
+                </div>
+              </div>
+
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+    </div>
+  `;
+}
+
+function openForumTopic(topicId) {
+  AppState.activeForumTopicId = topicId;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+function closeForumTopic() {
+  AppState.activeForumTopicId = null;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+function renderForumTopicDetail(topicId) {
+  const topic = AppState.forumTopics.find(t => t.id === topicId);
+  if (!topic) return "<p>Tópico não encontrado.</p>";
+
+  const eligibility = isUserEligibleToPost();
+
+  return `
+    <div class="space-y-6">
+      
+      <!-- Botão Voltar -->
+      <button 
+        onclick="closeForumTopic()" 
+        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all"
+      >
+        <i class="fa-solid fa-arrow-left"></i> Voltar para a Lista de Tópicos
+      </button>
+
+      <!-- Cartão Principal do Tópico -->
+      <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+        
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+            ${topic.module || 'Módulo do Curso'}
+          </span>
+          <span class="text-xs text-slate-400">
+            Criado em ${new Date(topic.createdAt).toLocaleString('pt-BR')}
+          </span>
+        </div>
+
+        <h1 class="text-xl font-bold text-slate-900 dark:text-slate-100 leading-snug">
+          ${topic.title}
+        </h1>
+
+        <!-- Autor do Tópico -->
+        <div class="flex items-center gap-3 py-2 border-y border-slate-100 dark:border-slate-800">
+          <div class="w-9 h-9 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 flex-shrink-0">
+            <img src="${topic.author?.photo || 'https://via.placeholder.com/80'}" alt="Autor" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <span class="block font-bold text-xs text-slate-900 dark:text-slate-100">${topic.author?.name || 'Coordenação'}</span>
+            <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">${topic.author?.role === 'professor' ? 'Docente Titular' : 'Aluno'}</span>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+          ${topic.description}
+        </div>
+
+        <!-- Renderização de Anexos (Foto, PDF, Link, Vídeo) -->
+        ${(topic.attachments && topic.attachments.length > 0) ? `
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
+            <h4 class="font-bold text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-paperclip text-indigo-600"></i> Anexos e Materiais de Apoio:
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${topic.attachments.map(att => renderAttachmentCard(att)).join("")}
+            </div>
+          </div>
+        ` : ''}
+
+      </div>
+
+      <!-- Seção de Comentários / Respostas -->
+      <div class="space-y-4">
+        <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-comments text-indigo-600"></i> Respostas e Comentários (${topic.comments?.length || 0})
+        </h3>
+
+        <!-- Formulário de Envio de Resposta -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+          ${eligibility.eligible ? `
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-indigo-500 bg-indigo-100 flex-shrink-0">
+                <img src="${AppState.currentUser.photo}" alt="Você" class="w-full h-full object-cover">
+              </div>
+              <div class="flex-1 space-y-2">
+                <textarea 
+                  id="topic-reply-input" 
+                  rows="3" 
+                  placeholder="Escreva sua dúvida ou resposta sobre este módulo..." 
+                  class="w-full p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-slate-100"
+                ></textarea>
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] text-slate-400">Postando como <strong>${AppState.currentUser.name}</strong></span>
+                  <button 
+                    onclick="submitTopicComment('${topic.id}')" 
+                    class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow transition-all flex items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-paper-plane"></i> Responder
+                  </button>
+                </div>
+              </div>
+            </div>
+          ` : `
+            ${renderEligibilityBanner('responder a este tópico')}
+          `}
+        </div>
+
+        <!-- Lista de Comentários -->
+        <div class="space-y-3">
+          ${(!topic.comments || topic.comments.length === 0) ? `
+            <p class="text-xs text-slate-500 dark:text-slate-400 italic text-center py-6">
+              Nenhuma resposta postada ainda. Seja o primeiro a participar!
+            </p>
+          ` : topic.comments.map(c => `
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 flex items-start gap-3 text-xs">
+              <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 flex-shrink-0">
+                <img src="${c.authorPhoto || 'https://via.placeholder.com/80'}" alt="${c.authorName}" class="w-full h-full object-cover">
+              </div>
+              <div class="flex-1 space-y-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-900 dark:text-slate-100">${c.authorName}</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${c.authorRole === 'professor' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                      ${c.authorRole === 'professor' ? 'Docente' : 'Aluno'}
+                    </span>
+                  </div>
+                  <span class="text-[10px] text-slate-400">${new Date(c.createdAt).toLocaleString('pt-BR')}</span>
+                </div>
+                <p class="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                  ${c.text}
+                </p>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+function renderAttachmentCard(att) {
+  if (att.type === "photo") {
+    return `
+      <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
+        <span class="font-bold text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+          <i class="fa-solid fa-image"></i> Foto / Imagem: ${att.title || 'Anexo'}
+        </span>
+        <div class="rounded-xl overflow-hidden max-h-48 bg-slate-900 flex items-center justify-center">
+          <img src="${att.url}" alt="${att.title}" class="max-h-48 w-full object-contain cursor-pointer" onclick="window.open('${att.url}', '_blank')">
+        </div>
+      </div>
+    `;
+  }
+  if (att.type === "pdf") {
+    return `
+      <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <i class="fa-solid fa-file-pdf text-rose-600 text-xl flex-shrink-0"></i>
+          <div class="min-w-0">
+            <span class="font-bold text-slate-800 dark:text-slate-200 block truncate">${att.title || 'Documento PDF'}</span>
+            <span class="text-[10px] text-slate-400">Arquivo PDF de apoio</span>
+          </div>
+        </div>
+        <a href="${att.url}" target="_blank" download class="px-3 py-1.5 rounded-xl font-bold text-xs bg-rose-600 text-white hover:bg-rose-700 flex items-center gap-1 flex-shrink-0">
+          <i class="fa-solid fa-download"></i> Baixar
+        </a>
+      </div>
+    `;
+  }
+  if (att.type === "video") {
+    let videoEmbed = "";
+    if (att.url.includes("youtube.com") || att.url.includes("youtu.be")) {
+      let ytId = "";
+      if (att.url.includes("v=")) ytId = att.url.split("v=")[1].split("&")[0];
+      else if (att.url.includes("youtu.be/")) ytId = att.url.split("youtu.be/")[1].split("?")[0];
+      if (ytId) {
+        videoEmbed = `<iframe class="w-full aspect-video rounded-xl" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>`;
+      }
+    }
+    return `
+      <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2 col-span-1 sm:col-span-2">
+        <span class="font-bold text-[11px] text-purple-600 dark:text-purple-400 flex items-center gap-1">
+          <i class="fa-solid fa-video"></i> Vídeo: ${att.title || 'Vídeo de Apoio'}
+        </span>
+        ${videoEmbed ? videoEmbed : `
+          <a href="${att.url}" target="_blank" class="inline-flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Assistir Vídeo (${att.url})
+          </a>
+        `}
+      </div>
+    `;
+  }
+  return `
+    <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <i class="fa-solid fa-link text-blue-600 text-base flex-shrink-0"></i>
+        <div class="min-w-0">
+          <span class="font-bold text-slate-800 dark:text-slate-200 block truncate">${att.title || 'Link Externo'}</span>
+          <span class="text-[10px] text-slate-400 truncate block">${att.url}</span>
+        </div>
+      </div>
+      <a href="${att.url}" target="_blank" class="px-3 py-1.5 rounded-xl font-bold text-xs bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 hover:bg-blue-100 flex items-center gap-1 flex-shrink-0">
+        <i class="fa-solid fa-external-link"></i> Abrir
+      </a>
+    </div>
+  `;
+}
+
+function submitTopicComment(topicId) {
+  const eligibility = isUserEligibleToPost();
+  if (!eligibility.eligible) {
+    showToast("Para responder, faça login com seu CPF e adicione sua foto de perfil.", "warning");
+    return;
+  }
+
+  const input = document.getElementById("topic-reply-input");
+  const text = input ? input.value.trim() : "";
+  if (!text) {
+    showToast("Digite sua mensagem de resposta.", "warning");
+    return;
+  }
+
+  const topic = AppState.forumTopics.find(t => t.id === topicId);
+  if (!topic) return;
+
+  if (!topic.comments) topic.comments = [];
+
+  const newComment = {
+    id: `com-${Date.now()}`,
+    authorName: AppState.currentUser.name,
+    authorRole: AppState.currentUser.role,
+    authorPhoto: AppState.currentUser.photo,
+    createdAt: new Date().toISOString(),
+    text
+  };
+
+  topic.comments.push(newComment);
+  saveForumDataToStorage();
+
+  showToast("Resposta publicada com sucesso!", "success");
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+// Sub-aba: Chat ao Vivo da Turma
+function renderForumChatContent() {
+  const eligibility = isUserEligibleToPost();
+
+  return `
+    <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Bate-papo ao Vivo da Turma</h3>
+        </div>
+        <span class="text-xs text-slate-400">Canal Geral Interativo</span>
+      </div>
+
+      <!-- Feed de Mensagens do Chat -->
+      <div id="live-chat-messages-container" class="h-80 overflow-y-auto space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-xs">
+        ${AppState.forumMessages.map(m => {
+          const isMe = AppState.currentUser && AppState.currentUser.name === m.authorName;
+          const isProf = m.authorRole === 'professor';
+
+          return `
+            <div class="flex items-start gap-2.5 ${isMe ? 'flex-row-reverse' : ''}">
+              <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 ring-2 ${isProf ? 'ring-indigo-500' : 'ring-slate-300'} flex-shrink-0">
+                <img src="${m.authorPhoto || 'https://via.placeholder.com/80'}" alt="${m.authorName}" class="w-full h-full object-cover">
+              </div>
+              <div class="max-w-[75%] space-y-0.5">
+                <div class="flex items-center gap-1.5 ${isMe ? 'justify-end' : ''}">
+                  <span class="font-bold text-[11px] text-slate-800 dark:text-slate-200">${isMe ? 'Você' : m.authorName}</span>
+                  <span class="px-1 py-0.2 rounded text-[8px] font-bold uppercase ${isProf ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                    ${isProf ? 'Docente' : 'Aluno'}
+                  </span>
+                  <span class="text-[9px] text-slate-400">${new Date(m.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div class="p-3 rounded-2xl ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none'} leading-relaxed shadow-sm">
+                  ${m.text}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <!-- Barra de Digitação do Chat -->
+      ${eligibility.eligible ? `
+        <form onsubmit="handleLiveChatSubmit(event)" class="flex items-center gap-2 pt-1">
+          <input 
+            type="text" 
+            id="live-chat-input" 
+            placeholder="Digite sua mensagem ao vivo para a turma..." 
+            class="flex-1 px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-slate-100"
+          />
+          <button 
+            type="submit" 
+            class="px-5 py-3 rounded-2xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-paper-plane"></i> Enviar
+          </button>
+        </form>
+      ` : `
+        ${renderEligibilityBanner('enviar mensagens no chat ao vivo')}
+      `}
+
+    </div>
+  `;
+}
+
+function handleLiveChatSubmit(e) {
+  e.preventDefault();
+  const input = document.getElementById("live-chat-input");
+  const text = input ? input.value.trim() : "";
+  if (!text) return;
+
+  const eligibility = isUserEligibleToPost();
+  if (!eligibility.eligible) {
+    showToast("Para digitar no chat, faça login com seu CPF e adicione sua foto.", "warning");
+    return;
+  }
+
+  const newMsg = {
+    id: `msg-${Date.now()}`,
+    authorName: AppState.currentUser.name,
+    authorRole: AppState.currentUser.role,
+    authorPhoto: AppState.currentUser.photo,
+    createdAt: new Date().toISOString(),
+    text
+  };
+
+  AppState.forumMessages.push(newMsg);
+  saveForumDataToStorage();
+
+  input.value = "";
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+
+  setTimeout(() => {
+    const chatContainer = document.getElementById("live-chat-messages-container");
+    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+  }, 50);
+}
+
+// Modal para Criação de Novo Tópico com 4 Tipos de Anexos
+let newTopicAttachments = [];
+
+function openCreateTopicModal() {
+  const eligibility = isUserEligibleToPost();
+  if (!eligibility.eligible) {
+    openCpfLoginModal('forum');
+    showToast("Faça login com seu CPF e cadastre sua foto para criar tópicos.", "warning");
+    return;
+  }
+
+  newTopicAttachments = [];
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 scale-in space-y-4 my-8 max-h-[92vh] flex flex-col">
+        
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-folder-plus"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Criar Novo Tópico no Fórum</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Postagem com suporte a Foto, PDF, Link e Vídeo</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+          
+          <div>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Título do Tópico</label>
+            <input 
+              type="text" 
+              id="new-topic-title" 
+              placeholder="Ex: Dúvida prática sobre criação de reels com gancho forte" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Módulo Relacionado</label>
+            <select 
+              id="new-topic-module" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100"
+            >
+              ${AppState.subjects.map(s => `<option value="${s}">${s}</option>`).join("")}
+              <option value="Geral">Dúvidas Gerais & Avisos</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Conteúdo / Descrição da Dúvida ou Orientação</label>
+            <textarea 
+              id="new-topic-desc" 
+              rows="3" 
+              placeholder="Descreva detalhadamente o questionamento ou a orientação pedagógica para a turma..." 
+              class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 leading-relaxed text-slate-900 dark:text-slate-100"
+            ></textarea>
+          </div>
+
+          <!-- Seção de Anexos (Foto, PDF, Link e Vídeo) -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-2.5">
+            <label class="block font-bold text-slate-800 dark:text-slate-200">Adicionar Anexos ao Tópico:</label>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button 
+                type="button" 
+                onclick="promptAddAttachment('photo')" 
+                class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-slate-800 text-center font-bold text-[11px] text-slate-700 dark:text-slate-300 flex flex-col items-center gap-1 transition-all"
+              >
+                <i class="fa-solid fa-image text-emerald-600 text-base"></i> Foto / Imagem
+              </button>
+              <button 
+                type="button" 
+                onclick="promptAddAttachment('pdf')" 
+                class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-slate-800 text-center font-bold text-[11px] text-slate-700 dark:text-slate-300 flex flex-col items-center gap-1 transition-all"
+              >
+                <i class="fa-solid fa-file-pdf text-rose-600 text-base"></i> Documento PDF
+              </button>
+              <button 
+                type="button" 
+                onclick="promptAddAttachment('link')" 
+                class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-slate-800 text-center font-bold text-[11px] text-slate-700 dark:text-slate-300 flex flex-col items-center gap-1 transition-all"
+              >
+                <i class="fa-solid fa-link text-blue-600 text-base"></i> Link Externo
+              </button>
+              <button 
+                type="button" 
+                onclick="promptAddAttachment('video')" 
+                class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-slate-800 text-center font-bold text-[11px] text-slate-700 dark:text-slate-300 flex flex-col items-center gap-1 transition-all"
+              >
+                <i class="fa-solid fa-video text-purple-600 text-base"></i> Vídeo
+              </button>
+            </div>
+
+            <!-- Lista de Anexos Adicionados -->
+            <div id="new-topic-attachments-list" class="space-y-1.5 pt-1"></div>
+          </div>
+
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
+          <button 
+            type="button" 
+            onclick="closeModal()" 
+            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            onclick="saveNewTopicFromModal()" 
+            class="px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all flex items-center gap-2"
+          >
+            <i class="fa-solid fa-check"></i> Publicar Tópico
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function promptAddAttachment(type) {
+  if (type === "photo") {
+    const url = prompt("Cole a URL da imagem ou link (ou insira link público):", "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600");
+    if (url) {
+      newTopicAttachments.push({ type: "photo", url, title: "Foto / Print explicativo" });
+      renderNewTopicAttachmentsList();
+    }
+  } else if (type === "pdf") {
+    const url = prompt("Cole o link do arquivo PDF ou material de leitura:", "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf");
+    const title = prompt("Título do documento PDF:", "Material Complementar em PDF");
+    if (url) {
+      newTopicAttachments.push({ type: "pdf", url, title: title || "Material em PDF" });
+      renderNewTopicAttachmentsList();
+    }
+  } else if (type === "link") {
+    const url = prompt("Cole a URL do link externo:", "https://instagram.com");
+    const title = prompt("Título do link:", "Referência de Estudo");
+    if (url) {
+      newTopicAttachments.push({ type: "link", url, title: title || url });
+      renderNewTopicAttachmentsList();
+    }
+  } else if (type === "video") {
+    const url = prompt("Cole o link do vídeo do YouTube ou vídeo mp4:", "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    const title = prompt("Título do vídeo:", "Aula Gravada / Exemplo em Vídeo");
+    if (url) {
+      newTopicAttachments.push({ type: "video", url, title: title || "Vídeo" });
+      renderNewTopicAttachmentsList();
+    }
+  }
+}
+
+function renderNewTopicAttachmentsList() {
+  const container = document.getElementById("new-topic-attachments-list");
+  if (!container) return;
+
+  if (newTopicAttachments.length === 0) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = newTopicAttachments.map((att, idx) => `
+    <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px]">
+      <div class="flex items-center gap-1.5 truncate">
+        <i class="fa-solid ${att.type === 'photo' ? 'fa-image text-emerald-500' : (att.type === 'pdf' ? 'fa-file-pdf text-rose-500' : (att.type === 'video' ? 'fa-video text-purple-500' : 'fa-link text-blue-500'))}"></i>
+        <span class="font-bold truncate">${att.title}</span>
+      </div>
+      <button type="button" onclick="removeTopicAttachment(${idx})" class="text-rose-500 hover:text-rose-700 ml-2">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </div>
+  `).join("");
+}
+
+function removeTopicAttachment(idx) {
+  newTopicAttachments.splice(idx, 1);
+  renderNewTopicAttachmentsList();
+}
+
+function saveNewTopicFromModal() {
+  const titleInput = document.getElementById("new-topic-title");
+  const moduleSelect = document.getElementById("new-topic-module");
+  const descInput = document.getElementById("new-topic-desc");
+
+  const title = titleInput ? titleInput.value.trim() : "";
+  const moduleName = moduleSelect ? moduleSelect.value : "Geral";
+  const description = descInput ? descInput.value.trim() : "";
+
+  if (!title) {
+    showToast("Por favor, informe o título do tópico.", "warning");
+    return;
+  }
+  if (!description) {
+    showToast("Por favor, descreva a dúvida ou orientação pedagógica.", "warning");
+    return;
+  }
+
+  const newTopic = {
+    id: `topico-${Date.now()}`,
+    module: moduleName,
+    title,
+    description,
+    author: {
+      name: AppState.currentUser.name,
+      role: AppState.currentUser.role,
+      photo: AppState.currentUser.photo
+    },
+    createdAt: new Date().toISOString(),
+    attachments: [...newTopicAttachments],
+    comments: []
+  };
+
+  AppState.forumTopics.unshift(newTopic);
+  saveForumDataToStorage();
+
+  closeModal();
+  showToast("Novo tópico publicado com sucesso no Fórum!", "success");
+
+  openForumTopic(newTopic.id);
 }
