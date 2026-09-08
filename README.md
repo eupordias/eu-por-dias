@@ -13,7 +13,7 @@
 
 O **Eu Por Dias** é uma plataforma educacional e administrativa desenvolvida para atender às demandas práticas do professor do programa estadual **Emprega Mais Alagoas**, no curso profissionalizante de **Gestão de Mídias Digitais**.
 
-O sistema centraliza e dá vida aos dados cadastrais, pedagógicos, contatos de emergência e rendimento acadêmico de **mais de 715 estudantes (725 linhas de formulários)** distribuídos por diversos polos de qualificação profissional em Alagoas (como Maceió, Messias, Delmiro Gouveia, Batalha, Poço das Trincheiras, SEDH, SINE, entre outros).
+O sistema centraliza e dá vida aos dados cadastrais, pedagógicos, contatos de emergência e rendimento acadêmico de **745 estudantes matriculados e presentes** (consolidados diretamente a partir dos formulários oficiais de Inscrição/Diagnóstico com 725 linhas e Lista de Presença em sala de aula), distribuídos por diversos polos de qualificação profissional em Alagoas (como Maceió, Penedo, Porto Calvo, Messias, Delmiro Gouveia, Batalha, Poço das Trincheiras, Arapiraca, União dos Palmares, Chã Preta, entre outros).
 
 ---
 
@@ -103,7 +103,7 @@ A plataforma está publicada e disponível para acesso em qualquer dispositivo (
 ```text
 ├── index.html          # Interface visual completa, CDN Supabase, navegação de abas e containers
 ├── app.js              # Controlador central, cliente Supabase, cálculos, modais e fotos
-├── mock-data.js        # Base consolidada dos 715 alunos e matriz curricular completa
+├── mock-data.js        # Base consolidada dos 745 alunos e matriz curricular completa
 ├── styles.css          # Estilos customizados de impressão A4 e animações de interface
 ├── build_data.ps1      # Script utilitário para conversão de dados do Google Sheets
 ├── sync_sheet.ps1      # Script auxiliar de teste com a Google Sheets API v4

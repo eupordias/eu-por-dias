@@ -229,9 +229,22 @@ function loadDataFromStorage() {
       
       if (!match) {
         currentList.push(newS);
+      } else {
+        if (!match.shirtSize && newS.shirtSize) match.shirtSize = newS.shirtSize;
+        if (newS.notes && newS.notes.includes("Presença confirmada") && (!match.notes || !match.notes.includes("Presença confirmada"))) {
+          match.notes = newS.notes + (match.notes ? " " + match.notes : "");
+        }
       }
     });
   }
+
+  // Assegura que todos os alunos possuam tamanho de camisa
+  currentList.forEach(s => {
+    if (!s.shirtSize) {
+      const found = INITIAL_STUDENTS_DATA.find(initS => initS.id === s.id || (s.cpf && initS.cpf === s.cpf));
+      s.shirtSize = found?.shirtSize || "M";
+    }
+  });
   
   // Normalizar e higienizar nomes de módulos (garante acentuação perfeita e cura dados herdados de cache)
   const rawSubjects = savedSubjects ? JSON.parse(savedSubjects) : [...DEFAULT_SUBJECTS];
@@ -259,7 +272,10 @@ function loadDataFromStorage() {
     localStorage.setItem("eupordias_students", JSON.stringify(currentList));
   } catch (e) {}
 
-  AppState.classrooms = Array.from(new Set([...DEFAULT_CLASSROOMS, ...(savedClassrooms ? JSON.parse(savedClassrooms) : [])])).sort();
+  AppState.classrooms = Array.from(new Set([...DEFAULT_CLASSROOMS])).sort();
+  try {
+    localStorage.setItem("eupordias_classrooms", JSON.stringify(AppState.classrooms));
+  } catch (e) {}
   
   if (savedSettings) {
     AppState.settings = { ...AppState.settings, ...JSON.parse(savedSettings) };
@@ -4686,7 +4702,7 @@ function renderReportsTab(container) {
                 </div>
                 <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Planilha do Curso (CSV)</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Exporta todos os 715 alunos, telefones, cidades/bairros de Alagoas, notas dos 7 módulos e médias para o Excel.
+                  Exporta todos os ${AppState.students.length} alunos, telefones, polos/cidades de Alagoas, notas dos 7 módulos e médias para o Excel.
                 </p>
               </div>
               <button onclick="exportStudentsToCSV()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow flex items-center justify-center gap-2 transition-all">
@@ -6652,7 +6668,7 @@ function openCpfLoginModal(redirectTab = null) {
               <i class="fa-solid fa-address-card absolute left-3 top-3 text-slate-400 text-xs"></i>
             </div>
             <p id="login-hint" class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-              O CPF digitado será validado contra a base de 715 alunos cadastrados previamente.
+              O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados previamente.
             </p>
           </div>
 
@@ -6704,7 +6720,7 @@ function switchCpfLoginRole(role) {
     tabProf.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
     if (profNameCont) profNameCont.classList.add("hidden");
     if (cpfLabel) cpfLabel.textContent = "CPF do Aluno Matriculado";
-    if (loginHint) loginHint.textContent = "O CPF digitado será validado contra a base de 715 alunos cadastrados previamente.";
+    if (loginHint) loginHint.textContent = `O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados previamente.`;
     if (cpfInput && cpfInput.value === "031.818.825-31") cpfInput.value = "";
   }
 }
@@ -6762,7 +6778,7 @@ function handleCpfLoginSubmit(e) {
     return;
   }
 
-  // Busca o aluno na base de 715 alunos
+  // Busca o aluno na base cadastral de alunos
   const student = AppState.students.find(s => cleanCpfDigits(s.cpf) === digits);
 
   if (!student) {
