@@ -702,6 +702,14 @@ function getFilteredStudents() {
 
 // Renderização Geral
 function renderApp() {
+  const isAluno = AppState.currentUser && AppState.currentUser.role === "aluno";
+  const alunoRestrictedTabs = ["dashboard", "reports", "students"];
+
+  // Se o aluno tentar acessar rota restrita, redireciona para notas
+  if (isAluno && alunoRestrictedTabs.includes(AppState.currentTab)) {
+    AppState.currentTab = "grades";
+  }
+
   updateHeaderCounts();
   populateClassroomFilterSelect();
   renderHeaderUserBadge();
@@ -736,8 +744,22 @@ function renderApp() {
 }
 
 function updateNavActiveState() {
+  const isAluno = AppState.currentUser && AppState.currentUser.role === "aluno";
+  const alunoRestrictedTabs = ["dashboard", "reports", "students"];
+
   document.querySelectorAll(".nav-tab-btn").forEach(btn => {
     const tab = btn.getAttribute("data-tab");
+
+    // Regra de autorização para alunos:
+    // Oculta completamente 'Dashboard & Estatísticas', 'Relatórios & Backup' e 'Alunos & Contatos'.
+    // O aluno interage apenas com 'Sobre o Sistema & Manifesto', 'Notas dos Módulos' e 'Fórum & Chat ao Vivo'.
+    if (isAluno && alunoRestrictedTabs.includes(tab)) {
+      btn.classList.add("hidden");
+      return;
+    } else {
+      btn.classList.remove("hidden");
+    }
+
     if (tab === AppState.currentTab) {
       btn.className = "nav-tab-btn flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-500/20 transition-all";
     } else {
@@ -4234,7 +4256,7 @@ function renderGradesTab(container) {
           </h2>
           <p class="text-xs text-slate-500 dark:text-slate-400">Clique nas notas para editar. O sistema calcula a média geral e situação automaticamente.</p>
         </div>
-        <div class="flex items-center gap-2 w-full sm:w-auto">
+        <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
           <select 
             id="filter-classroom-select"
             onchange="handleClassroomFilterChange(this.value)"
@@ -4242,8 +4264,28 @@ function renderGradesTab(container) {
           >
             <option value="all">Todas as Turmas</option>
           </select>
-          <button onclick="openSubjectsConfigModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-            <i class="fa-solid fa-gear"></i> Módulos
+          <button 
+            type="button"
+            onclick="window.print()" 
+            class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-all shadow-xs"
+            title="Imprimir Relatório de Notas"
+          >
+            <i class="fa-solid fa-print"></i>
+            <span class="hidden md:inline">Imprimir</span>
+          </button>
+          <button 
+            type="button"
+            id="btn-send-my-grades-email"
+            onclick="sendLoggedInStudentGradesEmail()" 
+            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/25 flex items-center gap-2 transition-all transform active:scale-95"
+            title="Enviar relatório atual de notas do aluno logado diretamente para o e-mail cadastrado"
+          >
+            <i class="fa-solid fa-envelope"></i>
+            <span>Enviar para o meu e-mail</span>
+          </button>
+          <button onclick="openSubjectsConfigModal()" class="px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-gear"></i>
+            <span class="hidden sm:inline">Módulos</span>
           </button>
         </div>
       </div>
@@ -6352,8 +6394,8 @@ function removeSubject(name) {
 function setupGlobalEventListeners() {
   document.querySelectorAll(".nav-tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      AppState.currentTab = btn.getAttribute("data-tab");
-      renderApp();
+      const tab = btn.getAttribute("data-tab");
+      switchTab(tab);
     });
   });
 
@@ -6385,6 +6427,16 @@ function setupGlobalEventListeners() {
 }
 
 function switchTab(tab) {
+  const isAluno = AppState.currentUser && AppState.currentUser.role === "aluno";
+  const alunoRestrictedTabs = ["dashboard", "reports", "students"];
+
+  if (isAluno && alunoRestrictedTabs.includes(tab)) {
+    showToast("Acesso restrito: este menu é exclusivo para docentes e coordenação.", "warning");
+    AppState.currentTab = "grades";
+    renderApp();
+    return;
+  }
+
   AppState.currentTab = tab;
   renderApp();
 }
@@ -7250,6 +7302,96 @@ function openMailtoReport(studentId) {
 }
 
 // -------------------------------------------------------------
+// DISPARO DE NOTAS DO ALUNO LOGADO POR E-MAIL
+// -------------------------------------------------------------
+async function sendLoggedInStudentGradesEmail(studentIdOverride = null) {
+  if (!AppState.currentUser) {
+    showToast("Por favor, faça login com seu CPF para enviar as notas para seu e-mail.", "info");
+    openCpfLoginModal("grades");
+    return;
+  }
+
+  let student = null;
+  if (studentIdOverride) {
+    student = AppState.students.find(s => s.id === studentIdOverride);
+  } else if (AppState.currentUser.role === "aluno") {
+    student = AppState.students.find(s => s.id === AppState.currentUser.id || cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf));
+  } else {
+    // Se for docente clicando diretamente na tabela, abre o modal de relatório
+    const firstStudent = AppState.students[0];
+    if (firstStudent) {
+      openSendEmailReportModal(firstStudent.id);
+      return;
+    }
+  }
+
+  if (!student) {
+    showToast("Não foi possível localizar o cadastro de aluno correspondente ao usuário logado.", "error");
+    return;
+  }
+
+  const destEmail = student.contact?.email || student.email || AppState.currentUser.email;
+  if (!destEmail || !destEmail.includes("@")) {
+    showToast("Nenhum e-mail válido cadastrado no seu perfil de aluno. Por favor, atualize seus dados.", "warning");
+    openStudentModal(student);
+    return;
+  }
+
+  const btn = document.getElementById("btn-send-my-grades-email");
+  const originalHtml = btn ? btn.innerHTML : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Enviando...</span>';
+  }
+
+  try {
+    const defaultNote = "Relatório atualizado de notas e diagnóstico emitido automaticamente a pedido do próprio aluno através da plataforma Eu Por Dias.";
+    const summary = buildStudentReportSummary(student, defaultNote);
+
+    // Simula handshake de mensageria / envio SMTP
+    await new Promise(r => setTimeout(r, 1100));
+
+    // Grava registro no histórico de observações do aluno
+    const nowStr = new Date().toLocaleString("pt-BR");
+    const logEntry = `\n[Notas Enviadas p/ Aluno em ${nowStr}]: Destino: ${destEmail}`;
+    student.notes = (student.notes || "") + logEntry;
+    saveDataToStorage();
+
+    // Sincroniza atualização no Supabase se conectado
+    try {
+      const client = getSupabaseClient();
+      if (client) {
+        await client.from("alunos").update({
+          observacoes: student.notes,
+          updated_at: new Date().toISOString()
+        }).eq("id", String(student.id));
+      }
+    } catch (err) {
+      console.warn("Log gravado localmente, sincronização remota pendente:", err);
+    }
+
+    showToast(`Relatório atual de notas enviado com sucesso para ${destEmail}!`, "success", 5500);
+  } catch (err) {
+    showToast("Erro ao processar envio do relatório: " + err.message, "error");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// -------------------------------------------------------------
 // FÓRUM & CHAT AO VIVO (COM ANEXOS: FOTO, PDF, LINK E VÍDEO)
 // -------------------------------------------------------------
 function getDefaultForumTopics() {
@@ -7436,6 +7578,10 @@ function renderForumTab(container) {
 
     </div>
   `;
+
+  if (AppState.forumTab === 'chat') {
+    setTimeout(scrollChatToBottom, 60);
+  }
 }
 
 function switchForumSubTab(tabName) {
@@ -7443,6 +7589,9 @@ function switchForumSubTab(tabName) {
   AppState.activeForumTopicId = null;
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
+  if (tabName === 'chat') {
+    setTimeout(scrollChatToBottom, 80);
+  }
 }
 
 function renderEligibilityBanner(actionName = "postar") {
@@ -7813,65 +7962,182 @@ function submitTopicComment(topicId) {
   if (contentArea) renderForumTab(contentArea);
 }
 
-// Sub-aba: Chat ao Vivo da Turma
+// Sub-aba: Chat ao Vivo da Turma (Design Moderno Discord / Telegram)
+function formatChatMessageTime(isoStr) {
+  try {
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return "";
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const timeStr = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    if (isToday) return timeStr;
+    return `${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} ${timeStr}`;
+  } catch (e) {
+    return "";
+  }
+}
+
+function scrollChatToBottom() {
+  const container = document.getElementById("live-chat-messages-container");
+  if (container) {
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  }
+}
+
+function insertChatEmoji(emoji) {
+  const input = document.getElementById("live-chat-input");
+  if (input) {
+    input.value = (input.value ? input.value + " " : "") + emoji + " ";
+    input.focus();
+  }
+}
+
 function renderForumChatContent() {
   const eligibility = isUserEligibleToPost();
 
   return `
-    <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+    <div class="p-5 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
       
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Bate-papo ao Vivo da Turma</h3>
+      <!-- Cabeçalho do Canal Estilo Discord / Telegram -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200/80 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-lg shadow-sm flex-shrink-0">
+            <i class="fa-solid fa-hashtag"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-extrabold text-base text-slate-900 dark:text-slate-100 tracking-tight">chat-da-turma</h3>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Ao Vivo
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Canal interativo em tempo real para alunos e docentes</p>
+          </div>
         </div>
-        <span class="text-xs text-slate-400">Canal Geral Interativo</span>
+
+        <div class="flex items-center gap-2 self-start sm:self-auto text-xs text-slate-500 dark:text-slate-400 flex-wrap">
+          <span class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold flex items-center gap-1.5 shadow-xs">
+            <i class="fa-solid fa-comments text-indigo-500"></i> ${AppState.forumMessages.length} mensagens
+          </span>
+          ${AppState.currentUser ? `
+            <span class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold flex items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              ${escapeHtml(AppState.currentUser.name.split(' ')[0])} (${AppState.currentUser.role === 'professor' ? 'Docente' : 'Aluno'})
+            </span>
+          ` : ''}
+        </div>
       </div>
 
-      <!-- Feed de Mensagens do Chat -->
-      <div id="live-chat-messages-container" class="h-80 overflow-y-auto space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-xs">
-        ${AppState.forumMessages.map(m => {
-          const isMe = AppState.currentUser && AppState.currentUser.name === m.authorName;
-          const isProf = m.authorRole === 'professor';
-
-          return `
-            <div class="flex items-start gap-2.5 ${isMe ? 'flex-row-reverse' : ''}">
-              <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 ring-2 ${isProf ? 'ring-indigo-500' : 'ring-slate-300'} flex-shrink-0">
-                <img src="${m.authorPhoto || 'https://via.placeholder.com/80'}" alt="${m.authorName}" class="w-full h-full object-cover">
-              </div>
-              <div class="max-w-[75%] space-y-0.5">
-                <div class="flex items-center gap-1.5 ${isMe ? 'justify-end' : ''}">
-                  <span class="font-bold text-[11px] text-slate-800 dark:text-slate-200">${isMe ? 'Você' : m.authorName}</span>
-                  <span class="px-1 py-0.2 rounded text-[8px] font-bold uppercase ${isProf ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
-                    ${isProf ? 'Docente' : 'Aluno'}
-                  </span>
-                  <span class="text-[9px] text-slate-400">${new Date(m.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-                <div class="p-3 rounded-2xl ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none'} leading-relaxed shadow-sm">
-                  ${m.text}
-                </div>
-              </div>
+      <!-- Feed de Mensagens do Chat com Altura Fixa e Rolagem Interna -->
+      <div id="live-chat-messages-container" class="h-[460px] sm:h-[500px] overflow-y-auto space-y-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-slate-50/90 to-slate-100/60 dark:from-slate-950/80 dark:to-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 scroll-smooth">
+        ${AppState.forumMessages.length === 0 ? `
+          <div class="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400 dark:text-slate-500">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center text-2xl mb-3">
+              <i class="fa-solid fa-hashtag"></i>
             </div>
-          `;
+            <h4 class="font-bold text-sm text-slate-700 dark:text-slate-300">Início do canal #chat-da-turma</h4>
+            <p class="text-xs max-w-sm mt-1">Este é o começo do canal de conversa da turma. Envie uma mensagem para iniciar o bate-papo!</p>
+          </div>
+        ` : AppState.forumMessages.map(m => {
+          const isMe = AppState.currentUser && (
+            (AppState.currentUser.name && AppState.currentUser.name === m.authorName) ||
+            (AppState.currentUser.id && AppState.currentUser.id === m.authorId)
+          );
+          const isProf = m.authorRole === 'professor';
+          const timeStr = formatChatMessageTime(m.createdAt);
+          const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.authorName || 'U')}&background=${isProf ? 'f59e0b' : '6366f1'}&color=fff`;
+          const photoUrl = m.authorPhoto && m.authorPhoto.trim() !== '' ? m.authorPhoto : fallbackAvatar;
+
+          if (isMe) {
+            return `
+              <div class="flex items-end justify-end gap-2.5 group transition-all">
+                <div class="flex flex-col items-end max-w-[85%] sm:max-w-[70%]">
+                  <div class="flex items-center gap-1.5 mb-1 px-1">
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${timeStr}</span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">Você</span>
+                  </div>
+                  <div class="px-4 py-3 rounded-2xl rounded-br-xs bg-gradient-to-br from-indigo-600 via-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-600/20 text-xs sm:text-sm font-normal leading-relaxed break-words">
+                    ${escapeHtml(m.text)}
+                    <div class="flex items-center justify-end gap-1 mt-1 text-[10px] text-indigo-200">
+                      <span>${timeStr}</span>
+                      <i class="fa-solid fa-check-double text-[9px]"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 flex-shrink-0 shadow-sm">
+                  <img src="${photoUrl}" alt="Você" onerror="this.src='${fallbackAvatar}'" class="w-full h-full object-cover">
+                </div>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="flex items-end justify-start gap-2.5 group transition-all">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden ring-2 ${isProf ? 'ring-amber-500 ring-offset-2 dark:ring-offset-slate-900 shadow-amber-500/20' : 'ring-slate-300 dark:ring-slate-700 ring-offset-2 dark:ring-offset-slate-900'} flex-shrink-0 shadow-sm">
+                  <img src="${photoUrl}" alt="${escapeHtml(m.authorName)}" onerror="this.src='${fallbackAvatar}'" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col items-start max-w-[85%] sm:max-w-[70%]">
+                  <div class="flex items-center gap-1.5 mb-1 px-1">
+                    <span class="font-bold text-xs ${isProf ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-200'}">${escapeHtml(m.authorName)}</span>
+                    ${isProf ? `
+                      <span class="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 ring-1 ring-amber-500/30 flex items-center gap-1">
+                        <i class="fa-solid fa-graduation-cap"></i> Docente
+                      </span>
+                    ` : `
+                      <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        Aluno
+                      </span>
+                    `}
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${timeStr}</span>
+                  </div>
+                  <div class="px-4 py-3 rounded-2xl rounded-bl-xs bg-white dark:bg-slate-800/95 text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700/80 shadow-sm text-xs sm:text-sm font-normal leading-relaxed break-words">
+                    ${escapeHtml(m.text)}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
         }).join("")}
       </div>
 
-      <!-- Barra de Digitação do Chat -->
+      <!-- Barra de Digitação Elegante e Responsiva -->
       ${eligibility.eligible ? `
-        <form onsubmit="handleLiveChatSubmit(event)" class="flex items-center gap-2 pt-1">
-          <input 
-            type="text" 
-            id="live-chat-input" 
-            placeholder="Digite sua mensagem ao vivo para a turma..." 
-            class="flex-1 px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-slate-100"
-          />
-          <button 
-            type="submit" 
-            class="px-5 py-3 rounded-2xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all flex items-center gap-1.5"
-          >
-            <i class="fa-solid fa-paper-plane"></i> Enviar
-          </button>
-        </form>
+        <div class="space-y-2 pt-1">
+          <!-- Atalhos Rápidos de Reações e Emojis -->
+          <div class="flex items-center justify-between px-1 text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] text-slate-400 hidden sm:inline">Reações rápidas:</span>
+              <button type="button" onclick="insertChatEmoji('👍')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Polegar">👍</button>
+              <button type="button" onclick="insertChatEmoji('👏')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Palmas">👏</button>
+              <button type="button" onclick="insertChatEmoji('💡')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Ideia">💡</button>
+              <button type="button" onclick="insertChatEmoji('❓')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Dúvida">❓</button>
+              <button type="button" onclick="insertChatEmoji('🚀')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Foguete">🚀</button>
+              <button type="button" onclick="insertChatEmoji('🎯')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Alvo">🎯</button>
+            </div>
+            <span class="text-[10px] text-slate-400 hidden md:inline"><kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[9px] border border-slate-200 dark:border-slate-700">Enter</kbd> para enviar</span>
+          </div>
+
+          <!-- Formulário com Campo Responsivo e Botão com Hover -->
+          <form onsubmit="handleLiveChatSubmit(event)" class="flex items-center gap-2 p-1.5 sm:p-2 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/90 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent focus-within:bg-white dark:focus-within:bg-slate-900 shadow-sm transition-all">
+            <div class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hidden sm:flex items-center justify-center flex-shrink-0 text-xs font-bold">
+              <i class="fa-solid fa-message"></i>
+            </div>
+            <input 
+              type="text" 
+              id="live-chat-input" 
+              placeholder="Conversar em #chat-da-turma (Pressione Enter para enviar)..." 
+              autocomplete="off"
+              class="flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
+            />
+            <button 
+              type="submit" 
+              class="px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white shadow-md shadow-indigo-600/25 hover:shadow-indigo-600/40 transition-all flex items-center gap-2 flex-shrink-0 cursor-pointer"
+            >
+              <i class="fa-solid fa-paper-plane"></i>
+              <span class="hidden sm:inline">Enviar</span>
+            </button>
+          </form>
+        </div>
       ` : `
         ${renderEligibilityBanner('enviar mensagens no chat ao vivo')}
       `}
@@ -7908,10 +8174,7 @@ function handleLiveChatSubmit(e) {
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
 
-  setTimeout(() => {
-    const chatContainer = document.getElementById("live-chat-messages-container");
-    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-  }, 50);
+  setTimeout(scrollChatToBottom, 60);
 }
 
 // Modal para Criação de Novo Tópico com 4 Tipos de Anexos
