@@ -81,25 +81,85 @@
         <!-- Ações do Cabeçalho -->
         <div class="flex items-center gap-2">
           
-          <!-- Botão Google Sheets API Rápido -->
-          <button 
-            onclick="openGoogleSheetsImportModal()" 
-            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/25 transition-all transform active:scale-95"
-            title="Sincronizar com a Google Sheets API v4"
-          >
-            <i class="fa-brands fa-google-drive text-sm"></i>
-            <span class="hidden sm:inline">Google Sheets API</span>
-          </button>
+          <!-- Submenu Conexões & Modo Deus (Google Sheets, Supabase, Modo Deus) -->
+          <div class="relative" id="integrations-submenu-container">
+            <button 
+              id="integrations-menu-btn"
+              onclick="toggleIntegrationsSubmenu(event)" 
+              class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/90 shadow-sm transition-all transform active:scale-95"
+              title="Menu de Conexões: Google Sheets, Supabase e Modo Deus"
+            >
+              <div class="flex items-center -space-x-1">
+                <span class="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
+                  <i class="fa-brands fa-google-drive"></i>
+                </span>
+                <span class="w-5 h-5 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
+                  <i class="fa-solid fa-cloud"></i>
+                </span>
+                <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
+                  <i class="fa-solid fa-bolt"></i>
+                </span>
+              </div>
+              <span class="hidden sm:inline font-bold">Conexões</span>
+              <span id="integrations-badge-status" class="hidden md:inline-flex"></span>
+              <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
+            </button>
 
-          <!-- Botão Supabase Cloud Nuvem -->
-          <button 
-            onclick="openSupabaseModal()" 
-            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-700/80 hover:bg-emerald-700 text-white shadow-md shadow-emerald-700/20 transition-all transform active:scale-95"
-            title="Banco de Dados em Nuvem Supabase"
-          >
-            <i class="fa-solid fa-cloud text-emerald-300"></i>
-            <span class="hidden sm:inline">Supabase</span>
-          </button>
+            <!-- Dropdown do Submenu -->
+            <div 
+              id="integrations-dropdown-menu" 
+              class="hidden absolute right-0 mt-2 w-72 sm:w-80 p-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/90 dark:border-slate-800 z-50 text-xs fade-in space-y-1"
+            >
+              <div class="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-sliders text-indigo-500"></i> Conexões &amp; Modo Deus
+                </span>
+              </div>
+
+              <!-- Item 1: Google Sheets API -->
+              <button 
+                onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
+                class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3 group"
+              >
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <i class="fa-brands fa-google-drive"></i>
+                  </div>
+                  <div>
+                    <strong class="block font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Google Sheets API</strong>
+                    <span class="block text-[10px] text-slate-400">Importar da planilha oficial</span>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60">
+                  Sheets
+                </span>
+              </button>
+
+              <!-- Item 2: Supabase Cloud -->
+              <button 
+                onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
+                class="w-full text-left p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3 group"
+              >
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-cloud"></i>
+                  </div>
+                  <div>
+                    <strong class="block font-bold text-slate-800 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Supabase Cloud</strong>
+                    <span class="block text-[10px] text-slate-400">Banco de dados em nuvem</span>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-900/60">
+                  Nuvem
+                </span>
+              </button>
+
+              <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
+
+              <!-- Item 3: Modo Deus / LGPD (Container do Modo Deus) -->
+              <div id="header-godmode-container" class="w-full"></div>
+            </div>
+          </div>
 
           <!-- Botão Novo Aluno Manual -->
           <button 
@@ -118,9 +178,6 @@
           >
             <i class="fa-solid fa-file-excel text-emerald-600 text-base"></i>
           </button>
-
-          <!-- Status / Botão Modo Deus (Google) -->
-          <div id="header-godmode-container" class="flex items-center"></div>
 
           <!-- Perfil e Login por CPF do Usuário -->
           <div id="header-user-container" class="flex items-center"></div>

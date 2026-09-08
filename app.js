@@ -794,51 +794,101 @@ function updateHeaderCounts() {
 
 function renderHeaderGodModeStatus() {
   const container = document.getElementById("header-godmode-container");
+  const badgeStatus = document.getElementById("integrations-badge-status");
+  const isGod = isGodModeActive();
+
+  // Atualiza indicador de status no botão gatilho do submenu
+  if (badgeStatus) {
+    if (isGod) {
+      badgeStatus.innerHTML = `
+        <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+          Deus
+        </span>
+      `;
+    } else {
+      badgeStatus.innerHTML = `
+        <span class="px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 flex items-center gap-1">
+          <i class="fa-solid fa-lock text-[8px]"></i> LGPD
+        </span>
+      `;
+    }
+  }
+
   if (!container) return;
 
-  if (isGodModeActive()) {
+  if (isGod) {
     const user = AppState.godMode.user || {};
     const name = user.name ? user.name.split(" ")[0] : "Professor";
     const email = user.email || "Google Master";
     container.innerHTML = `
-      <div class="flex items-center gap-2 bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-indigo-500/15 border border-amber-400/50 dark:border-amber-500/40 rounded-2xl px-2.5 py-1.5 shadow-sm">
-        <span class="relative flex h-2 w-2">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-        </span>
-        <div class="flex flex-col">
-          <span class="text-[10px] font-black text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1">
-            <i class="fa-solid fa-bolt text-amber-500"></i> Modo Deus
-          </span>
-          <span class="text-[9px] text-slate-600 dark:text-slate-300 font-bold truncate max-w-[100px]" title="${email}">
-            ${name}
-          </span>
+      <div class="p-2.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-indigo-500/15 border border-amber-400/50 dark:border-amber-500/40 space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            </span>
+            <div class="leading-tight">
+              <span class="text-[10px] font-black text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-solid fa-bolt text-amber-500"></i> Modo Deus Ativo
+              </span>
+              <span class="text-[9px] text-slate-600 dark:text-slate-300 font-bold block truncate max-w-[150px]" title="${email}">
+                ${name} (${email})
+              </span>
+            </div>
+          </div>
+          <button 
+            type="button"
+            onclick="closeIntegrationsSubmenu(); logoutGodMode();" 
+            class="px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-amber-500 hover:bg-amber-600 text-white transition-colors flex items-center gap-1 shadow-sm"
+            title="Encerrar Modo Deus e Trancar Modo LGPD"
+          >
+            <i class="fa-solid fa-lock text-[9px]"></i> Trancar
+          </button>
         </div>
-        <button 
-          onclick="logoutGodMode()" 
-          class="ml-0.5 px-2 py-1 rounded-xl text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500 text-amber-950 dark:text-amber-100 transition-colors flex items-center gap-1"
-          title="Encerrar Modo Deus e Trancar Modo LGPD"
-        >
-          <i class="fa-solid fa-lock text-[9px]"></i>
-          <span class="hidden sm:inline">Trancar</span>
-        </button>
       </div>
     `;
   } else {
     container.innerHTML = `
       <button 
-        onclick="openGodModeAuthModal()" 
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm transition-all transform active:scale-95"
-        title="Modo LGPD Permanente Ativo. Clique para entrar no Modo Deus via Google."
+        type="button"
+        onclick="closeIntegrationsSubmenu(); openGodModeAuthModal();" 
+        class="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors flex items-center justify-between gap-3 group"
       >
-        <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-        <span class="hidden md:inline text-[11px] font-bold text-slate-500 dark:text-slate-400">LGPD:</span>
-        <span class="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400">Travado</span>
-        <span class="w-1 h-3 bg-slate-300 dark:bg-slate-600 rounded-full mx-0.5 hidden sm:inline-block"></span>
-        <i class="fa-solid fa-bolt text-amber-500 text-[11px]"></i>
-        <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 hidden xl:inline">Modo Deus</span>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <strong class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Modo Deus (Google)</strong>
+              <span class="px-1.5 py-0.5 rounded text-[8px] font-extrabold bg-slate-100 dark:bg-slate-800 text-emerald-600 uppercase">LGPD Travado</span>
+            </div>
+            <span class="block text-[10px] text-slate-400">Acesso mestre irrestrito</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-600 text-[10px]"></i>
       </button>
     `;
+  }
+}
+
+function toggleIntegrationsSubmenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById("integrations-dropdown-menu");
+  if (!menu) return;
+  menu.classList.toggle("hidden");
+  if (!menu.classList.contains("hidden")) {
+    const dd = document.getElementById("user-header-dropdown");
+    if (dd) dd.classList.add("hidden");
+  }
+}
+
+function closeIntegrationsSubmenu() {
+  const menu = document.getElementById("integrations-dropdown-menu");
+  if (menu && !menu.classList.contains("hidden")) {
+    menu.classList.add("hidden");
   }
 }
 
@@ -6317,9 +6367,29 @@ function setupGlobalEventListeners() {
     });
   });
 
+  // Fechar dropdowns ao clicar fora
+  document.addEventListener("click", (e) => {
+    const intContainer = document.getElementById("integrations-submenu-container");
+    if (intContainer && !intContainer.contains(e.target)) {
+      closeIntegrationsSubmenu();
+    }
+    const userContainer = document.getElementById("header-user-container");
+    if (userContainer && !userContainer.contains(e.target)) {
+      const dd = document.getElementById("user-header-dropdown");
+      if (dd && !dd.classList.contains("hidden")) {
+        dd.classList.add("hidden");
+      }
+    }
+  });
+
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closeModal();
+      closeIntegrationsSubmenu();
+      const dd = document.getElementById("user-header-dropdown");
+      if (dd && !dd.classList.contains("hidden")) {
+        dd.classList.add("hidden");
+      }
     }
   });
 }
