@@ -39,7 +39,7 @@ const AppState = {
     supabaseConnected: true,
     lastSupabaseSync: "2026-09-07T14:32:00.000Z"
   },
-  currentTab: "students", // 'dashboard' | 'students' | 'grades' | 'reports' | 'about'
+  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students'
   privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
   godMode: {
     active: false,
