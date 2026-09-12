@@ -39,7 +39,7 @@ const AppState = {
     supabaseConnected: true,
     lastSupabaseSync: "2026-09-07T14:32:00.000Z"
   },
-  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum' | 'careers'
+  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum' | 'careers' | 'prompts'
   // Usuário Autenticado por CPF (Menu & Identificação)
   currentUser: null, // { id, name, cpf, role: 'professor' | 'aluno', photo, email, classroom, loginTime }
   // Fórum & Chat ao Vivo
@@ -55,6 +55,12 @@ const AppState = {
   careersFilterPolo: "all",
   careersFilterType: "all",
   careersFilterSearch: "",
+  // Laboratório de Prompts & IA (Awesome ChatGPT Prompts - prompts.chat)
+  promptsLibrary: [],
+  promptsActiveCategory: "all",
+  promptsSearchQuery: "",
+  favoritePrompts: [],
+  promptsGuideExpanded: true,
   privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
   godMode: {
     active: false,
@@ -342,6 +348,9 @@ function loadDataFromStorage() {
   // Carregar dados de Oportunidades & Trilhas
   loadCareersDataFromStorage();
 
+  // Carregar dados do Laboratório de Prompts & IA
+  loadPromptsDataFromStorage();
+
   saveDataToStorage();
 }
 
@@ -352,6 +361,7 @@ function saveDataToStorage() {
   localStorage.setItem("eupordias_settings", JSON.stringify(AppState.settings));
   saveForumDataToStorage();
   saveCareersDataToStorage();
+  savePromptsDataToStorage();
 }
 
 // Tema Claro / Escuro
@@ -766,6 +776,9 @@ function renderApp() {
       break;
     case "careers":
       renderCareersTab(contentArea);
+      break;
+    case "prompts":
+      renderPromptsTab(contentArea);
       break;
     default:
       renderAboutTab(contentArea);
@@ -1359,6 +1372,12 @@ function renderTabAccessRestriction(container, tabKey) {
       description: "Para consultar o mural de vagas de emprego com cálculo de compatibilidade de currículo, trilhas de aprendizagem e materiais gratuitos, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
       alunoInfo: "Acesso ao mural de vagas de Alagoas, cálculo de match personalizado com seu currículo, emissão de ficha profissional e cursos livres.",
       profInfo: "Publicação de novas vagas de emprego/estágio para a turma, gestão de oportunidades e compartilhamento de materiais pedagógicos."
+    },
+    prompts: {
+      title: "Regra de Acesso: Laboratório de Prompts & IA",
+      description: "Para explorar o acervo completo de comandos e personas de IA baseado no repositório <strong>prompts.chat (Awesome ChatGPT Prompts)</strong>, personalizar variáveis para seus clientes e utilizar o gerador de prompts, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso a dezenas de personas profissionais de IA (Copywriting, Social Media, Gestão de Anúncios, Programação), personalizador interativo de prompt e guia passo a passo de engenharia de prompt.",
+      profInfo: "Gestão pedagógica do acervo de IA, publicação de novos prompts para as aulas da turma e acompanhamento de atividades práticas com IA."
     }
   };
 
@@ -10280,3 +10299,1247 @@ Programa Emprega Mais Alagoas • Mídias Digitais`;
     showToast("Não foi possível copiar automaticamente.", "warning");
   });
 }
+
+// =============================================================
+// ABA 8: LABORATÓRIO DE PROMPTS & IA (AWESOME CHATGPT PROMPTS)
+// Baseado no repositório oficial: https://github.com/f/prompts.chat
+// =============================================================
+
+function getDefaultPromptsLibrary() {
+  return [
+    // -------------------------------------------------------------
+    // CATEGORIA 1: MARKETING DIGITAL & REDES SOCIAIS
+    // -------------------------------------------------------------
+    {
+      id: "p-mkt-1",
+      act: "Social Media Manager",
+      title: "Social Media Manager & Estrategista de Conteúdo",
+      category: "marketing",
+      categoryLabel: "Marketing & Redes Sociais",
+      icon: "fa-share-nodes",
+      color: "from-blue-500 to-indigo-600",
+      description: "Planeja calendário editorial semanal, define linhas editoriais, ganchos de engajamento e estratégias para marcas no Instagram.",
+      prompt: `Quero que você atue como um Social Media Manager profissional e experiente. Você será responsável por desenvolver um plano estratégico de conteúdo para \${Cliente / Empresa:uma clínica de estética em Maceió - AL}. Sua missão é definir as principais linhas editoriais, sugerir ganchos de alta retenção para posts e Reels, recomendar formatos (carrossel, vídeo, stories com enquete) e criar chamadas para ação (CTAs) que direcionem para o WhatsApp. O tom de voz deve ser \${Tom de Voz:humanizado, profissional e acolhedor}. Responda em tópicos organizados e forneça exemplos práticos prontos para publicação. Minha primeira solicitação é: "\${Primeira Solicitação:Crie um cronograma semanal de 5 postagens focado em atrair novos clientes locais.}"`,
+      tags: ["Instagram", "Planejamento", "Engajamento", "Calendário"],
+      contributor: "prompts.chat (@f) • Adaptado para Alagoas",
+      relatedModule: 1
+    },
+    {
+      id: "p-mkt-2",
+      act: "Meta Ads Specialist",
+      title: "Especialista em Tráfego Pago & Meta Ads Local",
+      category: "marketing",
+      categoryLabel: "Marketing & Redes Sociais",
+      icon: "fa-bullseye",
+      color: "from-blue-600 to-cyan-600",
+      description: "Estrutura campanhas de anúncios no Meta Ads (Facebook e Instagram) com foco em raio geográfico, público local e conversão no WhatsApp.",
+      prompt: `Quero que você atue como um Gestor de Tráfego Pago especialista em Meta Ads para negócios locais. Vou fornecer informações sobre o negócio \${Tipo de Negócio:uma hamburgueria artesanal em Arapiraca - AL} e seu orçamento diário de \${Orçamento Diário:R$ 25,00 por dia}. Você deve estruturar uma campanha completa: objetivo de campanha (Mensagens no WhatsApp ou Tráfego), segmentação detalhada de público (idade, interesses e raio em km), 3 variações de criativos (imagem/vídeo) e 3 opções de textos persuasivos para o anúncio com gatilhos de escassez e proximidade geográfica. Minha primeira solicitação é: "\${Primeira Solicitação:Monte a estrutura da campanha para aumentar pedidos pelo WhatsApp nos finais de semana.}"`,
+      tags: ["Meta Ads", "Tráfego Pago", "Negócios Locais", "WhatsApp"],
+      contributor: "prompts.chat (@f) • Adaptado para Alagoas",
+      relatedModule: 2
+    },
+    {
+      id: "p-mkt-3",
+      act: "Short-form Video Creator",
+      title: "Criador de Roteiros Virais para Reels & TikTok",
+      category: "marketing",
+      categoryLabel: "Marketing & Redes Sociais",
+      icon: "fa-video",
+      color: "from-rose-500 to-pink-600",
+      description: "Cria roteiros dinâmicos de 15 a 30 segundos com gancho magnético nos primeiros 3 segundos, áudio em alta e CTA envolvente.",
+      prompt: `Quero que você atue como um Roteirista Especialista em Vídeos Curtos (Reels, TikTok e Shorts). Crie roteiros altamente visuais e dinâmicos para \${Nicho:uma loja de roupas femininas}. Cada roteiro deve conter: 1) Gancho visual e verbal nos primeiros 3 segundos para reter a atenção; 2) Desenvolvimento rápido em 3 passos ou cenas; 3) Indicação de trilha sonora ou áudio em alta; 4) Texto em tela sugerido; 5) Chamada para ação irresistível na legenda e no áudio. O vídeo deve ter duração estimada de \${Duração Estimada:25 a 30 segundos}. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva 3 roteiros de Reels mostrando looks versáteis para o dia a dia.}"`,
+      tags: ["Reels", "TikTok", "Roteiro", "Vídeo Curto"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 3
+    },
+    {
+      id: "p-mkt-4",
+      act: "Instagram Growth Strategist",
+      title: "Estrategista de Crescimento no Instagram",
+      category: "marketing",
+      categoryLabel: "Marketing & Redes Sociais",
+      icon: "fa-chart-line",
+      color: "from-amber-500 to-rose-500",
+      description: "Audita perfis, otimiza biografia, destaques e propõe estratégias de crescimento orgânico e parcerias.",
+      prompt: `Quero que você atue como um Estrategista de Crescimento para Instagram. Vou te apresentar o perfil de \${Nome ou Tipo do Perfil:um nutricionista que atende online e presencial}. Analise e me entregue: 1) Proposta de Nome de Usuário e Nome Principal em negrito com palavras-chave de busca; 2) Biografia magnética com autoridade + público-alvo + link de ação; 3) Estrutura recomendada de 4 Destaques estratégicos; 4) Ideias de colaborações (Collabs) e parcerias locais para acelerar seguidores qualificados. Minha primeira solicitação é: "\${Primeira Solicitação:Reestruture a bio e os destaques deste perfil para transformá-lo em uma máquina de captação de clientes.}"`,
+      tags: ["Instagram", "Bio", "Crescimento", "Auditoria"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 1
+    },
+    {
+      id: "p-mkt-5",
+      act: "Local Influencer Consultant",
+      title: "Consultor de Parcerias & Influenciadores Locais",
+      category: "marketing",
+      categoryLabel: "Marketing & Redes Sociais",
+      icon: "fa-handshake",
+      color: "from-emerald-500 to-teal-600",
+      description: "Elabora mensagens de abordagem profissional para microinfluenciadores de Alagoas, roteiro de briefing e métricas de ROI.",
+      prompt: `Quero que você atue como um Consultor de Marketing de Influência Regional. Desenvolva uma estratégia para \${Segmento:uma cafeteria artesanal} contratar e fechar parcerias com microinfluenciadores (5k a 30k seguidores) em \${Cidade:Penedo - AL}. Forneça: 1) Modelo de mensagem de primeiro contato via Direct do Instagram; 2) Roteiro de Briefing simples em 5 tópicos para o criador de conteúdo seguir sem perder a espontaneidade; 3) Métricas para mensurar se a parceria gerou retorno (cupons de desconto, cliques no link, movimento no local). Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o modelo de mensagem de abordagem profissional para enviar aos influenciadores locais.}"`,
+      tags: ["Influenciadores", "Parcerias", "Briefing", "Direct"],
+      contributor: "prompts.chat (@f) • Adaptado",
+      relatedModule: 6
+    },
+
+    // -------------------------------------------------------------
+    // CATEGORIA 2: COPYWRITING, VENDAS & PERSUASÃO
+    // -------------------------------------------------------------
+    {
+      id: "p-copy-1",
+      act: "Advertiser & Copywriter",
+      title: "Copywriter Publicitário (Fórmula AIDA)",
+      category: "copywriting",
+      categoryLabel: "Copywriting & Vendas",
+      icon: "fa-pen-nib",
+      color: "from-purple-500 to-indigo-600",
+      description: "Escreve textos altamente persuasivos aplicando a fórmula Atenção, Interesse, Desejo e Ação para posts e anúncios.",
+      prompt: `Quero que você atue como um Copywriter Publicitário sênior especializado no modelo AIDA (Atenção, Interesse, Desejo, Ação). Vou descrever um produto ou serviço: \${Produto ou Serviço:Curso prático de Canva para empreendedores iniciantes}. Crie uma copy completa dividida claramente em 4 etapas: [ATENÇÃO] - Gancho chocante ou pergunta provocativa; [INTERESSE] - Apresentação do problema comum e conexão empática; [DESEJO] - Benefícios práticos, transformação e prova de valor; [AÇÃO] - Chamada clara e irresistível com urgência. Escreva em linguagem direta, envolvente e com quebras de linha que facilitam a leitura no celular. Minha primeira solicitação é: "\${Primeira Solicitação:Crie a copy para uma postagem de feed no formato carrossel.}"`,
+      tags: ["AIDA", "Persuasão", "Vendas", "Copywriting"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 4
+    },
+    {
+      id: "p-copy-2",
+      act: "Headline Generator",
+      title: "Gerador de Headlines & Títulos Magnéticos",
+      category: "copywriting",
+      categoryLabel: "Copywriting & Vendas",
+      icon: "fa-heading",
+      color: "from-indigo-500 to-cyan-500",
+      description: "Gera 10 variações de títulos irresistíveis com gatilhos de curiosidade, benefício claro e quebra de padrão.",
+      prompt: `Quero que você atue como um Especialista em Títulos e Headlines de Alta Conversão. Para o tema \${Tema do Conteúdo:Como vender pelo WhatsApp todos os dias mesmo sem ter muitos seguidores}, gere 10 opções de títulos divididos pelas seguintes categorias de gatilhos mentais: 1) Curiosidade e Segredo; 2) Como Fazer (Passo a Passo); 3) Alerta / Erro Comum a Evitar; 4) Número / Lista Rápida; 5) Promessa Direta com Prazo. Os títulos devem ser curtos, impactantes e perfeitos para a capa de carrosséis ou miniaturas de Reels. Minha primeira solicitação é: "\${Primeira Solicitação:Gere as 10 variações de títulos magnéticos para este tema.}"`,
+      tags: ["Headlines", "Títulos", "Gatilhos Mentais", "Cliques"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 4
+    },
+    {
+      id: "p-copy-3",
+      act: "Email Marketer",
+      title: "Especialista em E-mail Marketing & Newsletter",
+      category: "copywriting",
+      categoryLabel: "Copywriting & Vendas",
+      icon: "fa-envelope-open-text",
+      color: "from-blue-500 to-purple-600",
+      description: "Desenvolve e-mails persuasivos com linhas de assunto de alta taxa de abertura e narrativa de conversão.",
+      prompt: `Quero que você atue como um Redator Especialista em E-mail Marketing e Newsletters. Crie um e-mail de \${Objetivo do E-mail:boas-vindas e apresentação de oferta especial} para novos inscritos na lista de \${Nicho do Negócio:uma consultoria de marketing digital}. O e-mail deve conter: 1) 3 opções de linhas de assunto (com emojis estratégicos e menos de 45 caracteres); 2) Texto de pré-visualização (preheader); 3) Saudação personalizada com tom amigável; 4) História curta que conecta com as dores do leitor; 5) Oferta clara com botão de chamada para ação (CTA); 6) P.S. (post scriptum) persuasivo ao final. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o e-mail de boas-vindas com oferta para novos clientes.}"`,
+      tags: ["E-mail Marketing", "Newsletter", "Conversão", "Assuntos"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 4
+    },
+    {
+      id: "p-copy-4",
+      act: "Screenwriter & Sales Pitch",
+      title: "Roteirista de Vídeos de Vendas (VSL) e Pitch",
+      category: "copywriting",
+      categoryLabel: "Copywriting & Vendas",
+      icon: "fa-film",
+      color: "from-rose-600 to-amber-600",
+      description: "Estrutura pitch de vendas em vídeo de 60 a 90 segundos para apresentar serviços a comerciantes e empresas.",
+      prompt: `Quero que você atue como um Roteirista de Pitch Comercial e Vídeos de Vendas. Escreva um roteiro falado em primeira pessoa de 60 segundos para um profissional recém-formado em Gestão de Mídias Digitais se apresentar para \${Público Alvo / Empresa:donos de restaurantes e pizzarias de Alagoas}. Estrutura obrigatória: 1) Gancho com o problema real do cliente (perder vendas por não ter presença digital); 2) Apresentação profissional e credenciais; 3) O que você faz de diferente (foco em resultados, atendimento rápido e artes profissionais); 4) Oferta de diagnóstico gratuito; 5) Chamada para conversar no WhatsApp. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o roteiro completo do pitch de vendas.}"`,
+      tags: ["Pitch", "Vendas", "Apresentação", "Vídeo"],
+      contributor: "prompts.chat (@f) • Adaptado",
+      relatedModule: 4
+    },
+    {
+      id: "p-copy-5",
+      act: "Brand Storyteller",
+      title: "Storyteller de Marca & Narrativas Emocionais",
+      category: "copywriting",
+      categoryLabel: "Copywriting & Vendas",
+      icon: "fa-book-open-reader",
+      color: "from-amber-600 to-orange-500",
+      description: "Transforma a história de superação e criação de um negócio local em uma narrativa emocionante para postagens institucionais.",
+      prompt: `Quero que você atue como um Mestre em Storytelling de Marcas. Vou te contar a história de fundação de \${Nome da Empresa:uma confeitaria artesanal familiar iniciada na cozinha de casa}: "\${História Base:Começou com a dona fazendo bolos para os vizinhos em 2020 para complementar a renda familiar e hoje tem uma loja física com 5 funcionários}". Transforme essa história em um post emocionante para o feed do Instagram (formato carrossel narrativo ou legenda profunda), destacando os desafios iniciais, a perseverança, o amor pelo ofício e a gratidão aos primeiros clientes locais. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o texto completo do post em formato de história emocionante.}"`,
+      tags: ["Storytelling", "História de Marca", "Emoção", "Engajamento"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 5
+    },
+
+    // -------------------------------------------------------------
+    // CATEGORIA 3: GESTÃO, CARREIRA & NEGÓCIOS LOCAIS
+    // -------------------------------------------------------------
+    {
+      id: "p-ges-1",
+      act: "Job Interviewer",
+      title: "Entrevistador de Emprego & RH Simulador",
+      category: "gestao",
+      categoryLabel: "Gestão, Carreira & Negócios",
+      icon: "fa-user-tie",
+      color: "from-slate-700 to-indigo-900",
+      description: "Simula uma entrevista de emprego real para a vaga de Assistente de Mídias Sociais, fazendo perguntas uma a uma e avaliando respostas.",
+      prompt: `Quero que você atue como um Entrevistador de Recursos Humanos experiente em uma agência de publicidade. Eu serei o candidato a uma vaga de \${Cargo Desejado:Assistente de Mídias Sociais e Criação de Conteúdo em Alagoas}. Quero que você faça uma simulação de entrevista comigo. Regras estritas: 1) Faça apenas UMA pergunta por vez e espere a minha resposta antes de prosseguir; 2) Não escreva a conversa inteira de uma vez; 3) Após eu responder, faça um breve comentário sobre o ponto forte da minha resposta e em seguida faça a próxima pergunta técnica ou comportamental. Minha primeira frase é: "\${Primeira Frase:Olá! Estou pronto para iniciar a minha entrevista para a vaga.}"`,
+      tags: ["Entrevista", "Emprego", "Simulação", "Carreira"],
+      contributor: "prompts.chat (@f / iltekin)",
+      relatedModule: 7
+    },
+    {
+      id: "p-ges-2",
+      act: "Local Business Consultant",
+      title: "Consultor de Negócios & Diagnóstico Digital Local",
+      category: "gestao",
+      categoryLabel: "Gestão, Carreira & Negócios",
+      icon: "fa-store",
+      color: "from-emerald-600 to-teal-700",
+      description: "Gera um relatório de diagnóstico digital completo com pontos fracos, oportunidades e plano de ação em 30 dias para pequenos comércios.",
+      prompt: `Quero que você atue como um Consultor Especialista em Transformação Digital de Pequenos Negócios. Vou te fornecer informações sobre um estabelecimento comercial: \${Estabelecimento:uma loja de materiais de construção em Santana do Ipanema - AL com WhatsApp e Instagram pouco atualizados}. Elabore um diagnóstico em 4 etapas: 1) 3 principais erros digitais que fazem esse negócio perder clientes para concorrentes; 2) Oportunidades imediatas no Google Meu Negócio e Instagram; 3) Plano de Ação prático de 30 dias dividido em 4 semanas; 4) Sugestão de pacote mensal de serviços que um gestor de mídias pode vender para este estabelecimento. Minha primeira solicitação é: "\${Primeira Solicitação:Elabore o diagnóstico completo para este estabelecimento.}"`,
+      tags: ["Diagnóstico", "Consultoria", "Pequenos Negócios", "Plano 30 Dias"],
+      contributor: "prompts.chat (@f) • Adaptado",
+      relatedModule: 6
+    },
+    {
+      id: "p-ges-3",
+      act: "Freelance Pricing Calculator",
+      title: "Assistente de Precificação Freelance",
+      category: "gestao",
+      categoryLabel: "Gestão, Carreira & Negócios",
+      icon: "fa-calculator",
+      color: "from-teal-600 to-emerald-600",
+      description: "Calcula o valor da hora de trabalho e precifica pacotes mensais de gestão de mídias com base na realidade do mercado de Alagoas.",
+      prompt: `Quero que você atue como um Mentor Financeiro para Freelancers e Prestadores de Serviços Digitais. Ajude um profissional iniciante a calcular sua tabela de preços para \${Serviços Oferecidos:criação de 12 posts no Canva, 20 stories e gestão básica de Instagram}. Considere que a meta de renda mensal do profissional é de \${Meta de Renda Mensal:R$ 2.000,00 por mês} trabalhando \${Horas por Semana:20 horas por semana} e atendendo na região de \${Região:Alagoas}. Me forneça: 1) O valor mínimo da sua hora de trabalho; 2) A estimativa de horas gastas por cliente; 3) Proposta de 3 pacotes de serviços (Básico, Intermediário e Avançado) com valores recomendados e justificativa comercial. Minha primeira solicitação é: "\${Primeira Solicitação:Calcule a tabela de preços e os pacotes sugeridos.}"`,
+      tags: ["Precificação", "Freelance", "Valores", "Contratos"],
+      contributor: "prompts.chat (@f) • Adaptado",
+      relatedModule: 6
+    },
+    {
+      id: "p-ges-4",
+      act: "Life and Productivity Coach",
+      title: "Coach de Produtividade & Rotina de Estudos",
+      category: "gestao",
+      categoryLabel: "Gestão, Carreira & Negócios",
+      icon: "fa-stopwatch",
+      color: "from-indigo-600 to-purple-700",
+      description: "Monta cronograma semanal equilibrado para conciliar estudos do curso, tarefas de casa e projetos profissionais.",
+      prompt: `Quero que você atue como um Coach de Produtividade e Gestão de Tempo. Vou te informar a minha disponibilidade: \${Disponibilidade:Tenho 2 horas por dia à noite e 4 horas nos sábados para estudar e produzir conteúdo}. Monte uma rotina de estudos e produção baseada na técnica Pomodoro e blocos de tempo (Time Blocking) para que eu consiga: 1) Assistir às aulas do módulo; 2) Praticar ferramentas como Canva e CapCut; 3) Prospectar novos clientes; 4) Descansar sem culpa. Forneça o cronograma diário detalhado e dicas práticas para evitar a procrastinação. Minha primeira solicitação é: "\${Primeira Solicitação:Crie meu cronograma semanal de produtividade.}"`,
+      tags: ["Produtividade", "Tempo", "Rotina", "Foco"],
+      contributor: "prompts.chat (@devisasari)",
+      relatedModule: 7
+    },
+    {
+      id: "p-ges-5",
+      act: "Sales Negotiator & Objection Handler",
+      title: "Negociador Comercial & Quebra de Objeções",
+      category: "gestao",
+      categoryLabel: "Gestão, Carreira & Negócios",
+      icon: "fa-comments-dollar",
+      color: "from-amber-600 to-red-600",
+      description: "Ensina respostas elegantes e persuasivas para responder 'está muito caro', 'vou pensar' e 'já tenho um sobrinho que faz'.",
+      prompt: `Quero que você atue como um Especialista em Negociação Comercial e Fechamento de Vendas de Serviços. Forneça respostas estratégicas, educadas e persuasivas para as 3 objeções mais comuns que donos de empresas locais dizem ao receber uma proposta de mídias sociais: 1) "Achei o valor muito caro"; 2) "Vou pensar e te retorno depois"; 3) "Meu sobrinho já faz algumas artes para mim de graça". Para cada objeção, dê a explicação do motivo psicológico por trás dela e 2 modelos de mensagens prontas para enviar pelo WhatsApp que contornam a dúvida e conduzem para o fechamento. Minha primeira solicitação é: "\${Primeira Solicitação:Forneça as respostas para as 3 objeções de vendas.}"`,
+      tags: ["Negociação", "Objeções", "Vendas", "Fechamento"],
+      contributor: "prompts.chat (@f) • Adaptado",
+      relatedModule: 6
+    },
+
+    // -------------------------------------------------------------
+    // CATEGORIA 4: DESIGN, UX & CRIATIVIDADE
+    // -------------------------------------------------------------
+    {
+      id: "p-des-1",
+      act: "Art Director",
+      title: "Diretor de Arte para Mídias Sociais & Identidade",
+      category: "design",
+      categoryLabel: "Design, UX & Criatividade",
+      icon: "fa-palette",
+      color: "from-fuchsia-500 to-pink-600",
+      description: "Define paleta de cores hexadecimais, fontes gratuitas do Canva e elementos visuais com base no nicho do cliente.",
+      prompt: `Quero que você atue como um Diretor de Arte e Designer de Marcas sênior. Para o negócio \${Tipo de Negócio:uma cafeteria aconchegante com pegada rústica e moderna}, elabore um guia de identidade visual rápido para uso no Canva: 1) Paleta de 5 cores com códigos Hexadecimais (#HEX) e o significado de cada cor; 2) Combinação de 2 fontes gratuitas disponíveis no Canva (uma para títulos impactantes e outra para textos corridos de alta legibilidade); 3) Elementos gráficos recomendados (texturas, molduras, iluminação); 4) 3 diretrizes essenciais para manter o feed harmônico e elegante. Minha primeira solicitação é: "\${Primeira Solicitação:Crie a identidade visual completa para este negócio.}"`,
+      tags: ["Canva", "Paleta de Cores", "Design", "Tipografia"],
+      contributor: "prompts.chat (@devisasari)",
+      relatedModule: 5
+    },
+    {
+      id: "p-des-2",
+      act: "UX/UI Designer",
+      title: "Consultor de UX/UI para Landing Pages e Bio",
+      category: "design",
+      categoryLabel: "Design, UX & Criatividade",
+      icon: "fa-mobile-screen",
+      color: "from-blue-500 to-indigo-600",
+      description: "Estrutura árvores de links e páginas de captura mobile com foco em usabilidade, contraste e taxa de conversão.",
+      prompt: `Quero que você atue como um Consultor Especialista em UX/UI e Otimização de Conversão Mobile. Analise e projete a estrutura de uma página de Links da Bio (estilo Linktree/Canva Site) para \${Profissional ou Loja:uma micropigmentadora e designer de sobrancelhas}. Defina: 1) Hierarquia dos botões de cima para baixo em ordem de prioridade comercial; 2) Microtextos dos botões com gatilhos de ação direta; 3) Recomendações de contraste e acessibilidade para pessoas que usam o celular na rua; 4) Elemento de prova social para incluir no topo da página. Minha primeira solicitação é: "\${Primeira Solicitação:Projete a estrutura completa da página de links da bio.}"`,
+      tags: ["UX/UI", "Links da Bio", "Usabilidade", "Mobile"],
+      contributor: "prompts.chat (@devisasari)",
+      relatedModule: 5
+    },
+    {
+      id: "p-des-3",
+      act: "Visual Content Reviewer",
+      title: "Crítico & Revisor de Conteúdo Visual",
+      category: "design",
+      categoryLabel: "Design, UX & Criatividade",
+      icon: "fa-wand-magic-sparkles",
+      color: "from-purple-600 to-rose-600",
+      description: "Avalia a harmonia, legibilidade de textos sobre imagens e espaçamento de artes criadas no Canva.",
+      prompt: `Quero que você atue como um Revisor Crítico de Design e Comunicação Visual. Vou descrever uma arte de mídia social: "\${Descrição da Arte:Card com fundo vermelho brilhante, texto amarelo em fonte cursiva fina dizendo 'Promoção Relâmpago', foto do produto no canto inferior e 3 logos no topo}". Aponte: 1) Os 3 maiores erros de contraste, legibilidade ou poluição visual desta peça; 2) Como reorganizar a hierarquia de leitura (Z-Pattern ou F-Pattern); 3) Como refazer esta mesma peça no Canva de forma profissional em menos de 10 minutos. Minha primeira solicitação é: "\${Primeira Solicitação:Avalie esta arte e dê as orientações de melhoria.}"`,
+      tags: ["Crítica", "Legibilidade", "Revisão", "Hierarquia"],
+      contributor: "prompts.chat (@nuc)",
+      relatedModule: 5
+    },
+
+    // -------------------------------------------------------------
+    // CATEGORIA 5: TECNOLOGIA, DADOS & AUTOMAÇÃO
+    // -------------------------------------------------------------
+    {
+      id: "p-tech-1",
+      act: "Linux Terminal",
+      title: "Terminal Linux Simulado (Console Virtual)",
+      category: "tech",
+      categoryLabel: "Tecnologia, Dados & Automação",
+      icon: "fa-terminal",
+      color: "from-slate-800 to-slate-950",
+      description: "O prompt clássico número 1 do repositório prompts.chat: simula um console Linux interativo com respostas em código.",
+      prompt: `I want you to act as a Linux terminal. I will type commands and you will reply with what the terminal should show. I want you to only reply with the terminal output inside one unique code block, and nothing else. Do not write explanations. Do not type commands unless I instruct you to do so. When I need to tell you something in Portuguese, I will do so by putting text inside curly brackets {como este}. My first command is pwd`,
+      tags: ["Linux", "Terminal", "Bash", "Clássico prompts.chat"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 7
+    },
+    {
+      id: "p-tech-2",
+      act: "JavaScript Developer",
+      title: "Desenvolvedor JavaScript & Front-End",
+      category: "tech",
+      categoryLabel: "Tecnologia, Dados & Automação",
+      icon: "fa-code",
+      color: "from-amber-500 to-yellow-600",
+      description: "Gera scripts em JavaScript moderno, automações web e snippets de código limpo com explicações passo a passo.",
+      prompt: `Quero que você atue como um Desenvolvedor Front-End e JavaScript sênior. Você criará soluções de código limpas, modernas (ES6+) e bem documentadas para \${Objetivo do Código:criar uma função que valida formato de CPF brasileiro e aplica máscara 000.000.000-00 em tempo real em um campo de texto}. Entregue o código completo dentro de um bloco de código, acompanhado de uma explicação simples de cada linha para que um estudante consiga compreender o funcionamento. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o código em JavaScript com a função de validação de CPF.}"`,
+      tags: ["JavaScript", "Código", "Front-End", "Validação"],
+      contributor: "prompts.chat (@omerimzali)",
+      relatedModule: 7
+    },
+    {
+      id: "p-tech-3",
+      act: "Excel & Sheets Specialist",
+      title: "Especialista em Planilhas, Excel & Google Sheets",
+      category: "tech",
+      categoryLabel: "Tecnologia, Dados & Automação",
+      icon: "fa-table",
+      color: "from-emerald-600 to-green-700",
+      description: "Cria fórmulas avançadas (PROCV, PROCX, QUERY, FILTER, CONT.SE), dashboards e automações para controle de clientes.",
+      prompt: `Quero que você atue como um Especialista Avançado em Excel e Google Sheets. Eu preciso de uma fórmula para \${Finalidade da Planilha:calcular automaticamente a média de engajamento dos posts da semana e colorir de verde quem passou de 5% e vermelho quem ficou abaixo de 2%}. Forneça: 1) A fórmula pronta exata em Português e em Inglês; 2) O passo a passo para aplicar a Formatação Condicional; 3) Dica extra de como organizar a planilha de controle de clientes de mídias sociais. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva a fórmula e o passo a passo para esta planilha.}"`,
+      tags: ["Google Sheets", "Excel", "Fórmulas", "Métricas"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 7
+    },
+    {
+      id: "p-tech-4",
+      act: "Chatbot & Automation Architect",
+      title: "Arquiteto de Automação & Chatbot para WhatsApp",
+      category: "tech",
+      categoryLabel: "Tecnologia, Dados & Automação",
+      icon: "fa-robot",
+      color: "from-indigo-600 to-cyan-600",
+      description: "Desenvolve fluxogramas de mensagens automáticas, menu numérico e triagem de atendimento para WhatsApp Business.",
+      prompt: `Quero que você atue como um Arquiteto de Automação de Atendimento e Chatbots no WhatsApp Business. Crie um fluxo de atendimento automático para \${Tipo de Empresa:uma clínica odontológica que atende em Maceió}. O fluxo deve conter: 1) Mensagem de saudação automática com menu numérico de 4 opções claras (Ex: 1 - Agendar Consulta, 2 - Dúvidas sobre Tratamentos, 3 - Localização e Horários, 4 - Falar com Atendente Humano); 2) Respostas automáticas para cada opção; 3) Mensagem para horários fora do expediente comercial. Escreva em linguagem acolhedora, objetiva e com emojis estratégicos. Minha primeira solicitação é: "\${Primeira Solicitação:Crie o fluxo completo de mensagens automáticas.}"`,
+      tags: ["WhatsApp", "Chatbot", "Automação", "Atendimento"],
+      contributor: "prompts.chat (@f) • Adaptado",
+      relatedModule: 6
+    },
+
+    // -------------------------------------------------------------
+    // CATEGORIA 6: EDUCAÇÃO, IDIOMAS & REDAÇÃO
+    // -------------------------------------------------------------
+    {
+      id: "p-edu-1",
+      act: "AI Writing Tutor",
+      title: "Tutor de Escrita, Gramática & Clareza Textual",
+      category: "educacao",
+      categoryLabel: "Educação, Idiomas & Redação",
+      icon: "fa-graduation-cap",
+      color: "from-indigo-600 to-purple-800",
+      description: "Analisa redações, postagens e e-mails corrigindo erros de português, concordância e sugerindo versões mais elegantes.",
+      prompt: `Quero que você atue como um Tutor de Redação e Revisor Gramatical de Língua Portuguesa. Vou te enviar um texto escrito por mim: "\${Texto para Correção:Ola pessoal venho aqui divulgar meu trabalho de midias sociais estou com precos bons e faco artes no canva chama no zap}". Sua missão é: 1) Apontar os erros gramaticais, de pontuação e de concordância com explicações gentis e didáticas; 2) Fornecer uma versão corrigida padrão; 3) Fornecer uma versão aprimorada profissional de alto nível pronta para postar. Minha primeira solicitação é: "\${Primeira Solicitação:Revise e aprimore este texto.}"`,
+      tags: ["Gramática", "Português", "Revisão", "Clareza"],
+      contributor: "prompts.chat (@devisasari)",
+      relatedModule: 1
+    },
+    {
+      id: "p-edu-2",
+      act: "English Translator and Improver",
+      title: "Tradutor & Aprimorador de Inglês Profissional",
+      category: "educacao",
+      categoryLabel: "Educação, Idiomas & Redação",
+      icon: "fa-language",
+      color: "from-blue-600 to-indigo-700",
+      description: "Prompt clássico do repositório: traduz qualquer idioma para o inglês sofisticado, corrigindo erros e elevando o nível do vocabulário.",
+      prompt: `I want you to act as an English translator, spelling corrector and improver. I will speak to you in Portuguese (or any other language) and you will detect the language, translate it and answer in the corrected and improved version of my text, in professional English. I want you to replace my simplified words and sentences with more beautiful, elegant, upper-level English vocabulary suitable for international business and social media. Keep the meaning the same, but make it more impactful. Only reply with the correction and the improvements, do not write explanations. My first sentence is: "\${Primeira Frase em Português:Eu quero trabalhar com marketing digital e criação de conteúdo para empresas do mundo inteiro.}"`,
+      tags: ["Inglês", "Tradução", "Carreira Global", "Clássico prompts.chat"],
+      contributor: "prompts.chat (@f)",
+      relatedModule: 7
+    },
+    {
+      id: "p-edu-3",
+      act: "Plagiarism Checker and Paraphraser",
+      title: "Verificador de Originalidade & Reescrita Textual",
+      category: "educacao",
+      categoryLabel: "Educação, Idiomas & Redação",
+      icon: "fa-check-double",
+      color: "from-teal-600 to-cyan-700",
+      description: "Reescreve artigos e legendas mantendo a mensagem central com palavras 100% autorais e sem risco de plágio.",
+      prompt: `Quero que você atue como um Especialista em Originalidade Textual e Paráfrase. Vou te enviar um parágrafo de referência: "\${Texto Original:O marketing digital se tornou indispensável para pequenas empresas porque permite alcançar clientes locais com baixo investimento através das redes sociais}". Reescreva essa mesma ideia em 3 estilos diferentes: 1) Estilo Direto e Objetivo para postagem rápida; 2) Estilo Didático com metáfora ou exemplo prático; 3) Estilo Provocativo para gerar debate nos comentários. Todas as versões devem ser 100% originais. Minha primeira solicitação é: "\${Primeira Solicitação:Gere as 3 versões reescritas deste parágrafo.}"`,
+      tags: ["Originalidade", "Paráfrase", "Reescrita", "Estilo"],
+      contributor: "prompts.chat (@yetk1n)",
+      relatedModule: 1
+    },
+    {
+      id: "p-edu-4",
+      act: "Critical Debater",
+      title: "Debatedor Crítico & Analista de Cenários",
+      category: "educacao",
+      categoryLabel: "Educação, Idiomas & Redação",
+      icon: "fa-scale-balanced",
+      color: "from-slate-700 to-indigo-800",
+      description: "Apresenta os prós e contras de qualquer ferramenta, tendência ou decisão estratégica de mídias com argumentos sólidos.",
+      prompt: `Quero que você atue como um Analista Crítico e Debatedor Estratégico. Para a questão \${Tema em Discussão:Vale a pena pequenos negócios investirem em tráfego pago antes de terem uma base orgânica estruturada no Instagram?}, apresente: 1) Os 3 argumentos mais fortes a favor; 2) Os 3 argumentos mais fortes contra e riscos envolvidos; 3) Uma síntese equilibrada com recomendação prática para um estudante orientar seu cliente. Mantenha uma postura neutra, analítica e fundamentada em dados. Minha primeira solicitação é: "\${Primeira Solicitação:Apresente o debate completo sobre este tema.}"`,
+      tags: ["Debate", "Análise Crítica", "Estratégia", "Tomada de Decisão"],
+      contributor: "prompts.chat (@devisasari)",
+      relatedModule: 7
+    }
+  ];
+}
+
+// -------------------------------------------------------------
+// ARMAZENAMENTO E PERSISTÊNCIA DE PROMPTS
+// -------------------------------------------------------------
+function loadPromptsDataFromStorage() {
+  const defaults = getDefaultPromptsLibrary();
+  let customPrompts = [];
+  try {
+    const savedCustom = localStorage.getItem("eupordias_custom_prompts");
+    if (savedCustom) {
+      customPrompts = JSON.parse(savedCustom);
+    }
+  } catch (e) {
+    console.warn("Erro ao carregar prompts customizados do localStorage:", e);
+  }
+
+  try {
+    const savedFavs = localStorage.getItem("eupordias_favorite_prompts");
+    if (savedFavs) {
+      AppState.favoritePrompts = JSON.parse(savedFavs);
+    }
+  } catch (e) {
+    console.warn("Erro ao carregar prompts favoritos:", e);
+  }
+
+  // Mescla prompts padrão com customizados criados pelo professor
+  AppState.promptsLibrary = [...customPrompts, ...defaults];
+}
+
+function savePromptsDataToStorage() {
+  const customPrompts = AppState.promptsLibrary.filter(p => p.isCustom);
+  localStorage.setItem("eupordias_custom_prompts", JSON.stringify(customPrompts));
+  localStorage.setItem("eupordias_favorite_prompts", JSON.stringify(AppState.favoritePrompts || []));
+}
+
+// -------------------------------------------------------------
+// RENDERIZAÇÃO DA ABA: LABORATÓRIO DE PROMPTS & IA
+// -------------------------------------------------------------
+function renderPromptsTab(container) {
+  // REGRA DE ACESSO: Exige autenticação por CPF
+  if (!AppState.currentUser) {
+    renderTabAccessRestriction(container, 'prompts');
+    return;
+  }
+
+  const isProf = AppState.currentUser.role === "professor";
+  const isAluno = AppState.currentUser.role === "aluno";
+  const activeCategory = AppState.promptsActiveCategory || "all";
+  const searchQuery = (AppState.promptsSearchQuery || "").toLowerCase().trim();
+  const favoriteIds = AppState.favoritePrompts || [];
+  const guideExpanded = AppState.promptsGuideExpanded !== false;
+
+  // Filtragem dos Prompts
+  const filteredPrompts = AppState.promptsLibrary.filter(p => {
+    // Filtro por Categoria
+    if (activeCategory === "favorites") {
+      if (!favoriteIds.includes(p.id)) return false;
+    } else if (activeCategory !== "all" && p.category !== activeCategory) {
+      return false;
+    }
+
+    // Filtro por Busca Textual
+    if (searchQuery) {
+      const matchText = `${p.title} ${p.act} ${p.categoryLabel} ${p.description} ${p.prompt} ${(p.tags || []).join(" ")}`.toLowerCase();
+      if (!matchText.includes(searchQuery)) return false;
+    }
+
+    return true;
+  });
+
+  const categories = [
+    { key: "all", label: "Todos os Prompts", icon: "fa-layer-group" },
+    { key: "marketing", label: "Marketing & Redes", icon: "fa-share-nodes" },
+    { key: "copywriting", label: "Copywriting & Vendas", icon: "fa-pen-nib" },
+    { key: "gestao", label: "Gestão & Negócios", icon: "fa-store" },
+    { key: "design", label: "Design & Criatividade", icon: "fa-palette" },
+    { key: "tech", label: "Tecnologia & Dados", icon: "fa-code" },
+    { key: "educacao", label: "Educação & Redação", icon: "fa-graduation-cap" },
+    { key: "favorites", label: "Favoritos", icon: "fa-star", count: favoriteIds.length }
+  ];
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      
+      <!-- Banner Hero Principal do Repositório prompts.chat -->
+      <div class="relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white shadow-xl border border-indigo-500/30">
+        <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="space-y-2.5 max-w-2xl">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase bg-gradient-to-r from-indigo-500 to-purple-600 text-white tracking-wider shadow">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Awesome ChatGPT Prompts
+              </span>
+              <a 
+                href="https://github.com/f/prompts.chat" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="px-3 py-1 rounded-full text-[11px] font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors flex items-center gap-1.5"
+                title="Acessar repositório original no GitHub de Fatih Kadir Akın (@f)"
+              >
+                <i class="fa-brands fa-github text-sm"></i> prompts.chat (@f) <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/90 text-white flex items-center gap-1">
+                <i class="fa-solid fa-bolt"></i> Engenharia de Prompt Ativa
+              </span>
+            </div>
+
+            <h1 class="text-xl sm:text-3xl font-black tracking-tight leading-tight">
+              Laboratório de Prompts & Personas de IA
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Transforme o ChatGPT, Gemini e Claude em <strong>especialistas sêniores sob demanda</strong>. Esta página traz todo o acervo do repositório mundial <em>prompts.chat</em> traduzido e adaptado para mídias digitais, com personalizador dinâmico de variáveis.
+            </p>
+          </div>
+
+          <!-- Métricas Rápidas & Ações de Docente/Discente -->
+          <div class="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto flex-shrink-0">
+            <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
+              <div class="px-2">
+                <span class="block text-base sm:text-lg font-black text-amber-400">${AppState.promptsLibrary.length}</span>
+                <span class="text-[9px] uppercase tracking-wider text-slate-300">Prompts</span>
+              </div>
+              <div class="px-2 border-x border-white/10">
+                <span class="block text-base sm:text-lg font-black text-emerald-400">6</span>
+                <span class="text-[9px] uppercase tracking-wider text-slate-300">Áreas</span>
+              </div>
+              <div class="px-2">
+                <span class="block text-base sm:text-lg font-black text-indigo-300">${favoriteIds.length}</span>
+                <span class="text-[9px] uppercase tracking-wider text-slate-300">Favoritos</span>
+              </div>
+            </div>
+
+            ${isProf ? `
+              <button 
+                onclick="openCreatePromptModal()" 
+                class="w-full px-4 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <i class="fa-solid fa-plus"></i> + Adicionar Prompt à Turma
+              </button>
+            ` : `
+              <div class="flex items-center gap-2">
+                <a 
+                  href="https://chatgpt.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="flex-1 px-3 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                >
+                  <i class="fa-solid fa-robot"></i> Abrir ChatGPT
+                </a>
+                <a 
+                  href="https://gemini.google.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="flex-1 px-3 py-2.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                >
+                  <i class="fa-brands fa-google"></i> Abrir Gemini
+                </a>
+              </div>
+            `}
+          </div>
+        </div>
+      </div>
+
+      <!-- Guia Didático e Passo a Passo Explicativo (Retrátil) -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+        <div class="flex items-center justify-between cursor-pointer select-none" onclick="togglePromptsGuide()">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg shadow-sm">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+              <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                Como Funciona este Repositório & Passo a Passo de Uso para o Aluno
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                  Guia Didático Oficial
+                </span>
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Aprenda a metodologia de <strong>Role Prompting ("Aja como...")</strong> para obter resultados 10x melhores na Inteligência Artificial.
+              </p>
+            </div>
+          </div>
+          <button class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+            <i class="fa-solid ${guideExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
+          </button>
+        </div>
+
+        ${guideExpanded ? `
+          <div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-6 text-xs text-slate-600 dark:text-slate-300 fade-in">
+            
+            <!-- Explicação do Repositório -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 space-y-1.5">
+                <strong class="text-indigo-900 dark:text-indigo-200 font-bold text-xs flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-question text-indigo-500"></i> O que é o repositório prompts.chat?
+                </strong>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Criado pelo desenvolvedor Fatih Kadir Akın (<strong>@f</strong>), o <em>Awesome ChatGPT Prompts</em> tornou-se o repositório open-source mais famoso do mundo para inteligência artificial generativa, acumulando dezenas de milhares de estrelas no GitHub.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 space-y-1.5">
+                <strong class="text-emerald-900 dark:text-emerald-200 font-bold text-xs flex items-center gap-1.5">
+                  <i class="fa-solid fa-bullseye text-emerald-500"></i> Para que ele serve no seu aprendizado?
+                </strong>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Sem um prompt bem estruturado, o ChatGPT dá respostas genéricas e rasas. Ao utilizar o comando <strong>"Aja como [Persona]"</strong>, você ativa os parâmetros de um especialista no modelo, definindo limites, tom de voz e formato de entrega.
+                </p>
+              </div>
+            </div>
+
+            <!-- 4 Passos Práticos do Aluno -->
+            <div class="space-y-3">
+              <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-route text-indigo-500"></i> Passo a Passo em 4 Fases para Usar Qualquer Prompt:
+              </h3>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
+                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-black text-xs flex items-center justify-center">1</span>
+                  <h4 class="font-bold text-slate-800 dark:text-slate-200">Escolha a Persona</h4>
+                  <p class="text-[11px] text-slate-500 leading-relaxed">Navegue pelas categorias abaixo e encontre a especialidade ideal para a sua tarefa.</p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
+                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-black text-xs flex items-center justify-center">2</span>
+                  <h4 class="font-bold text-slate-800 dark:text-slate-200">Personalize as Variáveis</h4>
+                  <p class="text-[11px] text-slate-500 leading-relaxed">Clique em <strong>"Personalizar"</strong> para preencher os campos com os dados do seu cliente real.</p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
+                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-black text-xs flex items-center justify-center">3</span>
+                  <h4 class="font-bold text-slate-800 dark:text-slate-200">Copie em 1 Clique</h4>
+                  <p class="text-[11px] text-slate-500 leading-relaxed">Clique no botão <strong>"Copiar Prompt"</strong> para transferir o texto formatado para a área de transferência.</p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
+                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-black text-xs flex items-center justify-center">4</span>
+                  <h4 class="font-bold text-slate-800 dark:text-slate-200">Cole na IA & Interaja</h4>
+                  <p class="text-[11px] text-slate-500 leading-relaxed">Abra o ChatGPT ou Gemini, cole o prompt e converse mantendo o especialista focado no objetivo.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Barra de Filtros por Categoria & Busca em Tempo Real -->
+      <div class="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          
+          <!-- Pílulas de Categorias -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 md:pb-0 scrollbar-none">
+            ${categories.map(c => {
+              const isActive = activeCategory === c.key;
+              const countBadge = c.key === "all" ? AppState.promptsLibrary.length : (c.count !== undefined ? c.count : AppState.promptsLibrary.filter(p => p.category === c.key).length);
+
+              return `
+                <button 
+                  onclick="switchPromptsCategory('${c.key}')" 
+                  class="px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${isActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300'}"
+                >
+                  <i class="fa-solid ${c.icon}"></i>
+                  <span>${c.label}</span>
+                  <span class="px-1.5 py-0.2 rounded-full text-[10px] ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'}">${countBadge}</span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+
+          <!-- Campo de Busca Textual -->
+          <div class="w-full md:w-72 relative flex-shrink-0">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-slate-400"></i>
+            <input 
+              type="text" 
+              value="${escapeHtml(AppState.promptsSearchQuery || '')}"
+              oninput="handlePromptsSearchInput(this.value)"
+              placeholder="Buscar persona, nicho ou ferramenta..." 
+              class="w-full pl-9 pr-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Grid de Cards de Prompts -->
+      ${filteredPrompts.length === 0 ? `
+        <div class="p-12 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 text-slate-400 space-y-3">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl mx-auto text-slate-400">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <h3 class="font-bold text-sm text-slate-700 dark:text-slate-300">Nenhum prompt encontrado para esta seleção</h3>
+          <p class="text-xs max-w-sm mx-auto">Tente selecionar outra categoria ou limpar os termos digitados na busca.</p>
+          <button onclick="switchPromptsCategory('all'); handlePromptsSearchInput('');" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors">
+            Ver Todos os Prompts
+          </button>
+        </div>
+      ` : `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          ${filteredPrompts.map(p => {
+            const isFav = favoriteIds.includes(p.id);
+
+            return `
+              <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                
+                <div class="space-y-3">
+                  
+                  <!-- Header do Card: Ícone, Categoria & Favorito -->
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${p.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                        <i class="fa-solid ${p.icon || 'fa-wand-magic-sparkles'}"></i>
+                      </div>
+                      <div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                          ${escapeHtml(p.categoryLabel || p.category)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button 
+                      onclick="toggleFavoritePrompt('${p.id}')" 
+                      class="p-2 rounded-xl text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors cursor-pointer"
+                      title="${isFav ? 'Remover dos favoritos' : 'Salvar nos favoritos'}"
+                    >
+                      <i class="fa-${isFav ? 'solid' : 'regular'} fa-star ${isFav ? 'text-amber-400' : ''}"></i>
+                    </button>
+                  </div>
+
+                  <!-- Título da Persona e Papel -->
+                  <div>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 leading-snug">
+                      ${escapeHtml(p.title)}
+                    </h3>
+                    <p class="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5 flex items-center gap-1">
+                      <i class="fa-solid fa-user-astronaut"></i> Persona: <code>${escapeHtml(p.act)}</code>
+                    </p>
+                  </div>
+
+                  <!-- Descrição Didática -->
+                  <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
+                    ${escapeHtml(p.description)}
+                  </p>
+
+                  <!-- Preview do Prompt com Destaque de Variáveis -->
+                  <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 text-[11px] text-slate-700 dark:text-slate-300 font-mono leading-relaxed line-clamp-4 relative group">
+                    ${escapeHtml(p.prompt)}
+                  </div>
+
+                  <!-- Tags do Prompt -->
+                  <div class="flex flex-wrap gap-1 pt-1">
+                    ${(p.tags || []).map(t => `
+                      <span class="px-2 py-0.5 rounded-lg text-[9px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                        #${escapeHtml(t)}
+                      </span>
+                    `).join("")}
+                  </div>
+
+                </div>
+
+                <!-- Footer de Ações do Card -->
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+                  <div class="flex items-center gap-1.5">
+                    
+                    <button 
+                      onclick="copyPromptText('${p.id}')" 
+                      class="flex-1 px-3 py-2 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                      title="Copiar prompt pronto para colar no ChatGPT"
+                    >
+                      <i class="fa-solid fa-copy"></i> Copiar Prompt
+                    </button>
+
+                    <button 
+                      onclick="openPromptCustomizerModal('${p.id}')" 
+                      class="px-3 py-2 rounded-xl font-bold text-xs bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 transition-all flex items-center gap-1 cursor-pointer"
+                      title="Preencher variáveis e personalizar"
+                    >
+                      <i class="fa-solid fa-sliders"></i> Personalizar
+                    </button>
+
+                  </div>
+
+                  <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                    <span class="truncate max-w-[150px]"><i class="fa-solid fa-code-fork mr-1"></i>${escapeHtml(p.contributor || 'prompts.chat')}</span>
+                    
+                    <div class="flex items-center gap-1">
+                      <button 
+                        onclick="openInAiPlatform('${p.id}', 'chatgpt')" 
+                        class="px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 text-[10px] font-bold flex items-center gap-1"
+                        title="Copiar e abrir no ChatGPT"
+                      >
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i> ChatGPT
+                      </button>
+
+                      <button 
+                        onclick="openInAiPlatform('${p.id}', 'gemini')" 
+                        class="px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 hover:bg-blue-100 text-[10px] font-bold flex items-center gap-1"
+                        title="Copiar e abrir no Gemini"
+                      >
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i> Gemini
+                      </button>
+
+                      ${(isProf && p.isCustom) ? `
+                        <button 
+                          onclick="deleteCustomPrompt('${p.id}')" 
+                          class="p-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950" 
+                          title="Excluir este prompt customizado"
+                        >
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `}
+
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// AÇÕES E INTERATIVIDADE DA ABA DE PROMPTS
+// -------------------------------------------------------------
+function switchPromptsCategory(category) {
+  AppState.promptsActiveCategory = category;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderPromptsTab(contentArea);
+}
+
+function handlePromptsSearchInput(query) {
+  AppState.promptsSearchQuery = query;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderPromptsTab(contentArea);
+}
+
+function togglePromptsGuide() {
+  AppState.promptsGuideExpanded = !AppState.promptsGuideExpanded;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderPromptsTab(contentArea);
+}
+
+function toggleFavoritePrompt(promptId) {
+  if (!AppState.favoritePrompts) AppState.favoritePrompts = [];
+  const idx = AppState.favoritePrompts.indexOf(promptId);
+  if (idx >= 0) {
+    AppState.favoritePrompts.splice(idx, 1);
+    showToast("Prompt removido dos favoritos.", "info");
+  } else {
+    AppState.favoritePrompts.push(promptId);
+    showToast("Prompt adicionado aos favoritos!", "success");
+  }
+  savePromptsDataToStorage();
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderPromptsTab(contentArea);
+}
+
+function copyPromptText(promptId) {
+  const promptItem = AppState.promptsLibrary.find(p => p.id === promptId);
+  if (!promptItem) {
+    showToast("Prompt não encontrado.", "error");
+    return;
+  }
+
+  // Limpa os marcadores de variáveis para deixar pronto para envio se desejado
+  const cleanPrompt = promptItem.prompt.replace(/\$\{([^:]+):([^}]+)\}/g, "$2");
+
+  navigator.clipboard.writeText(cleanPrompt).then(() => {
+    showToast(`Prompt de "${promptItem.title}" copiado para a área de transferência!`, "success");
+  }).catch(() => {
+    showToast("Não foi possível copiar automaticamente.", "warning");
+  });
+}
+
+function openInAiPlatform(promptId, platform) {
+  copyPromptText(promptId);
+  const targetUrl = platform === "gemini" ? "https://gemini.google.com" : "https://chatgpt.com";
+  window.open(targetUrl, "_blank");
+}
+
+// -------------------------------------------------------------
+// PLAYGROUND / MODAL DE PERSONALIZAÇÃO DE VARIÁVEIS
+// -------------------------------------------------------------
+function openPromptCustomizerModal(promptId) {
+  const promptItem = AppState.promptsLibrary.find(p => p.id === promptId);
+  if (!promptItem) return;
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  // Extrai variáveis no formato ${Label:ValorPadrao}
+  const variableRegex = /\$\{([^:]+):([^}]+)\}/g;
+  const extractedVars = [];
+  let match;
+  while ((match = variableRegex.exec(promptItem.prompt)) !== null) {
+    extractedVars.push({
+      raw: match[0],
+      label: match[1].trim(),
+      defaultValue: match[2].trim()
+    });
+  }
+
+  // Se não houver variáveis com `${...}`, detecta chaves `[...]`
+  if (extractedVars.length === 0) {
+    const bracketRegex = /\[([A-ZÀ-Ú\s/]+)\]/g;
+    while ((match = bracketRegex.exec(promptItem.prompt)) !== null) {
+      extractedVars.push({
+        raw: match[0],
+        label: match[1].trim(),
+        defaultValue: ""
+      });
+    }
+  }
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 scale-in my-8">
+        
+        <!-- Header do Modal -->
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg shadow-sm">
+              <i class="fa-solid fa-sliders"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-slate-100">Personalizar: ${escapeHtml(promptItem.title)}</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Preencha os campos abaixo com os dados do seu cliente ou projeto</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Formulário de Campos Dinâmicos -->
+        <div class="space-y-4 text-xs">
+          ${extractedVars.length > 0 ? `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              ${extractedVars.map((v, i) => `
+                <div class="space-y-1">
+                  <label class="block font-bold text-slate-700 dark:text-slate-300">
+                    ${escapeHtml(v.label)}:
+                  </label>
+                  <input 
+                    type="text" 
+                    id="var-input-${i}" 
+                    value="${escapeHtml(v.defaultValue)}"
+                    data-raw="${escapeHtml(v.raw)}"
+                    oninput="updateCustomizerLivePreview('${promptItem.id}')"
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  />
+                </div>
+              `).join("")}
+            </div>
+          ` : `
+            <p class="text-slate-500 italic">Este prompt já está pronto para uso direto sem necessidade de preencher variáveis adicionais.</p>
+          `}
+
+          <!-- Preview do Prompt Gerado em Tempo Real -->
+          <div class="space-y-1.5 pt-2">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+              <span>Resultado Pronto para Enviar ao ChatGPT:</span>
+              <span class="text-[10px] text-emerald-600 font-semibold"><i class="fa-solid fa-check"></i> Atualizado em tempo real</span>
+            </label>
+            <textarea 
+              id="customizer-preview-area" 
+              rows="6" 
+              readonly 
+              class="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-mono text-xs text-slate-800 dark:text-slate-200 focus:outline-none select-all leading-relaxed"
+            >${escapeHtml(promptItem.prompt.replace(/\$\{([^:]+):([^}]+)\}/g, "$2"))}</textarea>
+          </div>
+        </div>
+
+        <!-- Ações do Modal -->
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              onclick="copyCustomizedPromptFromModal()" 
+              class="px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            >
+              <i class="fa-solid fa-copy"></i> Copiar Prompt Personalizado
+            </button>
+
+            <button 
+              type="button" 
+              onclick="copyAndOpenCustomizedPrompt('chatgpt')" 
+              class="px-3.5 py-2.5 rounded-xl font-semibold text-xs bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-robot"></i> Abrir no ChatGPT
+            </button>
+          </div>
+
+          <button 
+            type="button" 
+            onclick="closeModal()" 
+            class="px-4 py-2.5 rounded-xl font-semibold text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 transition-colors"
+          >
+            Fechar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function updateCustomizerLivePreview(promptId) {
+  const promptItem = AppState.promptsLibrary.find(p => p.id === promptId);
+  if (!promptItem) return;
+
+  const previewArea = document.getElementById("customizer-preview-area");
+  if (!previewArea) return;
+
+  let currentPrompt = promptItem.prompt;
+  const inputs = document.querySelectorAll('[id^="var-input-"]');
+
+  inputs.forEach(input => {
+    const raw = input.getAttribute("data-raw");
+    const val = input.value || "";
+    if (raw) {
+      currentPrompt = currentPrompt.split(raw).join(val);
+    }
+  });
+
+  // Limpa quaisquer tags restantes
+  currentPrompt = currentPrompt.replace(/\$\{([^:]+):([^}]+)\}/g, "$2");
+  previewArea.value = currentPrompt;
+}
+
+function copyCustomizedPromptFromModal() {
+  const previewArea = document.getElementById("customizer-preview-area");
+  if (!previewArea || !previewArea.value) return;
+
+  navigator.clipboard.writeText(previewArea.value).then(() => {
+    showToast("Prompt personalizado copiado para a área de transferência!", "success");
+  }).catch(() => {
+    showToast("Não foi possível copiar automaticamente.", "warning");
+  });
+}
+
+function copyAndOpenCustomizedPrompt(platform) {
+  copyCustomizedPromptFromModal();
+  const targetUrl = platform === "gemini" ? "https://gemini.google.com" : "https://chatgpt.com";
+  window.open(targetUrl, "_blank");
+}
+
+// -------------------------------------------------------------
+// ESPAÇO DO PROFESSOR: CRIAÇÃO DE NOVOS PROMPTS
+// -------------------------------------------------------------
+function openCreatePromptModal() {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores têm permissão para adicionar novos prompts.", "warning");
+    return;
+  }
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 space-y-5 scale-in my-8">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Criar Novo Prompt para a Turma</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Exclusivo para Docentes e Coordenação</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleCreatePromptSubmit(event)" class="space-y-3.5 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título da Persona / Função *</label>
+            <input 
+              type="text" 
+              id="prompt-title-input" 
+              required
+              placeholder="Ex: Especialista em Vendas no WhatsApp para Pequenos Negócios" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoria *</label>
+              <select 
+                id="prompt-category-select" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold focus:outline-none"
+              >
+                <option value="marketing">Marketing & Redes</option>
+                <option value="copywriting">Copywriting & Vendas</option>
+                <option value="gestao">Gestão & Negócios</option>
+                <option value="design">Design & Criatividade</option>
+                <option value="tech">Tecnologia & Dados</option>
+                <option value="educacao">Educação & Redação</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Papel em Inglês (Act as) *</label>
+              <input 
+                type="text" 
+                id="prompt-act-input" 
+                required
+                placeholder="Ex: WhatsApp Sales Closer" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descrição Breve da Finalidade *</label>
+            <input 
+              type="text" 
+              id="prompt-desc-input" 
+              required
+              placeholder="Ex: Auxilia o aluno a conduzir conversas de fechamento de pacotes pelo WhatsApp." 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+              Comando do Prompt Completo * 
+              <span class="font-normal text-slate-400">(use \${Nome:Padrão} para criar variáveis)</span>
+            </label>
+            <textarea 
+              id="prompt-text-input" 
+              rows="5" 
+              required
+              placeholder="Quero que você atue como um especialista em... Minha primeira solicitação é: ..." 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono text-[11px] focus:ring-2 focus:ring-indigo-500 focus:outline-none leading-relaxed"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tags Separadas por Vírgula</label>
+            <input 
+              type="text" 
+              id="prompt-tags-input" 
+              placeholder="Ex: WhatsApp, Fechamento, Módulo 6, Vendas" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none"
+            />
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+            <button 
+              type="button" 
+              onclick="closeModal()" 
+              class="px-4 py-2 rounded-xl font-semibold text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              class="px-5 py-2 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/30"
+            >
+              Publicar Prompt para a Turma
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  `;
+}
+
+function handleCreatePromptSubmit(event) {
+  event.preventDefault();
+
+  const title = (document.getElementById("prompt-title-input")?.value || "").trim();
+  const category = document.getElementById("prompt-category-select")?.value || "marketing";
+  const act = (document.getElementById("prompt-act-input")?.value || "").trim();
+  const description = (document.getElementById("prompt-desc-input")?.value || "").trim();
+  const promptText = (document.getElementById("prompt-text-input")?.value || "").trim();
+  const rawTags = (document.getElementById("prompt-tags-input")?.value || "").trim();
+
+  if (!title || !promptText) {
+    showToast("Preencha todos os campos obrigatórios.", "warning");
+    return;
+  }
+
+  const categoryLabels = {
+    marketing: "Marketing & Redes Sociais",
+    copywriting: "Copywriting & Vendas",
+    gestao: "Gestão, Carreira & Negócios",
+    design: "Design, UX & Criatividade",
+    tech: "Tecnologia, Dados & Automação",
+    educacao: "Educação, Idiomas & Redação"
+  };
+
+  const newPrompt = {
+    id: `custom-p-${Date.now()}`,
+    act: act || title,
+    title: title,
+    category: category,
+    categoryLabel: categoryLabels[category] || "Geral",
+    icon: category === "marketing" ? "fa-share-nodes" : category === "copywriting" ? "fa-pen-nib" : category === "gestao" ? "fa-store" : category === "design" ? "fa-palette" : category === "tech" ? "fa-code" : "fa-graduation-cap",
+    color: "from-indigo-600 to-purple-600",
+    description: description,
+    prompt: promptText,
+    tags: rawTags ? rawTags.split(",").map(t => t.trim()).filter(Boolean) : ["Turma", "Docente"],
+    contributor: AppState.currentUser?.name || "Professor(a)",
+    isCustom: true,
+    createdAt: new Date().toISOString()
+  };
+
+  AppState.promptsLibrary.unshift(newPrompt);
+  savePromptsDataToStorage();
+  closeModal();
+  showToast(`Novo prompt "${title}" publicado com sucesso para a turma!`, "success");
+
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderPromptsTab(contentArea);
+}
+
+function deleteCustomPrompt(promptId) {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas professores podem excluir prompts customizados.", "warning");
+    return;
+  }
+
+  const idx = AppState.promptsLibrary.findIndex(p => p.id === promptId);
+  if (idx < 0) return;
+
+  if (confirm("Tem certeza que deseja excluir este prompt customizado da biblioteca da turma?")) {
+    AppState.promptsLibrary.splice(idx, 1);
+    savePromptsDataToStorage();
+    showToast("Prompt excluído com sucesso.", "success");
+    const contentArea = document.getElementById("main-content-area");
+    if (contentArea) renderPromptsTab(contentArea);
+  }
+}
+
