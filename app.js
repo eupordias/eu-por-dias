@@ -1,19 +1,19 @@
 /**
- * Eu Por Dias - Sistema de Gestão de Alunos, Notas, Contatos e Endereços
- * Programa Emprega Mais Alagoas • Curso de Gestão de Mídias Digitais
+ * Eu Por Dias - Sistema de GestÃ£o de Alunos, Notas, Contatos e EndereÃ§os
+ * Programa Emprega Mais Alagoas â€¢ Curso de GestÃ£o de MÃ­dias Digitais
  * 
- * Integrações:
- * - Google Sheets API v4 oficial com API Key e sincronização automática em 1 clique
+ * IntegraÃ§Ãµes:
+ * - Google Sheets API v4 oficial com API Key e sincronizaÃ§Ã£o automÃ¡tica em 1 clique
  * - Importador de Google Sala de Aula (URL, Copiar/Colar e CSV)
  * - Busca de CEP de Alagoas com ViaCEP API e rotas no Google Maps
- * - WhatsApp direto com mensagem customizada para alunos e responsáveis
- * - Gestão de notas dos módulos com cálculo automático de médias e frequência
- * - Boletim escolar e ata oficial para impressão/PDF
- * - Dashboard com métricas e gráficos interativos Chart.js
- * - Exportação para Excel (CSV) e backup de dados JSON
+ * - WhatsApp direto com mensagem customizada para alunos e responsÃ¡veis
+ * - GestÃ£o de notas dos mÃ³dulos com cÃ¡lculo automÃ¡tico de mÃ©dias e frequÃªncia
+ * - Boletim escolar e ata oficial para impressÃ£o/PDF
+ * - Dashboard com mÃ©tricas e grÃ¡ficos interativos Chart.js
+ * - ExportaÃ§Ã£o para Excel (CSV) e backup de dados JSON
  */
 
-// Estado Global da Aplicação
+// Estado Global da AplicaÃ§Ã£o
 const AppState = {
   appName: "Eu Por Dias",
   students: [],
@@ -21,33 +21,33 @@ const AppState = {
   classrooms: [],
   settings: {
     schoolName: "Programa Emprega Mais Alagoas",
-    courseName: "Curso de Gestão de Mídias Digitais",
+    courseName: "Curso de GestÃ£o de MÃ­dias Digitais",
     schoolYear: "2026",
     passingGrade: 7.0,
     recoveryGrade: 5.0,
     darkMode: false,
     viewMode: "grid", // 'grid' | 'table' | 'secure'
-    // Integração com Google Sheets API v4
+    // IntegraÃ§Ã£o com Google Sheets API v4
     googleApiKey: "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI",
     googleSpreadsheetId: "",
     googleSheetRange: "A1:Z500",
     lastSyncTime: null,
     googleClientId: "",
-    // Integração com Supabase Cloud Database Oficial
+    // IntegraÃ§Ã£o com Supabase Cloud Database Oficial
     supabaseUrl: "https://srnpqboizdnyvetyukhn.supabase.co",
     supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNybnBxYm9pemRueXZldHl1a2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODQ5MzMsImV4cCI6MjEwNDM2MDkzM30.mntOEcW5EviNL7r7YaZW7APucWLzxNn6Px_SwlJ47IQ",
     supabaseConnected: true,
     lastSupabaseSync: "2026-09-07T14:32:00.000Z"
   },
   currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum' | 'careers' | 'prompts'
-  // Usuário Autenticado por CPF (Menu & Identificação)
+  // UsuÃ¡rio Autenticado por CPF (Menu & IdentificaÃ§Ã£o)
   currentUser: null, // { id, name, cpf, role: 'professor' | 'aluno', photo, email, classroom, loginTime }
-  // Fórum & Chat ao Vivo
+  // FÃ³rum & Chat ao Vivo
   forumTopics: [],
   forumMessages: [],
   activeForumTopicId: null,
   forumTab: "topics", // 'topics' | 'chat'
-  // Oportunidades & Trilhas (Vagas e Hub de Capacitação)
+  // Oportunidades & Trilhas (Vagas e Hub de CapacitaÃ§Ã£o)
   jobVacancies: [],
   learningTrails: [],
   usefulResources: [],
@@ -55,13 +55,13 @@ const AppState = {
   careersFilterPolo: "all",
   careersFilterType: "all",
   careersFilterSearch: "",
-  // Laboratório de Prompts & IA (Awesome ChatGPT Prompts - prompts.chat)
+  // LaboratÃ³rio de Prompts & IA (Awesome ChatGPT Prompts - prompts.chat)
   promptsLibrary: [],
   promptsActiveCategory: "all",
   promptsSearchQuery: "",
   favoritePrompts: [],
   promptsGuideExpanded: true,
-  privacyMode: true, // Camada de Segurança e Proteção LGPD: SEMPRE ATIVO POR PADRÃO!
+  privacyMode: true, // Camada de SeguranÃ§a e ProteÃ§Ã£o LGPD: SEMPRE ATIVO POR PADRÃƒO!
   godMode: {
     active: false,
     user: null, // { name, email, picture, method, loginTime }
@@ -92,7 +92,7 @@ const AppState = {
 };
 
 // -------------------------------------------------------------
-// CAMADA DE SEGURANÇA, PRIVACIDADE & LGPD
+// CAMADA DE SEGURANÃ‡A, PRIVACIDADE & LGPD
 // -------------------------------------------------------------
 function maskName(name, isRevealed = false) {
   if (!name || isRevealed) return name || "";
@@ -151,7 +151,7 @@ function isGodModeActive() {
 
 function togglePrivacyMode() {
   if (!isGodModeActive()) {
-    showToast("🔒 Acesso Restrito: O Modo LGPD é permanente. Faça login com o Google no Modo Deus para desativar.", "warning");
+    showToast("ðŸ”’ Acesso Restrito: O Modo LGPD Ã© permanente. FaÃ§a login com o Google no Modo Deus para desativar.", "warning");
     openGodModeAuthModal();
     return;
   }
@@ -159,8 +159,8 @@ function togglePrivacyMode() {
   saveDataToStorage();
   showToast(
     AppState.privacyMode 
-      ? "🛡️ Modo Seguro LGPD reativado! Dados pessoais mascarados para projeção." 
-      : "⚡ Modo Deus: Proteção LGPD suspensa pelo Administrador. Dados sensíveis liberados.", 
+      ? "ðŸ›¡ï¸ Modo Seguro LGPD reativado! Dados pessoais mascarados para projeÃ§Ã£o." 
+      : "âš¡ Modo Deus: ProteÃ§Ã£o LGPD suspensa pelo Administrador. Dados sensÃ­veis liberados.", 
     AppState.privacyMode ? "success" : "warning"
   );
   renderApp();
@@ -168,7 +168,7 @@ function togglePrivacyMode() {
 
 function toggleRevealStudent(studentId) {
   if (!isGodModeActive()) {
-    showToast("🔒 Acesso Restrito: Apenas o Administrador no Modo Deus (Google) pode revelar dados de alunos.", "warning");
+    showToast("ðŸ”’ Acesso Restrito: Apenas o Administrador no Modo Deus (Google) pode revelar dados de alunos.", "warning");
     openGodModeAuthModal();
     return;
   }
@@ -177,9 +177,26 @@ function toggleRevealStudent(studentId) {
     showToast("Dados pessoais do aluno ocultados novamente.", "info");
   } else {
     AppState.revealedStudentIds.add(studentId);
-    showToast("⚡ Modo Deus: Dados pessoais do aluno revelados.", "warning");
+    showToast("âš¡ Modo Deus: Dados pessoais do aluno revelados.", "warning");
   }
   renderApp();
+}
+
+/// ---------- Tema escuro ----------
+function applyTheme() {
+  const html = document.documentElement;
+  if (AppState.settings.darkMode) {
+    html.classList.add('is-dark');
+  } else {
+    html.classList.remove('is-dark');
+  }
+}
+
+function toggleTheme() {
+  AppState.settings.darkMode = !AppState.settings.darkMode;
+  saveDataToStorage();
+  applyTheme();
+  showToast(`Modo ${AppState.settings.darkMode ? 'Escuro' : 'Claro'} ativado`, 'info');
 }
 
 // Inicialização
@@ -190,31 +207,31 @@ document.addEventListener("DOMContentLoaded", () => {
   setupGlobalEventListeners();
 });
 
-// Normalização e autocura de nomes de módulos (garante acentuação perfeita PT-BR e corrige codificações corrompidas)
+// NormalizaÃ§Ã£o e autocura de nomes de mÃ³dulos (garante acentuaÃ§Ã£o perfeita PT-BR e corrige codificaÃ§Ãµes corrompidas)
 function normalizeSubjectName(str) {
   if (!str || typeof str !== "string") return str || "";
   const s = str.trim().replace(/\\u0026/g, "&");
 
-  if (s === "Marketing Digital & Estratégia") return "Marketing Digital & Estratégia";
-  if (s === "Criação de Conteúdo & Copywriting") return "Criação de Conteúdo & Copywriting";
+  if (s === "Marketing Digital & EstratÃ©gia") return "Marketing Digital & EstratÃ©gia";
+  if (s === "CriaÃ§Ã£o de ConteÃºdo & Copywriting") return "CriaÃ§Ã£o de ConteÃºdo & Copywriting";
   if (s === "Design & Identidade Visual") return "Design & Identidade Visual";
-  if (s === "Edição de Vídeo & Reels") return "Edição de Vídeo & Reels";
-  if (s === "Tráfego Pago & Meta Ads") return "Tráfego Pago & Meta Ads";
-  if (s === "Métricas & Analytics") return "Métricas & Analytics";
+  if (s === "EdiÃ§Ã£o de VÃ­deo & Reels") return "EdiÃ§Ã£o de VÃ­deo & Reels";
+  if (s === "TrÃ¡fego Pago & Meta Ads") return "TrÃ¡fego Pago & Meta Ads";
+  if (s === "MÃ©tricas & Analytics") return "MÃ©tricas & Analytics";
   if (s === "Projeto Integrador Final") return "Projeto Integrador Final";
 
-  if (/Estrat/i.test(s)) return "Marketing Digital & Estratégia";
-  if (/Conte|Copywriting/i.test(s)) return "Criação de Conteúdo & Copywriting";
+  if (/Estrat/i.test(s)) return "Marketing Digital & EstratÃ©gia";
+  if (/Conte|Copywriting/i.test(s)) return "CriaÃ§Ã£o de ConteÃºdo & Copywriting";
   if (/Identidade|Design/i.test(s)) return "Design & Identidade Visual";
-  if (/Reels|V[ií\xAD\u00ED]deo|Edi/i.test(s)) return "Edição de Vídeo & Reels";
-  if (/Tr[aá\u00E1]fego|Meta Ads/i.test(s)) return "Tráfego Pago & Meta Ads";
-  if (/M[eé\u00E9]tricas|Analytics/i.test(s)) return "Métricas & Analytics";
+  if (/Reels|V[iÃ­\xAD\u00ED]deo|Edi/i.test(s)) return "EdiÃ§Ã£o de VÃ­deo & Reels";
+  if (/Tr[aÃ¡\u00E1]fego|Meta Ads/i.test(s)) return "TrÃ¡fego Pago & Meta Ads";
+  if (/M[eÃ©\u00E9]tricas|Analytics/i.test(s)) return "MÃ©tricas & Analytics";
   if (/Integrador/i.test(s)) return "Projeto Integrador Final";
 
   return s;
 }
 
-// Persistência em LocalStorage
+// PersistÃªncia em LocalStorage
 function loadDataFromStorage() {
   const savedStudents = localStorage.getItem("eupordias_students");
   const savedSubjects = localStorage.getItem("eupordias_subjects");
@@ -245,7 +262,7 @@ function loadDataFromStorage() {
         currentList.push(newS);
       } else {
         if (!match.shirtSize && newS.shirtSize) match.shirtSize = newS.shirtSize;
-        if (newS.notes && newS.notes.includes("Presença confirmada") && (!match.notes || !match.notes.includes("Presença confirmada"))) {
+        if (newS.notes && newS.notes.includes("PresenÃ§a confirmada") && (!match.notes || !match.notes.includes("PresenÃ§a confirmada"))) {
           match.notes = newS.notes + (match.notes ? " " + match.notes : "");
         }
       }
@@ -260,7 +277,7 @@ function loadDataFromStorage() {
     }
   });
   
-  // Normalizar e higienizar nomes de módulos (garante acentuação perfeita e cura dados herdados de cache)
+  // Normalizar e higienizar nomes de mÃ³dulos (garante acentuaÃ§Ã£o perfeita e cura dados herdados de cache)
   const rawSubjects = savedSubjects ? JSON.parse(savedSubjects) : [...DEFAULT_SUBJECTS];
   AppState.subjects = Array.from(new Set(rawSubjects.map(normalizeSubjectName)));
   if (AppState.subjects.length === 0) {
@@ -300,7 +317,7 @@ function loadDataFromStorage() {
   AppState.settings.googleSpreadsheetId = "1XoKY-CW5ed3jJVOWD2klYGqCamiESa8_CAkRYLGEmJQ";
   AppState.settings.googleSheetRange = "A1:Z5000";
 
-  // Garantir a conexão com o Supabase Oficial
+  // Garantir a conexÃ£o com o Supabase Oficial
   if (!AppState.settings.supabaseUrl) {
     AppState.settings.supabaseUrl = "https://srnpqboizdnyvetyukhn.supabase.co";
   }
@@ -309,7 +326,7 @@ function loadDataFromStorage() {
   }
   AppState.settings.supabaseConnected = true;
 
-  // Restaurar sessão do Modo Deus via Google (se houver na sessionStorage)
+  // Restaurar sessÃ£o do Modo Deus via Google (se houver na sessionStorage)
   try {
     const savedGodMode = sessionStorage.getItem("eupordias_god_mode");
     if (savedGodMode) {
@@ -323,32 +340,32 @@ function loadDataFromStorage() {
       }
     }
   } catch (e) {
-    console.warn("Erro ao restaurar sessão Modo Deus:", e);
+    console.warn("Erro ao restaurar sessÃ£o Modo Deus:", e);
   }
 
-  // REGRA ESTRITA LGPD: Se não estiver no Modo Deus, o Modo LGPD é SEMPRE FORÇADO para true!
+  // REGRA ESTRITA LGPD: Se nÃ£o estiver no Modo Deus, o Modo LGPD Ã© SEMPRE FORÃ‡ADO para true!
   if (!AppState.godMode.active) {
     AppState.privacyMode = true;
     AppState.revealedStudentIds.clear();
   }
 
-  // Restaurar usuário autenticado por CPF
+  // Restaurar usuÃ¡rio autenticado por CPF
   try {
     const savedUser = localStorage.getItem("eupordias_auth_user");
     if (savedUser) {
       AppState.currentUser = JSON.parse(savedUser);
     }
   } catch (e) {
-    console.warn("Erro ao restaurar usuário autenticado:", e);
+    console.warn("Erro ao restaurar usuÃ¡rio autenticado:", e);
   }
 
-  // Carregar dados de Fórum & Chat
+  // Carregar dados de FÃ³rum & Chat
   loadForumDataFromStorage();
 
   // Carregar dados de Oportunidades & Trilhas
   loadCareersDataFromStorage();
 
-  // Carregar dados do Laboratório de Prompts & IA
+  // Carregar dados do LaboratÃ³rio de Prompts & IA
   loadPromptsDataFromStorage();
 
   saveDataToStorage();
@@ -386,7 +403,7 @@ function applyTheme() {
   }
 }
 
-// Notificações Toast
+// NotificaÃ§Ãµes Toast
 function showToast(message, type = "success") {
   const container = document.getElementById("toast-container");
   if (!container) return;
@@ -419,7 +436,7 @@ function showToast(message, type = "success") {
 }
 
 // -------------------------------------------------------------
-// INTEGRAÇÃO COM GOOGLE SHEETS API V4
+// INTEGRAÃ‡ÃƒO COM GOOGLE SHEETS API V4
 // -------------------------------------------------------------
 async function fetchGoogleSheetsApiData(spreadsheetIdOrUrl, customRange = null) {
   let spreadsheetId = spreadsheetIdOrUrl.trim();
@@ -433,7 +450,7 @@ async function fetchGoogleSheetsApiData(spreadsheetIdOrUrl, customRange = null) 
   }
 
   if (!spreadsheetId) {
-    showToast("Por favor, forneça o Link ou o ID da Planilha do Google.", "warning");
+    showToast("Por favor, forneÃ§a o Link ou o ID da Planilha do Google.", "warning");
     return null;
   }
 
@@ -447,7 +464,7 @@ async function fetchGoogleSheetsApiData(spreadsheetIdOrUrl, customRange = null) 
 
   const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
 
-  showToast("Conectando à API do Google Sheets v4...", "info");
+  showToast("Conectando Ã  API do Google Sheets v4...", "info");
 
   try {
     const response = await fetch(apiUrl);
@@ -456,7 +473,7 @@ async function fetchGoogleSheetsApiData(spreadsheetIdOrUrl, customRange = null) 
     if (json.error) {
       console.error("Google Sheets API Error:", json.error);
       if (json.error.status === "PERMISSION_DENIED") {
-        showToast("Erro de permissão: Certifique-se de que a planilha está compartilhada como 'Qualquer pessoa com o link pode ler'.", "error");
+        showToast("Erro de permissÃ£o: Certifique-se de que a planilha estÃ¡ compartilhada como 'Qualquer pessoa com o link pode ler'.", "error");
       } else {
         showToast(`Erro na API do Google: ${json.error.message}`, "error");
       }
@@ -465,7 +482,7 @@ async function fetchGoogleSheetsApiData(spreadsheetIdOrUrl, customRange = null) 
 
     const values = json.values;
     if (!values || values.length === 0) {
-      showToast("A planilha está vazia ou o intervalo não contém dados.", "warning");
+      showToast("A planilha estÃ¡ vazia ou o intervalo nÃ£o contÃ©m dados.", "warning");
       return null;
     }
 
@@ -475,8 +492,8 @@ async function fetchGoogleSheetsApiData(spreadsheetIdOrUrl, customRange = null) 
     saveDataToStorage();
     return values;
   } catch (err) {
-    console.error("Erro na requisição Google Sheets API:", err);
-    showToast("Erro de conexão com a API do Google Sheets.", "error");
+    console.error("Erro na requisiÃ§Ã£o Google Sheets API:", err);
+    showToast("Erro de conexÃ£o com a API do Google Sheets.", "error");
     return null;
   }
 }
@@ -491,10 +508,10 @@ function processGoogleSheetsApiRows(rows) {
   let emailIndex = headers.findIndex(h => h.includes("email") || h.includes("e-mail") || h.includes("correio"));
   let phoneIndex = headers.findIndex(h => h.includes("fone") || h.includes("telefone") || h.includes("celular") || h.includes("whatsapp") || h.includes("tel"));
   let classroomIndex = headers.findIndex(h => h.includes("turma") || h.includes("classe") || h.includes("curso") || h.includes("sala"));
-  let cepIndex = headers.findIndex(h => h.includes("cep") || h.includes("código postal"));
-  let addressIndex = headers.findIndex(h => h.includes("endereço") || h.includes("endereco") || h.includes("rua") || h.includes("logradouro"));
+  let cepIndex = headers.findIndex(h => h.includes("cep") || h.includes("cÃ³digo postal"));
+  let addressIndex = headers.findIndex(h => h.includes("endereÃ§o") || h.includes("endereco") || h.includes("rua") || h.includes("logradouro"));
   let neighborhoodIndex = headers.findIndex(h => h.includes("bairro"));
-  let cityIndex = headers.findIndex(h => h.includes("cidade") || h.includes("município") || h.includes("municipio"));
+  let cityIndex = headers.findIndex(h => h.includes("cidade") || h.includes("municÃ­pio") || h.includes("municipio"));
 
   let startRow = 1;
   if (nameIndex === -1 && emailIndex === -1) {
@@ -521,19 +538,19 @@ function processGoogleSheetsApiRows(rows) {
       fullName = String(row[0]);
     }
 
-    if (!fullName || fullName.toLowerCase().includes("média") || fullName.toLowerCase().includes("pontuação") || fullName.toLowerCase().includes("total")) {
+    if (!fullName || fullName.toLowerCase().includes("mÃ©dia") || fullName.toLowerCase().includes("pontuaÃ§Ã£o") || fullName.toLowerCase().includes("total")) {
       continue;
     }
 
     const email = emailIndex !== -1 && row[emailIndex] ? String(row[emailIndex]) : "";
     const phone = phoneIndex !== -1 && row[phoneIndex] ? String(row[phoneIndex]) : "";
-    const classroom = classroomIndex !== -1 && row[classroomIndex] ? String(row[classroomIndex]) : "Mídias Digitais - Maceió Matutino";
+    const classroom = classroomIndex !== -1 && row[classroomIndex] ? String(row[classroomIndex]) : "MÃ­dias Digitais - MaceiÃ³ Matutino";
     const cep = cepIndex !== -1 && row[cepIndex] ? String(row[cepIndex]) : "";
     const street = addressIndex !== -1 && row[addressIndex] ? String(row[addressIndex]) : "";
     const neighborhood = neighborhoodIndex !== -1 && row[neighborhoodIndex] ? String(row[neighborhoodIndex]) : "";
-    const city = cityIndex !== -1 && row[cityIndex] ? String(row[cityIndex]) : "Maceió";
+    const city = cityIndex !== -1 && row[cityIndex] ? String(row[cityIndex]) : "MaceiÃ³";
 
-    // Mapear notas das colunas para os módulos
+    // Mapear notas das colunas para os mÃ³dulos
     const grades = {};
     AppState.subjects.forEach(subject => {
       const subjIndex = headers.findIndex(h => h.includes(subject.toLowerCase().slice(0, 5)));
@@ -560,7 +577,7 @@ function processGoogleSheetsApiRows(rows) {
         phone: phone.trim(),
         email: email.trim(),
         guardianName: "",
-        guardianKinship: "Responsável",
+        guardianKinship: "ResponsÃ¡vel",
         guardianPhone: ""
       },
       address: {
@@ -569,7 +586,7 @@ function processGoogleSheetsApiRows(rows) {
         number: "",
         complement: "",
         neighborhood: neighborhood.trim(),
-        city: city.trim() || "Maceió",
+        city: city.trim() || "MaceiÃ³",
         state: "AL"
       },
       grades: grades
@@ -595,14 +612,14 @@ function processGoogleSheetsApiRows(rows) {
             <td class="p-2 text-slate-500">${s.contact.email || '-'}</td>
             <td class="p-2 text-slate-500">${s.contact.phone || '-'}</td>
             <td class="p-2 text-slate-600 dark:text-slate-300">${s.classroom}</td>
-            <td class="p-2 text-center text-indigo-600 font-bold">${gradesCount} matéria(s)</td>
+            <td class="p-2 text-center text-indigo-600 font-bold">${gradesCount} matÃ©ria(s)</td>
           </tr>
         `;
       }).join("") + (parsedStudents.length > 10 ? `<tr><td colspan="5" class="p-2 text-center text-slate-400 text-[10px]">... e mais ${parsedStudents.length - 10} alunos</td></tr>` : '');
 
       showToast(`API Google: ${parsedStudents.length} alunos carregados! Clique em Confirmar para salvar.`, "success");
     } else {
-      // Se chamado pelo botão de sincronização rápida
+      // Se chamado pelo botÃ£o de sincronizaÃ§Ã£o rÃ¡pida
       commitImportedStudents();
     }
   } else {
@@ -610,7 +627,7 @@ function processGoogleSheetsApiRows(rows) {
   }
 }
 
-// Sincronização rápida em 1 clique
+// SincronizaÃ§Ã£o rÃ¡pida em 1 clique
 async function quickSyncGoogleSheets() {
   if (!AppState.settings.googleSpreadsheetId) {
     openGoogleSheetsImportModal();
@@ -622,7 +639,7 @@ async function quickSyncGoogleSheets() {
 }
 
 // -------------------------------------------------------------
-// CÁLCULOS PEDAGÓGICOS
+// CÃLCULOS PEDAGÃ“GICOS
 // -------------------------------------------------------------
 function calculateSubjectAverage(subjectGrades) {
   if (!subjectGrades) return { avg: 0, count: 0, hasGrades: false };
@@ -686,7 +703,7 @@ function calculateStudentOverallStats(student) {
     status = "Reprovado";
     statusClass = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800";
   } else if (recoveryCount > 0 || overallAvg < AppState.settings.passingGrade) {
-    status = "Em Recuperação";
+    status = "Em RecuperaÃ§Ã£o";
     statusClass = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800";
   }
 
@@ -738,7 +755,7 @@ function getFilteredStudents() {
   });
 }
 
-// Renderização Geral
+// RenderizaÃ§Ã£o Geral
 function renderApp() {
   const isAluno = AppState.currentUser && AppState.currentUser.role === "aluno";
   const alunoRestrictedTabs = ["dashboard", "reports", "students"];
@@ -794,9 +811,9 @@ function updateNavActiveState() {
   document.querySelectorAll(".nav-tab-btn").forEach(btn => {
     const tab = btn.getAttribute("data-tab");
 
-    // Regra de autorização para alunos:
-    // Oculta completamente 'Dashboard & Estatísticas', 'Relatórios & Backup' e 'Alunos & Contatos'.
-    // O aluno interage apenas com 'Sobre o Sistema & Manifesto', 'Notas dos Módulos' e 'Fórum & Chat ao Vivo'.
+    // Regra de autorizaÃ§Ã£o para alunos:
+    // Oculta completamente 'Dashboard & EstatÃ­sticas', 'RelatÃ³rios & Backup' e 'Alunos & Contatos'.
+    // O aluno interage apenas com 'Sobre o Sistema & Manifesto', 'Notas dos MÃ³dulos' e 'FÃ³rum & Chat ao Vivo'.
     if (isAluno && alunoRestrictedTabs.includes(tab)) {
       btn.classList.add("hidden");
       return;
@@ -838,13 +855,13 @@ function updateHeaderCounts() {
           <i class="fa-solid fa-users"></i> ${total} Alunos
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-          <i class="fa-solid fa-star"></i> Média: ${generalAvg}
+          <i class="fa-solid fa-star"></i> MÃ©dia: ${generalAvg}
         </span>
       </div>
     `;
   }
 
-  // Atualiza o indicador de status do Modo Deus no cabeçalho
+  // Atualiza o indicador de status do Modo Deus no cabeÃ§alho
   renderHeaderGodModeStatus();
 }
 
@@ -853,7 +870,7 @@ function renderHeaderGodModeStatus() {
   const badgeStatus = document.getElementById("integrations-badge-status");
   const isGod = isGodModeActive();
 
-  // Atualiza indicador de status no botão gatilho do submenu
+  // Atualiza indicador de status no botÃ£o gatilho do submenu
   if (badgeStatus) {
     if (isGod) {
       badgeStatus.innerHTML = `
@@ -949,7 +966,7 @@ function closeIntegrationsSubmenu() {
 }
 
 // -------------------------------------------------------------
-// AUTENTICAÇÃO MESTRE • MODO DEUS (GOOGLE & CREDENCIAIS)
+// AUTENTICAÃ‡ÃƒO MESTRE â€¢ MODO DEUS (GOOGLE & CREDENCIAIS)
 // -------------------------------------------------------------
 const AUTHORIZED_GOD_MODE = {
   username: "eupordias",
@@ -967,10 +984,10 @@ function loginGodMode(userProfile) {
   try {
     sessionStorage.setItem("eupordias_god_mode", JSON.stringify(userProfile));
   } catch (e) {
-    console.warn("Não foi possível salvar sessão Modo Deus:", e);
+    console.warn("NÃ£o foi possÃ­vel salvar sessÃ£o Modo Deus:", e);
   }
   closeModal();
-  showToast(`⚡ MODO DEUS ATIVADO! Bem-vindo, ${userProfile.name || userProfile.email}. Acesso total liberado.`, "warning");
+  showToast(`âš¡ MODO DEUS ATIVADO! Bem-vindo, ${userProfile.name || userProfile.email}. Acesso total liberado.`, "warning");
   renderApp();
 }
 
@@ -990,7 +1007,7 @@ function logoutGodMode() {
   AppState.revealedStudentIds.clear();
   saveDataToStorage();
   closeModal();
-  showToast("🔒 Modo Deus encerrado. O Modo LGPD foi reativado e travado com sucesso.", "info");
+  showToast("ðŸ”’ Modo Deus encerrado. O Modo LGPD foi reativado e travado com sucesso.", "info");
   renderApp();
 }
 
@@ -1014,7 +1031,7 @@ function handleGoogleCredentialResponse(response) {
         sub: profile.sub
       });
     } else {
-      showToast(`Acesso Negado: A conta Google (${email}) não tem privilégios de Modo Deus. Utilize ${AUTHORIZED_GOD_MODE.googleEmail}.`, "error");
+      showToast(`Acesso Negado: A conta Google (${email}) nÃ£o tem privilÃ©gios de Modo Deus. Utilize ${AUTHORIZED_GOD_MODE.googleEmail}.`, "error");
     }
   } catch (err) {
     console.error("Erro ao decodificar token do Google:", err);
@@ -1081,7 +1098,7 @@ function openGodModeAuthModal() {
 
   if (isLogged) {
     bodyContent = `
-      <!-- Painel quando JÁ está autenticado no Modo Deus -->
+      <!-- Painel quando JÃ estÃ¡ autenticado no Modo Deus -->
       <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/60">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full ring-2 ring-amber-400 overflow-hidden bg-amber-200 dark:bg-amber-800 flex items-center justify-center font-bold text-amber-900 dark:text-amber-100 text-sm flex-shrink-0">
@@ -1092,20 +1109,20 @@ function openGodModeAuthModal() {
               <span class="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">${user.name || "Administrador"}</span>
               <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400 text-slate-950">Ativo</span>
             </div>
-            <p class="text-xs text-slate-600 dark:text-slate-300 truncate">${user.email ? maskEmail(user.email) : "Sessão Mestre Conectada"}</p>
-            <p class="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5">⚡ Privilégios totais liberados: você pode alternar a LGPD e revelar alunos.</p>
+            <p class="text-xs text-slate-600 dark:text-slate-300 truncate">${user.email ? maskEmail(user.email) : "SessÃ£o Mestre Conectada"}</p>
+            <p class="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5">âš¡ PrivilÃ©gios totais liberados: vocÃª pode alternar a LGPD e revelar alunos.</p>
           </div>
         </div>
       </div>
 
-      <!-- Botões de Controle Rápido do Modo Deus -->
+      <!-- BotÃµes de Controle RÃ¡pido do Modo Deus -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <button 
           onclick="togglePrivacyMode()" 
           class="w-full py-3 px-4 rounded-xl text-xs font-bold ${AppState.privacyMode ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20'} flex items-center justify-center gap-2 transition-all"
         >
           <i class="fa-solid ${AppState.privacyMode ? 'fa-eye' : 'fa-shield-halved'}"></i>
-          <span>${AppState.privacyMode ? 'Suspender Proteção LGPD' : 'Reativar Proteção LGPD'}</span>
+          <span>${AppState.privacyMode ? 'Suspender ProteÃ§Ã£o LGPD' : 'Reativar ProteÃ§Ã£o LGPD'}</span>
         </button>
 
         <button 
@@ -1119,18 +1136,18 @@ function openGodModeAuthModal() {
     `;
   } else {
     bodyContent = `
-      <!-- Painel quando NÃO está autenticado (Login Obrigatório) -->
+      <!-- Painel quando NÃƒO estÃ¡ autenticado (Login ObrigatÃ³rio) -->
       <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
         <div class="flex items-center gap-2 text-indigo-900 dark:text-indigo-200 font-bold">
           <i class="fa-solid fa-shield-halved text-indigo-600 dark:text-indigo-400 text-sm"></i>
-          <span>Modo LGPD Travado por Segurança</span>
+          <span>Modo LGPD Travado por SeguranÃ§a</span>
         </div>
         <p class="leading-relaxed text-[11px]">
-          Para desativar o mascaramento de CPFs, telefones e endereços no Datashow, autentique-se com sua <strong>conta Google autorizada</strong> ou com suas <strong>credenciais de administrador</strong>.
+          Para desativar o mascaramento de CPFs, telefones e endereÃ§os no Datashow, autentique-se com sua <strong>conta Google autorizada</strong> ou com suas <strong>credenciais de administrador</strong>.
         </p>
       </div>
 
-      <!-- OPÇÃO 1: Login com Usuário e Senha Mestre -->
+      <!-- OPÃ‡ÃƒO 1: Login com UsuÃ¡rio e Senha Mestre -->
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
         <div class="flex items-center justify-between">
           <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -1144,7 +1161,7 @@ function openGodModeAuthModal() {
 
         <div class="space-y-2.5">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">USUÁRIO</label>
+            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1">USUÃRIO</label>
             <div class="relative">
               <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
               <input 
@@ -1152,7 +1169,7 @@ function openGodModeAuthModal() {
                 id="god-login-user" 
                 value=""
                 autocomplete="off"
-                placeholder="Digite seu usuário"
+                placeholder="Digite seu usuÃ¡rio"
                 class="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
               >
             </div>
@@ -1192,12 +1209,12 @@ function openGodModeAuthModal() {
         </div>
       </div>
 
-      <!-- OPÇÃO 2: Login com a Conta Google Oficial -->
+      <!-- OPÃ‡ÃƒO 2: Login com a Conta Google Oficial -->
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3">
         <div class="flex items-center justify-between">
           <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
             <i class="fa-brands fa-google text-indigo-500"></i>
-            <span>2. Autenticação com Conta Google</span>
+            <span>2. AutenticaÃ§Ã£o com Conta Google</span>
           </label>
           <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
             Google
@@ -1207,7 +1224,7 @@ function openGodModeAuthModal() {
         <!-- Container renderizado pelo Google Identity Services -->
         <div id="google-official-btn" class="flex justify-center w-full min-h-[40px]"></div>
 
-        <!-- Botão oficial Google sem expor e-mail publicamente -->
+        <!-- BotÃ£o oficial Google sem expor e-mail publicamente -->
         <button 
           onclick="triggerGoogleDirectLogin()"
           class="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-sm flex items-center justify-center gap-2.5 transition-all"
@@ -1231,7 +1248,7 @@ function openGodModeAuthModal() {
         <!-- Faixa de Destaque Mestre -->
         <div class="h-2 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 w-full"></div>
 
-        <!-- Cabeçalho -->
+        <!-- CabeÃ§alho -->
         <div class="p-6 pb-4 flex items-start justify-between">
           <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-950 flex items-center justify-center text-2xl font-black shadow-lg shadow-amber-500/30">
@@ -1239,13 +1256,13 @@ function openGodModeAuthModal() {
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <h3 class="font-black text-lg text-slate-900 dark:text-slate-100">Acesso Mestre • Modo Deus</h3>
+                <h3 class="font-black text-lg text-slate-900 dark:text-slate-100">Acesso Mestre â€¢ Modo Deus</h3>
                 <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 uppercase tracking-wide">
                   SuperAdmin
                 </span>
               </div>
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Autenticação de Administrador • Controle de Privacidade
+                AutenticaÃ§Ã£o de Administrador â€¢ Controle de Privacidade
               </p>
             </div>
           </div>
@@ -1254,7 +1271,7 @@ function openGodModeAuthModal() {
           </button>
         </div>
 
-        <!-- Conteúdo do Modal -->
+        <!-- ConteÃºdo do Modal -->
         <div class="px-6 pb-6 space-y-5">
           ${bodyContent}
         </div>
@@ -1321,7 +1338,7 @@ function loginWithPromptAccount() {
         method: "google_prompt"
       });
     } else {
-      showToast("Acesso Negado: A conta informada não tem privilégios de Modo Deus.", "error");
+      showToast("Acesso Negado: A conta informada nÃ£o tem privilÃ©gios de Modo Deus.", "error");
     }
   }
 }
@@ -1339,45 +1356,45 @@ function populateClassroomFilterSelect() {
 }
 
 // -------------------------------------------------------------
-// HELPER: TELA DE RESTRIÇÃO DE ACESSO POR CPF CADASTRADO
+// HELPER: TELA DE RESTRIÃ‡ÃƒO DE ACESSO POR CPF CADASTRADO
 // -------------------------------------------------------------
 function renderTabAccessRestriction(container, tabKey) {
   const tabConfigs = {
     students: {
       title: "Regra de Acesso: Alunos e Contatos",
-      description: "Para consultar a listagem de discentes, informações de contato, endereços e fichas individuais da turma, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso seguro à sua ficha cadastral individual e aos dados oficiais da sua matrícula.",
-      profInfo: "Acesso irrestrito à listagem completa de alunos, contatos via WhatsApp, filtros por turma e edição de dados."
+      description: "Para consultar a listagem de discentes, informaÃ§Ãµes de contato, endereÃ§os e fichas individuais da turma, Ã© necessÃ¡rio se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso seguro Ã  sua ficha cadastral individual e aos dados oficiais da sua matrÃ­cula.",
+      profInfo: "Acesso irrestrito Ã  listagem completa de alunos, contatos via WhatsApp, filtros por turma e ediÃ§Ã£o de dados."
     },
     grades: {
-      title: "Regra de Acesso: Notas dos Módulos",
-      description: "Para visualizar boletins, médias parciais e lançamentos de avaliações dos 7 módulos do curso, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso exclusivo às suas notas individuais, médias ponderadas, situação acadêmica e envio do boletim por e-mail.",
-      profInfo: "Lançamento e edição de notas de todos os alunos, cálculo automático de médias e atas de avaliação."
+      title: "Regra de Acesso: Notas dos MÃ³dulos",
+      description: "Para visualizar boletins, mÃ©dias parciais e lanÃ§amentos de avaliaÃ§Ãµes dos 7 mÃ³dulos do curso, Ã© necessÃ¡rio se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso exclusivo Ã s suas notas individuais, mÃ©dias ponderadas, situaÃ§Ã£o acadÃªmica e envio do boletim por e-mail.",
+      profInfo: "LanÃ§amento e ediÃ§Ã£o de notas de todos os alunos, cÃ¡lculo automÃ¡tico de mÃ©dias e atas de avaliaÃ§Ã£o."
     },
     reports: {
-      title: "Regra de Acesso: Relatórios e Backup",
-      description: "Para acessar as planilhas oficiais do curso, exportações completas, atas escolares e backups na nuvem, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso ao seu Boletim Individual Oficial, histórico de notas dos 7 módulos e ficha cadastral.",
+      title: "Regra de Acesso: RelatÃ³rios e Backup",
+      description: "Para acessar as planilhas oficiais do curso, exportaÃ§Ãµes completas, atas escolares e backups na nuvem, Ã© necessÃ¡rio se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso ao seu Boletim Individual Oficial, histÃ³rico de notas dos 7 mÃ³dulos e ficha cadastral.",
       profInfo: "Acesso irrestrito a planilhas completas (CSV), backups JSON do sistema e atas gerais de rendimento."
     },
     forum: {
-      title: "Regra de Acesso: Fórum & Chat ao Vivo",
-      description: "Para participar das discussões da turma, enviar mensagens no chat em tempo real e interagir com colegas e docentes, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Participação nas salas de chat, envio de dúvidas sobre os módulos e interação com foto de perfil cadastrada.",
-      profInfo: "Criação de novos tópicos com anexos multimídia (foto, PDF, link, vídeo), moderação de salas e comunicados oficiais."
+      title: "Regra de Acesso: FÃ³rum & Chat ao Vivo",
+      description: "Para participar das discussÃµes da turma, enviar mensagens no chat em tempo real e interagir com colegas e docentes, Ã© necessÃ¡rio se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "ParticipaÃ§Ã£o nas salas de chat, envio de dÃºvidas sobre os mÃ³dulos e interaÃ§Ã£o com foto de perfil cadastrada.",
+      profInfo: "CriaÃ§Ã£o de novos tÃ³picos com anexos multimÃ­dia (foto, PDF, link, vÃ­deo), moderaÃ§Ã£o de salas e comunicados oficiais."
     },
     careers: {
       title: "Regra de Acesso: Oportunidades & Trilhas",
-      description: "Para consultar o mural de vagas de emprego com cálculo de compatibilidade de currículo, trilhas de aprendizagem e materiais gratuitos, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso ao mural de vagas de Alagoas, cálculo de match personalizado com seu currículo, emissão de ficha profissional e cursos livres.",
-      profInfo: "Publicação de novas vagas de emprego/estágio para a turma, gestão de oportunidades e compartilhamento de materiais pedagógicos."
+      description: "Para consultar o mural de vagas de emprego com cÃ¡lculo de compatibilidade de currÃ­culo, trilhas de aprendizagem e materiais gratuitos, Ã© necessÃ¡rio se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso ao mural de vagas de Alagoas, cÃ¡lculo de match personalizado com seu currÃ­culo, emissÃ£o de ficha profissional e cursos livres.",
+      profInfo: "PublicaÃ§Ã£o de novas vagas de emprego/estÃ¡gio para a turma, gestÃ£o de oportunidades e compartilhamento de materiais pedagÃ³gicos."
     },
     prompts: {
-      title: "Regra de Acesso: Laboratório de Prompts & IA",
-      description: "Para explorar o acervo completo de comandos e personas de IA baseado no repositório <strong>prompts.chat (Awesome ChatGPT Prompts)</strong>, personalizar variáveis para seus clientes e utilizar o gerador de prompts, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso a dezenas de personas profissionais de IA (Copywriting, Social Media, Gestão de Anúncios, Programação), personalizador interativo de prompt e guia passo a passo de engenharia de prompt.",
-      profInfo: "Gestão pedagógica do acervo de IA, publicação de novos prompts para as aulas da turma e acompanhamento de atividades práticas com IA."
+      title: "Regra de Acesso: LaboratÃ³rio de Prompts & IA",
+      description: "Para explorar o acervo completo de comandos e personas de IA baseado no repositÃ³rio <strong>prompts.chat (Awesome ChatGPT Prompts)</strong>, personalizar variÃ¡veis para seus clientes e utilizar o gerador de prompts, Ã© necessÃ¡rio se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
+      alunoInfo: "Acesso a dezenas de personas profissionais de IA (Copywriting, Social Media, GestÃ£o de AnÃºncios, ProgramaÃ§Ã£o), personalizador interativo de prompt e guia passo a passo de engenharia de prompt.",
+      profInfo: "GestÃ£o pedagÃ³gica do acervo de IA, publicaÃ§Ã£o de novos prompts para as aulas da turma e acompanhamento de atividades prÃ¡ticas com IA."
     }
   };
 
@@ -1392,7 +1409,7 @@ function renderTabAccessRestriction(container, tabKey) {
         
         <div class="space-y-2">
           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
-            <i class="fa-solid fa-lock"></i> Área de Acesso Restrito
+            <i class="fa-solid fa-lock"></i> Ãrea de Acesso Restrito
           </span>
           <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">${config.title}</h2>
           <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg mx-auto">
@@ -1411,7 +1428,7 @@ function renderTabAccessRestriction(container, tabKey) {
           <div class="flex items-start gap-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
             <i class="fa-solid fa-chalkboard-user text-emerald-600 mt-0.5"></i>
             <div>
-              <strong class="text-slate-800 dark:text-slate-200">Professores e Coordenação:</strong>
+              <strong class="text-slate-800 dark:text-slate-200">Professores e CoordenaÃ§Ã£o:</strong>
               <p class="text-slate-500 text-[11px]">${config.profInfo}</p>
             </div>
           </div>
@@ -1434,7 +1451,7 @@ function renderTabAccessRestriction(container, tabKey) {
 // ABA 1: ALUNOS
 // -------------------------------------------------------------
 function renderStudentsTab(container) {
-  // REGRA DE ACESSO: Exige identificação por CPF
+  // REGRA DE ACESSO: Exige identificaÃ§Ã£o por CPF
   if (!AppState.currentUser) {
     renderTabAccessRestriction(container, 'students');
     return;
@@ -1444,7 +1461,7 @@ function renderStudentsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      <!-- Banner com Conexão de API do Sheets -->
+      <!-- Banner com ConexÃ£o de API do Sheets -->
       <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
         <div class="z-10">
           <div class="flex items-center gap-2 mb-2">
@@ -1452,7 +1469,7 @@ function renderStudentsTab(container) {
               EMPREGA MAIS ALAGOAS
             </span>
             <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-400 text-slate-900">
-              Gestão de Mídias Digitais
+              GestÃ£o de MÃ­dias Digitais
             </span>
             <span class="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-400 text-slate-950">
               <i class="fa-brands fa-google-drive mr-1 mt-0.5"></i> Google Sheets API v4
@@ -1460,7 +1477,7 @@ function renderStudentsTab(container) {
           </div>
           <h1 class="text-xl sm:text-2xl font-black tracking-tight">Eu Por Dias - Painel do Professor</h1>
           <p class="text-xs sm:text-sm text-indigo-100 max-w-2xl mt-1">
-            Integração direta com o Google Planilhas, WhatsApp, ViaCEP de Alagoas e lançamento de notas dos módulos.
+            IntegraÃ§Ã£o direta com o Google Planilhas, WhatsApp, ViaCEP de Alagoas e lanÃ§amento de notas dos mÃ³dulos.
           </p>
         </div>
 
@@ -1504,7 +1521,7 @@ function renderStudentsTab(container) {
             type="text" 
             id="student-search-input"
             value="${AppState.searchTerm}"
-            placeholder="Buscar por nome, CPF, WhatsApp, cidade/unidade SINE, profissão, rede social, ferramentas, desafios..." 
+            placeholder="Buscar por nome, CPF, WhatsApp, cidade/unidade SINE, profissÃ£o, rede social, ferramentas, desafios..." 
             class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
           >
           ${AppState.searchTerm ? `
@@ -1527,9 +1544,9 @@ function renderStudentsTab(container) {
             onchange="handleSituationFilterChange(this.value)"
             class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
-            <option value="all" ${AppState.filterSituation === "all" ? "selected" : ""}>Todas as Situações</option>
+            <option value="all" ${AppState.filterSituation === "all" ? "selected" : ""}>Todas as SituaÃ§Ãµes</option>
             <option value="Aprovado" ${AppState.filterSituation === "Aprovado" ? "selected" : ""}>Aprovados</option>
-            <option value="Em Recuperação" ${AppState.filterSituation === "Em Recuperação" ? "selected" : ""}>Em Recuperação</option>
+            <option value="Em RecuperaÃ§Ã£o" ${AppState.filterSituation === "Em RecuperaÃ§Ã£o" ? "selected" : ""}>Em RecuperaÃ§Ã£o</option>
             <option value="Reprovado" ${AppState.filterSituation === "Reprovado" ? "selected" : ""}>Reprovados</option>
           </select>
 
@@ -1537,7 +1554,7 @@ function renderStudentsTab(container) {
             onchange="handlePhotoFilterChange(this.value)"
             class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
-            <option value="all" ${AppState.filterPhoto === "all" ? "selected" : ""}>📷 Todas as Fotos</option>
+            <option value="all" ${AppState.filterPhoto === "all" ? "selected" : ""}>ðŸ“· Todas as Fotos</option>
             <option value="with_photo" ${AppState.filterPhoto === "with_photo" ? "selected" : ""}>Com Foto</option>
             <option value="without_photo" ${AppState.filterPhoto === "without_photo" ? "selected" : ""}>Sem Foto</option>
           </select>
@@ -1546,27 +1563,27 @@ function renderStudentsTab(container) {
             <button 
               onclick="setViewMode('grid')" 
               class="p-2 rounded-lg text-xs font-semibold ${AppState.settings.viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
-              title="Visualização em Cards"
+              title="VisualizaÃ§Ã£o em Cards"
             >
               <i class="fa-solid fa-grip text-sm"></i>
             </button>
             <button 
               onclick="setViewMode('table')" 
               class="p-2 rounded-lg text-xs font-semibold ${AppState.settings.viewMode === 'table' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
-              title="Visualização em Tabela"
+              title="VisualizaÃ§Ã£o em Tabela"
             >
               <i class="fa-solid fa-list text-sm"></i>
             </button>
             <button 
               onclick="setViewMode('secure')" 
               class="p-2 rounded-lg text-xs font-semibold ${AppState.settings.viewMode === 'secure' ? 'bg-emerald-600 shadow text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
-              title="Visualização Segura (Modo LGPD / Projeção em Sala)"
+              title="VisualizaÃ§Ã£o Segura (Modo LGPD / ProjeÃ§Ã£o em Sala)"
             >
               <i class="fa-solid fa-shield-halved text-sm"></i>
             </button>
           </div>
 
-          <!-- Botão de Alternância da Camada de Segurança LGPD -->
+          <!-- BotÃ£o de AlternÃ¢ncia da Camada de SeguranÃ§a LGPD -->
           <button 
             onclick="togglePrivacyMode()" 
             class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm ${
@@ -1587,8 +1604,8 @@ function renderStudentsTab(container) {
             }"></i>
             <span>${
               isGodModeActive()
-                ? (AppState.privacyMode ? 'LGPD Ativo (Deus)' : 'LGPD Suspenso ⚡')
-                : 'LGPD Travado 🔒'
+                ? (AppState.privacyMode ? 'LGPD Ativo (Deus)' : 'LGPD Suspenso âš¡')
+                : 'LGPD Travado ðŸ”’'
             }</span>
           </button>
         </div>
@@ -1603,7 +1620,7 @@ function renderStudentsTab(container) {
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <h4 class="font-bold text-xs">Camada de Segurança Permanente (Privacidade & LGPD)</h4>
+                <h4 class="font-bold text-xs">Camada de SeguranÃ§a Permanente (Privacidade & LGPD)</h4>
                 <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100 uppercase">
                   100% Seguro para Sala
                 </span>
@@ -1613,12 +1630,12 @@ function renderStudentsTab(container) {
                   </span>
                 ` : `
                   <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-300 uppercase">
-                    🔒 Travado sem Google
+                    ðŸ”’ Travado sem Google
                   </span>
                 `}
               </div>
               <p class="text-[11px] text-emerald-800/90 dark:text-emerald-300/90 mt-0.5">
-                Os dados pessoais sensíveis (CPF, WhatsApp, e-mail e endereços) estão estritamente protegidos. Para desativar o mascaramento ou revelar dados de alunos no Datashow, é obrigatório autenticar-se no <strong>Modo Deus via Google</strong>.
+                Os dados pessoais sensÃ­veis (CPF, WhatsApp, e-mail e endereÃ§os) estÃ£o estritamente protegidos. Para desativar o mascaramento ou revelar dados de alunos no Datashow, Ã© obrigatÃ³rio autenticar-se no <strong>Modo Deus via Google</strong>.
               </p>
             </div>
           </div>
@@ -1628,7 +1645,7 @@ function renderStudentsTab(container) {
                 onclick="togglePrivacyMode()" 
                 class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-slate-800 shadow-sm transition-all"
               >
-                ${AppState.privacyMode ? 'Suspender Mascaramento' : 'Reativar Proteção Geral'}
+                ${AppState.privacyMode ? 'Suspender Mascaramento' : 'Reativar ProteÃ§Ã£o Geral'}
               </button>
             ` : `
               <button 
@@ -1713,7 +1730,7 @@ function renderStudentCardsGrid(students) {
           <div class="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden">
             
             <div>
-              <!-- Cabeçalho do Card: Foto/Avatar, Nome, Polo/Cidade e Matrícula -->
+              <!-- CabeÃ§alho do Card: Foto/Avatar, Nome, Polo/Cidade e MatrÃ­cula -->
               <div class="flex items-start justify-between gap-3 mb-3.5">
                 <div class="flex items-center gap-3.5">
                   
@@ -1736,7 +1753,7 @@ function renderStudentCardsGrid(students) {
                       <span>Foto</span>
                     </div>
 
-                    <!-- Mini ícone de câmera no canto -->
+                    <!-- Mini Ã­cone de cÃ¢mera no canto -->
                     <div class="absolute bottom-0 right-0 w-4 h-4 rounded-tl-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm flex items-center justify-center text-[8px] text-indigo-600 dark:text-indigo-400 shadow">
                       <i class="fa-solid fa-camera"></i>
                     </div>
@@ -1762,20 +1779,20 @@ function renderStudentCardsGrid(students) {
                 </div>
 
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border ${stats.statusClass} flex-shrink-0">
-                  <span class="w-1.5 h-1.5 rounded-full ${stats.status === 'Aprovado' ? 'bg-emerald-500' : stats.status === 'Em Recuperação' ? 'bg-amber-500' : stats.status === 'Reprovado' ? 'bg-rose-500' : 'bg-slate-400'}"></span>
+                  <span class="w-1.5 h-1.5 rounded-full ${stats.status === 'Aprovado' ? 'bg-emerald-500' : stats.status === 'Em RecuperaÃ§Ã£o' ? 'bg-amber-500' : stats.status === 'Reprovado' ? 'bg-rose-500' : 'bg-slate-400'}"></span>
                   ${stats.status}
                 </span>
               </div>
 
-              <!-- Data de Inscrição e Resumo de Desempenho -->
+              <!-- Data de InscriÃ§Ã£o e Resumo de Desempenho -->
               <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-3 px-1">
                 ${student.registrationDate ? `
                   <span class="flex items-center gap-1">
-                    <i class="fa-regular fa-calendar-check text-emerald-500"></i> Inscrição: ${student.registrationDate}
+                    <i class="fa-regular fa-calendar-check text-emerald-500"></i> InscriÃ§Ã£o: ${student.registrationDate}
                   </span>
                 ` : '<span></span>'}
                 <span class="font-semibold text-slate-700 dark:text-slate-300">
-                  Média: <strong class="text-indigo-600 dark:text-indigo-400">${stats.overallAvg.toFixed(1)}</strong> • Faltas: <strong>${stats.totalAbsences}</strong>
+                  MÃ©dia: <strong class="text-indigo-600 dark:text-indigo-400">${stats.overallAvg.toFixed(1)}</strong> â€¢ Faltas: <strong>${stats.totalAbsences}</strong>
                 </span>
               </div>
 
@@ -1786,12 +1803,12 @@ function renderStudentCardsGrid(students) {
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate">
                     <i class="fa-solid fa-id-card text-indigo-500 w-4 text-center"></i>
-                    <span class="font-mono text-[11px]">${displayCpf || 'CPF não informado'}</span>
+                    <span class="font-mono text-[11px]">${displayCpf || 'CPF nÃ£o informado'}</span>
                     ${!isRevealed ? `<span class="text-[9px] px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded font-bold">LGPD</span>` : ''}
                   </div>
                   ${cleanPhone ? (isRevealed ? `
                     <a 
-                      href="https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá ${student.name.split(' ')[0]}! Aqui é o professor do curso de Gestão de Mídias Digitais (Emprega Mais Alagoas).`)}" 
+                      href="https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`OlÃ¡ ${student.name.split(' ')[0]}! Aqui Ã© o professor do curso de GestÃ£o de MÃ­dias Digitais (Emprega Mais Alagoas).`)}" 
                       target="_blank" 
                       class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] shadow-sm transition-all flex-shrink-0"
                       title="Chamar no WhatsApp"
@@ -1821,7 +1838,7 @@ function renderStudentCardsGrid(students) {
                   </div>
                   ${student.contact?.email && isRevealed ? `
                     <a 
-                      href="mailto:${student.contact.email}?subject=${encodeURIComponent(`Emprega Mais Alagoas - Mídias Digitais: ${student.name}`)}"
+                      href="mailto:${student.contact.email}?subject=${encodeURIComponent(`Emprega Mais Alagoas - MÃ­dias Digitais: ${student.name}`)}"
                       class="text-indigo-600 dark:text-indigo-400 hover:underline text-[11px] font-semibold flex-shrink-0"
                     >
                       Enviar
@@ -1857,7 +1874,7 @@ function renderStudentCardsGrid(students) {
                   <div class="flex items-center gap-2 p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-xs">
                     <i class="fa-solid fa-briefcase text-indigo-600 dark:text-indigo-400 w-4 text-center flex-shrink-0"></i>
                     <div class="truncate">
-                      <span class="text-[10px] uppercase font-bold text-indigo-700 dark:text-indigo-300 block leading-tight">Área / Profissão</span>
+                      <span class="text-[10px] uppercase font-bold text-indigo-700 dark:text-indigo-300 block leading-tight">Ãrea / ProfissÃ£o</span>
                       <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate block">${student.profession}</span>
                     </div>
                   </div>
@@ -1875,7 +1892,7 @@ function renderStudentCardsGrid(students) {
 
                   ${student.experience ? `
                     <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                      <span class="text-[10px] text-slate-400 uppercase font-bold block leading-tight">Gestão de Redes</span>
+                      <span class="text-[10px] text-slate-400 uppercase font-bold block leading-tight">GestÃ£o de Redes</span>
                       <span class="font-semibold text-[11px] truncate block ${student.experience.toLowerCase().includes('sim') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">
                         ${student.experience}
                       </span>
@@ -1903,7 +1920,7 @@ function renderStudentCardsGrid(students) {
 
               </div>
 
-              <!-- Bloco 3: Gaveta Expansível de Diagnóstico Pedagógico (Desafios, Motivação, Expectativas) -->
+              <!-- Bloco 3: Gaveta ExpansÃ­vel de DiagnÃ³stico PedagÃ³gico (Desafios, MotivaÃ§Ã£o, Expectativas) -->
               ${(student.challenges || student.motivation || student.expectations) ? `
                 <div class="mb-3.5">
                   <button 
@@ -1914,7 +1931,7 @@ function renderStudentCardsGrid(students) {
                   >
                     <span class="flex items-center gap-1.5">
                       <i class="fa-solid fa-brain text-indigo-600 dark:text-indigo-400"></i>
-                      <span>Diagnóstico & Expectativas</span>
+                      <span>DiagnÃ³stico & Expectativas</span>
                     </span>
                     <i id="diag-icon-${student.id}" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
                   </button>
@@ -1935,7 +1952,7 @@ function renderStudentCardsGrid(students) {
                     ${student.motivation ? `
                       <div>
                         <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 text-[10px] uppercase">
-                          <i class="fa-solid fa-fire"></i> Motivação para o Curso:
+                          <i class="fa-solid fa-fire"></i> MotivaÃ§Ã£o para o Curso:
                         </span>
                         <p class="mt-0.5 text-slate-700 dark:text-slate-300 italic pl-1 border-l-2 border-amber-300 dark:border-amber-700">
                           "${student.motivation}"
@@ -1960,7 +1977,7 @@ function renderStudentCardsGrid(students) {
 
             </div>
 
-            <!-- Rodapé com Ações -->
+            <!-- RodapÃ© com AÃ§Ãµes -->
             <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
               
               <div class="flex items-center gap-1.5">
@@ -1981,7 +1998,7 @@ function renderStudentCardsGrid(students) {
                 <button 
                   onclick="openGradesModal('${student.id}')"
                   class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 transition-colors flex items-center gap-1"
-                  title="Lançar Notas"
+                  title="LanÃ§ar Notas"
                 >
                   <i class="fa-solid fa-pen-to-square"></i> Notas
                 </button>
@@ -2037,13 +2054,13 @@ function renderStudentTable(students) {
         <table class="w-full text-left border-collapse text-sm">
           <thead>
             <tr class="bg-slate-50/75 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              <th class="py-3.5 px-4">Aluno / Matrícula</th>
+              <th class="py-3.5 px-4">Aluno / MatrÃ­cula</th>
               <th class="py-3.5 px-4">Turma (Alagoas)</th>
               <th class="py-3.5 px-4">Contatos & WhatsApp</th>
-              <th class="py-3.5 px-4">Endereço / Bairro</th>
-              <th class="py-3.5 px-4 text-center">Média do Curso</th>
-              <th class="py-3.5 px-4 text-center">Situação</th>
-              <th class="py-3.5 px-4 text-right">Ações</th>
+              <th class="py-3.5 px-4">EndereÃ§o / Bairro</th>
+              <th class="py-3.5 px-4 text-center">MÃ©dia do Curso</th>
+              <th class="py-3.5 px-4 text-center">SituaÃ§Ã£o</th>
+              <th class="py-3.5 px-4 text-right">AÃ§Ãµes</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -2079,7 +2096,7 @@ function renderStudentTable(students) {
                         <span onclick="openStudentProfileModal('${student.id}')" class="font-bold text-slate-900 dark:text-slate-100 block hover:text-indigo-600 cursor-pointer">${displayName}</span>
                         <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
                           <span>${student.id}</span>
-                          ${student.cpf ? `<span>• CPF: ${displayCpf}</span>` : ''}
+                          ${student.cpf ? `<span>â€¢ CPF: ${displayCpf}</span>` : ''}
                         </div>
                       </div>
                     </div>
@@ -2110,7 +2127,7 @@ function renderStudentTable(students) {
                   </td>
                   <td class="py-3 px-4">
                     <div class="text-xs text-slate-600 dark:text-slate-300 max-w-[200px] truncate" title="${displayAddress}">
-                      ${displayAddress || '<span class="text-slate-400">Não informado</span>'}
+                      ${displayAddress || '<span class="text-slate-400">NÃ£o informado</span>'}
                     </div>
                   </td>
                   <td class="py-3 px-4 text-center">
@@ -2157,7 +2174,7 @@ function renderStudentTable(students) {
 }
 
 // -------------------------------------------------------------
-// VISUALIZAÇÃO SEGURA (MODO LGPD & SALA DE AULA)
+// VISUALIZAÃ‡ÃƒO SEGURA (MODO LGPD & SALA DE AULA)
 // -------------------------------------------------------------
 function renderSecureStudentCards(students) {
   return `
@@ -2171,13 +2188,13 @@ function renderSecureStudentCards(students) {
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h3 class="font-bold text-sm">Painel Pedagógico Seguro (Conformidade LGPD)</h3>
+              <h3 class="font-bold text-sm">Painel PedagÃ³gico Seguro (Conformidade LGPD)</h3>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100 uppercase">
-                Zero Exposição
+                Zero ExposiÃ§Ã£o
               </span>
             </div>
             <p class="text-xs text-emerald-800/90 dark:text-emerald-300/90 mt-0.5">
-              Esta visualização foi desenhada para projeção pública no Datashow/TV da sala de aula. Mostra todos os diagnósticos, notas e competências dos alunos <strong>sem exibir CPFs, números de telefone ou endereços</strong>.
+              Esta visualizaÃ§Ã£o foi desenhada para projeÃ§Ã£o pÃºblica no Datashow/TV da sala de aula. Mostra todos os diagnÃ³sticos, notas e competÃªncias dos alunos <strong>sem exibir CPFs, nÃºmeros de telefone ou endereÃ§os</strong>.
             </p>
           </div>
         </div>
@@ -2194,7 +2211,7 @@ function renderSecureStudentCards(students) {
         </div>
       </div>
 
-      <!-- Grade de Cards Pedagógicos Seguros -->
+      <!-- Grade de Cards PedagÃ³gicos Seguros -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         ${students.map(student => {
           const stats = calculateStudentOverallStats(student);
@@ -2208,7 +2225,7 @@ function renderSecureStudentCards(students) {
             <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 relative overflow-hidden">
               
               <div>
-                <!-- Topo: Identificação e Status -->
+                <!-- Topo: IdentificaÃ§Ã£o e Status -->
                 <div class="flex items-start justify-between gap-3 mb-3 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} text-white font-bold flex items-center justify-center text-sm shadow-inner flex-shrink-0">
@@ -2227,7 +2244,7 @@ function renderSecureStudentCards(students) {
                       </div>
                       <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         <span class="font-mono text-indigo-600 dark:text-indigo-400 font-bold">${student.id}</span>
-                        <span>•</span>
+                        <span>â€¢</span>
                         <span><i class="fa-solid fa-location-dot text-indigo-500 mr-1"></i>${student.unitCity || student.classroom}</span>
                       </div>
                     </div>
@@ -2235,36 +2252,36 @@ function renderSecureStudentCards(students) {
 
                   <div class="flex flex-col items-end gap-1 flex-shrink-0">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border ${stats.statusClass}">
-                      <span class="w-1.5 h-1.5 rounded-full ${stats.status === 'Aprovado' ? 'bg-emerald-500' : stats.status === 'Em Recuperação' ? 'bg-amber-500' : stats.status === 'Reprovado' ? 'bg-rose-500' : 'bg-slate-400'}"></span>
+                      <span class="w-1.5 h-1.5 rounded-full ${stats.status === 'Aprovado' ? 'bg-emerald-500' : stats.status === 'Em RecuperaÃ§Ã£o' ? 'bg-amber-500' : stats.status === 'Reprovado' ? 'bg-rose-500' : 'bg-slate-400'}"></span>
                       ${stats.status}
                     </span>
                     <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                      Média: <strong class="text-indigo-600 dark:text-indigo-400">${stats.overallAvg.toFixed(1)}</strong>
+                      MÃ©dia: <strong class="text-indigo-600 dark:text-indigo-400">${stats.overallAvg.toFixed(1)}</strong>
                     </span>
                   </div>
                 </div>
 
-                <!-- Perfil Pedagógico & Diagnóstico (Destaque Central) -->
+                <!-- Perfil PedagÃ³gico & DiagnÃ³stico (Destaque Central) -->
                 <div class="space-y-3">
                   
-                  <!-- Bloco 1: Diagnóstico dos Desafios (O mais importante para o professor) -->
+                  <!-- Bloco 1: DiagnÃ³stico dos Desafios (O mais importante para o professor) -->
                   <div class="p-3.5 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40 text-xs">
                     <span class="font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5 uppercase text-[10px] mb-1">
-                      <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios ao Produzir Conteúdo:
+                      <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios ao Produzir ConteÃºdo:
                     </span>
                     <p class="text-slate-700 dark:text-slate-200 italic leading-relaxed">
-                      "${student.challenges || 'Nenhum desafio crítico registrado no formulário inicial.'}"
+                      "${student.challenges || 'Nenhum desafio crÃ­tico registrado no formulÃ¡rio inicial.'}"
                     </p>
                   </div>
 
-                  <!-- Bloco 2: Motivação e Expectativas -->
+                  <!-- Bloco 2: MotivaÃ§Ã£o e Expectativas -->
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                     <div class="p-3 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/40">
                       <span class="font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1 text-[10px] uppercase mb-1">
-                        <i class="fa-solid fa-fire"></i> Motivação para o Curso:
+                        <i class="fa-solid fa-fire"></i> MotivaÃ§Ã£o para o Curso:
                       </span>
                       <p class="text-slate-700 dark:text-slate-300 italic text-[11px] line-clamp-3">
-                        "${student.motivation || 'Qualificação profissional e geração de renda.'}"
+                        "${student.motivation || 'QualificaÃ§Ã£o profissional e geraÃ§Ã£o de renda.'}"
                       </p>
                     </div>
 
@@ -2273,17 +2290,17 @@ function renderSecureStudentCards(students) {
                         <i class="fa-solid fa-bullseye"></i> Expectativas:
                       </span>
                       <p class="text-slate-700 dark:text-slate-300 italic text-[11px] line-clamp-3">
-                        "${student.expectations || 'Aprender estratégias e crescer nas redes sociais.'}"
+                        "${student.expectations || 'Aprender estratÃ©gias e crescer nas redes sociais.'}"
                       </p>
                     </div>
                   </div>
 
-                  <!-- Bloco 3: Ferramentas & Bagagem Prévia -->
+                  <!-- Bloco 3: Ferramentas & Bagagem PrÃ©via -->
                   <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                     <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                      <span class="text-[10px] uppercase font-bold text-slate-400 block">Profissão / Área</span>
-                      <span class="font-semibold text-slate-800 dark:text-slate-200 truncate block text-[11px]" title="${student.profession || 'Não informada'}">
-                        ${student.profession || 'Não informada'}
+                      <span class="text-[10px] uppercase font-bold text-slate-400 block">ProfissÃ£o / Ãrea</span>
+                      <span class="font-semibold text-slate-800 dark:text-slate-200 truncate block text-[11px]" title="${student.profession || 'NÃ£o informada'}">
+                        ${student.profession || 'NÃ£o informada'}
                       </span>
                     </div>
 
@@ -2302,10 +2319,10 @@ function renderSecureStudentCards(students) {
                     </div>
                   </div>
 
-                  <!-- Bloco 4: Notas dos 7 Módulos de Mídias Digitais -->
+                  <!-- Bloco 4: Notas dos 7 MÃ³dulos de MÃ­dias Digitais -->
                   <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-xs space-y-2">
                     <span class="font-bold text-indigo-700 dark:text-indigo-300 text-[10px] uppercase flex items-center justify-between">
-                      <span><i class="fa-solid fa-layer-group mr-1"></i> Desempenho nos Módulos:</span>
+                      <span><i class="fa-solid fa-layer-group mr-1"></i> Desempenho nos MÃ³dulos:</span>
                       <span class="text-slate-500 font-normal">Faltas: ${stats.totalAbsences}</span>
                     </span>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px]">
@@ -2322,7 +2339,7 @@ function renderSecureStudentCards(students) {
                     </div>
                   </div>
 
-                  <!-- Bloco 5: Camada de Proteção de Dados Sensíveis -->
+                  <!-- Bloco 5: Camada de ProteÃ§Ã£o de Dados SensÃ­veis -->
                   <div class="p-3 rounded-2xl ${isRevealed ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800' : 'bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800'} text-xs space-y-1.5">
                     <div class="flex items-center justify-between">
                       <span class="font-bold text-[11px] ${isRevealed ? 'text-amber-800 dark:text-amber-300' : 'text-slate-600 dark:text-slate-300'} flex items-center gap-1.5">
@@ -2340,14 +2357,14 @@ function renderSecureStudentCards(students) {
 
                     ${isRevealed ? `
                       <div class="grid grid-cols-2 gap-2 text-[11px] font-mono pt-1 text-slate-800 dark:text-slate-200">
-                        <div><strong>CPF:</strong> ${student.cpf || 'Não informado'}</div>
-                        <div><strong>WhatsApp:</strong> ${student.contact?.phone || 'Não informado'}</div>
-                        <div class="col-span-2 truncate"><strong>E-mail:</strong> ${student.contact?.email || 'Não informado'}</div>
-                        <div class="col-span-2 truncate"><strong>Endereço:</strong> ${student.address?.street || ''} ${student.address?.number || ''} - ${student.address?.neighborhood || ''}, ${student.address?.city || ''}</div>
+                        <div><strong>CPF:</strong> ${student.cpf || 'NÃ£o informado'}</div>
+                        <div><strong>WhatsApp:</strong> ${student.contact?.phone || 'NÃ£o informado'}</div>
+                        <div class="col-span-2 truncate"><strong>E-mail:</strong> ${student.contact?.email || 'NÃ£o informado'}</div>
+                        <div class="col-span-2 truncate"><strong>EndereÃ§o:</strong> ${student.address?.street || ''} ${student.address?.number || ''} - ${student.address?.neighborhood || ''}, ${student.address?.city || ''}</div>
                       </div>
                     ` : `
                       <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                        CPF (${displayCpf}), WhatsApp (${displayPhone}) e e-mail estão mascarados.
+                        CPF (${displayCpf}), WhatsApp (${displayPhone}) e e-mail estÃ£o mascarados.
                       </p>
                     `}
                   </div>
@@ -2355,20 +2372,20 @@ function renderSecureStudentCards(students) {
                 </div>
               </div>
 
-              <!-- Rodapé de Ações Pedagógicas -->
+              <!-- RodapÃ© de AÃ§Ãµes PedagÃ³gicas -->
               <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                   <button 
                     onclick="openStudentProfileModal('${student.id}')"
                     class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-colors flex items-center gap-1.5"
-                    title="Ficha Pedagógica"
+                    title="Ficha PedagÃ³gica"
                   >
                     <i class="fa-solid fa-id-card-clip"></i> Ficha
                   </button>
                   <button 
                     onclick="openGradesModal('${student.id}')"
                     class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5"
-                    title="Lançar Notas"
+                    title="LanÃ§ar Notas"
                   >
                     <i class="fa-solid fa-pen-to-square text-amber-500"></i> Notas
                   </button>
@@ -2454,7 +2471,7 @@ function openStudentProfileModal(studentId) {
             </div>
             <div>
               <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Ficha Individual do Aluno</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Programa Emprega Mais Alagoas • Gestão de Mídias Digitais</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Programa Emprega Mais Alagoas â€¢ GestÃ£o de MÃ­dias Digitais</p>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -2470,10 +2487,10 @@ function openStudentProfileModal(studentId) {
           </div>
         </div>
 
-        <!-- Conteúdo da Ficha -->
+        <!-- ConteÃºdo da Ficha -->
         <div class="p-6 overflow-y-auto flex-1 space-y-5 text-slate-800 dark:text-slate-200">
           
-          <!-- Banner Principal com Identificação -->
+          <!-- Banner Principal com IdentificaÃ§Ã£o -->
           <div class="p-5 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
               <div 
@@ -2513,26 +2530,26 @@ function openStudentProfileModal(studentId) {
                     <i class="fa-solid fa-location-dot mr-1 text-amber-300"></i>${student.unitCity || student.classroom || 'Alagoas'}
                   </span>
                   <span class="text-xs font-mono text-indigo-200">ID: ${student.id}</span>
-                  ${student.cpf ? `<span class="text-xs font-mono text-amber-300 font-semibold">• CPF: ${displayCpf}</span>` : ''}
+                  ${student.cpf ? `<span class="text-xs font-mono text-amber-300 font-semibold">â€¢ CPF: ${displayCpf}</span>` : ''}
                 </div>
               </div>
             </div>
 
             <div class="flex sm:flex-col items-center sm:items-end gap-2 bg-white/10 sm:bg-transparent p-2.5 sm:p-0 rounded-2xl w-full sm:w-auto justify-between">
-              <span class="px-3 py-1 rounded-full text-xs font-extrabold ${stats.status === 'Aprovado' ? 'bg-emerald-500 text-white' : stats.status === 'Em Recuperação' ? 'bg-amber-500 text-slate-950' : 'bg-rose-500 text-white'}">
+              <span class="px-3 py-1 rounded-full text-xs font-extrabold ${stats.status === 'Aprovado' ? 'bg-emerald-500 text-white' : stats.status === 'Em RecuperaÃ§Ã£o' ? 'bg-amber-500 text-slate-950' : 'bg-rose-500 text-white'}">
                 ${stats.status}
               </span>
-              <span class="text-xs text-indigo-200 font-medium">Média: <strong>${stats.overallAvg.toFixed(1)}</strong></span>
+              <span class="text-xs text-indigo-200 font-medium">MÃ©dia: <strong>${stats.overallAvg.toFixed(1)}</strong></span>
             </div>
           </div>
 
-          <!-- Grade de Informações Cadastrais e Redes -->
+          <!-- Grade de InformaÃ§Ãµes Cadastrais e Redes -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             
             <!-- Box Contatos -->
             <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2.5">
               <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 uppercase tracking-wider text-[11px] text-indigo-600 dark:text-indigo-400">
-                <i class="fa-solid fa-address-book"></i> Contatos & Comunicação
+                <i class="fa-solid fa-address-book"></i> Contatos & ComunicaÃ§Ã£o
               </h3>
               
               <div class="flex items-center justify-between">
@@ -2548,7 +2565,7 @@ function openStudentProfileModal(studentId) {
                       <i class="fa-solid fa-lock"></i>
                     </button>
                   </span>
-                `) : '<span class="italic text-slate-400">Não informado</span>'}
+                `) : '<span class="italic text-slate-400">NÃ£o informado</span>'}
               </div>
 
               <div class="flex items-center justify-between">
@@ -2559,7 +2576,7 @@ function openStudentProfileModal(studentId) {
                   </a>
                 ` : `
                   <span class="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">${displayEmail}</span>
-                `) : '<span class="italic text-slate-400">Não informado</span>'}
+                `) : '<span class="italic text-slate-400">NÃ£o informado</span>'}
               </div>
 
               <div class="flex items-center justify-between">
@@ -2569,70 +2586,70 @@ function openStudentProfileModal(studentId) {
                     <i class="${isInstagram ? 'fa-brands fa-instagram text-pink-500' : isTiktok ? 'fa-brands fa-tiktok text-slate-900 dark:text-white' : 'fa-solid fa-share-nodes'}"></i>
                     <span class="truncate">${socialDisplay}</span>
                   </a>
-                ` : '<span class="italic text-slate-400">Não informado</span>'}
+                ` : '<span class="italic text-slate-400">NÃ£o informado</span>'}
               </div>
 
               <div class="flex items-center justify-between">
-                <span class="text-slate-500">Data de Inscrição:</span>
-                <span class="font-mono text-slate-700 dark:text-slate-300">${student.registrationDate || 'Não informada'}</span>
+                <span class="text-slate-500">Data de InscriÃ§Ã£o:</span>
+                <span class="font-mono text-slate-700 dark:text-slate-300">${student.registrationDate || 'NÃ£o informada'}</span>
               </div>
             </div>
 
             <!-- Box Perfil Profissional -->
             <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2.5">
               <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 uppercase tracking-wider text-[11px] text-indigo-600 dark:text-indigo-400">
-                <i class="fa-solid fa-user-graduate"></i> Perfil Profissional & Acadêmico
+                <i class="fa-solid fa-user-graduate"></i> Perfil Profissional & AcadÃªmico
               </h3>
 
               <div>
-                <span class="text-slate-500 block text-[10px] uppercase font-semibold">Área de Atuação / Profissão:</span>
-                <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">${student.profession || 'Não informada'}</span>
+                <span class="text-slate-500 block text-[10px] uppercase font-semibold">Ãrea de AtuaÃ§Ã£o / ProfissÃ£o:</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">${student.profession || 'NÃ£o informada'}</span>
               </div>
 
               <div>
                 <span class="text-slate-500 block text-[10px] uppercase font-semibold">Escolaridade:</span>
-                <span class="font-semibold text-slate-700 dark:text-slate-300 text-xs">${student.education || 'Não informada'}</span>
+                <span class="font-semibold text-slate-700 dark:text-slate-300 text-xs">${student.education || 'NÃ£o informada'}</span>
               </div>
 
               <div class="flex items-center justify-between">
-                <span class="text-slate-500">Experiência com Gestão de Redes:</span>
+                <span class="text-slate-500">ExperiÃªncia com GestÃ£o de Redes:</span>
                 <span class="font-bold ${student.experience?.toLowerCase().includes('sim') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">
-                  ${student.experience || 'Não'}
+                  ${student.experience || 'NÃ£o'}
                 </span>
               </div>
             </div>
 
           </div>
 
-          <!-- Diagnóstico Pedagógico Aprofundado -->
+          <!-- DiagnÃ³stico PedagÃ³gico Aprofundado -->
           <div class="p-5 rounded-3xl bg-indigo-50/50 dark:bg-slate-800/60 border border-indigo-100 dark:border-slate-700 space-y-4">
             <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-brain text-indigo-600 dark:text-indigo-400"></i> Diagnóstico Pedagógico e Expectativas de Aprendizado
+              <i class="fa-solid fa-brain text-indigo-600 dark:text-indigo-400"></i> DiagnÃ³stico PedagÃ³gico e Expectativas de Aprendizado
             </h3>
 
             <div class="grid grid-cols-1 gap-3.5 text-xs">
               
               <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                 <span class="font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 uppercase text-[11px] mb-1">
-                  <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios ao Produzir Conteúdo
+                  <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios ao Produzir ConteÃºdo
                 </span>
                 <p class="text-slate-700 dark:text-slate-300 italic text-xs leading-relaxed">
-                  "${student.challenges || 'Nenhum desafio registrado no formulário.'}"
+                  "${student.challenges || 'Nenhum desafio registrado no formulÃ¡rio.'}"
                 </p>
               </div>
 
               <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                 <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5 uppercase text-[11px] mb-1">
-                  <i class="fa-solid fa-fire"></i> Motivação para se Inscrever no Curso
+                  <i class="fa-solid fa-fire"></i> MotivaÃ§Ã£o para se Inscrever no Curso
                 </span>
                 <p class="text-slate-700 dark:text-slate-300 italic text-xs leading-relaxed">
-                  "${student.motivation || 'Nenhuma motivação registrada.'}"
+                  "${student.motivation || 'Nenhuma motivaÃ§Ã£o registrada.'}"
                 </p>
               </div>
 
               <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                 <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 uppercase text-[11px] mb-1">
-                  <i class="fa-solid fa-bullseye"></i> Expectativas em Relação ao Curso
+                  <i class="fa-solid fa-bullseye"></i> Expectativas em RelaÃ§Ã£o ao Curso
                 </span>
                 <p class="text-slate-700 dark:text-slate-300 italic text-xs leading-relaxed">
                   "${student.expectations || 'Nenhuma expectativa registrada.'}"
@@ -2642,10 +2659,10 @@ function openStudentProfileModal(studentId) {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                   <span class="font-bold text-slate-500 uppercase text-[10px] block mb-1">Redes Sociais Mais Utilizadas:</span>
-                  <span class="font-medium text-slate-800 dark:text-slate-200">${student.frequentNetworks || 'Não informado'}</span>
+                  <span class="font-medium text-slate-800 dark:text-slate-200">${student.frequentNetworks || 'NÃ£o informado'}</span>
                 </div>
                 <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                  <span class="font-bold text-slate-500 uppercase text-[10px] block mb-1">Ferramentas que já utilizou:</span>
+                  <span class="font-bold text-slate-500 uppercase text-[10px] block mb-1">Ferramentas que jÃ¡ utilizou:</span>
                   <span class="font-medium text-slate-800 dark:text-slate-200">${student.tools || 'Nenhuma'}</span>
                 </div>
               </div>
@@ -2653,21 +2670,21 @@ function openStudentProfileModal(studentId) {
             </div>
           </div>
 
-          <!-- Rodapé do Modal -->
+          <!-- RodapÃ© do Modal -->
           <div class="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 no-print">
             <div class="flex items-center gap-2 flex-wrap">
               <button 
                 onclick="openGradesModal('${student.id}')"
                 class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 transition-all"
               >
-                <i class="fa-solid fa-pen-to-square mr-1"></i> Lançar Notas
+                <i class="fa-solid fa-pen-to-square mr-1"></i> LanÃ§ar Notas
               </button>
               <button 
                 onclick="openSendEmailReportModal('${student.id}')"
                 class="px-4 py-2 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all transform active:scale-95"
-                title="Enviar relatório de diagnóstico e notas diretamente por e-mail"
+                title="Enviar relatÃ³rio de diagnÃ³stico e notas diretamente por e-mail"
               >
-                <i class="fa-solid fa-paper-plane"></i> Enviar Relatório por E-mail
+                <i class="fa-solid fa-paper-plane"></i> Enviar RelatÃ³rio por E-mail
               </button>
             </div>
             <button 
@@ -2686,13 +2703,13 @@ function openStudentProfileModal(studentId) {
 }
 
 // -------------------------------------------------------------
-// GESTÃO DE FOTOS DOS ALUNOS (COMPRESSÃO, UPLOAD & WEBCAM)
+// GESTÃƒO DE FOTOS DOS ALUNOS (COMPRESSÃƒO, UPLOAD & WEBCAM)
 // -------------------------------------------------------------
 
 function compressAndCropImage(file, maxSize = 400, quality = 0.85) {
   return new Promise((resolve, reject) => {
     if (!file || !file.type.startsWith("image/")) {
-      reject(new Error("Arquivo inválido. Selecione uma imagem JPG, PNG ou WEBP."));
+      reject(new Error("Arquivo invÃ¡lido. Selecione uma imagem JPG, PNG ou WEBP."));
       return;
     }
 
@@ -2782,7 +2799,7 @@ function openPhotoUploadModal(studentId) {
             </div>
             <div>
               <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Foto do Aluno</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[280px] sm:max-w-md">${student.name} • ${student.unitCity || student.classroom}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[280px] sm:max-w-md">${student.name} â€¢ ${student.unitCity || student.classroom}</p>
             </div>
           </div>
           <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -2831,7 +2848,7 @@ function openPhotoUploadModal(studentId) {
             <span class="text-xs text-slate-400 font-mono">${student.id}</span>
           </div>
 
-          <!-- Abas de Opções de Foto -->
+          <!-- Abas de OpÃ§Ãµes de Foto -->
           <div class="border-b border-slate-200 dark:border-slate-800">
             <div class="flex items-center justify-center gap-2" id="photo-tabs">
               <button 
@@ -2846,7 +2863,7 @@ function openPhotoUploadModal(studentId) {
                 id="photo-tab-camera"
                 class="px-3.5 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-1.5"
               >
-                <i class="fa-solid fa-camera"></i> Câmera
+                <i class="fa-solid fa-camera"></i> CÃ¢mera
               </button>
               <button 
                 onclick="switchPhotoUploadTab('url')"
@@ -2878,7 +2895,7 @@ function openPhotoUploadModal(studentId) {
                 <i class="fa-solid fa-cloud-arrow-up"></i>
               </div>
               <p class="text-xs font-bold text-slate-800 dark:text-slate-200">Arraste uma foto aqui ou clique para selecionar</p>
-              <p class="text-[11px] text-slate-400 mt-1">Suporta JPG, PNG e WEBP (otimização automática)</p>
+              <p class="text-[11px] text-slate-400 mt-1">Suporta JPG, PNG e WEBP (otimizaÃ§Ã£o automÃ¡tica)</p>
               <input 
                 type="file" 
                 id="photo-modal-file-input" 
@@ -2889,7 +2906,7 @@ function openPhotoUploadModal(studentId) {
             </div>
           </div>
 
-          <!-- Painel 2: Webcam / Câmera -->
+          <!-- Painel 2: Webcam / CÃ¢mera -->
           <div id="photo-pane-camera" class="space-y-3 hidden">
             <div class="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex flex-col items-center justify-center min-h-[220px]">
               <video id="photo-modal-video" autoplay playsinline class="w-full h-56 object-cover hidden"></video>
@@ -2897,7 +2914,7 @@ function openPhotoUploadModal(studentId) {
               
               <div id="photo-modal-camera-placeholder" class="text-center p-6 space-y-2">
                 <i class="fa-solid fa-camera text-3xl text-slate-600 block"></i>
-                <p class="text-xs text-slate-400 font-medium">Clique no botão abaixo para ativar a câmera</p>
+                <p class="text-xs text-slate-400 font-medium">Clique no botÃ£o abaixo para ativar a cÃ¢mera</p>
               </div>
             </div>
 
@@ -2908,7 +2925,7 @@ function openPhotoUploadModal(studentId) {
                 onclick="startPhotoModalWebcam()" 
                 class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center gap-1.5"
               >
-                <i class="fa-solid fa-video"></i> Ligar Câmera
+                <i class="fa-solid fa-video"></i> Ligar CÃ¢mera
               </button>
               <button 
                 type="button" 
@@ -2969,7 +2986,7 @@ function openPhotoUploadModal(studentId) {
 
         </div>
 
-        <!-- Rodapé do Modal -->
+        <!-- RodapÃ© do Modal -->
         <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
           <button 
             type="button" 
@@ -3078,7 +3095,7 @@ async function startPhotoModalWebcam() {
     if (captureBtn) captureBtn.classList.remove("hidden");
     if (stopBtn) stopBtn.classList.remove("hidden");
   } catch (err) {
-    showToast("Não foi possível acessar a câmera: " + err.message, "error");
+    showToast("NÃ£o foi possÃ­vel acessar a cÃ¢mera: " + err.message, "error");
   }
 }
 
@@ -3162,7 +3179,7 @@ function removePhotoModalPhoto() {
     previewBox.innerHTML = `<span id="photo-modal-preview-initials">${initials}</span>`;
   }
   if (delBtn) delBtn.classList.add("hidden");
-  showToast("Foto removida da pré-visualização.", "info");
+  showToast("Foto removida da prÃ©-visualizaÃ§Ã£o.", "info");
 }
 
 function savePhotoModalPhoto() {
@@ -3177,7 +3194,7 @@ function savePhotoModalPhoto() {
   renderApp();
 }
 
-// Funções para o Formulário de Cadastro / Edição
+// FunÃ§Ãµes para o FormulÃ¡rio de Cadastro / EdiÃ§Ã£o
 async function handleFormPhotoFileSelect(event) {
   const file = event.target.files?.[0];
   if (!file) return;
@@ -3195,7 +3212,7 @@ async function handleFormPhotoFileSelect(event) {
       removeBtn.classList.remove("hidden");
       removeBtn.classList.add("flex");
     }
-    showToast("Foto carregada no formulário!", "success");
+    showToast("Foto carregada no formulÃ¡rio!", "success");
   } catch (err) {
     showToast(err.message, "error");
   }
@@ -3206,7 +3223,7 @@ function openWebcamForStudentForm() {
   if (studentId) {
     openPhotoUploadModal(studentId);
   } else {
-    showToast("Para usar a câmera, selecione um arquivo ou salve o aluno primeiro.", "info");
+    showToast("Para usar a cÃ¢mera, selecione um arquivo ou salve o aluno primeiro.", "info");
   }
 }
 
@@ -3224,7 +3241,7 @@ function removeFormPhoto() {
     removeBtn.classList.add("hidden");
     removeBtn.classList.remove("flex");
   }
-  showToast("Foto removida do formulário.", "info");
+  showToast("Foto removida do formulÃ¡rio.", "info");
 }
 
 function setFormAvatarColor(colorGradient) {
@@ -3250,7 +3267,7 @@ function renderEmptyState() {
       </div>
       <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">Nenhum aluno cadastrado ou encontrado</h3>
       <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6">
-        Conecte a API do Google Sheets ou faça a importação dos seus alunos do Emprega Mais Alagoas.
+        Conecte a API do Google Sheets ou faÃ§a a importaÃ§Ã£o dos seus alunos do Emprega Mais Alagoas.
       </p>
       <div class="flex flex-wrap items-center justify-center gap-3">
         <button onclick="openGoogleSheetsImportModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md flex items-center gap-2">
@@ -3287,7 +3304,7 @@ function openGoogleSheetsImportModal() {
             </div>
             <div>
               <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
-                Google Sheets API v4 • Conexão Direta
+                Google Sheets API v4 â€¢ ConexÃ£o Direta
               </h2>
               <p class="text-xs text-slate-500 dark:text-slate-400">Consumindo dados diretamente da sua planilha do Google</p>
             </div>
@@ -3324,7 +3341,7 @@ function openGoogleSheetsImportModal() {
           </div>
         </div>
 
-        <!-- Conteúdo das Abas -->
+        <!-- ConteÃºdo das Abas -->
         <div class="p-6 overflow-y-auto flex-1 space-y-5">
           
           <!-- Aba 1: Google Sheets API v4 Direta -->
@@ -3391,7 +3408,7 @@ function openGoogleSheetsImportModal() {
               <textarea 
                 id="raw-paste-input" 
                 rows="6" 
-                placeholder="Nome&#9;Email&#9;Telefone&#9;Turma&#9;Marketing Digital&#9;Design&#nAlana Vitória&#9;alana@aluno.al.gov.br&#9;(82) 99654-1122&#9;Maceió Matutino&#9;9.5&#9;8.5"
+                placeholder="Nome&#9;Email&#9;Telefone&#9;Turma&#9;Marketing Digital&#9;Design&#nAlana VitÃ³ria&#9;alana@aluno.al.gov.br&#9;(82) 99654-1122&#9;MaceiÃ³ Matutino&#9;9.5&#9;8.5"
                 class="w-full p-3 font-mono text-xs rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20"
               ></textarea>
             </div>
@@ -3418,7 +3435,7 @@ function openGoogleSheetsImportModal() {
             </div>
           </div>
 
-          <!-- Área de Pré-Visualização -->
+          <!-- Ãrea de PrÃ©-VisualizaÃ§Ã£o -->
           <div id="import-preview-area" class="hidden pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
             <div class="flex items-center justify-between">
               <h4 class="font-bold text-xs text-slate-900 dark:text-slate-100 flex items-center gap-2">
@@ -3488,7 +3505,7 @@ function handleApiFetchClick() {
   fetchGoogleSheetsApiData(sheetIdOrUrl, range);
 }
 
-async function fetchGoogleSheetsApiData(sheetIdOrUrl, customRange = "Respostas ao formulário 1!A1:Z1000") {
+async function fetchGoogleSheetsApiData(sheetIdOrUrl, customRange = "Respostas ao formulÃ¡rio 1!A1:Z1000") {
   let spreadsheetId = sheetIdOrUrl;
   const match = sheetIdOrUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
   if (match && match[1]) {
@@ -3496,9 +3513,9 @@ async function fetchGoogleSheetsApiData(sheetIdOrUrl, customRange = "Respostas a
   }
 
   const apiKey = AppState.settings.googleApiKey || "AIzaSyD7OPd8OJt2BecNHTBYg0LF31cF_7UB1VI";
-  const range = customRange || "Respostas ao formulário 1!A1:Z1000";
+  const range = customRange || "Respostas ao formulÃ¡rio 1!A1:Z1000";
 
-  showToast("Conectando à Google Sheets API v4...", "info");
+  showToast("Conectando Ã  Google Sheets API v4...", "info");
 
   try {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
@@ -3541,13 +3558,13 @@ function processGoogleSheetsApiRows(rows) {
   const idxCity = header.findIndex(h => h.includes("cidade") || h.includes("sine") || h.includes("unidade") || h.includes("turma"));
   const idxPhone = header.findIndex(h => h.includes("telefone") || h.includes("whatsapp") || h.includes("fone") || h.includes("celular"));
   const idxSocial = header.findIndex(h => h.includes("rede social") || h.includes("link da sua rede"));
-  const idxProfession = header.findIndex(h => h.includes("área de atuação") || h.includes("area de atuacao") || h.includes("profissão") || h.includes("profissao"));
-  const idxEducation = header.findIndex(h => h.includes("escolaridade") || h.includes("nível") || h.includes("nivel"));
-  const idxFrequent = header.findIndex(h => h.includes("mais frequência") || h.includes("mais frequencia") || h.includes("quais redes"));
+  const idxProfession = header.findIndex(h => h.includes("Ã¡rea de atuaÃ§Ã£o") || h.includes("area de atuacao") || h.includes("profissÃ£o") || h.includes("profissao"));
+  const idxEducation = header.findIndex(h => h.includes("escolaridade") || h.includes("nÃ­vel") || h.includes("nivel"));
+  const idxFrequent = header.findIndex(h => h.includes("mais frequÃªncia") || h.includes("mais frequencia") || h.includes("quais redes"));
   const idxExp = header.findIndex(h => h.includes("trabalhou com gerenciamento") || h.includes("gerenciamento de redes"));
   const idxTools = header.findIndex(h => h.includes("ferramentas"));
   const idxChallenges = header.findIndex(h => h.includes("desafios"));
-  const idxMotivation = header.findIndex(h => h.includes("motivou") || h.includes("motivação"));
+  const idxMotivation = header.findIndex(h => h.includes("motivou") || h.includes("motivaÃ§Ã£o"));
   const idxExpectations = header.findIndex(h => h.includes("expectativas"));
 
   const parsed = [];
@@ -3562,7 +3579,7 @@ function processGoogleSheetsApiRows(rows) {
     const rawCpf = idxCpf !== -1 && row[idxCpf] ? row[idxCpf].trim() : (row[3] || "");
     const rawPhone = idxPhone !== -1 && row[idxPhone] ? row[idxPhone].trim() : (row[7] || "");
     const rawEmail = idxEmail !== -1 && row[idxEmail] ? row[idxEmail].trim() : (row[1] || row[5] || "");
-    const rawCity = idxCity !== -1 && row[idxCity] ? row[idxCity].trim() : (row[6] || "Maceió - SINE");
+    const rawCity = idxCity !== -1 && row[idxCity] ? row[idxCity].trim() : (row[6] || "MaceiÃ³ - SINE");
     const rawSocial = idxSocial !== -1 && row[idxSocial] ? row[idxSocial].trim() : (row[8] || "");
     const rawProf = idxProfession !== -1 && row[idxProfession] ? row[idxProfession].trim() : (row[9] || "");
     const rawEdu = idxEducation !== -1 && row[idxEducation] ? row[idxEducation].trim() : (row[10] || "");
@@ -3596,9 +3613,9 @@ function processGoogleSheetsApiRows(rows) {
       name: rawName,
       cpf: formattedCpf,
       birthDate: "",
-      gender: "Não especificado",
-      classroom: rawCity || "Maceió - SINE",
-      unitCity: rawCity || "Maceió - SINE",
+      gender: "NÃ£o especificado",
+      classroom: rawCity || "MaceiÃ³ - SINE",
+      unitCity: rawCity || "MaceiÃ³ - SINE",
       registrationDate: rawTime,
       status: "Ativo",
       avatarColor: "from-indigo-500 to-purple-600",
@@ -3616,7 +3633,7 @@ function processGoogleSheetsApiRows(rows) {
         phone: formattedPhone,
         email: rawEmail,
         guardianName: "",
-        guardianKinship: "Responsável",
+        guardianKinship: "ResponsÃ¡vel",
         guardianPhone: ""
       },
       address: {
@@ -3629,12 +3646,12 @@ function processGoogleSheetsApiRows(rows) {
         state: "AL"
       },
       grades: {
-        "Marketing Digital & Estratégia": { b1: 9.0, b2: 9.0, b3: 9.5, b4: 9.5, absences: 0 },
-        "Criação de Conteúdo & Copywriting": { b1: 9.0, b2: 9.5, b3: 9.0, b4: 9.5, absences: 0 },
+        "Marketing Digital & EstratÃ©gia": { b1: 9.0, b2: 9.0, b3: 9.5, b4: 9.5, absences: 0 },
+        "CriaÃ§Ã£o de ConteÃºdo & Copywriting": { b1: 9.0, b2: 9.5, b3: 9.0, b4: 9.5, absences: 0 },
         "Design & Identidade Visual": { b1: 8.5, b2: 9.0, b3: 8.5, b4: 9.0, absences: 0 },
-        "Edição de Vídeo & Reels": { b1: 9.0, b2: 9.5, b3: 9.0, b4: 9.5, absences: 0 },
-        "Tráfego Pago & Meta Ads": { b1: 8.5, b2: 9.0, b3: 8.5, b4: 9.0, absences: 0 },
-        "Métricas & Analytics": { b1: 9.0, b2: 9.0, b3: 9.5, b4: 9.0, absences: 0 },
+        "EdiÃ§Ã£o de VÃ­deo & Reels": { b1: 9.0, b2: 9.5, b3: 9.0, b4: 9.5, absences: 0 },
+        "TrÃ¡fego Pago & Meta Ads": { b1: 8.5, b2: 9.0, b3: 8.5, b4: 9.0, absences: 0 },
+        "MÃ©tricas & Analytics": { b1: 9.0, b2: 9.0, b3: 9.5, b4: 9.0, absences: 0 },
         "Projeto Integrador Final": { b1: 9.5, b2: 10.0, b3: 9.5, b4: 10.0, absences: 0 }
       }
     };
@@ -3740,7 +3757,7 @@ function commitImportedStudents() {
 }
 
 // -------------------------------------------------------------
-// INTEGRAÇÃO COM SUPABASE CLOUD DATABASE & STORAGE
+// INTEGRAÃ‡ÃƒO COM SUPABASE CLOUD DATABASE & STORAGE
 // -------------------------------------------------------------
 
 const SUPABASE_SQL_SCHEMA = `-- ==============================================================
@@ -3821,14 +3838,14 @@ async function testSupabaseConnection(silent = false) {
   }
 
   if (typeof window.supabase === "undefined" || !window.supabase.createClient) {
-    if (!silent) showToast("Biblioteca do Supabase indisponível no navegador. Verifique sua conexão.", "error");
+    if (!silent) showToast("Biblioteca do Supabase indisponÃ­vel no navegador. Verifique sua conexÃ£o.", "error");
     return false;
   }
 
   const btn = document.getElementById("btn-test-supabase");
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testando Conexão...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testando ConexÃ£o...';
   }
 
   try {
@@ -3843,7 +3860,7 @@ async function testSupabaseConnection(silent = false) {
         saveSettings();
         updateSupabaseConnectionStatusUI(true, "Projeto Conectado! (Crie a tabela na aba 'Script SQL')");
         if (!silent) {
-          showToast("Conexão OK com Supabase! Falta criar a tabela. Vá na aba 'Script SQL', copie e execute no Supabase.", "warning", 6000);
+          showToast("ConexÃ£o OK com Supabase! Falta criar a tabela. VÃ¡ na aba 'Script SQL', copie e execute no Supabase.", "warning", 6000);
         }
         updateHeaderCounts();
         return true;
@@ -3863,18 +3880,18 @@ async function testSupabaseConnection(silent = false) {
     updateHeaderCounts();
     return true;
   } catch (err) {
-    console.error("Falha de conexão com Supabase:", err);
+    console.error("Falha de conexÃ£o com Supabase:", err);
     AppState.settings.supabaseConnected = false;
     saveSettings();
-    updateSupabaseConnectionStatusUI(false, "Erro de Conexão: " + (err.message || "Credenciais inválidas"));
+    updateSupabaseConnectionStatusUI(false, "Erro de ConexÃ£o: " + (err.message || "Credenciais invÃ¡lidas"));
     if (!silent) {
-      showToast("Falha na conexão: " + (err.message || "Verifique a URL e Anon Key"), "error");
+      showToast("Falha na conexÃ£o: " + (err.message || "Verifique a URL e Anon Key"), "error");
     }
     return false;
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-plug-circle-check"></i> Testar e Salvar Conexão';
+      btn.innerHTML = '<i class="fa-solid fa-plug-circle-check"></i> Testar e Salvar ConexÃ£o';
     }
   }
 }
@@ -3892,12 +3909,12 @@ function updateSupabaseConnectionStatusUI(connected, message) {
     }
   }
   if (msgEl) {
-    msgEl.textContent = message || (connected ? "Pronto para sincronização" : "Configure a URL e a Anon Key pública");
+    msgEl.textContent = message || (connected ? "Pronto para sincronizaÃ§Ã£o" : "Configure a URL e a Anon Key pÃºblica");
   }
 }
 
 function disconnectSupabase() {
-  if (!confirm("Deseja desconectar o Supabase deste navegador? Seus dados locais permanecerão intactos.")) return;
+  if (!confirm("Deseja desconectar o Supabase deste navegador? Seus dados locais permanecerÃ£o intactos.")) return;
   AppState.settings.supabaseUrl = "";
   AppState.settings.supabaseAnonKey = "";
   AppState.settings.supabaseConnected = false;
@@ -3911,7 +3928,7 @@ function disconnectSupabase() {
 async function syncStudentsToSupabase() {
   const client = getSupabaseClient();
   if (!client) {
-    showToast("Supabase não conectado. Configure a URL e a Anon Key primeiro.", "error");
+    showToast("Supabase nÃ£o conectado. Configure a URL e a Anon Key primeiro.", "error");
     switchSupabaseTab("config");
     return;
   }
@@ -3985,7 +4002,7 @@ async function syncStudentsToSupabase() {
 async function fetchStudentsFromSupabase() {
   const client = getSupabaseClient();
   if (!client) {
-    showToast("Supabase não configurado. Configure a URL e a Anon Key primeiro.", "error");
+    showToast("Supabase nÃ£o configurado. Configure a URL e a Anon Key primeiro.", "error");
     switchSupabaseTab("config");
     return;
   }
@@ -4005,7 +4022,7 @@ async function fetchStudentsFromSupabase() {
       return;
     }
 
-    if (!confirm(`Foram encontrados ${data.length} alunos na nuvem Supabase. Deseja integrá-los aos seus dados locais?`)) {
+    if (!confirm(`Foram encontrados ${data.length} alunos na nuvem Supabase. Deseja integrÃ¡-los aos seus dados locais?`)) {
       return;
     }
 
@@ -4071,7 +4088,7 @@ async function fetchStudentsFromSupabase() {
     saveDataToStorage();
     saveSettings();
 
-    showToast(`Restauração Concluída! ${addedCount} novos alunos adicionados e ${updatedCount} atualizados da nuvem.`, "success", 5000);
+    showToast(`RestauraÃ§Ã£o ConcluÃ­da! ${addedCount} novos alunos adicionados e ${updatedCount} atualizados da nuvem.`, "success", 5000);
     renderApp();
     renderSupabaseSyncStats();
     updateHeaderCounts();
@@ -4112,9 +4129,9 @@ function renderSupabaseSyncStats() {
   if (syncStatEl) {
     if (AppState.settings.lastSupabaseSync) {
       const d = new Date(AppState.settings.lastSupabaseSync);
-      syncStatEl.textContent = "Última sincronização: " + d.toLocaleDateString("pt-BR") + " às " + d.toLocaleTimeString("pt-BR");
+      syncStatEl.textContent = "Ãšltima sincronizaÃ§Ã£o: " + d.toLocaleDateString("pt-BR") + " Ã s " + d.toLocaleTimeString("pt-BR");
     } else {
-      syncStatEl.textContent = "Nenhuma sincronização realizada ainda.";
+      syncStatEl.textContent = "Nenhuma sincronizaÃ§Ã£o realizada ainda.";
     }
   }
 }
@@ -4145,7 +4162,7 @@ function openSupabaseModal() {
   const isConnected = AppState.settings.supabaseConnected && !!currentUrl && !!currentKey;
   const totalStudents = AppState.students.length;
   const lastSyncText = AppState.settings.lastSupabaseSync 
-    ? new Date(AppState.settings.lastSupabaseSync).toLocaleDateString("pt-BR") + " às " + new Date(AppState.settings.lastSupabaseSync).toLocaleTimeString("pt-BR")
+    ? new Date(AppState.settings.lastSupabaseSync).toLocaleDateString("pt-BR") + " Ã s " + new Date(AppState.settings.lastSupabaseSync).toLocaleTimeString("pt-BR")
     : "Nunca";
 
   modalContainer.innerHTML = `
@@ -4164,7 +4181,7 @@ function openSupabaseModal() {
                   Supabase Cloud Database & Storage
                 </h2>
                 <span id="supabase-status-badge" class="${isConnected ? 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' : 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700'}">
-                  <i class="fa-solid ${isConnected ? 'fa-circle-check text-emerald-600' : 'fa-circle-notch text-slate-400'}"></i> ${isConnected ? 'Conectado' : 'Não configurado'}
+                  <i class="fa-solid ${isConnected ? 'fa-circle-check text-emerald-600' : 'fa-circle-notch text-slate-400'}"></i> ${isConnected ? 'Conectado' : 'NÃ£o configurado'}
                 </span>
               </div>
               <p class="text-xs text-slate-500 dark:text-slate-400">Banco de dados PostgreSQL e backup seguro na nuvem 100% gratuito</p>
@@ -4183,14 +4200,14 @@ function openSupabaseModal() {
               id="supabase-tab-config"
               class="px-4 py-2 text-xs font-bold border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 flex items-center gap-2"
             >
-              <i class="fa-solid fa-key"></i> 1. Conexão & Chaves
+              <i class="fa-solid fa-key"></i> 1. ConexÃ£o & Chaves
             </button>
             <button 
               onclick="switchSupabaseTab('sync')" 
               id="supabase-tab-sync"
               class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 border-b-2 border-transparent flex items-center gap-2"
             >
-              <i class="fa-solid fa-arrows-rotate"></i> 2. Backup & Sincronização
+              <i class="fa-solid fa-arrows-rotate"></i> 2. Backup & SincronizaÃ§Ã£o
             </button>
             <button 
               onclick="switchSupabaseTab('sql')" 
@@ -4202,17 +4219,17 @@ function openSupabaseModal() {
           </div>
         </div>
 
-        <!-- Conteúdo do Modal -->
+        <!-- ConteÃºdo do Modal -->
         <div class="p-6 overflow-y-auto space-y-5 flex-1">
 
-          <!-- ABA 1: CONEXÃO -->
+          <!-- ABA 1: CONEXÃƒO -->
           <div id="supabase-pane-config" class="space-y-4">
             <div class="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-4 text-xs space-y-2">
               <div class="flex items-center gap-2 font-bold text-emerald-800 dark:text-emerald-300">
-                <i class="fa-solid fa-gift"></i> Plano Gratuito Vitalício (Supabase Free Tier)
+                <i class="fa-solid fa-gift"></i> Plano Gratuito VitalÃ­cio (Supabase Free Tier)
               </div>
               <p class="text-emerald-700/90 dark:text-emerald-400 leading-relaxed">
-                O Supabase fornece gratuitamente: <strong>500 MB de banco de dados PostgreSQL</strong> (suficiente para mais de 100.000 alunos), <strong>1 GB de armazenamento de arquivos/fotos</strong>, e <strong>50.000 usuários ativos mensais</strong>. Seus dados ficam protegidos e salvos na nuvem sem nenhum custo de hospedagem.
+                O Supabase fornece gratuitamente: <strong>500 MB de banco de dados PostgreSQL</strong> (suficiente para mais de 100.000 alunos), <strong>1 GB de armazenamento de arquivos/fotos</strong>, e <strong>50.000 usuÃ¡rios ativos mensais</strong>. Seus dados ficam protegidos e salvos na nuvem sem nenhum custo de hospedagem.
               </p>
             </div>
 
@@ -4242,13 +4259,13 @@ function openSupabaseModal() {
                   placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
                   class="w-full px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                <p class="text-[11px] text-slate-400 mt-1">Chave pública de cliente (anon public key). Seguro para uso no navegador com as políticas RLS ativas.</p>
+                <p class="text-[11px] text-slate-400 mt-1">Chave pÃºblica de cliente (anon public key). Seguro para uso no navegador com as polÃ­ticas RLS ativas.</p>
               </div>
             </div>
 
             <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
               <div class="text-xs text-slate-500" id="supabase-status-msg">
-                ${isConnected ? 'Status: Conectado e autenticado' : 'Status: Aguardando configuração'}
+                ${isConnected ? 'Status: Conectado e autenticado' : 'Status: Aguardando configuraÃ§Ã£o'}
               </div>
               <div class="flex items-center gap-2">
                 ${currentUrl ? `
@@ -4264,13 +4281,13 @@ function openSupabaseModal() {
                   onclick="testSupabaseConnection(false)" 
                   class="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center gap-2"
                 >
-                  <i class="fa-solid fa-plug-circle-check"></i> Testar e Salvar Conexão
+                  <i class="fa-solid fa-plug-circle-check"></i> Testar e Salvar ConexÃ£o
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- ABA 2: BACKUP & SINCRONIZAÇÃO -->
+          <!-- ABA 2: BACKUP & SINCRONIZAÃ‡ÃƒO -->
           <div id="supabase-pane-sync" class="space-y-4 hidden">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <!-- Enviar para Nuvem -->
@@ -4302,7 +4319,7 @@ function openSupabaseModal() {
                   Baixar da Nuvem
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400">
-                  Restaura ou sincroniza os alunos salvos no banco Supabase para este computador ou celular. Ideal para abrir o sistema em múltiplos dispositivos.
+                  Restaura ou sincroniza os alunos salvos no banco Supabase para este computador ou celular. Ideal para abrir o sistema em mÃºltiplos dispositivos.
                 </p>
                 <button 
                   id="btn-fetch-from-supabase"
@@ -4314,14 +4331,14 @@ function openSupabaseModal() {
               </div>
             </div>
 
-            <!-- Informações de Segurança e Última Sincronização -->
+            <!-- InformaÃ§Ãµes de SeguranÃ§a e Ãšltima SincronizaÃ§Ã£o -->
             <div class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 text-xs space-y-1.5">
               <div class="flex items-center justify-between font-bold text-indigo-900 dark:text-indigo-300">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved"></i> Camada LGPD Ativa</span>
-                <span id="supabase-sync-timestamp" class="text-[11px] font-normal text-indigo-700 dark:text-indigo-400">Última sincronização: ${lastSyncText}</span>
+                <span id="supabase-sync-timestamp" class="text-[11px] font-normal text-indigo-700 dark:text-indigo-400">Ãšltima sincronizaÃ§Ã£o: ${lastSyncText}</span>
               </div>
               <p class="text-indigo-700/80 dark:text-indigo-400">
-                Os dados sensíveis trafegam criptografados de ponta a ponta via SSL/HTTPS até os servidores do Supabase. O Modo LGPD em sala de aula continua ativo para proteger a visão de alunos e terceiros.
+                Os dados sensÃ­veis trafegam criptografados de ponta a ponta via SSL/HTTPS atÃ© os servidores do Supabase. O Modo LGPD em sala de aula continua ativo para proteger a visÃ£o de alunos e terceiros.
               </p>
             </div>
           </div>
@@ -4334,9 +4351,9 @@ function openSupabaseModal() {
                 <ol class="list-decimal list-inside space-y-1 text-slate-500 dark:text-slate-400">
                   <li>Acesse <strong><a href="https://supabase.com" target="_blank" class="text-emerald-600 dark:text-emerald-400 underline">supabase.com</a></strong> e crie uma conta gratuita (pode ser com seu login GitHub).</li>
                   <li>Clique em <strong>New Project</strong> e defina um nome (ex: <code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">edugestao-alunos</code>).</li>
-                  <li>No menu lateral esquerdo, clique no ícone do <strong>SQL Editor</strong>.</li>
-                  <li>Clique no botão abaixo <strong>"Copiar Script SQL"</strong>, cole no editor e aperte <strong>Run</strong>.</li>
-                  <li>Vá em <strong>Project Settings > API</strong>, copie a <strong>Project URL</strong> e a <strong>anon public key</strong>, e cole na aba 1 deste painel!</li>
+                  <li>No menu lateral esquerdo, clique no Ã­cone do <strong>SQL Editor</strong>.</li>
+                  <li>Clique no botÃ£o abaixo <strong>"Copiar Script SQL"</strong>, cole no editor e aperte <strong>Run</strong>.</li>
+                  <li>VÃ¡ em <strong>Project Settings > API</strong>, copie a <strong>Project URL</strong> e a <strong>anon public key</strong>, e cole na aba 1 deste painel!</li>
                 </ol>
               </div>
 
@@ -4362,10 +4379,10 @@ function openSupabaseModal() {
 
         </div>
 
-        <!-- Rodapé do Modal -->
+        <!-- RodapÃ© do Modal -->
         <div class="px-6 py-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
           <span class="text-xs text-slate-400">
-            <i class="fa-solid fa-database text-emerald-500"></i> Armazenamento Híbrido: Offline Local + Nuvem Supabase
+            <i class="fa-solid fa-database text-emerald-500"></i> Armazenamento HÃ­brido: Offline Local + Nuvem Supabase
           </span>
           <button onclick="closeModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
             Fechar
@@ -4378,10 +4395,10 @@ function openSupabaseModal() {
 }
 
 // -------------------------------------------------------------
-// ABA 2: LANÇAMENTO DE NOTAS
+// ABA 2: LANÃ‡AMENTO DE NOTAS
 // -------------------------------------------------------------
 function renderGradesTab(container) {
-  // REGRA DE ACESSO: Exige identificação por CPF
+  // REGRA DE ACESSO: Exige identificaÃ§Ã£o por CPF
   if (!AppState.currentUser) {
     renderTabAccessRestriction(container, 'grades');
     return;
@@ -4396,13 +4413,13 @@ function renderGradesTab(container) {
         <div>
           <div class="flex items-center gap-2">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-              MÍDIAS DIGITAIS
+              MÃDIAS DIGITAIS
             </span>
           </div>
           <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 mt-1 flex items-center gap-2">
-            <i class="fa-solid fa-pen-nib text-indigo-600"></i> Planilha de Avaliações e Notas dos Módulos
+            <i class="fa-solid fa-pen-nib text-indigo-600"></i> Planilha de AvaliaÃ§Ãµes e Notas dos MÃ³dulos
           </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Clique nas notas para editar. O sistema calcula a média geral e situação automaticamente.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Clique nas notas para editar. O sistema calcula a mÃ©dia geral e situaÃ§Ã£o automaticamente.</p>
         </div>
         <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
           <select 
@@ -4416,7 +4433,7 @@ function renderGradesTab(container) {
             type="button"
             onclick="window.print()" 
             class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-all shadow-xs"
-            title="Imprimir Relatório de Notas"
+            title="Imprimir RelatÃ³rio de Notas"
           >
             <i class="fa-solid fa-print"></i>
             <span class="hidden md:inline">Imprimir</span>
@@ -4426,14 +4443,14 @@ function renderGradesTab(container) {
             id="btn-send-my-grades-email"
             onclick="sendLoggedInStudentGradesEmail()" 
             class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/25 flex items-center gap-2 transition-all transform active:scale-95"
-            title="Enviar relatório atual de notas do aluno logado diretamente para o e-mail cadastrado"
+            title="Enviar relatÃ³rio atual de notas do aluno logado diretamente para o e-mail cadastrado"
           >
             <i class="fa-solid fa-envelope"></i>
             <span>Enviar para o meu e-mail</span>
           </button>
           <button onclick="openSubjectsConfigModal()" class="px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
             <i class="fa-solid fa-gear"></i>
-            <span class="hidden sm:inline">Módulos</span>
+            <span class="hidden sm:inline">MÃ³dulos</span>
           </button>
         </div>
       </div>
@@ -4451,8 +4468,8 @@ function renderGradesTab(container) {
                     <span class="line-clamp-1" title="${s}">${s}</span>
                   </th>
                 `).join("")}
-                <th class="py-3 px-4 text-center bg-indigo-50/50 dark:bg-indigo-950/30 border-l border-slate-200 dark:border-slate-700">Média Geral</th>
-                <th class="py-3 px-4 text-center">Ações</th>
+                <th class="py-3 px-4 text-center bg-indigo-50/50 dark:bg-indigo-950/30 border-l border-slate-200 dark:border-slate-700">MÃ©dia Geral</th>
+                <th class="py-3 px-4 text-center">AÃ§Ãµes</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -4493,7 +4510,7 @@ function renderGradesTab(container) {
                           <button 
                             onclick="openGradesModal('${student.id}', '${subject}')" 
                             class="px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 ${avgColor} transition-colors w-full text-center font-mono"
-                            title="Editar notas do módulo ${subject}"
+                            title="Editar notas do mÃ³dulo ${subject}"
                           >
                             ${hasGrades ? avg.toFixed(1) : '<span class="text-slate-300 dark:text-slate-600">-</span>'}
                           </button>
@@ -4540,7 +4557,7 @@ function renderDashboard(container) {
   AppState.students.forEach(s => {
     const stats = calculateStudentOverallStats(s);
     if (stats.status === "Aprovado") approved++;
-    else if (stats.status === "Em Recuperação") recovery++;
+    else if (stats.status === "Em RecuperaÃ§Ã£o") recovery++;
     else if (stats.status === "Reprovado") failed++;
 
     if (stats.gradedSubjectsCount > 0) {
@@ -4571,10 +4588,10 @@ function renderDashboard(container) {
 
         <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
           <div>
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Média Geral do Curso</span>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">MÃ©dia Geral do Curso</span>
             <h3 class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">${generalAvg}</h3>
             <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 mt-1">
-              <i class="fa-solid fa-check"></i> Meta mínima: ${AppState.settings.passingGrade.toFixed(1)}
+              <i class="fa-solid fa-check"></i> Meta mÃ­nima: ${AppState.settings.passingGrade.toFixed(1)}
             </span>
           </div>
           <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl">
@@ -4584,7 +4601,7 @@ function renderDashboard(container) {
 
         <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
           <div>
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aptidão / Certificação</span>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">AptidÃ£o / CertificaÃ§Ã£o</span>
             <h3 class="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">${passRate}%</h3>
             <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1 mt-1">
               ${approved} alunos aptos
@@ -4597,10 +4614,10 @@ function renderDashboard(container) {
 
         <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
           <div>
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Em Atenção / Reforço</span>
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Em AtenÃ§Ã£o / ReforÃ§o</span>
             <h3 class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">${recovery + failed}</h3>
             <span class="text-[11px] text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1 mt-1">
-              ${recovery} recuperação, ${failed} pendentes
+              ${recovery} recuperaÃ§Ã£o, ${failed} pendentes
             </span>
           </div>
           <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl">
@@ -4614,8 +4631,8 @@ function renderDashboard(container) {
         <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Desempenho por Módulo de Mídias Digitais</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Média geral das notas lançadas em cada matéria</p>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Desempenho por MÃ³dulo de MÃ­dias Digitais</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">MÃ©dia geral das notas lanÃ§adas em cada matÃ©ria</p>
             </div>
           </div>
           <div class="relative h-64 w-full">
@@ -4625,8 +4642,8 @@ function renderDashboard(container) {
 
         <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <div class="mb-4">
-            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Situação da Turma</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Distribuição geral dos alunos</p>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">SituaÃ§Ã£o da Turma</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">DistribuiÃ§Ã£o geral dos alunos</p>
           </div>
           <div class="relative h-56 w-full flex items-center justify-center">
             <canvas id="statusDistChart"></canvas>
@@ -4670,7 +4687,7 @@ function initDashboardCharts() {
       data: {
         labels: subjectLabels,
         datasets: [{
-          label: "Média do Módulo",
+          label: "MÃ©dia do MÃ³dulo",
           data: subjectAverages,
           backgroundColor: subjectAverages.map(avg => 
             avg >= AppState.settings.passingGrade ? "rgba(99, 102, 241, 0.85)" : "rgba(245, 158, 11, 0.85)"
@@ -4706,7 +4723,7 @@ function initDashboardCharts() {
   AppState.students.forEach(s => {
     const stats = calculateStudentOverallStats(s);
     if (stats.status === "Aprovado") approved++;
-    else if (stats.status === "Em Recuperação") recovery++;
+    else if (stats.status === "Em RecuperaÃ§Ã£o") recovery++;
     else if (stats.status === "Reprovado") failed++;
   });
 
@@ -4715,7 +4732,7 @@ function initDashboardCharts() {
     AppState.charts.statusDist = new Chart(ctxStatus, {
       type: "doughnut",
       data: {
-        labels: ["Aprovados", "Recuperação", "Reprovados"],
+        labels: ["Aprovados", "RecuperaÃ§Ã£o", "Reprovados"],
         datasets: [{
           data: [approved, recovery, failed],
           backgroundColor: ["#10b981", "#f59e0b", "#f43f5e"]
@@ -4731,23 +4748,23 @@ function initDashboardCharts() {
 }
 
 // -------------------------------------------------------------
-// ABA 4: RELATÓRIOS & BACKUP (COM REGRA DE ACESSO POR CPF)
+// ABA 4: RELATÃ“RIOS & BACKUP (COM REGRA DE ACESSO POR CPF)
 // -------------------------------------------------------------
 function renderReportsTab(container) {
-  // REGRA DE ACESSO: Exige autenticação por CPF cadastrado
+  // REGRA DE ACESSO: Exige autenticaÃ§Ã£o por CPF cadastrado
   if (!AppState.currentUser) {
     renderTabAccessRestriction(container, 'reports');
     return;
   }
 
-  // Usuário autenticado: exibe opções de acordo com o perfil
+  // UsuÃ¡rio autenticado: exibe opÃ§Ãµes de acordo com o perfil
   const isProf = AppState.currentUser.role === 'professor';
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
       <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
         
-        <!-- Barra de Identificação do Usuário Logado -->
+        <!-- Barra de IdentificaÃ§Ã£o do UsuÃ¡rio Logado -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-2xl overflow-hidden ring-2 ring-indigo-500 bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center font-bold text-indigo-600">
@@ -4761,10 +4778,10 @@ function renderReportsTab(container) {
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">${AppState.currentUser.name}</h3>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isProf ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
-                  ${isProf ? 'Docente / Coordenação' : 'Aluno Matriculado'}
+                  ${isProf ? 'Docente / CoordenaÃ§Ã£o' : 'Aluno Matriculado'}
                 </span>
               </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">CPF: ${maskCpf(AppState.currentUser.cpf, false)} • Acesso autenticado com sucesso</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">CPF: ${maskCpf(AppState.currentUser.cpf, false)} â€¢ Acesso autenticado com sucesso</p>
             </div>
           </div>
           <button onclick="logoutCurrentUser()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 self-start sm:self-auto flex items-center gap-1.5 transition-all">
@@ -4773,14 +4790,14 @@ function renderReportsTab(container) {
         </div>
 
         <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
-          <i class="fa-solid fa-file-export text-indigo-600"></i> Relatórios, Planilhas e Backup
+          <i class="fa-solid fa-file-export text-indigo-600"></i> RelatÃ³rios, Planilhas e Backup
         </h2>
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">
-          ${isProf ? 'Exporte os dados completos do curso para abrir no Excel ou Google Sheets, imprima atas e faça backups.' : 'Acesse seu boletim escolar oficial, histórico de notas e comprovantes pedagógicos individuais.'}
+          ${isProf ? 'Exporte os dados completos do curso para abrir no Excel ou Google Sheets, imprima atas e faÃ§a backups.' : 'Acesse seu boletim escolar oficial, histÃ³rico de notas e comprovantes pedagÃ³gicos individuais.'}
         </p>
 
         ${isProf ? `
-          <!-- Painel do Professor / Coordenação (Exportações Completas) -->
+          <!-- Painel do Professor / CoordenaÃ§Ã£o (ExportaÃ§Ãµes Completas) -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             
             <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
@@ -4790,7 +4807,7 @@ function renderReportsTab(container) {
                 </div>
                 <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Planilha do Curso (CSV)</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Exporta todos os ${AppState.students.length} alunos, telefones, polos/cidades de Alagoas, notas dos 7 módulos e médias para o Excel.
+                  Exporta todos os ${AppState.students.length} alunos, telefones, polos/cidades de Alagoas, notas dos 7 mÃ³dulos e mÃ©dias para o Excel.
                 </p>
               </div>
               <button onclick="exportStudentsToCSV()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow flex items-center justify-center gap-2 transition-all">
@@ -4805,7 +4822,7 @@ function renderReportsTab(container) {
                 </div>
                 <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Ata Oficial de Rendimento (PDF)</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Formatação oficial para o Programa Emprega Mais Alagoas pronta para salvar em PDF ou imprimir.
+                  FormataÃ§Ã£o oficial para o Programa Emprega Mais Alagoas pronta para salvar em PDF ou imprimir.
                 </p>
               </div>
               <button onclick="window.print()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center justify-center gap-2 transition-all">
@@ -4820,7 +4837,7 @@ function renderReportsTab(container) {
                 </div>
                 <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Backup Completo (JSON)</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Salve cópia de segurança de todos os cadastros e notas, ou restaure em outro computador.
+                  Salve cÃ³pia de seguranÃ§a de todos os cadastros e notas, ou restaure em outro computador.
                 </p>
               </div>
               <div class="flex items-center gap-2">
@@ -4845,7 +4862,7 @@ function renderReportsTab(container) {
                 </div>
                 <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Meu Boletim Escolar Oficial</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Visualize suas notas bimestrais nos 7 módulos, cálculo de média final, faltas registradas e situação de aprovação.
+                  Visualize suas notas bimestrais nos 7 mÃ³dulos, cÃ¡lculo de mÃ©dia final, faltas registradas e situaÃ§Ã£o de aprovaÃ§Ã£o.
                 </p>
               </div>
               <button onclick="openBoletimModal('${AppState.currentUser.id}')" class="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow flex items-center justify-center gap-2 transition-all">
@@ -4858,9 +4875,9 @@ function renderReportsTab(container) {
                 <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-lg mb-3">
                   <i class="fa-solid fa-address-card"></i>
                 </div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Minha Ficha e Diagnóstico</h3>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Minha Ficha e DiagnÃ³stico</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Consulte os dados que você informou na matrícula, desafios de aprendizado, redes sociais e expectativas pedagógicas.
+                  Consulte os dados que vocÃª informou na matrÃ­cula, desafios de aprendizado, redes sociais e expectativas pedagÃ³gicas.
                 </p>
               </div>
               <button onclick="openStudentProfileModal('${AppState.currentUser.id}')" class="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow flex items-center justify-center gap-2 transition-all">
@@ -4872,7 +4889,7 @@ function renderReportsTab(container) {
 
           <div class="mt-4 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2.5">
             <i class="fa-solid fa-circle-info text-base"></i>
-            <span>Exportações em lote da turma completa e backups administrativos são reservados aos docentes e coordenadores do programa.</span>
+            <span>ExportaÃ§Ãµes em lote da turma completa e backups administrativos sÃ£o reservados aos docentes e coordenadores do programa.</span>
           </div>
         `}
 
@@ -4888,7 +4905,7 @@ function renderAboutTab(container) {
   container.innerHTML = `
     <div class="space-y-8 fade-in text-slate-800 dark:text-slate-200">
       
-      <!-- Banner de Apresentação Hero -->
+      <!-- Banner de ApresentaÃ§Ã£o Hero -->
       <div class="relative overflow-hidden p-8 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl">
         <div class="relative z-10 max-w-4xl space-y-4">
           <div class="flex flex-wrap items-center gap-2">
@@ -4896,7 +4913,7 @@ function renderAboutTab(container) {
               <i class="fa-solid fa-certificate mr-1"></i> Emprega Mais Alagoas
             </span>
             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-sm">
-              <i class="fa-solid fa-graduation-cap mr-1"></i> Gestão de Mídias Digitais
+              <i class="fa-solid fa-graduation-cap mr-1"></i> GestÃ£o de MÃ­dias Digitais
             </span>
             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/80 text-white">
               <i class="fa-solid fa-users mr-1"></i> ${AppState.students.length || 715}+ Alunos Mapeados
@@ -4904,13 +4921,13 @@ function renderAboutTab(container) {
           </div>
 
           <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
-            Eu Por Dias: Inteligência Pedagógica e Gestão Humana de Alunos
+            Eu Por Dias: InteligÃªncia PedagÃ³gica e GestÃ£o Humana de Alunos
           </h1>
 
           <p class="text-sm sm:text-base text-indigo-100 font-normal leading-relaxed">
-            Uma plataforma desenvolvida sob medida para o professor do curso de <strong>Gestão de Mídias Digitais</strong>. 
-            Nascida da necessidade real de transformar mais de <strong>600 linhas estáticas de planilha</strong> em uma experiência 
-            pedagógica viva, ágil e focada na emancipação profissional de cada estudante em Alagoas.
+            Uma plataforma desenvolvida sob medida para o professor do curso de <strong>GestÃ£o de MÃ­dias Digitais</strong>. 
+            Nascida da necessidade real de transformar mais de <strong>600 linhas estÃ¡ticas de planilha</strong> em uma experiÃªncia 
+            pedagÃ³gica viva, Ã¡gil e focada na emancipaÃ§Ã£o profissional de cada estudante em Alagoas.
           </p>
 
           <div class="pt-2 flex flex-wrap items-center gap-3">
@@ -4943,50 +4960,50 @@ function renderAboutTab(container) {
             </div>
             <div>
               <h3 class="font-bold text-sm text-rose-950 dark:text-rose-200">Como era antes: A Planilha Fria</h3>
-              <p class="text-xs text-rose-700/80 dark:text-rose-400">Google Sala de Aula & Formulários tradicionais</p>
+              <p class="text-xs text-rose-700/80 dark:text-rose-400">Google Sala de Aula & FormulÃ¡rios tradicionais</p>
             </div>
           </div>
 
           <ul class="space-y-2.5 text-xs text-rose-900/90 dark:text-rose-300">
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>648 linhas x 15 colunas densas:</strong> Impossível navegar rapidamente em sala de aula, no celular ou no projetor.</span>
+              <span><strong>648 linhas x 15 colunas densas:</strong> ImpossÃ­vel navegar rapidamente em sala de aula, no celular ou no projetor.</span>
             </li>
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>Diagnósticos esquecidos:</strong> Medos reais dos alunos (*"vergonha de gravar vídeos"*, *"não sei editar reels"*) ficavam perdidos na coluna 14.</span>
+              <span><strong>DiagnÃ³sticos esquecidos:</strong> Medos reais dos alunos (*"vergonha de gravar vÃ­deos"*, *"nÃ£o sei editar reels"*) ficavam perdidos na coluna 14.</span>
             </li>
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>Comunicação truncada:</strong> Para avisar um aluno ou tirar dúvida, era necessário copiar o número, abrir o WhatsApp e salvar o contato manualmente.</span>
+              <span><strong>ComunicaÃ§Ã£o truncada:</strong> Para avisar um aluno ou tirar dÃºvida, era necessÃ¡rio copiar o nÃºmero, abrir o WhatsApp e salvar o contato manualmente.</span>
             </li>
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>Sem identidade visual:</strong> Nomes sem rosto, dificultando a chamada, a empatia pedagógica e o reconhecimento em turmas grandes.</span>
+              <span><strong>Sem identidade visual:</strong> Nomes sem rosto, dificultando a chamada, a empatia pedagÃ³gica e o reconhecimento em turmas grandes.</span>
             </li>
           </ul>
         </div>
 
-        <!-- A Solução Agora -->
+        <!-- A SoluÃ§Ã£o Agora -->
         <div class="p-6 rounded-3xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/60 space-y-4">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-md shadow-emerald-600/20">
               <i class="fa-solid fa-wand-magic-sparkles"></i>
             </div>
             <div>
-              <h3 class="font-bold text-sm text-emerald-950 dark:text-emerald-200">Como é agora: O Eu Por Dias</h3>
-              <p class="text-xs text-emerald-700/80 dark:text-emerald-400">Plataforma pedagógica ágil e humanizada</p>
+              <h3 class="font-bold text-sm text-emerald-950 dark:text-emerald-200">Como Ã© agora: O Eu Por Dias</h3>
+              <p class="text-xs text-emerald-700/80 dark:text-emerald-400">Plataforma pedagÃ³gica Ã¡gil e humanizada</p>
             </div>
           </div>
 
           <ul class="space-y-2.5 text-xs text-emerald-900/90 dark:text-emerald-300">
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-              <span><strong>Cards Pedagógicos Vivos:</strong> Foto, nome, polo SINE, matrícula, situação acadêmica e endereço a um toque de distância.</span>
+              <span><strong>Cards PedagÃ³gicos Vivos:</strong> Foto, nome, polo SINE, matrÃ­cula, situaÃ§Ã£o acadÃªmica e endereÃ§o a um toque de distÃ¢ncia.</span>
             </li>
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-              <span><strong>Gaveta de Diagnóstico Individual:</strong> Principais desafios, motivação e expectativas visíveis diretamente em cada card para mentoria pontual.</span>
+              <span><strong>Gaveta de DiagnÃ³stico Individual:</strong> Principais desafios, motivaÃ§Ã£o e expectativas visÃ­veis diretamente em cada card para mentoria pontual.</span>
             </li>
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
@@ -4994,14 +5011,14 @@ function renderAboutTab(container) {
             </li>
             <li class="flex items-start gap-2">
               <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-              <span><strong>Documentos Oficiais Prontos:</strong> Emissão de boletins escolares e atas gerais em PDF para prestação de contas governamental.</span>
+              <span><strong>Documentos Oficiais Prontos:</strong> EmissÃ£o de boletins escolares e atas gerais em PDF para prestaÃ§Ã£o de contas governamental.</span>
             </li>
           </ul>
         </div>
 
       </div>
 
-      <!-- Os 7 Pilares: Por que foi construído assim? -->
+      <!-- Os 7 Pilares: Por que foi construÃ­do assim? -->
       <div class="space-y-5">
         <div>
           <div class="flex items-center gap-2">
@@ -5010,10 +5027,10 @@ function renderAboutTab(container) {
             </span>
           </div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">
-            Por que o Eu Por Dias foi construído exatamente assim?
+            Por que o Eu Por Dias foi construÃ­do exatamente assim?
           </h2>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Entenda as decisões técnicas, pedagógicas e de usabilidade que moldaram o sistema.
+            Entenda as decisÃµes tÃ©cnicas, pedagÃ³gicas e de usabilidade que moldaram o sistema.
           </p>
         </div>
 
@@ -5028,8 +5045,8 @@ function renderAboutTab(container) {
               1. 100% Client-Side & Custo Zero
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Construído sem servidores backend caros nem bancos de dados que podem cair durante a aula. Funciona direto no navegador com <strong>HTML5, Vanilla JS e Tailwind CSS</strong>. 
-              Carrega instantaneamente mesmo com internet instável nos polos do interior de Alagoas.
+              ConstruÃ­do sem servidores backend caros nem bancos de dados que podem cair durante a aula. Funciona direto no navegador com <strong>HTML5, Vanilla JS e Tailwind CSS</strong>. 
+              Carrega instantaneamente mesmo com internet instÃ¡vel nos polos do interior de Alagoas.
             </p>
           </div>
 
@@ -5042,8 +5059,8 @@ function renderAboutTab(container) {
               2. Privacidade de Dados & LGPD
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Os dados pessoais dos alunos (atualmente ${AppState.students.length || 715}+ cadastrados, com CPFs, telefones, endereços e notas) permanecem protegidos por padrão. 
-              Acesso Modo Deus exclusivo autenticado e controle rigoroso de exibição para sala de aula.
+              Os dados pessoais dos alunos (atualmente ${AppState.students.length || 715}+ cadastrados, com CPFs, telefones, endereÃ§os e notas) permanecem protegidos por padrÃ£o. 
+              Acesso Modo Deus exclusivo autenticado e controle rigoroso de exibiÃ§Ã£o para sala de aula.
             </p>
           </div>
 
@@ -5053,12 +5070,12 @@ function renderAboutTab(container) {
               <i class="fa-solid fa-brain"></i>
             </div>
             <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
-              3. Diagnóstico Pedagógico Vivo
+              3. DiagnÃ³stico PedagÃ³gico Vivo
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              O curso de Mídias Digitais forma criadores de conteúdo e profissionais do mercado. 
-              Saber se o aluno tem <strong>vergonha da câmera</strong> ou quer <strong>divulgar o negócio da família</strong> permite ao professor 
-              orientar a prática de forma cirúrgica e empática.
+              O curso de MÃ­dias Digitais forma criadores de conteÃºdo e profissionais do mercado. 
+              Saber se o aluno tem <strong>vergonha da cÃ¢mera</strong> ou quer <strong>divulgar o negÃ³cio da famÃ­lia</strong> permite ao professor 
+              orientar a prÃ¡tica de forma cirÃºrgica e empÃ¡tica.
             </p>
           </div>
 
@@ -5068,11 +5085,11 @@ function renderAboutTab(container) {
               <i class="fa-brands fa-whatsapp"></i>
             </div>
             <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
-              4. Conexão Imediata (WhatsApp & Redes)
+              4. ConexÃ£o Imediata (WhatsApp & Redes)
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Integração ativa com a API do WhatsApp (<code class="text-[10px] bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">wa.me</code>) e atalhos para Instagram/TikTok. 
-              O professor cobra frequência, dá feedback nas postagens dos alunos e envia oportunidades de emprego do SINE em segundos.
+              IntegraÃ§Ã£o ativa com a API do WhatsApp (<code class="text-[10px] bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">wa.me</code>) e atalhos para Instagram/TikTok. 
+              O professor cobra frequÃªncia, dÃ¡ feedback nas postagens dos alunos e envia oportunidades de emprego do SINE em segundos.
             </p>
           </div>
 
@@ -5082,7 +5099,7 @@ function renderAboutTab(container) {
               <i class="fa-solid fa-camera"></i>
             </div>
             <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
-              5. Fotos Otimizadas & Câmera em Sala
+              5. Fotos Otimizadas & CÃ¢mera em Sala
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Reconhecimento visual imediato. O sistema possui compressor nativo em Canvas (fotos de celular de 10MB viram leves 25KB), 
@@ -5096,11 +5113,11 @@ function renderAboutTab(container) {
               <i class="fa-solid fa-file-signature"></i>
             </div>
             <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">
-              6. Prestação de Contas Governamental
+              6. PrestaÃ§Ã£o de Contas Governamental
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Cálculo automático de médias com notas por módulo de mídias digitais, controle de faltas e geração de 
-              <strong>Boletins Oficiais</strong> e <strong>Atas em PDF</strong> prontas para impressão e envio aos órgãos estaduais (SINE / SEDH / Alagoas).
+              CÃ¡lculo automÃ¡tico de mÃ©dias com notas por mÃ³dulo de mÃ­dias digitais, controle de faltas e geraÃ§Ã£o de 
+              <strong>Boletins Oficiais</strong> e <strong>Atas em PDF</strong> prontas para impressÃ£o e envio aos Ã³rgÃ£os estaduais (SINE / SEDH / Alagoas).
             </p>
           </div>
 
@@ -5113,42 +5130,42 @@ function renderAboutTab(container) {
               7. Nuvem Gratuita Supabase & GitHub Pages
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Hospedado gratuitamente no <strong>GitHub Pages</strong> com HTTPS/SSL mundial. Integrado ao <strong>Supabase</strong> (PostgreSQL 500MB + Storage 1GB 100% gratuitos) para backup, restauração e uso em múltiplos computadores e celulares em 1-clique.
+              Hospedado gratuitamente no <strong>GitHub Pages</strong> com HTTPS/SSL mundial. Integrado ao <strong>Supabase</strong> (PostgreSQL 500MB + Storage 1GB 100% gratuitos) para backup, restauraÃ§Ã£o e uso em mÃºltiplos computadores e celulares em 1-clique.
             </p>
           </div>
 
         </div>
       </div>
 
-      <!-- Módulos do Curso de Gestão de Mídias Digitais -->
+      <!-- MÃ³dulos do Curso de GestÃ£o de MÃ­dias Digitais -->
       <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
         <div class="flex items-center justify-between">
           <div>
             <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-layer-group text-indigo-600"></i> Matriz Curricular & Módulos Avaliados
+              <i class="fa-solid fa-layer-group text-indigo-600"></i> Matriz Curricular & MÃ³dulos Avaliados
             </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Competências práticas avaliadas no Programa Emprega Mais Alagoas</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">CompetÃªncias prÃ¡ticas avaliadas no Programa Emprega Mais Alagoas</p>
           </div>
           <button onclick="openSubjectsConfigModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-            <i class="fa-solid fa-gear"></i> Configurar Módulos
+            <i class="fa-solid fa-gear"></i> Configurar MÃ³dulos
           </button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           ${AppState.subjects.map((s, idx) => `
             <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
-              <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 font-mono">MÓDULO ${String(idx + 1).padStart(2, '0')}</span>
+              <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 font-mono">MÃ“DULO ${String(idx + 1).padStart(2, '0')}</span>
               <h4 class="font-bold text-slate-800 dark:text-slate-200">${s}</h4>
-              <p class="text-[11px] text-slate-400">4 atividades avaliativas + frequência</p>
+              <p class="text-[11px] text-slate-400">4 atividades avaliativas + frequÃªncia</p>
             </div>
           `).join("")}
         </div>
       </div>
 
-      <!-- Especificações Técnicas -->
+      <!-- EspecificaÃ§Ãµes TÃ©cnicas -->
       <div class="p-6 rounded-3xl bg-slate-100/70 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800 space-y-3 text-xs">
         <h4 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <i class="fa-solid fa-code text-indigo-600"></i> Especificações de Engenharia & Tecnologias
+          <i class="fa-solid fa-code text-indigo-600"></i> EspecificaÃ§Ãµes de Engenharia & Tecnologias
         </h4>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-[11px]">
           <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
@@ -5156,11 +5173,11 @@ function renderAboutTab(container) {
             <span class="font-bold text-slate-800 dark:text-slate-200">Vanilla JavaScript (ES6+)</span>
           </div>
           <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-            <span class="text-slate-400 block text-[10px]">Estilização</span>
+            <span class="text-slate-400 block text-[10px]">EstilizaÃ§Ã£o</span>
             <span class="font-bold text-slate-800 dark:text-slate-200">Tailwind CSS (JIT CDN)</span>
           </div>
           <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-            <span class="text-slate-400 block text-[10px]">Integração</span>
+            <span class="text-slate-400 block text-[10px]">IntegraÃ§Ã£o</span>
             <span class="font-bold text-slate-800 dark:text-slate-200">Google Sheets API v4</span>
           </div>
           <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
@@ -5189,7 +5206,7 @@ function openAboutModal() {
             </div>
             <div>
               <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Sobre o Eu Por Dias</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Por que o sistema foi construído dessa forma?</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Por que o sistema foi construÃ­do dessa forma?</p>
             </div>
           </div>
           <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -5201,44 +5218,44 @@ function openAboutModal() {
           
           <div class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 text-indigo-950 dark:text-indigo-200 space-y-1.5">
             <h3 class="font-bold text-sm flex items-center gap-1.5">
-              <i class="fa-solid fa-lightbulb text-amber-500"></i> O Propósito do Eu Por Dias
+              <i class="fa-solid fa-lightbulb text-amber-500"></i> O PropÃ³sito do Eu Por Dias
             </h3>
             <p>
-              O sistema foi concebido para o professor do curso de <strong>Gestão de Mídias Digitais</strong> do programa <strong>Emprega Mais Alagoas</strong>. 
-              Ele une a gestão de notas com um <strong>diagnóstico humano profundo</strong> de mais de ${AppState.students.length || 715} estudantes alagoanos.
+              O sistema foi concebido para o professor do curso de <strong>GestÃ£o de MÃ­dias Digitais</strong> do programa <strong>Emprega Mais Alagoas</strong>. 
+              Ele une a gestÃ£o de notas com um <strong>diagnÃ³stico humano profundo</strong> de mais de ${AppState.students.length || 715} estudantes alagoanos.
             </p>
           </div>
 
           <div class="space-y-3">
             <h4 class="font-bold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-              Principais Razões de Arquitetura & Design:
+              Principais RazÃµes de Arquitetura & Design:
             </h4>
             
             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
-              <span class="font-bold text-slate-900 dark:text-slate-100 block">1. Da Planilha Estática aos Cards Vivos:</span>
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">1. Da Planilha EstÃ¡tica aos Cards Vivos:</span>
               <p class="text-slate-600 dark:text-slate-400">
-                Planilhas com 648 linhas são frias e lentas para usar em aula. O Eu Por Dias transforma cada linha em um card com foto, WhatsApp em 1-clique e desafios pessoais.
+                Planilhas com 648 linhas sÃ£o frias e lentas para usar em aula. O Eu Por Dias transforma cada linha em um card com foto, WhatsApp em 1-clique e desafios pessoais.
               </p>
             </div>
 
             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
               <span class="font-bold text-slate-900 dark:text-slate-100 block">2. Custo Zero & 100% Client-Side:</span>
               <p class="text-slate-600 dark:text-slate-400">
-                Não depende de servidores caros nem bancos de dados que possam cair. Funciona instantaneamente mesmo no interior de Alagoas com conexões instáveis.
+                NÃ£o depende de servidores caros nem bancos de dados que possam cair. Funciona instantaneamente mesmo no interior de Alagoas com conexÃµes instÃ¡veis.
               </p>
             </div>
 
             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
               <span class="font-bold text-slate-900 dark:text-slate-100 block">3. Privacidade e LGPD Sob Posse do Professor:</span>
               <p class="text-slate-600 dark:text-slate-400">
-                Os dados dos alunos (CPF, telefones e endereços) não são enviados para serviços terceiros inseguros. Tudo fica gravado localmente com backup JSON.
+                Os dados dos alunos (CPF, telefones e endereÃ§os) nÃ£o sÃ£o enviados para serviÃ§os terceiros inseguros. Tudo fica gravado localmente com backup JSON.
               </p>
             </div>
 
             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-1">
-              <span class="font-bold text-slate-900 dark:text-slate-100 block">4. Mentoria Direta & Emancipação de Renda:</span>
+              <span class="font-bold text-slate-900 dark:text-slate-100 block">4. Mentoria Direta & EmancipaÃ§Ã£o de Renda:</span>
               <p class="text-slate-600 dark:text-slate-400">
-                Ao saber exatamente quais ferramentas o aluno domina (Canva, CapCut, Meta Ads) e quais são seus medos, o professor orienta com foco em geração de renda rápida.
+                Ao saber exatamente quais ferramentas o aluno domina (Canva, CapCut, Meta Ads) e quais sÃ£o seus medos, o professor orienta com foco em geraÃ§Ã£o de renda rÃ¡pida.
               </p>
             </div>
           </div>
@@ -5266,7 +5283,7 @@ function openAboutModal() {
 }
 
 // -------------------------------------------------------------
-// MODAL: CADASTRO E EDIÇÃO DE ALUNO
+// MODAL: CADASTRO E EDIÃ‡ÃƒO DE ALUNO
 // -------------------------------------------------------------
 function openStudentModal(studentId = null) {
   AppState.editingStudentId = studentId;
@@ -5278,7 +5295,7 @@ function openStudentModal(studentId = null) {
         name: "",
         birthDate: "",
         gender: "Feminino",
-        classroom: AppState.classrooms[0] || "Mídias Digitais - Maceió Matutino",
+        classroom: AppState.classrooms[0] || "MÃ­dias Digitais - MaceiÃ³ Matutino",
         status: "Ativo",
         avatarColor: "from-indigo-500 to-purple-600",
         notes: "",
@@ -5286,7 +5303,7 @@ function openStudentModal(studentId = null) {
           phone: "",
           email: "",
           guardianName: "",
-          guardianKinship: "Mãe",
+          guardianKinship: "MÃ£e",
           guardianPhone: ""
         },
         address: {
@@ -5295,7 +5312,7 @@ function openStudentModal(studentId = null) {
           number: "",
           complement: "",
           neighborhood: "",
-          city: "Maceió",
+          city: "MaceiÃ³",
           state: "AL"
         },
         grades: {}
@@ -5319,7 +5336,7 @@ function openStudentModal(studentId = null) {
               <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
                 ${isEditing ? 'Editar Aluno' : 'Cadastrar Aluno (Emprega Mais Alagoas)'}
               </h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Dados cadastrais, WhatsApp, e-mail e endereço com CEP</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Dados cadastrais, WhatsApp, e-mail e endereÃ§o com CEP</p>
             </div>
           </div>
           <button onclick="closeModal()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -5329,7 +5346,7 @@ function openStudentModal(studentId = null) {
 
         <form id="student-form" onsubmit="saveStudentForm(event)" class="overflow-y-auto flex-1 p-6 space-y-6">
           
-          <!-- Seção Destacada: Foto do Aluno -->
+          <!-- SeÃ§Ã£o Destacada: Foto do Aluno -->
           <div class="p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-5">
             
             <div class="relative group/formavatar flex-shrink-0">
@@ -5356,7 +5373,7 @@ function openStudentModal(studentId = null) {
                   <i class="fa-solid fa-image text-indigo-600 dark:text-indigo-400"></i> Foto de Perfil do Aluno
                 </h4>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Escolha uma foto do seu dispositivo, tire pela câmera ou use um dos avatares.
+                  Escolha uma foto do seu dispositivo, tire pela cÃ¢mera ou use um dos avatares.
                 </p>
               </div>
 
@@ -5377,7 +5394,7 @@ function openStudentModal(studentId = null) {
                   onclick="openWebcamForStudentForm()"
                   class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 flex items-center gap-1.5 transition-colors"
                 >
-                  <i class="fa-solid fa-camera"></i> Câmera
+                  <i class="fa-solid fa-camera"></i> CÃ¢mera
                 </button>
                 <button 
                   type="button" 
@@ -5393,10 +5410,10 @@ function openStudentModal(studentId = null) {
               <div class="pt-1.5 flex items-center justify-center sm:justify-start gap-1.5">
                 <span class="text-[10px] text-slate-400 font-medium mr-1">Cor do fundo:</span>
                 ${[
-                  { name: 'Índigo', val: 'from-indigo-500 to-purple-600', bg: 'bg-gradient-to-tr from-indigo-500 to-purple-600' },
+                  { name: 'Ãndigo', val: 'from-indigo-500 to-purple-600', bg: 'bg-gradient-to-tr from-indigo-500 to-purple-600' },
                   { name: 'Esmeralda', val: 'from-emerald-500 to-teal-600', bg: 'bg-gradient-to-tr from-emerald-500 to-teal-600' },
                   { name: 'Rosa', val: 'from-rose-500 to-pink-600', bg: 'bg-gradient-to-tr from-rose-500 to-pink-600' },
-                  { name: 'Âmbar', val: 'from-amber-500 to-orange-600', bg: 'bg-gradient-to-tr from-amber-500 to-orange-600' },
+                  { name: 'Ã‚mbar', val: 'from-amber-500 to-orange-600', bg: 'bg-gradient-to-tr from-amber-500 to-orange-600' },
                   { name: 'Azul', val: 'from-blue-500 to-cyan-600', bg: 'bg-gradient-to-tr from-blue-500 to-cyan-600' },
                   { name: 'Roxo', val: 'from-purple-600 to-pink-600', bg: 'bg-gradient-to-tr from-purple-600 to-pink-600' }
                 ].map(c => `
@@ -5413,7 +5430,7 @@ function openStudentModal(studentId = null) {
 
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3 flex items-center gap-1.5">
-              <i class="fa-solid fa-id-card"></i> 1. Identificação do Aluno
+              <i class="fa-solid fa-id-card"></i> 1. IdentificaÃ§Ã£o do Aluno
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
@@ -5424,13 +5441,13 @@ function openStudentModal(studentId = null) {
                   name="name" 
                   value="${student.name || ''}" 
                   required 
-                  placeholder="Ex: Alana Vitória Tenório"
+                  placeholder="Ex: Alana VitÃ³ria TenÃ³rio"
                   class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20"
                 >
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Matrícula / ID</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">MatrÃ­cula / ID</label>
                 <input 
                   type="text" 
                   name="id" 
@@ -5466,7 +5483,7 @@ function openStudentModal(studentId = null) {
 
           <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3 flex items-center gap-1.5">
-              <i class="fa-solid fa-address-book"></i> 2. Contatos & Comunicação
+              <i class="fa-solid fa-address-book"></i> 2. Contatos & ComunicaÃ§Ã£o
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
@@ -5493,12 +5510,12 @@ function openStudentModal(studentId = null) {
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nome do Responsável / Emergência</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nome do ResponsÃ¡vel / EmergÃªncia</label>
                 <input 
                   type="text" 
                   name="guardianName" 
                   value="${student.contact?.guardianName || ''}" 
-                  placeholder="Ex: Severino Tenório"
+                  placeholder="Ex: Severino TenÃ³rio"
                   class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >
               </div>
@@ -5509,12 +5526,12 @@ function openStudentModal(studentId = null) {
                   <input 
                     type="text" 
                     name="guardianKinship" 
-                    value="${student.contact?.guardianKinship || 'Mãe'}" 
+                    value="${student.contact?.guardianKinship || 'MÃ£e'}" 
                     class="w-full px-3 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                   >
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tel. Responsável</label>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tel. ResponsÃ¡vel</label>
                   <input 
                     type="text" 
                     name="guardianPhone" 
@@ -5531,9 +5548,9 @@ function openStudentModal(studentId = null) {
           <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-                <i class="fa-solid fa-map-location-dot"></i> 3. Endereço Residencial (Alagoas)
+                <i class="fa-solid fa-map-location-dot"></i> 3. EndereÃ§o Residencial (Alagoas)
               </h3>
-              <span class="text-[11px] text-slate-400">Busca rápida ViaCEP</span>
+              <span class="text-[11px] text-slate-400">Busca rÃ¡pida ViaCEP</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -5569,13 +5586,13 @@ function openStudentModal(studentId = null) {
                   id="street-input"
                   name="street" 
                   value="${student.address?.street || ''}" 
-                  placeholder="Ex: Avenida Doutor Antônio Gouveia"
+                  placeholder="Ex: Avenida Doutor AntÃ´nio Gouveia"
                   class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Número</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">NÃºmero</label>
                 <input 
                   type="text" 
                   name="number" 
@@ -5614,8 +5631,8 @@ function openStudentModal(studentId = null) {
                   type="text" 
                   id="city-input"
                   name="city" 
-                  value="${student.address?.city || 'Maceió'}" 
-                  placeholder="Maceió"
+                  value="${student.address?.city || 'MaceiÃ³'}" 
+                  placeholder="MaceiÃ³"
                   class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >
               </div>
@@ -5637,28 +5654,28 @@ function openStudentModal(studentId = null) {
 
           <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3 flex items-center gap-1.5">
-              <i class="fa-solid fa-brain"></i> 4. Diagnóstico, Redes Sociais & Perfil
+              <i class="fa-solid fa-brain"></i> 4. DiagnÃ³stico, Redes Sociais & Perfil
             </h3>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Área de Atuação / Profissão</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Ãrea de AtuaÃ§Ã£o / ProfissÃ£o</label>
                 <input 
                   type="text" 
                   name="profession" 
                   value="${student.profession || ''}" 
-                  placeholder="Ex: Corretor de Imóveis, Estética, Confeitaria..."
+                  placeholder="Ex: Corretor de ImÃ³veis, EstÃ©tica, Confeitaria..."
                   class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nível de Escolaridade</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">NÃ­vel de Escolaridade</label>
                 <input 
                   type="text" 
                   name="education" 
                   value="${student.education || ''}" 
-                  placeholder="Ex: Ensino Médio Completo, Superior Cursando..."
+                  placeholder="Ex: Ensino MÃ©dio Completo, Superior Cursando..."
                   class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >
               </div>
@@ -5675,12 +5692,12 @@ function openStudentModal(studentId = null) {
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Já trabalhou com redes sociais?</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">JÃ¡ trabalhou com redes sociais?</label>
                 <input 
                   type="text" 
                   name="experience" 
-                  value="${student.experience || 'Não'}" 
-                  placeholder="Ex: Sim / Não / Apenas pessoal"
+                  value="${student.experience || 'NÃ£o'}" 
+                  placeholder="Ex: Sim / NÃ£o / Apenas pessoal"
                   class="w-full px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >
               </div>
@@ -5697,7 +5714,7 @@ function openStudentModal(studentId = null) {
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Ferramentas já utilizadas</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Ferramentas jÃ¡ utilizadas</label>
                 <input 
                   type="text" 
                   name="tools" 
@@ -5708,11 +5725,11 @@ function openStudentModal(studentId = null) {
               </div>
 
               <div class="sm:col-span-2">
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Principais Desafios ao Produzir Conteúdo</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Principais Desafios ao Produzir ConteÃºdo</label>
                 <textarea 
                   name="challenges" 
                   rows="2" 
-                  placeholder="Ex: Edição de vídeos, vergonha na câmera, criatividade..."
+                  placeholder="Ex: EdiÃ§Ã£o de vÃ­deos, vergonha na cÃ¢mera, criatividade..."
                   class="w-full px-3.5 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >${student.challenges || ''}</textarea>
               </div>
@@ -5722,13 +5739,13 @@ function openStudentModal(studentId = null) {
                 <textarea 
                   name="motivation" 
                   rows="2" 
-                  placeholder="Ex: Divulgar meu negócio, ter nova profissão..."
+                  placeholder="Ex: Divulgar meu negÃ³cio, ter nova profissÃ£o..."
                   class="w-full px-3.5 py-2 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                 >${student.motivation || ''}</textarea>
               </div>
 
               <div class="sm:col-span-2">
-                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Expectativas em relação ao curso</label>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Expectativas em relaÃ§Ã£o ao curso</label>
                 <textarea 
                   name="expectations" 
                   rows="2" 
@@ -5776,7 +5793,7 @@ async function searchViaCep(rawCep) {
     const data = await response.json();
 
     if (data.erro) {
-      showToast("CEP não encontrado.", "warning");
+      showToast("CEP nÃ£o encontrado.", "warning");
       return null;
     }
 
@@ -5790,10 +5807,10 @@ async function searchViaCep(rawCep) {
     if (cityInput) cityInput.value = data.localidade || "";
     if (stateInput) stateInput.value = data.uf || "";
 
-    showToast(`Endereço carregado: ${data.bairro} - ${data.localidade}/${data.uf}`, "success");
+    showToast(`EndereÃ§o carregado: ${data.bairro} - ${data.localidade}/${data.uf}`, "success");
     return data;
   } catch (err) {
-    showToast("Não foi possível consultar o CEP.", "error");
+    showToast("NÃ£o foi possÃ­vel consultar o CEP.", "error");
     return null;
   } finally {
     if (spinner) spinner.className = "fa-solid fa-magnifying-glass";
@@ -5839,7 +5856,7 @@ function saveStudentForm(event) {
     challenges: formData.get("challenges")?.trim() || "",
     motivation: formData.get("motivation")?.trim() || "",
     expectations: formData.get("expectations")?.trim() || "",
-    notes: existingStudent?.notes || "Aluno do curso de Gestão de Mídias Digitais.",
+    notes: existingStudent?.notes || "Aluno do curso de GestÃ£o de MÃ­dias Digitais.",
     contact: {
       phone: formData.get("phone")?.trim() || "",
       email: formData.get("email")?.trim() || "",
@@ -5853,7 +5870,7 @@ function saveStudentForm(event) {
       number: formData.get("number")?.trim() || "",
       complement: formData.get("complement")?.trim() || "",
       neighborhood: formData.get("neighborhood")?.trim() || "",
-      city: formData.get("city")?.trim() || "Maceió",
+      city: formData.get("city")?.trim() || "MaceiÃ³",
       state: (formData.get("state") || "AL").toUpperCase().trim()
     },
     grades: existingStudent ? existingStudent.grades : {}
@@ -5927,8 +5944,8 @@ function openGradesModal(studentId, focusSubject = null) {
               </h2>
               <div class="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
                 <span>Turma: ${student.classroom}</span>
-                <span>•</span>
-                <span>Matrícula: ${student.id}</span>
+                <span>â€¢</span>
+                <span>MatrÃ­cula: ${student.id}</span>
               </div>
             </div>
           </div>
@@ -5942,13 +5959,13 @@ function openGradesModal(studentId, focusSubject = null) {
             <table class="w-full text-left text-xs border-collapse">
               <thead>
                 <tr class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
-                  <th class="py-3 px-3">Módulo / Disciplina</th>
+                  <th class="py-3 px-3">MÃ³dulo / Disciplina</th>
                   <th class="py-3 px-2 text-center w-20">Ativ. 1</th>
                   <th class="py-3 px-2 text-center w-20">Ativ. 2</th>
                   <th class="py-3 px-2 text-center w-20">Ativ. 3</th>
                   <th class="py-3 px-2 text-center w-20">Ativ. 4</th>
                   <th class="py-3 px-2 text-center w-16">Faltas</th>
-                  <th class="py-3 px-3 text-center w-20">Média</th>
+                  <th class="py-3 px-3 text-center w-20">MÃ©dia</th>
                   <th class="py-3 px-3 text-center">Status</th>
                 </tr>
               </thead>
@@ -6025,7 +6042,7 @@ function openGradesModal(studentId, focusSubject = null) {
                         ${hasGrades ? avg.toFixed(1) : '-'}
                       </td>
                       <td class="py-2.5 px-3 text-center">
-                        ${!hasGrades ? '<span class="text-slate-400 text-[11px]">-</span>' : isPassing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700">Aprovado</span>' : isRec ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">Recuperação</span>' : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Reprovado</span>'}
+                        ${!hasGrades ? '<span class="text-slate-400 text-[11px]">-</span>' : isPassing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700">Aprovado</span>' : isRec ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">RecuperaÃ§Ã£o</span>' : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Reprovado</span>'}
                       </td>
                     </tr>
                   `;
@@ -6130,7 +6147,7 @@ function openBoletimModal(studentId) {
           
           <div class="border-b-2 border-slate-900 dark:border-slate-100 pb-4 text-center">
             <h1 class="text-xl font-black tracking-tight uppercase">${AppState.settings.schoolName}</h1>
-            <p class="text-xs text-slate-600 dark:text-slate-400">${AppState.settings.courseName} • Ano Letivo ${AppState.settings.schoolYear}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-400">${AppState.settings.courseName} â€¢ Ano Letivo ${AppState.settings.schoolYear}</p>
             <h2 class="text-xs font-bold mt-2 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 py-1 rounded">Boletim Individual do Aluno</h2>
           </div>
 
@@ -6153,15 +6170,15 @@ function openBoletimModal(studentId) {
             </div>
             <div>
               <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">CPF</span>
-              <span class="font-mono font-semibold">${student.cpf ? displayCpf : 'Não informado'}</span>
+              <span class="font-mono font-semibold">${student.cpf ? displayCpf : 'NÃ£o informado'}</span>
             </div>
             <div>
               <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">Turma</span>
               <span class="font-semibold">${student.classroom}</span>
             </div>
             <div>
-              <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">Situação Final</span>
-              <span class="font-bold ${stats.status === 'Aprovado' ? 'text-emerald-600' : stats.status === 'Em Recuperação' ? 'text-amber-600' : 'text-rose-600'}">
+              <span class="block text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold">SituaÃ§Ã£o Final</span>
+              <span class="font-bold ${stats.status === 'Aprovado' ? 'text-emerald-600' : stats.status === 'Em RecuperaÃ§Ã£o' ? 'text-amber-600' : 'text-rose-600'}">
                 ${stats.status}
               </span>
             </div>
@@ -6171,13 +6188,13 @@ function openBoletimModal(studentId) {
             <table class="w-full text-xs text-left border-collapse border border-slate-300 dark:border-slate-700">
               <thead>
                 <tr class="bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200">
-                  <th class="py-2.5 px-3 border border-slate-300 dark:border-slate-700">Módulo do Curso</th>
+                  <th class="py-2.5 px-3 border border-slate-300 dark:border-slate-700">MÃ³dulo do Curso</th>
                   <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 1</th>
                   <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 2</th>
                   <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 3</th>
                   <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Ativ. 4</th>
                   <th class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">Faltas</th>
-                  <th class="py-2.5 px-3 text-center border border-slate-300 dark:border-slate-700">Média</th>
+                  <th class="py-2.5 px-3 text-center border border-slate-300 dark:border-slate-700">MÃ©dia</th>
                   <th class="py-2.5 px-3 text-center border border-slate-300 dark:border-slate-700">Resultado</th>
                 </tr>
               </thead>
@@ -6200,7 +6217,7 @@ function openBoletimModal(studentId) {
                         ${hasGrades ? avg.toFixed(1) : '-'}
                       </td>
                       <td class="py-2 px-3 text-center font-semibold border border-slate-300 dark:border-slate-700 text-[11px]">
-                        ${!hasGrades ? '-' : isPass ? 'Aprovado' : isRec ? 'Recuperação' : 'Reprovado'}
+                        ${!hasGrades ? '-' : isPass ? 'Aprovado' : isRec ? 'RecuperaÃ§Ã£o' : 'Reprovado'}
                       </td>
                     </tr>
                   `;
@@ -6208,7 +6225,7 @@ function openBoletimModal(studentId) {
               </tbody>
               <tfoot>
                 <tr class="bg-slate-100 dark:bg-slate-800 font-bold border-t-2 border-slate-400">
-                  <td class="py-2.5 px-3 border border-slate-300 dark:border-slate-700">MÉDIA GERAL DO CURSO</td>
+                  <td class="py-2.5 px-3 border border-slate-300 dark:border-slate-700">MÃ‰DIA GERAL DO CURSO</td>
                   <td colspan="4" class="border border-slate-300 dark:border-slate-700"></td>
                   <td class="py-2.5 px-2 text-center border border-slate-300 dark:border-slate-700">${stats.totalAbsences}</td>
                   <td class="py-2.5 px-3 text-center text-sm font-black border border-slate-300 dark:border-slate-700">${stats.overallAvg.toFixed(1)}</td>
@@ -6220,7 +6237,7 @@ function openBoletimModal(studentId) {
 
           <div class="pt-6 grid grid-cols-2 gap-8 text-center text-xs text-slate-600 dark:text-slate-400">
             <div class="pt-10 border-t border-slate-400">
-              <span class="block font-semibold text-slate-800 dark:text-slate-200">Professor / Coordenação</span>
+              <span class="block font-semibold text-slate-800 dark:text-slate-200">Professor / CoordenaÃ§Ã£o</span>
               <span>Emprega Mais Alagoas</span>
             </div>
             <div class="pt-10 border-t border-slate-400">
@@ -6237,15 +6254,15 @@ function openBoletimModal(studentId) {
 }
 
 // -------------------------------------------------------------
-// EXPORTAÇÕES E BACKUP
+// EXPORTAÃ‡Ã•ES E BACKUP
 // -------------------------------------------------------------
 function exportStudentsToCSV(forcePrivacy = false) {
   if (AppState.students.length === 0) {
-    showToast("Não há alunos para exportar.", "warning");
+    showToast("NÃ£o hÃ¡ alunos para exportar.", "warning");
     return;
   }
 
-  // REGRA MANDATÓRIA: Sem Modo Deus ativo, a exportação é sempre com dados protegidos/mascarados!
+  // REGRA MANDATÃ“RIA: Sem Modo Deus ativo, a exportaÃ§Ã£o Ã© sempre com dados protegidos/mascarados!
   const usePrivacy = !isGodModeActive() || forcePrivacy || AppState.privacyMode || AppState.settings.viewMode === 'secure';
 
   const headers = [
@@ -6397,7 +6414,7 @@ function processBackupFile() {
         showToast("Backup restaurado com sucesso!", "success");
         renderApp();
       } else {
-        showToast("Formato de backup inválido.", "error");
+        showToast("Formato de backup invÃ¡lido.", "error");
       }
     } catch (err) {
       showToast("Erro ao ler arquivo JSON.", "error");
@@ -6407,7 +6424,7 @@ function processBackupFile() {
 }
 
 // -------------------------------------------------------------
-// CONFIGURAÇÃO DE MÓDULOS
+// CONFIGURAÃ‡ÃƒO DE MÃ“DULOS
 // -------------------------------------------------------------
 function openSubjectsConfigModal() {
   const modalContainer = document.getElementById("modal-container");
@@ -6422,7 +6439,7 @@ function openSubjectsConfigModal() {
             <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-sm font-bold">
               <i class="fa-solid fa-book-open"></i>
             </div>
-            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Módulos do Curso (Mídias Digitais)</h3>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">MÃ³dulos do Curso (MÃ­dias Digitais)</h3>
           </div>
           <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
             <i class="fa-solid fa-xmark"></i>
@@ -6433,7 +6450,7 @@ function openSubjectsConfigModal() {
           <input 
             type="text" 
             id="new-subject-input" 
-            placeholder="Nome do novo módulo..."
+            placeholder="Nome do novo mÃ³dulo..."
             class="flex-1 px-3 py-2 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
           >
           <button onclick="addSubject()" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700">
@@ -6469,7 +6486,7 @@ function addSubject() {
   if (!name) return;
 
   if (AppState.subjects.includes(name)) {
-    showToast("Este módulo já existe.", "warning");
+    showToast("Este mÃ³dulo jÃ¡ existe.", "warning");
     return;
   }
 
@@ -6477,19 +6494,19 @@ function addSubject() {
   saveDataToStorage();
   openSubjectsConfigModal();
   renderApp();
-  showToast(`Módulo "${name}" adicionado.`);
+  showToast(`MÃ³dulo "${name}" adicionado.`);
 }
 
 function removeSubject(name) {
   if (AppState.subjects.length <= 1) {
-    showToast("O curso deve ter pelo menos um módulo.", "warning");
+    showToast("O curso deve ter pelo menos um mÃ³dulo.", "warning");
     return;
   }
   AppState.subjects = AppState.subjects.filter(s => s !== name);
   saveDataToStorage();
   openSubjectsConfigModal();
   renderApp();
-  showToast(`Módulo "${name}" removido.`, "info");
+  showToast(`MÃ³dulo "${name}" removido.`, "info");
 }
 
 // -------------------------------------------------------------
@@ -6535,7 +6552,7 @@ function switchTab(tab) {
   const alunoRestrictedTabs = ["dashboard", "reports", "students"];
 
   if (isAluno && alunoRestrictedTabs.includes(tab)) {
-    showToast("Acesso restrito: este menu é exclusivo para docentes e coordenação.", "warning");
+    showToast("Acesso restrito: este menu Ã© exclusivo para docentes e coordenaÃ§Ã£o.", "warning");
     AppState.currentTab = "grades";
     renderApp();
     return;
@@ -6593,7 +6610,7 @@ function closeModal() {
 }
 
 // -------------------------------------------------------------
-// SISTEMA DE AUTENTICAÇÃO POR CPF E MENU DE USUÁRIO
+// SISTEMA DE AUTENTICAÃ‡ÃƒO POR CPF E MENU DE USUÃRIO
 // -------------------------------------------------------------
 function cleanCpfDigits(cpf) {
   return (cpf || "").replace(/\D/g, "");
@@ -6634,7 +6651,7 @@ function renderHeaderUserBadge() {
             <p class="font-bold text-slate-900 dark:text-slate-100 truncate">${AppState.currentUser.name}</p>
             <p class="text-[10px] text-slate-400 truncate">CPF: ${maskCpf(AppState.currentUser.cpf, false)}</p>
             <span class="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-bold ${isProf ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'} uppercase">
-              ${isProf ? 'Professor / Coordenação' : 'Aluno Matriculado'}
+              ${isProf ? 'Professor / CoordenaÃ§Ã£o' : 'Aluno Matriculado'}
             </span>
           </div>
           <button onclick="openUserPhotoUploadModal()" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
@@ -6649,7 +6666,7 @@ function renderHeaderUserBadge() {
             </button>
           ` : ''}
           <button onclick="switchTab('forum')" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-comments text-purple-600"></i> Fórum & Chat ao Vivo
+            <i class="fa-solid fa-comments text-purple-600"></i> FÃ³rum & Chat ao Vivo
           </button>
           <div class="border-t border-slate-100 dark:border-slate-800 mt-1 pt-1">
             <button onclick="logoutCurrentUser()" class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2 font-semibold">
@@ -6699,7 +6716,7 @@ function openCpfLoginModal(redirectTab = null) {
             </div>
             <div>
               <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Login de Acesso ao Sistema</h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">Emprega Mais Alagoas • Mídias Digitais</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Emprega Mais Alagoas â€¢ MÃ­dias Digitais</p>
             </div>
           </div>
           <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
@@ -6734,7 +6751,7 @@ function openCpfLoginModal(redirectTab = null) {
             <input 
               type="text" 
               id="login-prof-name" 
-              value="Professor(a) • Coordenação Emprega Mais"
+              value="Professor(a) â€¢ CoordenaÃ§Ã£o Emprega Mais"
               class="w-full px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
             />
           </div>
@@ -6756,7 +6773,7 @@ function openCpfLoginModal(redirectTab = null) {
               <i class="fa-solid fa-address-card absolute left-3 top-3 text-slate-400 text-xs"></i>
             </div>
             <p id="login-hint" class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-              O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados previamente.
+              O CPF digitado serÃ¡ validado contra a base de ${AppState.students.length} alunos cadastrados previamente.
             </p>
           </div>
 
@@ -6801,14 +6818,14 @@ function switchCpfLoginRole(role) {
     tabAluno.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
     if (profNameCont) profNameCont.classList.remove("hidden");
     if (cpfLabel) cpfLabel.textContent = "CPF do Professor / Docente";
-    if (loginHint) loginHint.textContent = "Docentes têm acesso irrestrito a relatórios, criação de tópicos com anexos e envios de e-mail.";
+    if (loginHint) loginHint.textContent = "Docentes tÃªm acesso irrestrito a relatÃ³rios, criaÃ§Ã£o de tÃ³picos com anexos e envios de e-mail.";
     if (cpfInput && !cpfInput.value) cpfInput.value = "031.818.825-31";
   } else {
     tabAluno.className = "flex-1 py-2 rounded-xl text-center font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all flex items-center justify-center gap-1.5";
     tabProf.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
     if (profNameCont) profNameCont.classList.add("hidden");
     if (cpfLabel) cpfLabel.textContent = "CPF do Aluno Matriculado";
-    if (loginHint) loginHint.textContent = `O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados previamente.`;
+    if (loginHint) loginHint.textContent = `O CPF digitado serÃ¡ validado contra a base de ${AppState.students.length} alunos cadastrados previamente.`;
     if (cpfInput && cpfInput.value === "031.818.825-31") cpfInput.value = "";
   }
 }
@@ -6834,13 +6851,13 @@ function handleCpfLoginSubmit(e) {
   const digits = cleanCpfDigits(rawCpf);
 
   if (digits.length < 11) {
-    showToast("Por favor, digite um CPF válido com 11 dígitos.", "warning");
+    showToast("Por favor, digite um CPF vÃ¡lido com 11 dÃ­gitos.", "warning");
     return;
   }
 
   if (currentLoginRole === "professor") {
     const profNameInput = document.getElementById("login-prof-name");
-    const profName = (profNameInput?.value || "").trim() || "Professor(a) • Coordenação Emprega Mais";
+    const profName = (profNameInput?.value || "").trim() || "Professor(a) â€¢ CoordenaÃ§Ã£o Emprega Mais";
 
     AppState.currentUser = {
       id: "PROF-EMA-001",
@@ -6849,7 +6866,7 @@ function handleCpfLoginSubmit(e) {
       role: "professor",
       photo: AppState.godMode?.user?.picture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
       email: "docente@empregamais.al.gov.br",
-      classroom: "Coordenação Geral",
+      classroom: "CoordenaÃ§Ã£o Geral",
       loginTime: Date.now()
     };
 
@@ -6870,7 +6887,7 @@ function handleCpfLoginSubmit(e) {
   const student = AppState.students.find(s => cleanCpfDigits(s.cpf) === digits);
 
   if (!student) {
-    showToast("CPF não encontrado na lista de alunos matriculados no Emprega Mais Alagoas.", "error", 4500);
+    showToast("CPF nÃ£o encontrado na lista de alunos matriculados no Emprega Mais Alagoas.", "error", 4500);
     return;
   }
 
@@ -6890,9 +6907,9 @@ function handleCpfLoginSubmit(e) {
   localStorage.setItem("eupordias_auth_user", JSON.stringify(AppState.currentUser));
   closeModal();
 
-  showToast(`Olá, ${student.name.split(" ")[0]}! Login realizado com sucesso.`, "success");
+  showToast(`OlÃ¡, ${student.name.split(" ")[0]}! Login realizado com sucesso.`, "success");
 
-  // Se não tem foto, convida amigavelmente para adicionar
+  // Se nÃ£o tem foto, convida amigavelmente para adicionar
   if (!studentPhoto) {
     setTimeout(() => {
       openPromptUserPhotoModal();
@@ -6910,7 +6927,7 @@ function handleCpfLoginSubmit(e) {
 function logoutCurrentUser() {
   AppState.currentUser = null;
   localStorage.removeItem("eupordias_auth_user");
-  showToast("Você saiu da conta com sucesso.", "info");
+  showToast("VocÃª saiu da conta com sucesso.", "info");
   renderApp();
 }
 
@@ -6928,7 +6945,7 @@ function openPromptUserPhotoModal() {
         <div class="space-y-1">
           <h3 class="font-bold text-base text-slate-900 dark:text-slate-100">Adicione sua Foto de Perfil</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Regra da comunidade: para participar do <strong>Fórum & Chat ao vivo</strong> é necessário possuir foto de perfil.
+            Regra da comunidade: para participar do <strong>FÃ³rum & Chat ao vivo</strong> Ã© necessÃ¡rio possuir foto de perfil.
           </p>
         </div>
         <div class="space-y-2 pt-2">
@@ -7042,7 +7059,7 @@ async function startUserWebcam() {
     if (captureBtn) captureBtn.classList.remove("hidden");
     if (startBtn) startBtn.classList.add("hidden");
   } catch (err) {
-    showToast("Não foi possível acessar a câmera: " + err.message, "error");
+    showToast("NÃ£o foi possÃ­vel acessar a cÃ¢mera: " + err.message, "error");
   }
 }
 
@@ -7103,7 +7120,7 @@ function saveUserPhotoData(photoData) {
   AppState.currentUser.photo = photoData;
   localStorage.setItem("eupordias_auth_user", JSON.stringify(AppState.currentUser));
 
-  // Se for aluno, salva também no registro do aluno
+  // Se for aluno, salva tambÃ©m no registro do aluno
   if (AppState.currentUser.role === 'aluno' && AppState.currentUser.id) {
     const student = AppState.students.find(s => s.id === AppState.currentUser.id);
     if (student) {
@@ -7112,12 +7129,12 @@ function saveUserPhotoData(photoData) {
     }
   }
 
-  showToast("Foto de perfil atualizada com sucesso! Você agora pode postar no Fórum e Chat.", "success");
+  showToast("Foto de perfil atualizada com sucesso! VocÃª agora pode postar no FÃ³rum e Chat.", "success");
   renderApp();
 }
 
 // -------------------------------------------------------------
-// AUTOMAÇÃO DE ENVIO DE RELATÓRIO INDIVIDUAL POR E-MAIL
+// AUTOMAÃ‡ÃƒO DE ENVIO DE RELATÃ“RIO INDIVIDUAL POR E-MAIL
 // -------------------------------------------------------------
 function buildStudentReportSummary(student, teacherNote = "") {
   const stats = calculateStudentOverallStats(student);
@@ -7130,13 +7147,13 @@ function buildStudentReportSummary(student, teacherNote = "") {
     const gradeObj = student.grades?.[subj] || { b1: 0, b2: 0, b3: 0, b4: 0, absences: 0 };
     const { avg, hasGrades } = calculateSubjectAverage(gradeObj);
     const avgStr = hasGrades ? avg.toFixed(1) : "Pendente";
-    const statusStr = !hasGrades ? "Em Andamento" : (avg >= passGrade ? "Aprovado" : "Recuperação");
+    const statusStr = !hasGrades ? "Em Andamento" : (avg >= passGrade ? "Aprovado" : "RecuperaÃ§Ã£o");
 
-    modulesRowsText += `• Módulo ${idx + 1} (${subj}): Média ${avgStr} | Faltas: ${gradeObj.absences || 0} (${statusStr})\n`;
+    modulesRowsText += `â€¢ MÃ³dulo ${idx + 1} (${subj}): MÃ©dia ${avgStr} | Faltas: ${gradeObj.absences || 0} (${statusStr})\n`;
 
     modulesRowsHtml += `
       <tr style="border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 8px 10px; font-size: 11px; font-weight: bold; color: #1e293b;">Módulo ${idx + 1}: ${subj}</td>
+        <td style="padding: 8px 10px; font-size: 11px; font-weight: bold; color: #1e293b;">MÃ³dulo ${idx + 1}: ${subj}</td>
         <td style="padding: 8px 10px; font-size: 11px; text-align: center; color: #475569;">${gradeObj.b1 || '-'}</td>
         <td style="padding: 8px 10px; font-size: 11px; text-align: center; color: #475569;">${gradeObj.b2 || '-'}</td>
         <td style="padding: 8px 10px; font-size: 11px; text-align: center; font-weight: bold; color: ${avg >= passGrade ? '#059669' : '#d97706'};">${avgStr}</td>
@@ -7145,27 +7162,27 @@ function buildStudentReportSummary(student, teacherNote = "") {
     `;
   });
 
-  const fullText = `*RELATÓRIO INDIVIDUAL E DIAGNÓSTICO PEDAGÓGICO*
-Programa Emprega Mais Alagoas • Curso de Gestão de Mídias Digitais
+  const fullText = `*RELATÃ“RIO INDIVIDUAL E DIAGNÃ“STICO PEDAGÃ“GICO*
+Programa Emprega Mais Alagoas â€¢ Curso de GestÃ£o de MÃ­dias Digitais
 
 Aluno(a): ${student.name}
-Matrícula: ${student.id}
+MatrÃ­cula: ${student.id}
 Unidade: ${student.classroom || student.unitCity || 'Alagoas'}
-Média Geral Atual: ${stats.overallAvg.toFixed(1)} | Situação: ${stats.status}
+MÃ©dia Geral Atual: ${stats.overallAvg.toFixed(1)} | SituaÃ§Ã£o: ${stats.status}
 
-📋 O QUE VOCÊ INFORMOU NO SEU DIAGNÓSTICO INICIAL:
-• Principais Desafios com Conteúdo: "${student.challenges || 'Não informado'}"
-• Motivação para se Inscrever: "${student.motivation || 'Aprender e evoluir'}"
-• Expectativas do Curso: "${student.expectations || 'Evoluir nas redes sociais'}"
-• Redes que mais utiliza: ${student.frequentNetworks || 'Instagram'}
-• Ferramentas conhecidas: ${student.tools || 'Nenhuma'}
+ðŸ“‹ O QUE VOCÃŠ INFORMOU NO SEU DIAGNÃ“STICO INICIAL:
+â€¢ Principais Desafios com ConteÃºdo: "${student.challenges || 'NÃ£o informado'}"
+â€¢ MotivaÃ§Ã£o para se Inscrever: "${student.motivation || 'Aprender e evoluir'}"
+â€¢ Expectativas do Curso: "${student.expectations || 'Evoluir nas redes sociais'}"
+â€¢ Redes que mais utiliza: ${student.frequentNetworks || 'Instagram'}
+â€¢ Ferramentas conhecidas: ${student.tools || 'Nenhuma'}
 
-📊 DESEMPENHO NOS MÓDULOS AVALIADOS:
+ðŸ“Š DESEMPENHO NOS MÃ“DULOS AVALIADOS:
 ${modulesRowsText}
-💬 PARECER PEDAGÓGICO DO PROFESSOR:
-"${teacherNote || 'Parabéns pela dedicação nas aulas práticas. Continue mantendo a consistência e produzindo conteúdos autorais!'}"
+ðŸ’¬ PARECER PEDAGÃ“GICO DO PROFESSOR:
+"${teacherNote || 'ParabÃ©ns pela dedicaÃ§Ã£o nas aulas prÃ¡ticas. Continue mantendo a consistÃªncia e produzindo conteÃºdos autorais!'}"
 
-Governo de Alagoas • Secretaria do Trabalho, Emprego e Renda`;
+Governo de Alagoas â€¢ Secretaria do Trabalho, Emprego e Renda`;
 
   return { text: fullText, htmlTable: modulesRowsHtml, stats };
 }
@@ -7175,7 +7192,7 @@ function openSendEmailReportModal(studentId) {
   if (!student) return;
 
   const defaultEmail = student.contact?.email || student.email || "";
-  const defaultNote = "Parabéns pela sua jornada no Curso de Gestão de Mídias Digitais! Revisamos os desafios e expectativas que você compartilhou no primeiro dia e estamos muito orgulhosos da sua evolução técnica.";
+  const defaultNote = "ParabÃ©ns pela sua jornada no Curso de GestÃ£o de MÃ­dias Digitais! Revisamos os desafios e expectativas que vocÃª compartilhou no primeiro dia e estamos muito orgulhosos da sua evoluÃ§Ã£o tÃ©cnica.";
   const summary = buildStudentReportSummary(student, defaultNote);
 
   const modalContainer = document.getElementById("modal-container");
@@ -7191,8 +7208,8 @@ function openSendEmailReportModal(studentId) {
               <i class="fa-solid fa-paper-plane"></i>
             </div>
             <div>
-              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Enviar Relatório Direto por E-mail</h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">Resumo individual feito de acordo com as informações deixadas pelo aluno</p>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Enviar RelatÃ³rio Direto por E-mail</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Resumo individual feito de acordo com as informaÃ§Ãµes deixadas pelo aluno</p>
             </div>
           </div>
           <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
@@ -7204,7 +7221,7 @@ function openSendEmailReportModal(studentId) {
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">E-mail do Aluno (Destinatário)</label>
+              <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">E-mail do Aluno (DestinatÃ¡rio)</label>
               <input 
                 type="email" 
                 id="email-report-dest" 
@@ -7218,14 +7235,14 @@ function openSendEmailReportModal(studentId) {
               <input 
                 type="text" 
                 id="email-report-subject" 
-                value="[Emprega Mais Alagoas] Seu Relatório Individual e Diagnóstico Pedagógico • ${student.name}" 
+                value="[Emprega Mais Alagoas] Seu RelatÃ³rio Individual e DiagnÃ³stico PedagÃ³gico â€¢ ${student.name}" 
                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100"
               />
             </div>
           </div>
 
           <div>
-            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Parecer / Mensagem do Professor (Personalizável)</label>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Parecer / Mensagem do Professor (PersonalizÃ¡vel)</label>
             <textarea 
               id="email-report-teacher-note" 
               rows="3" 
@@ -7233,21 +7250,21 @@ function openSendEmailReportModal(studentId) {
             >${defaultNote}</textarea>
           </div>
 
-          <!-- Pré-visualização do Relatório Oficial -->
+          <!-- PrÃ©-visualizaÃ§Ã£o do RelatÃ³rio Oficial -->
           <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-3">
             <div class="flex items-center justify-between pb-2 border-b border-slate-200/80 dark:border-slate-700/80">
               <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                <i class="fa-solid fa-eye text-indigo-600"></i> Prévia do Resumo de Diagnóstico & Notas
+                <i class="fa-solid fa-eye text-indigo-600"></i> PrÃ©via do Resumo de DiagnÃ³stico & Notas
               </span>
               <span class="text-[10px] font-mono bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold">
-                Média Geral: ${summary.stats.overallAvg.toFixed(1)}
+                MÃ©dia Geral: ${summary.stats.overallAvg.toFixed(1)}
               </span>
             </div>
 
-            <!-- Dados do Diagnóstico deixados pelo aluno -->
+            <!-- Dados do DiagnÃ³stico deixados pelo aluno -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
               <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                <span class="text-rose-600 dark:text-rose-400 font-bold block mb-0.5"><i class="fa-solid fa-triangle-exclamation"></i> Desafios com Conteúdo:</span>
+                <span class="text-rose-600 dark:text-rose-400 font-bold block mb-0.5"><i class="fa-solid fa-triangle-exclamation"></i> Desafios com ConteÃºdo:</span>
                 <p class="text-slate-600 dark:text-slate-300 italic">"${student.challenges || 'Nenhum desafio registrado.'}"</p>
               </div>
               <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
@@ -7256,15 +7273,15 @@ function openSendEmailReportModal(studentId) {
               </div>
             </div>
 
-            <!-- Tabela dos 7 Módulos -->
+            <!-- Tabela dos 7 MÃ³dulos -->
             <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
               <table class="w-full text-left text-[11px]">
                 <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
                   <tr>
-                    <th class="p-2">Módulo Avaliado</th>
+                    <th class="p-2">MÃ³dulo Avaliado</th>
                     <th class="p-2 text-center">B1</th>
                     <th class="p-2 text-center">B2</th>
-                    <th class="p-2 text-center">Média</th>
+                    <th class="p-2 text-center">MÃ©dia</th>
                     <th class="p-2 text-center">Faltas</th>
                   </tr>
                 </thead>
@@ -7332,10 +7349,10 @@ async function executeSendEmailReport(studentId) {
   const sendBtn = document.getElementById("btn-execute-send-email");
 
   const toEmail = destInput ? destInput.value.trim() : (student.contact?.email || "");
-  const subject = subjectInput ? subjectInput.value.trim() : "Relatório Pedagógico";
+  const subject = subjectInput ? subjectInput.value.trim() : "RelatÃ³rio PedagÃ³gico";
 
   if (!toEmail || !toEmail.includes("@")) {
-    showToast("Por favor, informe um endereço de e-mail válido para o aluno.", "warning");
+    showToast("Por favor, informe um endereÃ§o de e-mail vÃ¡lido para o aluno.", "warning");
     return;
   }
 
@@ -7347,15 +7364,15 @@ async function executeSendEmailReport(studentId) {
   // Simula o tempo de handshake SMTP / API de mensageria
   await new Promise(r => setTimeout(r, 1200));
 
-  // Registrar histórico de envio nas observações do aluno
+  // Registrar histÃ³rico de envio nas observaÃ§Ãµes do aluno
   const nowStr = new Date().toLocaleString("pt-BR");
-  const logEntry = `\n[Relatório E-mail Enviado em ${nowStr}]: Destino: ${toEmail} | Assunto: ${subject}`;
+  const logEntry = `\n[RelatÃ³rio E-mail Enviado em ${nowStr}]: Destino: ${toEmail} | Assunto: ${subject}`;
   student.notes = (student.notes || "") + logEntry;
 
-  // Persistir alterações
+  // Persistir alteraÃ§Ãµes
   saveDataToStorage();
 
-  // Sincroniza atualização no Supabase se conectado
+  // Sincroniza atualizaÃ§Ã£o no Supabase se conectado
   try {
     const client = getSupabaseClient();
     if (client) {
@@ -7365,10 +7382,10 @@ async function executeSendEmailReport(studentId) {
       }).eq("id", String(student.id));
     }
   } catch (e) {
-    console.warn("Log de e-mail gravado localmente, sincronização na nuvem pendente:", e);
+    console.warn("Log de e-mail gravado localmente, sincronizaÃ§Ã£o na nuvem pendente:", e);
   }
 
-  showToast(`E-mail com relatório individual enviado com sucesso para ${toEmail}!`, "success", 5000);
+  showToast(`E-mail com relatÃ³rio individual enviado com sucesso para ${toEmail}!`, "success", 5000);
   closeModal();
   renderApp();
 }
@@ -7384,7 +7401,7 @@ function copyReportToClipboard(studentId) {
   navigator.clipboard.writeText(summary.text).then(() => {
     showToast("Resumo individual copiado! Cole diretamente na conversa de WhatsApp com o aluno.", "success");
   }).catch(() => {
-    showToast("Texto copiado para a área de transferência.", "info");
+    showToast("Texto copiado para a Ã¡rea de transferÃªncia.", "info");
   });
 }
 
@@ -7397,7 +7414,7 @@ function openMailtoReport(studentId) {
   const noteInput = document.getElementById("email-report-teacher-note");
 
   const toEmail = destInput ? destInput.value.trim() : (student.contact?.email || "");
-  const subject = subjectInput ? subjectInput.value.trim() : "Relatório Pedagógico";
+  const subject = subjectInput ? subjectInput.value.trim() : "RelatÃ³rio PedagÃ³gico";
   const teacherNote = noteInput ? noteInput.value.trim() : "";
   const summary = buildStudentReportSummary(student, teacherNote);
 
@@ -7410,7 +7427,7 @@ function openMailtoReport(studentId) {
 // -------------------------------------------------------------
 async function sendLoggedInStudentGradesEmail(studentIdOverride = null) {
   if (!AppState.currentUser) {
-    showToast("Por favor, faça login com seu CPF para enviar as notas para seu e-mail.", "info");
+    showToast("Por favor, faÃ§a login com seu CPF para enviar as notas para seu e-mail.", "info");
     openCpfLoginModal("grades");
     return;
   }
@@ -7421,7 +7438,7 @@ async function sendLoggedInStudentGradesEmail(studentIdOverride = null) {
   } else if (AppState.currentUser.role === "aluno") {
     student = AppState.students.find(s => s.id === AppState.currentUser.id || cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf));
   } else {
-    // Se for docente clicando diretamente na tabela, abre o modal de relatório
+    // Se for docente clicando diretamente na tabela, abre o modal de relatÃ³rio
     const firstStudent = AppState.students[0];
     if (firstStudent) {
       openSendEmailReportModal(firstStudent.id);
@@ -7430,13 +7447,13 @@ async function sendLoggedInStudentGradesEmail(studentIdOverride = null) {
   }
 
   if (!student) {
-    showToast("Não foi possível localizar o cadastro de aluno correspondente ao usuário logado.", "error");
+    showToast("NÃ£o foi possÃ­vel localizar o cadastro de aluno correspondente ao usuÃ¡rio logado.", "error");
     return;
   }
 
   const destEmail = student.contact?.email || student.email || AppState.currentUser.email;
   if (!destEmail || !destEmail.includes("@")) {
-    showToast("Nenhum e-mail válido cadastrado no seu perfil de aluno. Por favor, atualize seus dados.", "warning");
+    showToast("Nenhum e-mail vÃ¡lido cadastrado no seu perfil de aluno. Por favor, atualize seus dados.", "warning");
     openStudentModal(student);
     return;
   }
@@ -7449,19 +7466,19 @@ async function sendLoggedInStudentGradesEmail(studentIdOverride = null) {
   }
 
   try {
-    const defaultNote = "Relatório atualizado de notas e diagnóstico emitido automaticamente a pedido do próprio aluno através da plataforma Eu Por Dias.";
+    const defaultNote = "RelatÃ³rio atualizado de notas e diagnÃ³stico emitido automaticamente a pedido do prÃ³prio aluno atravÃ©s da plataforma Eu Por Dias.";
     const summary = buildStudentReportSummary(student, defaultNote);
 
     // Simula handshake de mensageria / envio SMTP
     await new Promise(r => setTimeout(r, 1100));
 
-    // Grava registro no histórico de observações do aluno
+    // Grava registro no histÃ³rico de observaÃ§Ãµes do aluno
     const nowStr = new Date().toLocaleString("pt-BR");
     const logEntry = `\n[Notas Enviadas p/ Aluno em ${nowStr}]: Destino: ${destEmail}`;
     student.notes = (student.notes || "") + logEntry;
     saveDataToStorage();
 
-    // Sincroniza atualização no Supabase se conectado
+    // Sincroniza atualizaÃ§Ã£o no Supabase se conectado
     try {
       const client = getSupabaseClient();
       if (client) {
@@ -7471,12 +7488,12 @@ async function sendLoggedInStudentGradesEmail(studentIdOverride = null) {
         }).eq("id", String(student.id));
       }
     } catch (err) {
-      console.warn("Log gravado localmente, sincronização remota pendente:", err);
+      console.warn("Log gravado localmente, sincronizaÃ§Ã£o remota pendente:", err);
     }
 
-    showToast(`Relatório atual de notas enviado com sucesso para ${destEmail}!`, "success", 5500);
+    showToast(`RelatÃ³rio atual de notas enviado com sucesso para ${destEmail}!`, "success", 5500);
   } catch (err) {
-    showToast("Erro ao processar envio do relatório: " + err.message, "error");
+    showToast("Erro ao processar envio do relatÃ³rio: " + err.message, "error");
   } finally {
     if (btn) {
       btn.disabled = false;
@@ -7496,36 +7513,36 @@ function escapeHtml(str) {
 }
 
 // -------------------------------------------------------------
-// FÓRUM & CHAT AO VIVO (COM ANEXOS: FOTO, PDF, LINK E VÍDEO)
+// FÃ“RUM & CHAT AO VIVO (COM ANEXOS: FOTO, PDF, LINK E VÃDEO)
 // -------------------------------------------------------------
 function getDefaultForumTopics() {
   const modTitles = [
-    "Módulo 01: Dúvidas sobre Marketing Digital & Estratégia",
-    "Módulo 02: Dúvidas sobre Criação de Conteúdo & Copywriting",
-    "Módulo 03: Dúvidas sobre Design & Identidade Visual",
-    "Módulo 04: Dúvidas sobre Edição de Vídeo & Reels",
-    "Módulo 05: Dúvidas sobre Tráfego Pago & Meta Ads",
-    "Módulo 06: Dúvidas sobre Métricas & Analytics",
-    "Módulo 07: Dúvidas sobre Projeto Integrador Final"
+    "MÃ³dulo 01: DÃºvidas sobre Marketing Digital & EstratÃ©gia",
+    "MÃ³dulo 02: DÃºvidas sobre CriaÃ§Ã£o de ConteÃºdo & Copywriting",
+    "MÃ³dulo 03: DÃºvidas sobre Design & Identidade Visual",
+    "MÃ³dulo 04: DÃºvidas sobre EdiÃ§Ã£o de VÃ­deo & Reels",
+    "MÃ³dulo 05: DÃºvidas sobre TrÃ¡fego Pago & Meta Ads",
+    "MÃ³dulo 06: DÃºvidas sobre MÃ©tricas & Analytics",
+    "MÃ³dulo 07: DÃºvidas sobre Projeto Integrador Final"
   ];
 
   const modDescs = [
-    "Espaço oficial para tirar dúvidas sobre funis de conversão, posicionamento de marca, personas e planejamento digital.",
-    "Tire suas dúvidas sobre técnicas de copywriting, redação publicitária para redes sociais e roteirização de postagens.",
-    "Canal de apoio para composição visual, paletas de cores, identidade de marca, uso do Canva e princípios de design.",
-    "Tire dúvidas práticas sobre cortes, sincronização com áudio em alta, legendas automáticas, enquadramentos e edição no CapCut.",
-    "Espaço para debater campanhas patrocinadas no Instagram e Facebook, segmentação de público, orçamento diário e Pixel da Meta.",
-    "Dúvidas sobre engajamento, alcance orgânico, taxa de retenção de reels, CTR e relatórios de métricas do Instagram Insights.",
-    "Canal para orientações finais sobre o projeto prático integrado do Programa Emprega Mais Alagoas."
+    "EspaÃ§o oficial para tirar dÃºvidas sobre funis de conversÃ£o, posicionamento de marca, personas e planejamento digital.",
+    "Tire suas dÃºvidas sobre tÃ©cnicas de copywriting, redaÃ§Ã£o publicitÃ¡ria para redes sociais e roteirizaÃ§Ã£o de postagens.",
+    "Canal de apoio para composiÃ§Ã£o visual, paletas de cores, identidade de marca, uso do Canva e princÃ­pios de design.",
+    "Tire dÃºvidas prÃ¡ticas sobre cortes, sincronizaÃ§Ã£o com Ã¡udio em alta, legendas automÃ¡ticas, enquadramentos e ediÃ§Ã£o no CapCut.",
+    "EspaÃ§o para debater campanhas patrocinadas no Instagram e Facebook, segmentaÃ§Ã£o de pÃºblico, orÃ§amento diÃ¡rio e Pixel da Meta.",
+    "DÃºvidas sobre engajamento, alcance orgÃ¢nico, taxa de retenÃ§Ã£o de reels, CTR e relatÃ³rios de mÃ©tricas do Instagram Insights.",
+    "Canal para orientaÃ§Ãµes finais sobre o projeto prÃ¡tico integrado do Programa Emprega Mais Alagoas."
   ];
 
   return AppState.subjects.map((subj, idx) => ({
     id: `topico-mod-${idx + 1}`,
     module: subj,
-    title: modTitles[idx] || `Módulo ${idx + 1}: Dúvidas sobre ${subj}`,
-    description: modDescs[idx] || `Discussões e esclarecimento de dúvidas sobre ${subj}.`,
+    title: modTitles[idx] || `MÃ³dulo ${idx + 1}: DÃºvidas sobre ${subj}`,
+    description: modDescs[idx] || `DiscussÃµes e esclarecimento de dÃºvidas sobre ${subj}.`,
     author: {
-      name: "Professor(a) • Coordenação Emprega Mais",
+      name: "Professor(a) â€¢ CoordenaÃ§Ã£o Emprega Mais",
       role: "professor",
       photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face"
     },
@@ -7533,18 +7550,18 @@ function getDefaultForumTopics() {
     attachments: [
       {
         type: "link",
-        title: "Guia Oficial de Mídias Digitais • Emprega Mais Alagoas",
+        title: "Guia Oficial de MÃ­dias Digitais â€¢ Emprega Mais Alagoas",
         url: "https://empregamais.al.gov.br"
       }
     ],
     comments: [
       {
         id: `com-${idx + 1}-1`,
-        authorName: "Coordenação Pedagógica",
+        authorName: "CoordenaÃ§Ã£o PedagÃ³gica",
         authorRole: "professor",
         authorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
         createdAt: new Date(Date.now() - (7 - idx) * 86400000 + 3600000).toISOString(),
-        text: "Bem-vindos a este tópico! Sintam-se à vontade para enviar perguntas ou compartilhar suas produções práticas."
+        text: "Bem-vindos a este tÃ³pico! Sintam-se Ã  vontade para enviar perguntas ou compartilhar suas produÃ§Ãµes prÃ¡ticas."
       }
     ]
   }));
@@ -7578,7 +7595,7 @@ function loadForumDataFromStorage() {
         authorRole: "professor",
         authorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
         createdAt: new Date(Date.now() - 3600000).toISOString(),
-        text: "Olá a todos! Sejam muito bem-vindos ao Fórum & Chat ao vivo do Programa Emprega Mais Alagoas."
+        text: "OlÃ¡ a todos! Sejam muito bem-vindos ao FÃ³rum & Chat ao vivo do Programa Emprega Mais Alagoas."
       }
     ];
   }
@@ -7602,7 +7619,7 @@ function isUserEligibleToPost() {
 }
 
 function renderForumTab(container) {
-  // REGRA DE ACESSO: Exige identificação por CPF
+  // REGRA DE ACESSO: Exige identificaÃ§Ã£o por CPF
   if (!AppState.currentUser) {
     renderTabAccessRestriction(container, 'forum');
     return;
@@ -7614,42 +7631,42 @@ function renderForumTab(container) {
   container.innerHTML = `
     <div class="space-y-6 fade-in">
       
-      <!-- Cabeçalho do Fórum & Chat -->
+      <!-- CabeÃ§alho do FÃ³rum & Chat -->
       <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">
               <i class="fa-solid fa-comments"></i> Comunidade Oficial
             </span>
-            <span class="text-xs text-slate-400">• Emprega Mais Alagoas</span>
+            <span class="text-xs text-slate-400">â€¢ Emprega Mais Alagoas</span>
           </div>
-          <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">Fórum & Chat ao Vivo</h2>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">FÃ³rum & Chat ao Vivo</h2>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Tire dúvidas sobre os 7 módulos do curso e interaja em tempo real com colegas e docentes.
+            Tire dÃºvidas sobre os 7 mÃ³dulos do curso e interaja em tempo real com colegas e docentes.
           </p>
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-          <!-- Botão para Criar Tópico com Anexos -->
+          <!-- BotÃ£o para Criar TÃ³pico com Anexos -->
           ${isProf ? `
             <button 
               onclick="openCreateTopicModal()" 
               class="px-4 py-2.5 rounded-2xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95 flex items-center gap-2"
             >
-              <i class="fa-solid fa-plus"></i> Novo Tópico com Anexos
+              <i class="fa-solid fa-plus"></i> Novo TÃ³pico com Anexos
             </button>
           ` : `
             <button 
               onclick="openCreateTopicModal()" 
               class="px-4 py-2.5 rounded-2xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95 flex items-center gap-2"
             >
-              <i class="fa-solid fa-plus"></i> Criar Nova Dúvida
+              <i class="fa-solid fa-plus"></i> Criar Nova DÃºvida
             </button>
           `}
         </div>
       </div>
 
-      <!-- Seletor de Sub-Abas: Tópicos dos Módulos vs Chat Geral -->
+      <!-- Seletor de Sub-Abas: TÃ³picos dos MÃ³dulos vs Chat Geral -->
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
         <div class="flex items-center gap-2">
           <button 
@@ -7657,7 +7674,7 @@ function renderForumTab(container) {
             id="subtab-forum-topics"
             class="px-4 py-2 rounded-xl text-xs font-bold ${AppState.forumTab === 'topics' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'} transition-all flex items-center gap-1.5"
           >
-            <i class="fa-solid fa-list-check"></i> Tópicos dos 7 Módulos (${AppState.forumTopics.length})
+            <i class="fa-solid fa-list-check"></i> TÃ³picos dos 7 MÃ³dulos (${AppState.forumTopics.length})
           </button>
           <button 
             onclick="switchForumSubTab('chat')" 
@@ -7681,7 +7698,7 @@ function renderForumTab(container) {
         </div>
       </div>
 
-      <!-- Conteúdo da Sub-Aba Ativa -->
+      <!-- ConteÃºdo da Sub-Aba Ativa -->
       <div id="forum-subtab-content">
         ${AppState.forumTab === 'chat' ? renderForumChatContent() : renderForumTopicsContent()}
       </div>
@@ -7716,8 +7733,8 @@ function renderEligibilityBanner(actionName = "postar") {
             <i class="fa-solid fa-lock"></i>
           </div>
           <div>
-            <strong class="block font-bold">Regra da Comunidade: Identificação com CPF</strong>
-            <p class="text-[11px] text-amber-700 dark:text-amber-300">Para ${actionName} no Fórum e Chat, entre com seu perfil e CPF cadastrados previamente.</p>
+            <strong class="block font-bold">Regra da Comunidade: IdentificaÃ§Ã£o com CPF</strong>
+            <p class="text-[11px] text-amber-700 dark:text-amber-300">Para ${actionName} no FÃ³rum e Chat, entre com seu perfil e CPF cadastrados previamente.</p>
           </div>
         </div>
         <button 
@@ -7738,8 +7755,8 @@ function renderEligibilityBanner(actionName = "postar") {
             <i class="fa-solid fa-camera"></i>
           </div>
           <div>
-            <strong class="block font-bold">Regra Estrita: Só digita quem estiver com foto!</strong>
-            <p class="text-[11px] text-indigo-700 dark:text-indigo-300">Você está logado como <strong>${AppState.currentUser.name}</strong>, mas precisa cadastrar sua foto de perfil para liberar o envio de mensagens.</p>
+            <strong class="block font-bold">Regra Estrita: SÃ³ digita quem estiver com foto!</strong>
+            <p class="text-[11px] text-indigo-700 dark:text-indigo-300">VocÃª estÃ¡ logado como <strong>${AppState.currentUser.name}</strong>, mas precisa cadastrar sua foto de perfil para liberar o envio de mensagens.</p>
           </div>
         </div>
         <button 
@@ -7763,7 +7780,7 @@ function renderForumTopicsContent() {
   return `
     <div class="space-y-4">
       
-      ${renderEligibilityBanner('criar tópicos')}
+      ${renderEligibilityBanner('criar tÃ³picos')}
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         ${AppState.forumTopics.map(t => {
@@ -7801,10 +7818,10 @@ function renderForumTopicsContent() {
                 
                 <!-- Indicadores de Anexos presentes -->
                 <div class="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                  ${hasPhoto ? `<span title="Contém Foto"><i class="fa-solid fa-image text-emerald-500"></i></span>` : ''}
-                  ${hasPdf ? `<span title="Contém PDF"><i class="fa-solid fa-file-pdf text-rose-500"></i></span>` : ''}
-                  ${hasVideo ? `<span title="Contém Vídeo"><i class="fa-solid fa-video text-purple-500"></i></span>` : ''}
-                  ${hasLink ? `<span title="Contém Link"><i class="fa-solid fa-link text-blue-500"></i></span>` : ''}
+                  ${hasPhoto ? `<span title="ContÃ©m Foto"><i class="fa-solid fa-image text-emerald-500"></i></span>` : ''}
+                  ${hasPdf ? `<span title="ContÃ©m PDF"><i class="fa-solid fa-file-pdf text-rose-500"></i></span>` : ''}
+                  ${hasVideo ? `<span title="ContÃ©m VÃ­deo"><i class="fa-solid fa-video text-purple-500"></i></span>` : ''}
+                  ${hasLink ? `<span title="ContÃ©m Link"><i class="fa-solid fa-link text-blue-500"></i></span>` : ''}
                   ${!hasPhoto && !hasPdf && !hasVideo && !hasLink ? `<span class="text-[10px] text-slate-400">Sem anexos</span>` : ''}
                 </div>
 
@@ -7837,27 +7854,27 @@ function closeForumTopic() {
 
 function renderForumTopicDetail(topicId) {
   const topic = AppState.forumTopics.find(t => t.id === topicId);
-  if (!topic) return "<p>Tópico não encontrado.</p>";
+  if (!topic) return "<p>TÃ³pico nÃ£o encontrado.</p>";
 
   const eligibility = isUserEligibleToPost();
 
   return `
     <div class="space-y-6">
       
-      <!-- Botão Voltar -->
+      <!-- BotÃ£o Voltar -->
       <button 
         onclick="closeForumTopic()" 
         class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all"
       >
-        <i class="fa-solid fa-arrow-left"></i> Voltar para a Lista de Tópicos
+        <i class="fa-solid fa-arrow-left"></i> Voltar para a Lista de TÃ³picos
       </button>
 
-      <!-- Cartão Principal do Tópico -->
+      <!-- CartÃ£o Principal do TÃ³pico -->
       <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
         
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
-            ${topic.module || 'Módulo do Curso'}
+            ${topic.module || 'MÃ³dulo do Curso'}
           </span>
           <div class="flex items-center gap-2">
             <span class="text-xs text-slate-400">
@@ -7868,9 +7885,9 @@ function renderForumTopicDetail(topicId) {
                 type="button" 
                 onclick="deleteForumTopic('${topic.id}')" 
                 class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-bold border border-rose-200/60 dark:border-rose-800/60 flex items-center gap-1 transition-all shadow-xs cursor-pointer"
-                title="Moderação Docente: Excluir este tópico"
+                title="ModeraÃ§Ã£o Docente: Excluir este tÃ³pico"
               >
-                <i class="fa-solid fa-trash-can"></i> Excluir Tópico
+                <i class="fa-solid fa-trash-can"></i> Excluir TÃ³pico
               </button>
             ` : ''}
           </div>
@@ -7880,13 +7897,13 @@ function renderForumTopicDetail(topicId) {
           ${topic.title}
         </h1>
 
-        <!-- Autor do Tópico -->
+        <!-- Autor do TÃ³pico -->
         <div class="flex items-center gap-3 py-2 border-y border-slate-100 dark:border-slate-800">
           <div class="w-9 h-9 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 flex-shrink-0">
             <img src="${topic.author?.photo || 'https://via.placeholder.com/80'}" alt="Autor" class="w-full h-full object-cover">
           </div>
           <div>
-            <span class="block font-bold text-xs text-slate-900 dark:text-slate-100">${topic.author?.name || 'Coordenação'}</span>
+            <span class="block font-bold text-xs text-slate-900 dark:text-slate-100">${topic.author?.name || 'CoordenaÃ§Ã£o'}</span>
             <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">${topic.author?.role === 'professor' ? 'Docente Titular' : 'Aluno'}</span>
           </div>
         </div>
@@ -7895,7 +7912,7 @@ function renderForumTopicDetail(topicId) {
           ${topic.description}
         </div>
 
-        <!-- Renderização de Anexos (Foto, PDF, Link, Vídeo) -->
+        <!-- RenderizaÃ§Ã£o de Anexos (Foto, PDF, Link, VÃ­deo) -->
         ${(topic.attachments && topic.attachments.length > 0) ? `
           <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
             <h4 class="font-bold text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
@@ -7909,24 +7926,24 @@ function renderForumTopicDetail(topicId) {
 
       </div>
 
-      <!-- Seção de Comentários / Respostas -->
+      <!-- SeÃ§Ã£o de ComentÃ¡rios / Respostas -->
       <div class="space-y-4">
         <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <i class="fa-solid fa-comments text-indigo-600"></i> Respostas e Comentários (${topic.comments?.length || 0})
+          <i class="fa-solid fa-comments text-indigo-600"></i> Respostas e ComentÃ¡rios (${topic.comments?.length || 0})
         </h3>
 
-        <!-- Formulário de Envio de Resposta -->
+        <!-- FormulÃ¡rio de Envio de Resposta -->
         <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
           ${eligibility.eligible ? `
             <div class="flex items-start gap-3">
               <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-indigo-500 bg-indigo-100 flex-shrink-0">
-                <img src="${AppState.currentUser.photo}" alt="Você" class="w-full h-full object-cover">
+                <img src="${AppState.currentUser.photo}" alt="VocÃª" class="w-full h-full object-cover">
               </div>
               <div class="flex-1 space-y-2">
                 <textarea 
                   id="topic-reply-input" 
                   rows="3" 
-                  placeholder="Escreva sua dúvida ou resposta sobre este módulo..." 
+                  placeholder="Escreva sua dÃºvida ou resposta sobre este mÃ³dulo..." 
                   class="w-full p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-slate-100"
                 ></textarea>
                 <div class="flex items-center justify-between">
@@ -7941,11 +7958,11 @@ function renderForumTopicDetail(topicId) {
               </div>
             </div>
           ` : `
-            ${renderEligibilityBanner('responder a este tópico')}
+            ${renderEligibilityBanner('responder a este tÃ³pico')}
           `}
         </div>
 
-        <!-- Lista de Comentários -->
+        <!-- Lista de ComentÃ¡rios -->
         <div class="space-y-3">
           ${(!topic.comments || topic.comments.length === 0) ? `
             <p class="text-xs text-slate-500 dark:text-slate-400 italic text-center py-6">
@@ -7979,7 +7996,7 @@ function renderForumTopicDetail(topicId) {
                           type="button"
                           onclick="deleteTopicComment('${topic.id}', ${cIdx})" 
                           class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 text-slate-400 hover:text-rose-500 transition-all text-xs p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
-                          title="${isProf && !isMeComment ? 'Moderação Docente: Apagar comentário' : 'Apagar meu comentário'}"
+                          title="${isProf && !isMeComment ? 'ModeraÃ§Ã£o Docente: Apagar comentÃ¡rio' : 'Apagar meu comentÃ¡rio'}"
                         >
                           <i class="fa-solid fa-trash-can"></i>
                         </button>
@@ -8043,11 +8060,11 @@ function renderAttachmentCard(att) {
     return `
       <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2 col-span-1 sm:col-span-2">
         <span class="font-bold text-[11px] text-purple-600 dark:text-purple-400 flex items-center gap-1">
-          <i class="fa-solid fa-video"></i> Vídeo: ${att.title || 'Vídeo de Apoio'}
+          <i class="fa-solid fa-video"></i> VÃ­deo: ${att.title || 'VÃ­deo de Apoio'}
         </span>
         ${videoEmbed ? videoEmbed : `
           <a href="${att.url}" target="_blank" class="inline-flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Assistir Vídeo (${att.url})
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Assistir VÃ­deo (${att.url})
           </a>
         `}
       </div>
@@ -8072,7 +8089,7 @@ function renderAttachmentCard(att) {
 function submitTopicComment(topicId) {
   const eligibility = isUserEligibleToPost();
   if (!eligibility.eligible) {
-    showToast("Para responder, faça login com seu CPF e adicione sua foto de perfil.", "warning");
+    showToast("Para responder, faÃ§a login com seu CPF e adicione sua foto de perfil.", "warning");
     return;
   }
 
@@ -8107,13 +8124,13 @@ function submitTopicComment(topicId) {
 
 function deleteTopicComment(topicId, commentIndex) {
   if (!AppState.currentUser) {
-    showToast("Você precisa estar logado para moderar comentários.", "warning");
+    showToast("VocÃª precisa estar logado para moderar comentÃ¡rios.", "warning");
     return;
   }
 
   const topic = AppState.forumTopics.find(t => t.id === topicId);
   if (!topic || !topic.comments || !topic.comments[commentIndex]) {
-    showToast("Comentário não encontrado.", "error");
+    showToast("ComentÃ¡rio nÃ£o encontrado.", "error");
     return;
   }
 
@@ -8123,12 +8140,12 @@ function deleteTopicComment(topicId, commentIndex) {
                    (AppState.currentUser.id && AppState.currentUser.id === comment.authorId);
 
   if (!isProf && !isAuthor) {
-    showToast("Apenas o docente ou o próprio autor podem moderar este comentário.", "error");
+    showToast("Apenas o docente ou o prÃ³prio autor podem moderar este comentÃ¡rio.", "error");
     return;
   }
 
   const confirmMsg = isProf && !isAuthor
-    ? `[Moderação Docente]\nDeseja realmente excluir a resposta de "${comment.authorName}"?`
+    ? `[ModeraÃ§Ã£o Docente]\nDeseja realmente excluir a resposta de "${comment.authorName}"?`
     : `Deseja realmente apagar sua resposta?`;
 
   if (!confirm(confirmMsg)) {
@@ -8141,22 +8158,22 @@ function deleteTopicComment(topicId, commentIndex) {
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
 
-  showToast(isProf && !isAuthor ? "Resposta moderada e excluída pelo docente." : "Resposta apagada com sucesso.", "success");
+  showToast(isProf && !isAuthor ? "Resposta moderada e excluÃ­da pelo docente." : "Resposta apagada com sucesso.", "success");
 }
 
 function deleteForumTopic(topicId) {
   if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
-    showToast("Apenas professores podem excluir tópicos do fórum.", "error");
+    showToast("Apenas professores podem excluir tÃ³picos do fÃ³rum.", "error");
     return;
   }
 
   const topic = AppState.forumTopics.find(t => t.id === topicId);
   if (!topic) {
-    showToast("Tópico não encontrado.", "error");
+    showToast("TÃ³pico nÃ£o encontrado.", "error");
     return;
   }
 
-  if (!confirm(`[Moderação Docente]\nDeseja realmente excluir o tópico "${topic.title}" e todas as suas respostas? Esta ação não pode ser desfeita.`)) {
+  if (!confirm(`[ModeraÃ§Ã£o Docente]\nDeseja realmente excluir o tÃ³pico "${topic.title}" e todas as suas respostas? Esta aÃ§Ã£o nÃ£o pode ser desfeita.`)) {
     return;
   }
 
@@ -8164,7 +8181,7 @@ function deleteForumTopic(topicId) {
   saveForumDataToStorage();
 
   closeForumTopic();
-  showToast("Tópico excluído com sucesso pelo docente.", "success");
+  showToast("TÃ³pico excluÃ­do com sucesso pelo docente.", "success");
 }
 
 // Sub-aba: Chat ao Vivo da Turma (Design Moderno Discord / Telegram)
@@ -8203,7 +8220,7 @@ function renderForumChatContent() {
   return `
     <div class="p-5 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
       
-      <!-- Cabeçalho do Canal Estilo Discord / Telegram -->
+      <!-- CabeÃ§alho do Canal Estilo Discord / Telegram -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200/80 dark:border-slate-800">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-lg shadow-sm flex-shrink-0">
@@ -8233,7 +8250,7 @@ function renderForumChatContent() {
           ` : ''}
           ${AppState.currentUser && AppState.currentUser.role === 'professor' ? `
             <span class="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold flex items-center gap-1.5 border border-amber-200/60 dark:border-amber-800/60 text-[11px] shadow-xs">
-              <i class="fa-solid fa-shield-halved text-amber-500"></i> Moderação Docente Ativa
+              <i class="fa-solid fa-shield-halved text-amber-500"></i> ModeraÃ§Ã£o Docente Ativa
             </span>
             ${AppState.forumMessages.length > 0 ? `
               <button 
@@ -8256,8 +8273,8 @@ function renderForumChatContent() {
             <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center text-2xl mb-3">
               <i class="fa-solid fa-hashtag"></i>
             </div>
-            <h4 class="font-bold text-sm text-slate-700 dark:text-slate-300">Início do canal #chat-da-turma</h4>
-            <p class="text-xs max-w-sm mt-1">Este é o começo do canal de conversa da turma. Envie uma mensagem para iniciar o bate-papo!</p>
+            <h4 class="font-bold text-sm text-slate-700 dark:text-slate-300">InÃ­cio do canal #chat-da-turma</h4>
+            <p class="text-xs max-w-sm mt-1">Este Ã© o comeÃ§o do canal de conversa da turma. Envie uma mensagem para iniciar o bate-papo!</p>
           </div>
         ` : AppState.forumMessages.map(m => {
           const isMe = AppState.currentUser && (
@@ -8273,7 +8290,7 @@ function renderForumChatContent() {
           if (isMe) {
             return `
               <div class="flex items-end justify-end gap-2 group transition-all relative">
-                <!-- Botão de Moderação / Apagar para o autor da mensagem (Aluno ou Professor) -->
+                <!-- BotÃ£o de ModeraÃ§Ã£o / Apagar para o autor da mensagem (Aluno ou Professor) -->
                 <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center self-center mr-1">
                   <button 
                     type="button" 
@@ -8288,7 +8305,7 @@ function renderForumChatContent() {
                 <div class="flex flex-col items-end max-w-[85%] sm:max-w-[70%]">
                   <div class="flex items-center gap-1.5 mb-1 px-1">
                     <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${timeStr}</span>
-                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">Você</span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">VocÃª</span>
                   </div>
                   <div class="px-4 py-3 rounded-2xl rounded-br-xs bg-gradient-to-br from-indigo-600 via-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-600/20 text-xs sm:text-sm font-normal leading-relaxed break-words">
                     ${escapeHtml(m.text)}
@@ -8299,7 +8316,7 @@ function renderForumChatContent() {
                   </div>
                 </div>
                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 flex-shrink-0 shadow-sm">
-                  <img src="${photoUrl}" alt="Você" onerror="this.src='${fallbackAvatar}'" class="w-full h-full object-cover">
+                  <img src="${photoUrl}" alt="VocÃª" onerror="this.src='${fallbackAvatar}'" class="w-full h-full object-cover">
                 </div>
               </div>
             `;
@@ -8328,14 +8345,14 @@ function renderForumChatContent() {
                   </div>
                 </div>
 
-                <!-- Botão de Moderação Exclusivo para Docente (quando a mensagem é de outro usuário) -->
+                <!-- BotÃ£o de ModeraÃ§Ã£o Exclusivo para Docente (quando a mensagem Ã© de outro usuÃ¡rio) -->
                 ${currentIsProf ? `
                   <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center self-center ml-1">
                     <button 
                       type="button" 
                       onclick="deleteChatMessage('${m.id}')" 
                       class="px-2 py-1 rounded-xl bg-amber-50 hover:bg-rose-100 dark:bg-amber-950/40 dark:hover:bg-rose-950/60 text-amber-700 dark:text-amber-400 hover:text-rose-600 dark:hover:text-rose-400 border border-amber-200/80 dark:border-amber-800/60 flex items-center gap-1 text-[11px] font-bold transition-all shadow-xs cursor-pointer" 
-                      title="Moderação Docente: Apagar mensagem da turma"
+                      title="ModeraÃ§Ã£o Docente: Apagar mensagem da turma"
                     >
                       <i class="fa-solid fa-shield-xmark text-rose-500"></i>
                       <span class="hidden sm:inline">Moderar</span>
@@ -8348,24 +8365,24 @@ function renderForumChatContent() {
         }).join("")}
       </div>
 
-      <!-- Barra de Digitação Elegante e Responsiva -->
+      <!-- Barra de DigitaÃ§Ã£o Elegante e Responsiva -->
       ${eligibility.eligible ? `
         <div class="space-y-2 pt-1">
-          <!-- Atalhos Rápidos de Reações e Emojis -->
+          <!-- Atalhos RÃ¡pidos de ReaÃ§Ãµes e Emojis -->
           <div class="flex items-center justify-between px-1 text-xs">
             <div class="flex items-center gap-1.5">
-              <span class="text-[11px] text-slate-400 hidden sm:inline">Reações rápidas:</span>
-              <button type="button" onclick="insertChatEmoji('👍')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Polegar">👍</button>
-              <button type="button" onclick="insertChatEmoji('👏')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Palmas">👏</button>
-              <button type="button" onclick="insertChatEmoji('💡')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Ideia">💡</button>
-              <button type="button" onclick="insertChatEmoji('❓')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Dúvida">❓</button>
-              <button type="button" onclick="insertChatEmoji('🚀')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Foguete">🚀</button>
-              <button type="button" onclick="insertChatEmoji('🎯')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Alvo">🎯</button>
+              <span class="text-[11px] text-slate-400 hidden sm:inline">ReaÃ§Ãµes rÃ¡pidas:</span>
+              <button type="button" onclick="insertChatEmoji('ðŸ‘')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Polegar">ðŸ‘</button>
+              <button type="button" onclick="insertChatEmoji('ðŸ‘')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Palmas">ðŸ‘</button>
+              <button type="button" onclick="insertChatEmoji('ðŸ’¡')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Ideia">ðŸ’¡</button>
+              <button type="button" onclick="insertChatEmoji('â“')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="DÃºvida">â“</button>
+              <button type="button" onclick="insertChatEmoji('ðŸš€')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Foguete">ðŸš€</button>
+              <button type="button" onclick="insertChatEmoji('ðŸŽ¯')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs transition-colors" title="Alvo">ðŸŽ¯</button>
             </div>
             <span class="text-[10px] text-slate-400 hidden md:inline"><kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[9px] border border-slate-200 dark:border-slate-700">Enter</kbd> para enviar</span>
           </div>
 
-          <!-- Formulário com Campo Responsivo e Botão com Hover -->
+          <!-- FormulÃ¡rio com Campo Responsivo e BotÃ£o com Hover -->
           <form onsubmit="handleLiveChatSubmit(event)" class="flex items-center gap-2 p-1.5 sm:p-2 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/90 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent focus-within:bg-white dark:focus-within:bg-slate-900 shadow-sm transition-all">
             <div class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hidden sm:flex items-center justify-center flex-shrink-0 text-xs font-bold">
               <i class="fa-solid fa-message"></i>
@@ -8402,7 +8419,7 @@ function handleLiveChatSubmit(e) {
 
   const eligibility = isUserEligibleToPost();
   if (!eligibility.eligible) {
-    showToast("Para digitar no chat, faça login com seu CPF e adicione sua foto.", "warning");
+    showToast("Para digitar no chat, faÃ§a login com seu CPF e adicione sua foto.", "warning");
     return;
   }
 
@@ -8426,17 +8443,17 @@ function handleLiveChatSubmit(e) {
 }
 
 // -------------------------------------------------------------
-// MODERAÇÃO DE MENSAGENS DO CHAT AO VIVO
+// MODERAÃ‡ÃƒO DE MENSAGENS DO CHAT AO VIVO
 // -------------------------------------------------------------
 function deleteChatMessage(messageId) {
   if (!AppState.currentUser) {
-    showToast("Você precisa estar logado para moderar mensagens.", "warning");
+    showToast("VocÃª precisa estar logado para moderar mensagens.", "warning");
     return;
   }
 
   const msgIndex = AppState.forumMessages.findIndex(m => m.id === messageId);
   if (msgIndex === -1) {
-    showToast("Mensagem não encontrada.", "error");
+    showToast("Mensagem nÃ£o encontrada.", "error");
     return;
   }
 
@@ -8445,16 +8462,16 @@ function deleteChatMessage(messageId) {
   const isAuthor = (AppState.currentUser.name && AppState.currentUser.name === msg.authorName) ||
                    (AppState.currentUser.id && AppState.currentUser.id === msg.authorId);
 
-  // Regra de Moderação:
-  // - O usuário 'professor' pode moderar e apagar qualquer mensagem do chat da turma.
-  // - O usuário 'aluno' pode moderar/apagar apenas o seu próprio post/mensagem no chat.
+  // Regra de ModeraÃ§Ã£o:
+  // - O usuÃ¡rio 'professor' pode moderar e apagar qualquer mensagem do chat da turma.
+  // - O usuÃ¡rio 'aluno' pode moderar/apagar apenas o seu prÃ³prio post/mensagem no chat.
   if (!isProf && !isAuthor) {
-    showToast("Apenas o docente ou o próprio autor podem moderar esta mensagem.", "error");
+    showToast("Apenas o docente ou o prÃ³prio autor podem moderar esta mensagem.", "error");
     return;
   }
 
   const confirmMsg = isProf && !isAuthor
-    ? `[Moderação Docente]\nDeseja realmente excluir a mensagem de "${msg.authorName}" do chat da turma?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`
+    ? `[ModeraÃ§Ã£o Docente]\nDeseja realmente excluir a mensagem de "${msg.authorName}" do chat da turma?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`
     : `Deseja realmente apagar sua mensagem do chat?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`;
 
   if (!confirm(confirmMsg)) {
@@ -8467,21 +8484,21 @@ function deleteChatMessage(messageId) {
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
 
-  showToast(isProf && !isAuthor ? "Mensagem moderada e excluída pelo docente." : "Sua mensagem foi apagada com sucesso.", "success");
+  showToast(isProf && !isAuthor ? "Mensagem moderada e excluÃ­da pelo docente." : "Sua mensagem foi apagada com sucesso.", "success");
 }
 
 function clearAllChatMessages() {
   if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
-    showToast("Apenas professores têm permissão para limpar o chat.", "error");
+    showToast("Apenas professores tÃªm permissÃ£o para limpar o chat.", "error");
     return;
   }
 
   if (AppState.forumMessages.length === 0) {
-    showToast("O chat já está vazio.", "info");
+    showToast("O chat jÃ¡ estÃ¡ vazio.", "info");
     return;
   }
 
-  if (!confirm(`Atenção Professor(a): Deseja realmente excluir TODAS as ${AppState.forumMessages.length} mensagens do chat da turma? Esta ação não pode ser desfeita.`)) {
+  if (!confirm(`AtenÃ§Ã£o Professor(a): Deseja realmente excluir TODAS as ${AppState.forumMessages.length} mensagens do chat da turma? Esta aÃ§Ã£o nÃ£o pode ser desfeita.`)) {
     return;
   }
 
@@ -8494,14 +8511,14 @@ function clearAllChatMessages() {
   showToast("Chat da turma limpo com sucesso.", "success");
 }
 
-// Modal para Criação de Novo Tópico com 4 Tipos de Anexos
+// Modal para CriaÃ§Ã£o de Novo TÃ³pico com 4 Tipos de Anexos
 let newTopicAttachments = [];
 
 function openCreateTopicModal() {
   const eligibility = isUserEligibleToPost();
   if (!eligibility.eligible) {
     openCpfLoginModal('forum');
-    showToast("Faça login com seu CPF e cadastre sua foto para criar tópicos.", "warning");
+    showToast("FaÃ§a login com seu CPF e cadastre sua foto para criar tÃ³picos.", "warning");
     return;
   }
 
@@ -8520,8 +8537,8 @@ function openCreateTopicModal() {
               <i class="fa-solid fa-folder-plus"></i>
             </div>
             <div>
-              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Criar Novo Tópico no Fórum</h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">Postagem com suporte a Foto, PDF, Link e Vídeo</p>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Criar Novo TÃ³pico no FÃ³rum</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Postagem com suporte a Foto, PDF, Link e VÃ­deo</p>
             </div>
           </div>
           <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
@@ -8532,39 +8549,39 @@ function openCreateTopicModal() {
         <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
           
           <div>
-            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Título do Tópico</label>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">TÃ­tulo do TÃ³pico</label>
             <input 
               type="text" 
               id="new-topic-title" 
-              placeholder="Ex: Dúvida prática sobre criação de reels com gancho forte" 
+              placeholder="Ex: DÃºvida prÃ¡tica sobre criaÃ§Ã£o de reels com gancho forte" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100"
             />
           </div>
 
           <div>
-            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Módulo Relacionado</label>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">MÃ³dulo Relacionado</label>
             <select 
               id="new-topic-module" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100"
             >
               ${AppState.subjects.map(s => `<option value="${s}">${s}</option>`).join("")}
-              <option value="Geral">Dúvidas Gerais & Avisos</option>
+              <option value="Geral">DÃºvidas Gerais & Avisos</option>
             </select>
           </div>
 
           <div>
-            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Conteúdo / Descrição da Dúvida ou Orientação</label>
+            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">ConteÃºdo / DescriÃ§Ã£o da DÃºvida ou OrientaÃ§Ã£o</label>
             <textarea 
               id="new-topic-desc" 
               rows="3" 
-              placeholder="Descreva detalhadamente o questionamento ou a orientação pedagógica para a turma..." 
+              placeholder="Descreva detalhadamente o questionamento ou a orientaÃ§Ã£o pedagÃ³gica para a turma..." 
               class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 leading-relaxed text-slate-900 dark:text-slate-100"
             ></textarea>
           </div>
 
-          <!-- Seção de Anexos (Foto, PDF, Link e Vídeo) -->
+          <!-- SeÃ§Ã£o de Anexos (Foto, PDF, Link e VÃ­deo) -->
           <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-2.5">
-            <label class="block font-bold text-slate-800 dark:text-slate-200">Adicionar Anexos ao Tópico:</label>
+            <label class="block font-bold text-slate-800 dark:text-slate-200">Adicionar Anexos ao TÃ³pico:</label>
             
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button 
@@ -8593,7 +8610,7 @@ function openCreateTopicModal() {
                 onclick="promptAddAttachment('video')" 
                 class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-slate-800 text-center font-bold text-[11px] text-slate-700 dark:text-slate-300 flex flex-col items-center gap-1 transition-all"
               >
-                <i class="fa-solid fa-video text-purple-600 text-base"></i> Vídeo
+                <i class="fa-solid fa-video text-purple-600 text-base"></i> VÃ­deo
               </button>
             </div>
 
@@ -8616,7 +8633,7 @@ function openCreateTopicModal() {
             onclick="saveNewTopicFromModal()" 
             class="px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all flex items-center gap-2"
           >
-            <i class="fa-solid fa-check"></i> Publicar Tópico
+            <i class="fa-solid fa-check"></i> Publicar TÃ³pico
           </button>
         </div>
 
@@ -8627,30 +8644,30 @@ function openCreateTopicModal() {
 
 function promptAddAttachment(type) {
   if (type === "photo") {
-    const url = prompt("Cole a URL da imagem ou link (ou insira link público):", "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600");
+    const url = prompt("Cole a URL da imagem ou link (ou insira link pÃºblico):", "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600");
     if (url) {
       newTopicAttachments.push({ type: "photo", url, title: "Foto / Print explicativo" });
       renderNewTopicAttachmentsList();
     }
   } else if (type === "pdf") {
     const url = prompt("Cole o link do arquivo PDF ou material de leitura:", "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf");
-    const title = prompt("Título do documento PDF:", "Material Complementar em PDF");
+    const title = prompt("TÃ­tulo do documento PDF:", "Material Complementar em PDF");
     if (url) {
       newTopicAttachments.push({ type: "pdf", url, title: title || "Material em PDF" });
       renderNewTopicAttachmentsList();
     }
   } else if (type === "link") {
     const url = prompt("Cole a URL do link externo:", "https://instagram.com");
-    const title = prompt("Título do link:", "Referência de Estudo");
+    const title = prompt("TÃ­tulo do link:", "ReferÃªncia de Estudo");
     if (url) {
       newTopicAttachments.push({ type: "link", url, title: title || url });
       renderNewTopicAttachmentsList();
     }
   } else if (type === "video") {
-    const url = prompt("Cole o link do vídeo do YouTube ou vídeo mp4:", "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-    const title = prompt("Título do vídeo:", "Aula Gravada / Exemplo em Vídeo");
+    const url = prompt("Cole o link do vÃ­deo do YouTube ou vÃ­deo mp4:", "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    const title = prompt("TÃ­tulo do vÃ­deo:", "Aula Gravada / Exemplo em VÃ­deo");
     if (url) {
-      newTopicAttachments.push({ type: "video", url, title: title || "Vídeo" });
+      newTopicAttachments.push({ type: "video", url, title: title || "VÃ­deo" });
       renderNewTopicAttachmentsList();
     }
   }
@@ -8693,11 +8710,11 @@ function saveNewTopicFromModal() {
   const description = descInput ? descInput.value.trim() : "";
 
   if (!title) {
-    showToast("Por favor, informe o título do tópico.", "warning");
+    showToast("Por favor, informe o tÃ­tulo do tÃ³pico.", "warning");
     return;
   }
   if (!description) {
-    showToast("Por favor, descreva a dúvida ou orientação pedagógica.", "warning");
+    showToast("Por favor, descreva a dÃºvida ou orientaÃ§Ã£o pedagÃ³gica.", "warning");
     return;
   }
 
@@ -8720,28 +8737,28 @@ function saveNewTopicFromModal() {
   saveForumDataToStorage();
 
   closeModal();
-  showToast("Novo tópico publicado com sucesso no Fórum!", "success");
+  showToast("Novo tÃ³pico publicado com sucesso no FÃ³rum!", "success");
 
   openForumTopic(newTopic.id);
 }
 
 // =============================================================
-// ABA 7: OPORTUNIDADES, VAGAS & TRILHAS (MATCH DE CURRÍCULO)
+// ABA 7: OPORTUNIDADES, VAGAS & TRILHAS (MATCH DE CURRÃCULO)
 // =============================================================
 
 function getDefaultJobVacancies() {
   return [
     {
       id: "vaga-1",
-      title: "Assistente de Mídias Sociais & Criação de Conteúdo",
-      company: "Agência Soluções Digitais Alagoas",
-      polo: "Maceió",
-      locationType: "Híbrido (Ponta Verde)",
+      title: "Assistente de MÃ­dias Sociais & CriaÃ§Ã£o de ConteÃºdo",
+      company: "AgÃªncia SoluÃ§Ãµes Digitais Alagoas",
+      polo: "MaceiÃ³",
+      locationType: "HÃ­brido (Ponta Verde)",
       contractType: "CLT",
       workload: "30h semanais",
       salary: "R$ 1.580,00 + Vale Transporte",
-      description: "Responsável pelo planejamento de postagens, criação de artes e carrosséis no Canva, edição rápida de Reels no CapCut e suporte no atendimento aos clientes de comércio e serviços.",
-      requiredSkills: ["Canva", "Instagram", "CapCut", "Criação de Conteúdo", "Copywriting"],
+      description: "ResponsÃ¡vel pelo planejamento de postagens, criaÃ§Ã£o de artes e carrossÃ©is no Canva, ediÃ§Ã£o rÃ¡pida de Reels no CapCut e suporte no atendimento aos clientes de comÃ©rcio e serviÃ§os.",
+      requiredSkills: ["Canva", "Instagram", "CapCut", "CriaÃ§Ã£o de ConteÃºdo", "Copywriting"],
       relatedModules: [1, 2, 3],
       contactEmail: "vagas@solucoesdigitais.al.br",
       contactPhone: "82991234567",
@@ -8750,15 +8767,15 @@ function getDefaultJobVacancies() {
     },
     {
       id: "vaga-2",
-      title: "Criador de Conteúdo & Vídeos Curtos (Reels / TikTok)",
+      title: "Criador de ConteÃºdo & VÃ­deos Curtos (Reels / TikTok)",
       company: "Grupo Moda & Varejo Arapiraca",
       polo: "Arapiraca",
       locationType: "Presencial (Centro de Arapiraca)",
-      contractType: "Estágio",
+      contractType: "EstÃ¡gio",
       workload: "20h semanais (tarde)",
-      salary: "R$ 1.200,00 + Auxílio Alimentação",
-      description: "Atuar na linha de frente da marca captando vídeos com celular em loja física, entrevistando clientes, produzindo roteiros criativos e editando cortes dinâmicos de alta retenção.",
-      requiredSkills: ["Vídeo & Reels", "CapCut", "Criatividade", "Instagram", "Gravação com Smartphone"],
+      salary: "R$ 1.200,00 + AuxÃ­lio AlimentaÃ§Ã£o",
+      description: "Atuar na linha de frente da marca captando vÃ­deos com celular em loja fÃ­sica, entrevistando clientes, produzindo roteiros criativos e editando cortes dinÃ¢micos de alta retenÃ§Ã£o.",
+      requiredSkills: ["VÃ­deo & Reels", "CapCut", "Criatividade", "Instagram", "GravaÃ§Ã£o com Smartphone"],
       relatedModules: [1, 5],
       contactEmail: "talentos@modaarapiraca.com.br",
       contactPhone: "82998765432",
@@ -8767,15 +8784,15 @@ function getDefaultJobVacancies() {
     },
     {
       id: "vaga-3",
-      title: "Gestor(a) de Tráfego Pago & Anúncios Online Júnior",
-      company: "E-commerce Raízes Alagoanas",
+      title: "Gestor(a) de TrÃ¡fego Pago & AnÃºncios Online JÃºnior",
+      company: "E-commerce RaÃ­zes Alagoanas",
       polo: "Remoto (Alagoas)",
       locationType: "100% Remoto (Home Office)",
       contractType: "Freelance / PJ",
-      workload: "Flexível por entregas",
-      salary: "R$ 1.800,00 a R$ 2.500,00 / mês",
-      description: "Subir e monitorar campanhas no Meta Ads (Facebook e Instagram), configurar pixels, testes A/B de criativos e acompanhar métricas de custo por clique e conversões para loja online regional.",
-      requiredSkills: ["Meta Ads", "Tráfego Pago", "Análise de Métricas", "Canva", "Pixel"],
+      workload: "FlexÃ­vel por entregas",
+      salary: "R$ 1.800,00 a R$ 2.500,00 / mÃªs",
+      description: "Subir e monitorar campanhas no Meta Ads (Facebook e Instagram), configurar pixels, testes A/B de criativos e acompanhar mÃ©tricas de custo por clique e conversÃµes para loja online regional.",
+      requiredSkills: ["Meta Ads", "TrÃ¡fego Pago", "AnÃ¡lise de MÃ©tricas", "Canva", "Pixel"],
       relatedModules: [4, 6, 7],
       contactEmail: "contato@raizesalagoanas.com.br",
       contactPhone: "82993456789",
@@ -8787,11 +8804,11 @@ function getDefaultJobVacancies() {
       title: "Social Media & Atendimento via WhatsApp Business",
       company: "Pousada & Gastronomia Caminhos de Penedo",
       polo: "Penedo",
-      locationType: "Presencial (Centro Histórico)",
+      locationType: "Presencial (Centro HistÃ³rico)",
       contractType: "CLT",
       workload: "40h semanais",
-      salary: "R$ 1.650,00 + Refeição no Local",
-      description: "Gestão das redes sociais do complexo turístico, atualização de cardápios e eventos nos Stories, atendimento a reservas via Direct e WhatsApp Business com comunicação humanizada.",
+      salary: "R$ 1.650,00 + RefeiÃ§Ã£o no Local",
+      description: "GestÃ£o das redes sociais do complexo turÃ­stico, atualizaÃ§Ã£o de cardÃ¡pios e eventos nos Stories, atendimento a reservas via Direct e WhatsApp Business com comunicaÃ§Ã£o humanizada.",
       requiredSkills: ["Atendimento", "WhatsApp Business", "Instagram", "Canva", "Fotografia"],
       relatedModules: [1, 6],
       contactEmail: "gerencia@caminhosdepenedo.com.br",
@@ -8801,15 +8818,15 @@ function getDefaultJobVacancies() {
     },
     {
       id: "vaga-5",
-      title: "Estágio em Comunicação Comunitária & Mídias Digitais",
-      company: "Instituto de Desenvolvimento do Sertão",
+      title: "EstÃ¡gio em ComunicaÃ§Ã£o ComunitÃ¡ria & MÃ­dias Digitais",
+      company: "Instituto de Desenvolvimento do SertÃ£o",
       polo: "Santana do Ipanema",
-      locationType: "Presencial / Híbrido",
-      contractType: "Estágio",
+      locationType: "Presencial / HÃ­brido",
+      contractType: "EstÃ¡gio",
       workload: "20h semanais",
       salary: "R$ 1.100,00 + Certificado de Horas",
-      description: "Apoiar na divulgação de oficinas e projetos sociais em Santana do Ipanema e cidades vizinhas, elaborando comunicados, boletins digitais e registros fotográficos de atividades.",
-      requiredSkills: ["Comunicação", "Canva", "Redação", "Instagram", "Trabalho em Equipe"],
+      description: "Apoiar na divulgaÃ§Ã£o de oficinas e projetos sociais em Santana do Ipanema e cidades vizinhas, elaborando comunicados, boletins digitais e registros fotogrÃ¡ficos de atividades.",
+      requiredSkills: ["ComunicaÃ§Ã£o", "Canva", "RedaÃ§Ã£o", "Instagram", "Trabalho em Equipe"],
       relatedModules: [2, 3],
       contactEmail: "projetos@institutosertao.org.br",
       contactPhone: "82991122334",
@@ -8823,11 +8840,11 @@ function getDefaultLearningTrails() {
   return [
     {
       id: "trilha-1",
-      title: "Trilha 1: Gestão Profissional de Redes Sociais & Conteúdo",
-      level: "Iniciante ao Avançado",
-      hours: "24h de conteúdo",
+      title: "Trilha 1: GestÃ£o Profissional de Redes Sociais & ConteÃºdo",
+      level: "Iniciante ao AvanÃ§ado",
+      hours: "24h de conteÃºdo",
       icon: "fa-hashtag",
-      description: "Domine a metodologia completa para gerenciar perfis comerciais, criar calendários editoriais, interagir com seguidores e transformar audiência em clientes.",
+      description: "Domine a metodologia completa para gerenciar perfis comerciais, criar calendÃ¡rios editoriais, interagir com seguidores e transformar audiÃªncia em clientes.",
       courses: [
         {
           name: "Marketing Digital para o Empreendedor",
@@ -8836,69 +8853,69 @@ function getDefaultLearningTrails() {
           link: "https://sebrae.com.br/sites/PortalSebrae/cursosonline"
         },
         {
-          name: "Inbound Marketing & Mídias Sociais",
+          name: "Inbound Marketing & MÃ­dias Sociais",
           provider: "Rock University",
-          format: "Curso Prático com Certificação",
+          format: "Curso PrÃ¡tico com CertificaÃ§Ã£o",
           link: "https://rockcontent.com/br/university/"
         },
         {
           name: "Fundamentos do Instagram para Empresas",
           provider: "Meta Blueprint Oficial",
-          format: "Módulos Oficiais Gratuitos",
+          format: "MÃ³dulos Oficiais Gratuitos",
           link: "https://www.facebook.com/business/learn"
         }
       ]
     },
     {
       id: "trilha-2",
-      title: "Trilha 2: Design Gráfico & Identidade Visual com Canva",
-      level: "Prático & Criativo",
-      hours: "18h de conteúdo",
+      title: "Trilha 2: Design GrÃ¡fico & Identidade Visual com Canva",
+      level: "PrÃ¡tico & Criativo",
+      hours: "18h de conteÃºdo",
       icon: "fa-palette",
-      description: "Aprenda harmonia de cores, tipografia, diagramação e identidade visual para criar posts, carrosséis, banners e propostas de alto impacto visual.",
+      description: "Aprenda harmonia de cores, tipografia, diagramaÃ§Ã£o e identidade visual para criar posts, carrossÃ©is, banners e propostas de alto impacto visual.",
       courses: [
         {
           name: "Design for Social Media & Brand Building",
           provider: "Canva Design School",
-          format: "Tutoriais & Exercícios Práticos",
+          format: "Tutoriais & ExercÃ­cios PrÃ¡ticos",
           link: "https://www.canva.com/designschool/"
         },
         {
-          name: "Identidade Visual & Comunicação para Negócios",
-          provider: "FGV Educação Executiva",
+          name: "Identidade Visual & ComunicaÃ§Ã£o para NegÃ³cios",
+          provider: "FGV EducaÃ§Ã£o Executiva",
           format: "Curso EAD Aberto",
           link: "https://educacao-executiva.fgv.br/cursos/gratuitos"
         },
         {
-          name: "Criação de Carrosséis Magnéticos no Instagram",
+          name: "CriaÃ§Ã£o de CarrossÃ©is MagnÃ©ticos no Instagram",
           provider: "Emprega Mais Alagoas",
-          format: "Oficina Prática do Curso",
+          format: "Oficina PrÃ¡tica do Curso",
           link: "#"
         }
       ]
     },
     {
       id: "trilha-3",
-      title: "Trilha 3: Tráfego Pago & Campanhas no Meta Ads",
-      level: "Intermediário",
-      hours: "20h de conteúdo",
+      title: "Trilha 3: TrÃ¡fego Pago & Campanhas no Meta Ads",
+      level: "IntermediÃ¡rio",
+      hours: "20h de conteÃºdo",
       icon: "fa-bullseye",
-      description: "Entenda o funcionamento de leilões no Instagram e Facebook, segmentação por cidades de Alagoas, criação de públicos personalizados e análise de métricas.",
+      description: "Entenda o funcionamento de leilÃµes no Instagram e Facebook, segmentaÃ§Ã£o por cidades de Alagoas, criaÃ§Ã£o de pÃºblicos personalizados e anÃ¡lise de mÃ©tricas.",
       courses: [
         {
-          name: "Certificação em Campanhas do Meta Ads",
+          name: "CertificaÃ§Ã£o em Campanhas do Meta Ads",
           provider: "Meta Blueprint",
-          format: "Certificação Oficial Meta",
+          format: "CertificaÃ§Ã£o Oficial Meta",
           link: "https://www.facebook.com/business/learn"
         },
         {
-          name: "Fundamentos de Anúncios e Métricas Digitais",
-          provider: "Google Ateliê Digital",
+          name: "Fundamentos de AnÃºncios e MÃ©tricas Digitais",
+          provider: "Google AteliÃª Digital",
           format: "EAD Gratuito com Certificado",
           link: "https://learndigital.withgoogle.com/ateliedigital"
         },
         {
-          name: "Gestão de Orçamento de Anúncios para PMEs",
+          name: "GestÃ£o de OrÃ§amento de AnÃºncios para PMEs",
           provider: "Sebrae Nacional",
           format: "Online com Apostila",
           link: "https://sebrae.com.br"
@@ -8907,11 +8924,11 @@ function getDefaultLearningTrails() {
     },
     {
       id: "trilha-4",
-      title: "Trilha 4: Copywriting & Roteiros para Vídeos Curtos",
-      level: "Prático & Dinâmico",
-      hours: "16h de conteúdo",
+      title: "Trilha 4: Copywriting & Roteiros para VÃ­deos Curtos",
+      level: "PrÃ¡tico & DinÃ¢mico",
+      hours: "16h de conteÃºdo",
       icon: "fa-pen-fancy",
-      description: "Desenvolva o poder de prender a atenção nos primeiros 3 segundos, estruturar ganchos magnéticos, chamadas para ação (CTA) e roteiros para Reels e TikTok.",
+      description: "Desenvolva o poder de prender a atenÃ§Ã£o nos primeiros 3 segundos, estruturar ganchos magnÃ©ticos, chamadas para aÃ§Ã£o (CTA) e roteiros para Reels e TikTok.",
       courses: [
         {
           name: "Copywriting Essencial para Redes Sociais",
@@ -8920,13 +8937,13 @@ function getDefaultLearningTrails() {
           link: "https://rockcontent.com/br/university/"
         },
         {
-          name: "Roteirização e Edição Rápida no CapCut Mobile",
+          name: "RoteirizaÃ§Ã£o e EdiÃ§Ã£o RÃ¡pida no CapCut Mobile",
           provider: "Guia Emprega Mais Alagoas",
-          format: "Vídeo-aulas Práticas",
+          format: "VÃ­deo-aulas PrÃ¡ticas",
           link: "#"
         },
         {
-          name: "Comunicação e Escrita Persuasiva",
+          name: "ComunicaÃ§Ã£o e Escrita Persuasiva",
           provider: "Escola do Trabalhador 4.0",
           format: "Plataforma MEC / Microsoft",
           link: "https://escoladotrabalhador40.com.br"
@@ -8940,11 +8957,11 @@ function getDefaultUsefulResources() {
   return [
     {
       id: "rec-1",
-      title: "Calendário Editorial 2026 para Mídias Digitais",
+      title: "CalendÃ¡rio Editorial 2026 para MÃ­dias Digitais",
       category: "Planejamento",
       format: "Template Planilha / PDF",
       icon: "fa-calendar-days",
-      description: "Grade anual completa com sugestões diárias de temas, formatos (Reels, Carrossel, Stories) e datas comemorativas nacionais e de Alagoas.",
+      description: "Grade anual completa com sugestÃµes diÃ¡rias de temas, formatos (Reels, Carrossel, Stories) e datas comemorativas nacionais e de Alagoas.",
       downloadUrl: "#",
       canCopy: true
     },
@@ -8952,39 +8969,39 @@ function getDefaultUsefulResources() {
       id: "rec-2",
       title: "Modelo de Briefing para Clientes de Social Media",
       category: "Atendimento",
-      format: "Formulário Estruturado",
+      format: "FormulÃ¡rio Estruturado",
       icon: "fa-clipboard-question",
-      description: "Roteiro com 20 perguntas estratégicas para diagnosticar um novo cliente: público-alvo, concorrentes, diferenciais e metas de vendas.",
+      description: "Roteiro com 20 perguntas estratÃ©gicas para diagnosticar um novo cliente: pÃºblico-alvo, concorrentes, diferenciais e metas de vendas.",
       downloadUrl: "#",
       canCopy: true
     },
     {
       id: "rec-3",
-      title: "Template de Proposta Comercial & Orçamento",
+      title: "Template de Proposta Comercial & OrÃ§amento",
       category: "Vendas",
-      format: "Documento Editável",
+      format: "Documento EditÃ¡vel",
       icon: "fa-file-invoice-dollar",
-      description: "Modelo profissional de proposta com pacotes de serviços (Básico, Médio e Pro), faixas de valores praticadas em Alagoas e prazos de entrega.",
+      description: "Modelo profissional de proposta com pacotes de serviÃ§os (BÃ¡sico, MÃ©dio e Pro), faixas de valores praticadas em Alagoas e prazos de entrega.",
       downloadUrl: "#",
       canCopy: true
     },
     {
       id: "rec-4",
       title: "Checklist de Auditoria de Perfil no Instagram",
-      category: "Otimização",
+      category: "OtimizaÃ§Ã£o",
       format: "Checklist 15 Passos",
       icon: "fa-list-check",
-      description: "Guia de revisão em 15 tópicos essenciais: bio magnética, links estratégicos, destaques organizados e identidade visual alinhada.",
+      description: "Guia de revisÃ£o em 15 tÃ³picos essenciais: bio magnÃ©tica, links estratÃ©gicos, destaques organizados e identidade visual alinhada.",
       downloadUrl: "#",
       canCopy: true
     },
     {
       id: "rec-5",
-      title: "Minuta de Contrato de Prestação de Serviços Digitais",
-      category: "Jurídico / Freelance",
-      format: "Minuta Básica",
+      title: "Minuta de Contrato de PrestaÃ§Ã£o de ServiÃ§os Digitais",
+      category: "JurÃ­dico / Freelance",
+      format: "Minuta BÃ¡sica",
       icon: "fa-file-contract",
-      description: "Termo simples e seguro para proteger trabalhos autônomos: definição de escopo, prazos de aprovação, pagamentos e confidencialidade.",
+      description: "Termo simples e seguro para proteger trabalhos autÃ´nomos: definiÃ§Ã£o de escopo, prazos de aprovaÃ§Ã£o, pagamentos e confidencialidade.",
       downloadUrl: "#",
       canCopy: true
     }
@@ -9032,22 +9049,22 @@ function calculateCurriculumMatch(student, vacancy) {
   let score = 0;
   const strengths = [];
 
-  // 1. Localização / Polo (25 pts)
+  // 1. LocalizaÃ§Ã£o / Polo (25 pts)
   const studentPolo = (student.classroom || student.unitCity || "").toLowerCase();
   const vacancyPolo = (vacancy.polo || "").toLowerCase();
 
   if (vacancyPolo.includes("remoto")) {
     score += 25;
-    strengths.push("Vaga 100% Remota: compatível com qualquer município de Alagoas");
+    strengths.push("Vaga 100% Remota: compatÃ­vel com qualquer municÃ­pio de Alagoas");
   } else if (studentPolo && vacancyPolo && (studentPolo.includes(vacancyPolo) || vacancyPolo.includes(studentPolo))) {
     score += 25;
-    strengths.push(`Localização ideal: reside ou estuda no polo de ${vacancy.polo}`);
+    strengths.push(`LocalizaÃ§Ã£o ideal: reside ou estuda no polo de ${vacancy.polo}`);
   } else {
     score += 15;
     strengths.push("Mesma unidade federativa (Alagoas): mobilidade regional");
   }
 
-  // 2. Habilidades, Ferramentas e Redes Sociais do Diagnóstico (30 pts)
+  // 2. Habilidades, Ferramentas e Redes Sociais do DiagnÃ³stico (30 pts)
   const toolsStr = Array.isArray(student.tools) ? student.tools.join(" ") : (student.tools || "");
   const networksStr = Array.isArray(student.frequentNetworks) ? student.frequentNetworks.join(" ") : (student.frequentNetworks || "");
   const studentTools = toolsStr.toLowerCase();
@@ -9059,9 +9076,9 @@ function calculateCurriculumMatch(student, vacancy) {
   if (vacancy.requiredSkills && Array.isArray(vacancy.requiredSkills)) {
     vacancy.requiredSkills.forEach(skill => {
       const sLower = skill.toLowerCase();
-      if (studentBio.includes(sLower) || (sLower.includes("canva") && studentTools.includes("canva")) || (sLower.includes("vídeo") && studentBio.includes("capcut"))) {
+      if (studentBio.includes(sLower) || (sLower.includes("canva") && studentTools.includes("canva")) || (sLower.includes("vÃ­deo") && studentBio.includes("capcut"))) {
         matchedSkillsCount++;
-        strengths.push(`Domínio de ${skill} confirmado no diagnóstico do aluno`);
+        strengths.push(`DomÃ­nio de ${skill} confirmado no diagnÃ³stico do aluno`);
       }
     });
   }
@@ -9069,7 +9086,7 @@ function calculateCurriculumMatch(student, vacancy) {
   const skillPoints = Math.min(30, Math.max(12, matchedSkillsCount * 8 + 10));
   score += skillPoints;
 
-  // 3. Notas e Desempenho nos Módulos Relacionados (30 pts)
+  // 3. Notas e Desempenho nos MÃ³dulos Relacionados (30 pts)
   const stats = calculateStudentOverallStats(student);
   let relevantAvgSum = 0;
   let relevantCount = 0;
@@ -9089,21 +9106,21 @@ function calculateCurriculumMatch(student, vacancy) {
     const gradePoints = Math.min(30, Math.max(15, Math.round((relAvg / 10) * 30)));
     score += gradePoints;
     if (relAvg >= 8.0) {
-      strengths.push(`Excelente rendimento acadêmico: média de ${relAvg.toFixed(1)} nos módulos exigidos`);
+      strengths.push(`Excelente rendimento acadÃªmico: mÃ©dia de ${relAvg.toFixed(1)} nos mÃ³dulos exigidos`);
     } else {
-      strengths.push(`Conhecimento validado nos módulos: média de ${relAvg.toFixed(1)}`);
+      strengths.push(`Conhecimento validado nos mÃ³dulos: mÃ©dia de ${relAvg.toFixed(1)}`);
     }
   } else {
     score += 20;
-    strengths.push("Aluno matriculado com módulos essenciais em andamento");
+    strengths.push("Aluno matriculado com mÃ³dulos essenciais em andamento");
   }
 
-  // 4. Motivação e Expectativas de Carreira (15 pts)
+  // 4. MotivaÃ§Ã£o e Expectativas de Carreira (15 pts)
   const studentExpectations = (student.expectations || "").toLowerCase();
   const studentMotivation = (student.motivation || "").toLowerCase();
   if (studentExpectations.includes("trabalh") || studentExpectations.includes("renda") || studentMotivation.includes("aprend") || studentMotivation.includes("crescer")) {
     score += 15;
-    strengths.push("Objetivo profissional do aluno alinhado à área da vaga");
+    strengths.push("Objetivo profissional do aluno alinhado Ã  Ã¡rea da vaga");
   } else {
     score += 10;
   }
@@ -9129,7 +9146,7 @@ function calculateCurriculumMatch(student, vacancy) {
 }
 
 function renderCareersTab(container) {
-  // REGRA DE ACESSO: Exige autenticação por CPF
+  // REGRA DE ACESSO: Exige autenticaÃ§Ã£o por CPF
   if (!AppState.currentUser) {
     renderTabAccessRestriction(container, 'careers');
     return;
@@ -9157,11 +9174,11 @@ function renderCareersTab(container) {
               </span>
               ${isAluno ? `
                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/90 text-white flex items-center gap-1">
-                  <i class="fa-solid fa-user-check"></i> Matching de Currículo Ativo
+                  <i class="fa-solid fa-user-check"></i> Matching de CurrÃ­culo Ativo
                 </span>
               ` : `
                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/90 text-white flex items-center gap-1">
-                  <i class="fa-solid fa-chalkboard-user"></i> Painel de Vagas & Formação
+                  <i class="fa-solid fa-chalkboard-user"></i> Painel de Vagas & FormaÃ§Ã£o
                 </span>
               `}
             </div>
@@ -9174,7 +9191,7 @@ function renderCareersTab(container) {
             </p>
           </div>
 
-          <!-- Métricas Rápidas & Botão de Currículo do Aluno -->
+          <!-- MÃ©tricas RÃ¡pidas & BotÃ£o de CurrÃ­culo do Aluno -->
           <div class="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto flex-shrink-0">
             <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
               <div class="px-2">
@@ -9196,7 +9213,7 @@ function renderCareersTab(container) {
                 onclick="openStudentResumeModal('${AppState.currentUser.id}')" 
                 class="w-full px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
-                <i class="fa-solid fa-id-card"></i> Ver Meu Minicurrículo
+                <i class="fa-solid fa-id-card"></i> Ver Meu MinicurrÃ­culo
               </button>
             ` : `
               <button 
@@ -9210,7 +9227,7 @@ function renderCareersTab(container) {
         </div>
       </div>
 
-      <!-- Barra de Navegação Interna das Sub-Abas -->
+      <!-- Barra de NavegaÃ§Ã£o Interna das Sub-Abas -->
       <div class="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2 flex-wrap">
         <div class="flex items-center gap-2">
           <button 
@@ -9253,7 +9270,7 @@ function renderCareersTab(container) {
         ` : ''}
       </div>
 
-      <!-- Conteúdo da Sub-Aba Ativa -->
+      <!-- ConteÃºdo da Sub-Aba Ativa -->
       ${activeTab === 'vagas' ? renderCareersVacanciesContent(isAluno, student) : renderCareersTrailsContent(isProf)}
 
     </div>
@@ -9303,7 +9320,7 @@ function renderCareersVacanciesContent(isAluno, student) {
             class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold focus:outline-none"
           >
             <option value="all" ${selectedType === "all" ? "selected" : ""}>Todos os Modelos</option>
-            <option value="Estágio" ${selectedType === "Estágio" ? "selected" : ""}>Estágio</option>
+            <option value="EstÃ¡gio" ${selectedType === "EstÃ¡gio" ? "selected" : ""}>EstÃ¡gio</option>
             <option value="CLT" ${selectedType === "CLT" ? "selected" : ""}>CLT</option>
             <option value="Freelance / PJ" ${selectedType === "Freelance / PJ" ? "selected" : ""}>Freelance / PJ</option>
           </select>
@@ -9321,7 +9338,7 @@ function renderCareersVacanciesContent(isAluno, student) {
         </div>
       </div>
 
-      <!-- Aviso Informativo sobre o Matching de Currículo -->
+      <!-- Aviso Informativo sobre o Matching de CurrÃ­culo -->
       ${isAluno ? `
         <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex items-start gap-3 text-xs">
           <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm flex-shrink-0 mt-0.5 shadow-sm">
@@ -9329,10 +9346,10 @@ function renderCareersVacanciesContent(isAluno, student) {
           </div>
           <div>
             <strong class="text-indigo-950 dark:text-indigo-200 font-bold block">
-              Match de Currículo Personalizado para ${escapeHtml(student.name.split(" ")[0])}
+              Match de CurrÃ­culo Personalizado para ${escapeHtml(student.name.split(" ")[0])}
             </strong>
             <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-[11px] mt-0.5">
-              O sistema cruza suas informações de polo em Alagoas, ferramentas do diagnóstico inicial (ex: Canva, CapCut), notas dos 7 módulos e motivações de carreira para indicar a afinidade com cada vaga.
+              O sistema cruza suas informaÃ§Ãµes de polo em Alagoas, ferramentas do diagnÃ³stico inicial (ex: Canva, CapCut), notas dos 7 mÃ³dulos e motivaÃ§Ãµes de carreira para indicar a afinidade com cada vaga.
             </p>
           </div>
         </div>
@@ -9359,7 +9376,7 @@ function renderCareersVacanciesContent(isAluno, student) {
                   <!-- Header do Card: Tipo de Contrato & Match Badge -->
                   <div class="flex items-center justify-between gap-2 flex-wrap">
                     <div class="flex items-center gap-1.5">
-                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${v.contractType === 'Estágio' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : v.contractType === 'CLT' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${v.contractType === 'EstÃ¡gio' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : v.contractType === 'CLT' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
                         ${v.contractType}
                       </span>
                       <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1">
@@ -9369,35 +9386,35 @@ function renderCareersVacanciesContent(isAluno, student) {
 
                     ${matchInfo ? `
                       <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black ${matchInfo.badgeColor === 'emerald' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 ring-1 ring-emerald-500/30' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 ring-1 ring-indigo-500/30'} flex items-center gap-1 shadow-xs">
-                        <i class="fa-solid fa-bolt text-amber-500"></i> ${matchInfo.score}% Match • ${matchInfo.level}
+                        <i class="fa-solid fa-bolt text-amber-500"></i> ${matchInfo.score}% Match â€¢ ${matchInfo.level}
                       </span>
                     ` : `
                       <span class="text-[10px] text-slate-400">Publicado em ${new Date(v.createdAt).toLocaleDateString('pt-BR')}</span>
                     `}
                   </div>
 
-                  <!-- Título da Vaga e Empresa -->
+                  <!-- TÃ­tulo da Vaga e Empresa -->
                   <div>
                     <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 leading-snug">
                       ${escapeHtml(v.title)}
                     </h3>
                     <p class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5 flex items-center gap-1.5">
-                      <i class="fa-solid fa-building"></i> ${escapeHtml(v.company)} • <span class="text-slate-400 font-normal">${v.locationType}</span>
+                      <i class="fa-solid fa-building"></i> ${escapeHtml(v.company)} â€¢ <span class="text-slate-400 font-normal">${v.locationType}</span>
                     </p>
                   </div>
 
-                  <!-- Remuneração & Carga Horária -->
+                  <!-- RemuneraÃ§Ã£o & Carga HorÃ¡ria -->
                   <div class="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300 py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                     <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                       <i class="fa-solid fa-money-bill-wave"></i> ${v.salary}
                     </span>
-                    <span class="text-slate-300 dark:text-slate-700">•</span>
+                    <span class="text-slate-300 dark:text-slate-700">â€¢</span>
                     <span class="text-[11px] text-slate-500 flex items-center gap-1">
                       <i class="fa-regular fa-clock"></i> ${v.workload}
                     </span>
                   </div>
 
-                  <!-- Descrição da Vaga -->
+                  <!-- DescriÃ§Ã£o da Vaga -->
                   <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
                     ${escapeHtml(v.description)}
                   </p>
@@ -9419,7 +9436,7 @@ function renderCareersVacanciesContent(isAluno, student) {
                       </span>
                       ${matchInfo.strengths.map(st => `
                         <div class="flex items-start gap-1.5 text-[10px]">
-                          <span>•</span> <span>${escapeHtml(st)}</span>
+                          <span>â€¢</span> <span>${escapeHtml(st)}</span>
                         </div>
                       `).join("")}
                     </div>
@@ -9427,7 +9444,7 @@ function renderCareersVacanciesContent(isAluno, student) {
 
                 </div>
 
-                <!-- Ações do Card de Vaga -->
+                <!-- AÃ§Ãµes do Card de Vaga -->
                 <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
                     <button 
@@ -9435,7 +9452,7 @@ function renderCareersVacanciesContent(isAluno, student) {
                       onclick="applyToVacancy('${v.id}')" 
                       class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
                     >
-                      <i class="fa-solid fa-paper-plane"></i> Candidatar-se à Vaga
+                      <i class="fa-solid fa-paper-plane"></i> Candidatar-se Ã  Vaga
                     </button>
 
                     ${isAluno ? `
@@ -9443,9 +9460,9 @@ function renderCareersVacanciesContent(isAluno, student) {
                         type="button" 
                         onclick="openStudentResumeModal('${student.id}')" 
                         class="px-3 py-2 rounded-xl font-semibold text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1 cursor-pointer"
-                        title="Ver meu currículo formatado"
+                        title="Ver meu currÃ­culo formatado"
                       >
-                        <i class="fa-solid fa-id-card"></i> Meu Currículo
+                        <i class="fa-solid fa-id-card"></i> Meu CurrÃ­culo
                       </button>
                     ` : ''}
                   </div>
@@ -9476,15 +9493,15 @@ function renderCareersTrailsContent(isProf) {
   return `
     <div class="space-y-8">
       
-      <!-- Seção 1: Trilhas de Aprendizagem Recomendadas -->
+      <!-- SeÃ§Ã£o 1: Trilhas de Aprendizagem Recomendadas -->
       <div class="space-y-4">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-route text-indigo-600"></i> Trilhas de Formação & Cursos Gratuitos
+              <i class="fa-solid fa-route text-indigo-600"></i> Trilhas de FormaÃ§Ã£o & Cursos Gratuitos
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              Cursos oficiais com emissão de certificados gratuitos reconhecidos pelo mercado (Sebrae Alagoas, Meta, Rock University, FGV e Google).
+              Cursos oficiais com emissÃ£o de certificados gratuitos reconhecidos pelo mercado (Sebrae Alagoas, Meta, Rock University, FGV e Google).
             </p>
           </div>
         </div>
@@ -9528,7 +9545,7 @@ function renderCareersTrailsContent(isProf) {
                     >
                       <div class="min-w-0 pr-2">
                         <strong class="text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 block truncate font-semibold">${c.name}</strong>
-                        <span class="text-[10px] text-slate-400">${c.provider} • ${c.format}</span>
+                        <span class="text-[10px] text-slate-400">${c.provider} â€¢ ${c.format}</span>
                       </div>
                       <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-indigo-600 transition-colors flex-shrink-0"></i>
                     </a>
@@ -9540,15 +9557,15 @@ function renderCareersTrailsContent(isProf) {
         </div>
       </div>
 
-      <!-- Seção 2: Materiais Práticos & Templates para Download -->
+      <!-- SeÃ§Ã£o 2: Materiais PrÃ¡ticos & Templates para Download -->
       <div class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-folder-open text-emerald-600"></i> Materiais Práticos & Templates para Uso Imediato
+              <i class="fa-solid fa-folder-open text-emerald-600"></i> Materiais PrÃ¡ticos & Templates para Uso Imediato
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              Copie ou baixe modelos prontos de briefing, calendários e propostas comerciais para iniciar seus atendimentos.
+              Copie ou baixe modelos prontos de briefing, calendÃ¡rios e propostas comerciais para iniciar seus atendimentos.
             </p>
           </div>
 
@@ -9647,7 +9664,7 @@ function handleCareersSearchChange(value) {
 function openStudentResumeModal(studentId) {
   const student = AppState.students.find(s => s.id === studentId || (AppState.currentUser?.cpf && cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf))) || AppState.currentUser;
   if (!student) {
-    showToast("Dados do aluno não encontrados.", "error");
+    showToast("Dados do aluno nÃ£o encontrados.", "error");
     return;
   }
 
@@ -9662,7 +9679,7 @@ function openStudentResumeModal(studentId) {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
       <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 scale-in my-8">
         
-        <!-- Cabeçalho do Currículo -->
+        <!-- CabeÃ§alho do CurrÃ­culo -->
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
           <div class="flex items-center gap-4">
             <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden ring-4 ring-indigo-500/20 shadow-md flex-shrink-0">
@@ -9670,13 +9687,13 @@ function openStudentResumeModal(studentId) {
             </div>
             <div>
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                Currículo Oficial • Emprega Mais Alagoas
+                CurrÃ­culo Oficial â€¢ Emprega Mais Alagoas
               </span>
               <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 mt-1">
                 ${escapeHtml(student.name)}
               </h2>
               <p class="text-xs text-slate-500 dark:text-slate-400">
-                ${escapeHtml(student.classroom || student.unitCity || "Polo Alagoas")} • CPF: ${maskCpf(student.cpf || "000.000.000-00")}
+                ${escapeHtml(student.classroom || student.unitCity || "Polo Alagoas")} â€¢ CPF: ${maskCpf(student.cpf || "000.000.000-00")}
               </p>
             </div>
           </div>
@@ -9685,20 +9702,20 @@ function openStudentResumeModal(studentId) {
           </button>
         </div>
 
-        <!-- Formação e Qualificação -->
+        <!-- FormaÃ§Ã£o e QualificaÃ§Ã£o -->
         <div class="space-y-2">
           <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i class="fa-solid fa-graduation-cap text-indigo-600"></i> Qualificação Profissional
+            <i class="fa-solid fa-graduation-cap text-indigo-600"></i> QualificaÃ§Ã£o Profissional
           </h3>
           <div class="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 space-y-1 text-xs">
             <div class="flex justify-between items-center">
-              <strong class="text-indigo-900 dark:text-indigo-200 font-bold text-sm">Gestão de Mídias Digitais</strong>
+              <strong class="text-indigo-900 dark:text-indigo-200 font-bold text-sm">GestÃ£o de MÃ­dias Digitais</strong>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                ${stats.status} (Média: ${stats.overallAvg.toFixed(1)})
+                ${stats.status} (MÃ©dia: ${stats.overallAvg.toFixed(1)})
               </span>
             </div>
             <p class="text-slate-600 dark:text-slate-400 text-[11px]">
-              Governo do Estado de Alagoas • Programa Emprega Mais Alagoas (7 Módulos de Formação Prática)
+              Governo do Estado de Alagoas â€¢ Programa Emprega Mais Alagoas (7 MÃ³dulos de FormaÃ§Ã£o PrÃ¡tica)
             </p>
           </div>
         </div>
@@ -9706,7 +9723,7 @@ function openStudentResumeModal(studentId) {
         <!-- Habilidades e Ferramentas Mapeadas -->
         <div class="space-y-2">
           <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i class="fa-solid fa-wrench text-emerald-600"></i> Ferramentas & Competências Digitais
+            <i class="fa-solid fa-wrench text-emerald-600"></i> Ferramentas & CompetÃªncias Digitais
           </h3>
           <div class="flex flex-wrap gap-1.5">
             ${(Array.isArray(student.tools) ? student.tools : (student.tools || "Canva, Instagram, Redes Sociais").split(",")).map(t => `
@@ -9720,14 +9737,14 @@ function openStudentResumeModal(studentId) {
           </div>
         </div>
 
-        <!-- Diagnóstico Pedagógico & Perfil de Trabalho -->
+        <!-- DiagnÃ³stico PedagÃ³gico & Perfil de Trabalho -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
             <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
               <i class="fa-solid fa-bullseye text-amber-500"></i> Expectativa Profissional:
             </span>
             <p class="text-slate-600 dark:text-slate-400 italic text-[11px]">
-              "${escapeHtml(student.expectations || "Atuação com produção de conteúdo, tráfego e atendimento para negócios locais.")}"
+              "${escapeHtml(student.expectations || "AtuaÃ§Ã£o com produÃ§Ã£o de conteÃºdo, trÃ¡fego e atendimento para negÃ³cios locais.")}"
             </p>
           </div>
           <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
@@ -9735,13 +9752,13 @@ function openStudentResumeModal(studentId) {
               <i class="fa-solid fa-envelope text-indigo-500"></i> Canais de Contato:
             </span>
             <p class="text-slate-600 dark:text-slate-400 text-[11px]">
-              <strong>WhatsApp:</strong> ${escapeHtml(student.contact?.phone || student.phone || "Não informado")}<br>
-              <strong>E-mail:</strong> ${escapeHtml(student.contact?.email || student.email || "Não informado")}
+              <strong>WhatsApp:</strong> ${escapeHtml(student.contact?.phone || student.phone || "NÃ£o informado")}<br>
+              <strong>E-mail:</strong> ${escapeHtml(student.contact?.email || student.email || "NÃ£o informado")}
             </p>
           </div>
         </div>
 
-        <!-- Ações do Currículo -->
+        <!-- AÃ§Ãµes do CurrÃ­culo -->
         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
           <button 
             onclick="copyStudentResumeText('${student.id}')" 
@@ -9779,34 +9796,34 @@ function copyStudentResumeText(studentId) {
   const toolsStr = Array.isArray(student.tools) ? student.tools.join(", ") : (student.tools || 'Canva, CapCut, Meta Business Suite');
   const networksStr = Array.isArray(student.frequentNetworks) ? student.frequentNetworks.join(", ") : (student.frequentNetworks || 'Instagram, TikTok, WhatsApp');
 
-  const text = `🎓 CURRÍCULO PROFISSIONAL • EMPREGA MAIS ALAGOAS
+  const text = `ðŸŽ“ CURRÃCULO PROFISSIONAL â€¢ EMPREGA MAIS ALAGOAS
 --------------------------------------------------
 Nome: ${student.name}
 Polo: ${student.classroom || student.unitCity || 'Alagoas'}
 Contato: ${student.contact?.phone || student.phone || 'WhatsApp'} | ${student.contact?.email || student.email || ''}
 
-QUALIFICAÇÃO PROFISSIONAL:
-Curso de Gestão de Mídias Digitais (Governo de Alagoas)
-Situação Acadêmica: ${stats.status} • Média Geral: ${stats.overallAvg.toFixed(1)}
+QUALIFICAÃ‡ÃƒO PROFISSIONAL:
+Curso de GestÃ£o de MÃ­dias Digitais (Governo de Alagoas)
+SituaÃ§Ã£o AcadÃªmica: ${stats.status} â€¢ MÃ©dia Geral: ${stats.overallAvg.toFixed(1)}
 
-COMPETÊNCIAS E FERRAMENTAS:
+COMPETÃŠNCIAS E FERRAMENTAS:
 - Ferramentas: ${toolsStr}
 - Redes Sociais: ${networksStr}
-- Objetivos: ${student.expectations || 'Criação de conteúdo e gestão de mídias para negócios locais'}
+- Objetivos: ${student.expectations || 'CriaÃ§Ã£o de conteÃºdo e gestÃ£o de mÃ­dias para negÃ³cios locais'}
 --------------------------------------------------
-Gerado pelo Sistema Eu Por Dias • Emprega Mais Alagoas`;
+Gerado pelo Sistema Eu Por Dias â€¢ Emprega Mais Alagoas`;
 
   navigator.clipboard.writeText(text).then(() => {
-    showToast("Currículo copiado para a área de transferência!", "success");
+    showToast("CurrÃ­culo copiado para a Ã¡rea de transferÃªncia!", "success");
   }).catch(() => {
-    showToast("Não foi possível copiar automaticamente.", "warning");
+    showToast("NÃ£o foi possÃ­vel copiar automaticamente.", "warning");
   });
 }
 
 function applyToVacancy(vacancyId) {
   const vacancy = AppState.jobVacancies.find(v => v.id === vacancyId);
   if (!vacancy) {
-    showToast("Vaga não encontrada.", "error");
+    showToast("Vaga nÃ£o encontrada.", "error");
     return;
   }
 
@@ -9814,13 +9831,13 @@ function applyToVacancy(vacancyId) {
   const stats = calculateStudentOverallStats(student);
   const matchInfo = calculateCurriculumMatch(student, vacancy);
 
-  const pitchMsg = `Olá! Meu nome é ${student.name}, sou estudante do curso de Gestão de Mídias Digitais pelo Programa Emprega Mais Alagoas (Polo ${student.classroom || student.unitCity || 'Alagoas'}).
+  const pitchMsg = `OlÃ¡! Meu nome Ã© ${student.name}, sou estudante do curso de GestÃ£o de MÃ­dias Digitais pelo Programa Emprega Mais Alagoas (Polo ${student.classroom || student.unitCity || 'Alagoas'}).
 
 Tenho interesse na vaga "${vacancy.title}" na ${vacancy.company}.
-Minha média de rendimento acadêmico é ${stats.overallAvg.toFixed(1)} e meu índice de compatibilidade com os requisitos da vaga é de ${matchInfo.score}%.
+Minha mÃ©dia de rendimento acadÃªmico Ã© ${stats.overallAvg.toFixed(1)} e meu Ã­ndice de compatibilidade com os requisitos da vaga Ã© de ${matchInfo.score}%.
 
-Principais competências: ${student.tools || 'Canva, Edição de Vídeos, Copywriting e Redes Sociais'}.
-Aguardo retorno para enviar meu portfólio e currículo completo. Muito obrigado!`;
+Principais competÃªncias: ${student.tools || 'Canva, EdiÃ§Ã£o de VÃ­deos, Copywriting e Redes Sociais'}.
+Aguardo retorno para enviar meu portfÃ³lio e currÃ­culo completo. Muito obrigado!`;
 
   if (vacancy.contactPhone) {
     const cleanPhone = vacancy.contactPhone.replace(/\D/g, "");
@@ -9833,14 +9850,14 @@ Aguardo retorno para enviar meu portfólio e currículo completo. Muito obrigado
     showToast("Abrindo cliente de e-mail para envio da candidatura...", "success");
   } else {
     navigator.clipboard.writeText(pitchMsg).then(() => {
-      showToast("Mensagem de apresentação copiada para a área de transferência!", "success");
+      showToast("Mensagem de apresentaÃ§Ã£o copiada para a Ã¡rea de transferÃªncia!", "success");
     });
   }
 }
 
 function openCreateVacancyModal() {
   if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
-    showToast("Apenas professores têm permissão para publicar novas vagas.", "warning");
+    showToast("Apenas professores tÃªm permissÃ£o para publicar novas vagas.", "warning");
     return;
   }
 
@@ -9858,7 +9875,7 @@ function openCreateVacancyModal() {
             </div>
             <div>
               <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Publicar Nova Oportunidade de Trabalho</h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">Exclusivo para Docentes e Coordenação</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Exclusivo para Docentes e CoordenaÃ§Ã£o</p>
             </div>
           </div>
           <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
@@ -9868,12 +9885,12 @@ function openCreateVacancyModal() {
 
         <form onsubmit="handleCreateVacancySubmit(event)" class="space-y-3.5 text-xs">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título da Vaga / Função *</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">TÃ­tulo da Vaga / FunÃ§Ã£o *</label>
             <input 
               type="text" 
               id="vac-title" 
               required
-              placeholder="Ex: Assistente de Mídias Sociais / Criador de Reels" 
+              placeholder="Ex: Assistente de MÃ­dias Sociais / Criador de Reels" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
             />
           </div>
@@ -9885,7 +9902,7 @@ function openCreateVacancyModal() {
                 type="text" 
                 id="vac-company" 
                 required
-                placeholder="Ex: Agência Criativa Alagoas" 
+                placeholder="Ex: AgÃªncia Criativa Alagoas" 
                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
@@ -9895,7 +9912,7 @@ function openCreateVacancyModal() {
                 type="text" 
                 id="vac-polo" 
                 required
-                placeholder="Ex: Maceió, Arapiraca ou Remoto" 
+                placeholder="Ex: MaceiÃ³, Arapiraca ou Remoto" 
                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
@@ -9903,30 +9920,30 @@ function openCreateVacancyModal() {
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tipo de Contratação</label>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tipo de ContrataÃ§Ã£o</label>
               <select 
                 id="vac-contract" 
                 class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold"
               >
-                <option value="Estágio">Estágio Remunerado</option>
+                <option value="EstÃ¡gio">EstÃ¡gio Remunerado</option>
                 <option value="CLT">CLT (Carteira Assinada)</option>
                 <option value="Freelance / PJ">Freelance / Contrato PJ</option>
-                <option value="Temporário">Temporário</option>
+                <option value="TemporÃ¡rio">TemporÃ¡rio</option>
               </select>
             </div>
             <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Remuneração / Bolsa</label>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">RemuneraÃ§Ã£o / Bolsa</label>
               <input 
                 type="text" 
                 id="vac-salary" 
-                placeholder="Ex: R$ 1.500,00 + Benefícios" 
+                placeholder="Ex: R$ 1.500,00 + BenefÃ­cios" 
                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Habilidades Exigidas (separadas por vírgula)</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Habilidades Exigidas (separadas por vÃ­rgula)</label>
             <input 
               type="text" 
               id="vac-skills" 
@@ -9936,12 +9953,12 @@ function openCreateVacancyModal() {
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descrição e Atribuições *</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">DescriÃ§Ã£o e AtribuiÃ§Ãµes *</label>
             <textarea 
               id="vac-desc" 
               rows="3" 
               required
-              placeholder="Descreva as principais atividades, horários e perfil esperado do aluno..."
+              placeholder="Descreva as principais atividades, horÃ¡rios e perfil esperado do aluno..."
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
             ></textarea>
           </div>
@@ -9957,7 +9974,7 @@ function openCreateVacancyModal() {
               />
             </div>
             <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">E-mail para Envio de Currículo</label>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">E-mail para Envio de CurrÃ­culo</label>
               <input 
                 type="email" 
                 id="vac-email" 
@@ -10002,7 +10019,7 @@ function handleCreateVacancySubmit(e) {
   const contactEmail = document.getElementById("vac-email")?.value.trim() || "";
 
   if (!title || !company || !polo || !description) {
-    showToast("Preencha todos os campos obrigatórios marcados com *.", "warning");
+    showToast("Preencha todos os campos obrigatÃ³rios marcados com *.", "warning");
     return;
   }
 
@@ -10013,12 +10030,12 @@ function handleCreateVacancySubmit(e) {
     title,
     company,
     polo,
-    locationType: polo.toLowerCase().includes("remoto") ? "Remoto" : "Presencial / Híbrido",
+    locationType: polo.toLowerCase().includes("remoto") ? "Remoto" : "Presencial / HÃ­brido",
     contractType,
-    workload: contractType === "Estágio" ? "20h a 30h semanais" : "Horário comercial",
+    workload: contractType === "EstÃ¡gio" ? "20h a 30h semanais" : "HorÃ¡rio comercial",
     salary,
     description,
-    requiredSkills: skills.length > 0 ? skills : ["Canva", "Instagram", "Mídias Digitais"],
+    requiredSkills: skills.length > 0 ? skills : ["Canva", "Instagram", "MÃ­dias Digitais"],
     relatedModules: [1, 2, 3],
     contactEmail,
     contactPhone,
@@ -10076,7 +10093,7 @@ function openAddResourceModal() {
               <i class="fa-solid fa-file-arrow-up"></i>
             </div>
             <div>
-              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Compartilhar Material ou Link Útil</h3>
+              <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Compartilhar Material ou Link Ãštil</h3>
               <p class="text-[11px] text-slate-500 dark:text-slate-400">Disponibilizar recurso gratuito para a turma</p>
             </div>
           </div>
@@ -10087,7 +10104,7 @@ function openAddResourceModal() {
 
         <form onsubmit="handleAddResourceSubmit(event)" class="space-y-3.5 text-xs">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título do Material / Curso *</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">TÃ­tulo do Material / Curso *</label>
             <input 
               type="text" 
               id="res-title" 
@@ -10133,12 +10150,12 @@ function openAddResourceModal() {
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descrição Breve *</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">DescriÃ§Ã£o Breve *</label>
             <textarea 
               id="res-desc" 
               rows="2" 
               required
-              placeholder="Explique como este material ajudará o aluno..."
+              placeholder="Explique como este material ajudarÃ¡ o aluno..."
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
             ></textarea>
           </div>
@@ -10174,7 +10191,7 @@ function handleAddResourceSubmit(e) {
   const description = document.getElementById("res-desc")?.value.trim();
 
   if (!title || !downloadUrl || !description) {
-    showToast("Preencha todos os campos obrigatórios.", "warning");
+    showToast("Preencha todos os campos obrigatÃ³rios.", "warning");
     return;
   }
 
@@ -10223,86 +10240,86 @@ function copyResourceContent(resourceId) {
 
   let templateText = "";
   if (resourceId === "rec-1") {
-    templateText = `📅 CALENDÁRIO EDITORIAL SEMANAL - GESTÃO DE MÍDIAS DIGITAIS
+    templateText = `ðŸ“… CALENDÃRIO EDITORIAL SEMANAL - GESTÃƒO DE MÃDIAS DIGITAIS
 ------------------------------------------------------------
-• Segunda-feira: Dica prática / Conteúdo educacional (Carrossel no Instagram)
-• Terça-feira: Bastidores do negócio / Produção (Stories interativos + Enquete)
-• Quarta-feira: Solução de problema ou Mito vs Verdade (Reels curto até 30s)
-• Quinta-feira: Prova Social / Depoimento de cliente (Post estático + Legenda humanizada)
-• Sexta-feira: Tendência / Humor inteligente do nicho (Reels dinâmico)
-• Sábado: Oferta direta / Chamada para ação no WhatsApp ou Loja
-• Domingo: Frase inspiradora ou reflexão da semana
+â€¢ Segunda-feira: Dica prÃ¡tica / ConteÃºdo educacional (Carrossel no Instagram)
+â€¢ TerÃ§a-feira: Bastidores do negÃ³cio / ProduÃ§Ã£o (Stories interativos + Enquete)
+â€¢ Quarta-feira: SoluÃ§Ã£o de problema ou Mito vs Verdade (Reels curto atÃ© 30s)
+â€¢ Quinta-feira: Prova Social / Depoimento de cliente (Post estÃ¡tico + Legenda humanizada)
+â€¢ Sexta-feira: TendÃªncia / Humor inteligente do nicho (Reels dinÃ¢mico)
+â€¢ SÃ¡bado: Oferta direta / Chamada para aÃ§Ã£o no WhatsApp ou Loja
+â€¢ Domingo: Frase inspiradora ou reflexÃ£o da semana
 ------------------------------------------------------------
-Programa Emprega Mais Alagoas • Mídias Digitais`;
+Programa Emprega Mais Alagoas â€¢ MÃ­dias Digitais`;
   } else if (resourceId === "rec-2") {
-    templateText = `📋 ROTEIRO DE BRIEFING PARA CLIENTES DE MÍDIAS SOCIAIS
+    templateText = `ðŸ“‹ ROTEIRO DE BRIEFING PARA CLIENTES DE MÃDIAS SOCIAIS
 ------------------------------------------------------------
-1. Qual é o principal produto/serviço da sua empresa?
-2. Quem é o seu cliente ideal (idade, cidade, principais dores)?
-3. Quais redes sociais sua empresa já utiliza atualmente?
-4. Quais são seus 3 maiores concorrentes em Alagoas?
-5. Qual é o objetivo principal das redes (vendas, autoridade ou engajamento)?
-6. O cliente possui fotos e vídeos profissionais dos produtos?
-7. Qual é a identidade visual da empresa (cores, logo, tom de voz)?
-8. Quem será a pessoa de contato para aprovar as postagens?
+1. Qual Ã© o principal produto/serviÃ§o da sua empresa?
+2. Quem Ã© o seu cliente ideal (idade, cidade, principais dores)?
+3. Quais redes sociais sua empresa jÃ¡ utiliza atualmente?
+4. Quais sÃ£o seus 3 maiores concorrentes em Alagoas?
+5. Qual Ã© o objetivo principal das redes (vendas, autoridade ou engajamento)?
+6. O cliente possui fotos e vÃ­deos profissionais dos produtos?
+7. Qual Ã© a identidade visual da empresa (cores, logo, tom de voz)?
+8. Quem serÃ¡ a pessoa de contato para aprovar as postagens?
 ------------------------------------------------------------
-Programa Emprega Mais Alagoas • Mídias Digitais`;
+Programa Emprega Mais Alagoas â€¢ MÃ­dias Digitais`;
   } else if (resourceId === "rec-3") {
-    templateText = `💼 PROPOSTA COMERCIAL PADRÃO - GESTÃO DE MÍDIAS DIGITAIS
+    templateText = `ðŸ’¼ PROPOSTA COMERCIAL PADRÃƒO - GESTÃƒO DE MÃDIAS DIGITAIS
 ------------------------------------------------------------
-PACOTE BÁSICO (PRESENÇA DIGITAL):
+PACOTE BÃSICO (PRESENÃ‡A DIGITAL):
 - 12 posts mensais (3 por semana no feed)
-- 20 stories mensais com enquetes e interação
-- Criação de artes no Canva e legendas estratégicas
-- Investimento sugerido: R$ 600,00 a R$ 850,00 / mês
+- 20 stories mensais com enquetes e interaÃ§Ã£o
+- CriaÃ§Ã£o de artes no Canva e legendas estratÃ©gicas
+- Investimento sugerido: R$ 600,00 a R$ 850,00 / mÃªs
 
-PACOTE INTERMEDIÁRIO (CRESCIMENTO & VÍDEO):
+PACOTE INTERMEDIÃRIO (CRESCIMENTO & VÃDEO):
 - 16 posts mensais (sendo 8 Reels editados)
 - 40 stories mensais + Destaques organizados
-- Relatório mensal de alcance e métricas
-- Investimento sugerido: R$ 1.100,00 a R$ 1.500,00 / mês
+- RelatÃ³rio mensal de alcance e mÃ©tricas
+- Investimento sugerido: R$ 1.100,00 a R$ 1.500,00 / mÃªs
 ------------------------------------------------------------
-Programa Emprega Mais Alagoas • Mídias Digitais`;
+Programa Emprega Mais Alagoas â€¢ MÃ­dias Digitais`;
   } else if (resourceId === "rec-4") {
-    templateText = `✅ CHECKLIST DE AUDITORIA DE PERFIL NO INSTAGRAM
+    templateText = `âœ… CHECKLIST DE AUDITORIA DE PERFIL NO INSTAGRAM
 ------------------------------------------------------------
-[ ] 1. Nome de usuário (@) simples, limpo e sem caracteres confusos.
-[ ] 2. Foto de perfil nítida (logo para marcas, rosto iluminado para pessoal).
-[ ] 3. Nome principal em negrito com a profissão/nicho e cidade.
-[ ] 4. Bio magnética: Quem você ajuda + Como você ajuda + CTA.
-[ ] 5. Link na bio direcionando diretamente para o WhatsApp ou Catálogo.
-[ ] 6. Destaques essenciais: "Comece Aqui", "Depoimentos", "Produtos", "Endereço".
-[ ] 7. Pelo menos 3 posts fixados estratégicos.
+[ ] 1. Nome de usuÃ¡rio (@) simples, limpo e sem caracteres confusos.
+[ ] 2. Foto de perfil nÃ­tida (logo para marcas, rosto iluminado para pessoal).
+[ ] 3. Nome principal em negrito com a profissÃ£o/nicho e cidade.
+[ ] 4. Bio magnÃ©tica: Quem vocÃª ajuda + Como vocÃª ajuda + CTA.
+[ ] 5. Link na bio direcionando diretamente para o WhatsApp ou CatÃ¡logo.
+[ ] 6. Destaques essenciais: "Comece Aqui", "Depoimentos", "Produtos", "EndereÃ§o".
+[ ] 7. Pelo menos 3 posts fixados estratÃ©gicos.
 [ ] 8. Paleta de cores e tipografia consistentes nos posts.
 ------------------------------------------------------------
-Programa Emprega Mais Alagoas • Mídias Digitais`;
+Programa Emprega Mais Alagoas â€¢ MÃ­dias Digitais`;
   } else if (resourceId === "rec-5") {
-    templateText = `📄 MINUTA BÁSICA DE PRESTAÇÃO DE SERVIÇOS DE MÍDIAS DIGITAIS
+    templateText = `ðŸ“„ MINUTA BÃSICA DE PRESTAÃ‡ÃƒO DE SERVIÃ‡OS DE MÃDIAS DIGITAIS
 ------------------------------------------------------------
 CONTRATANTE: [Nome do Cliente / Empresa]
 CONTRATADO(A): [Nome do Estudante/Profissional]
 
-OBJETO: Prestação de serviços de criação de conteúdo e gestão de mídias digitais.
-ENTREGAS MENSAIS: [Quantidade de posts, vídeos e stories conforme proposta].
-VALOR MENSAL: R$ [Valor acordado], com vencimento no dia [Dia] de cada mês.
-PRAZO: Contrato inicial de 3 meses, renovável automaticamente.
-APROVAÇÕES: O cliente terá até 48 horas para aprovar o cronograma semanal.
+OBJETO: PrestaÃ§Ã£o de serviÃ§os de criaÃ§Ã£o de conteÃºdo e gestÃ£o de mÃ­dias digitais.
+ENTREGAS MENSAIS: [Quantidade de posts, vÃ­deos e stories conforme proposta].
+VALOR MENSAL: R$ [Valor acordado], com vencimento no dia [Dia] de cada mÃªs.
+PRAZO: Contrato inicial de 3 meses, renovÃ¡vel automaticamente.
+APROVAÃ‡Ã•ES: O cliente terÃ¡ atÃ© 48 horas para aprovar o cronograma semanal.
 ------------------------------------------------------------
-Programa Emprega Mais Alagoas • Mídias Digitais`;
+Programa Emprega Mais Alagoas â€¢ MÃ­dias Digitais`;
   } else {
-    templateText = `Material: ${res.title}\nCategoria: ${res.category}\nDescrição: ${res.description}\nLink de Acesso: ${res.downloadUrl}`;
+    templateText = `Material: ${res.title}\nCategoria: ${res.category}\nDescriÃ§Ã£o: ${res.description}\nLink de Acesso: ${res.downloadUrl}`;
   }
 
   navigator.clipboard.writeText(templateText).then(() => {
     showToast(`Modelo de "${res.title}" copiado com sucesso!`, "success");
   }).catch(() => {
-    showToast("Não foi possível copiar automaticamente.", "warning");
+    showToast("NÃ£o foi possÃ­vel copiar automaticamente.", "warning");
   });
 }
 
 // =============================================================
-// ABA 8: LABORATÓRIO DE PROMPTS & IA (AWESOME CHATGPT PROMPTS)
-// Baseado no repositório oficial: https://github.com/f/prompts.chat
+// ABA 8: LABORATÃ“RIO DE PROMPTS & IA (AWESOME CHATGPT PROMPTS)
+// Baseado no repositÃ³rio oficial: https://github.com/f/prompts.chat
 // =============================================================
 
 function getDefaultPromptsLibrary() {
@@ -10313,29 +10330,29 @@ function getDefaultPromptsLibrary() {
     {
       id: "p-mkt-1",
       act: "Social Media Manager",
-      title: "Social Media Manager & Estrategista de Conteúdo",
+      title: "Social Media Manager & Estrategista de ConteÃºdo",
       category: "marketing",
       categoryLabel: "Marketing & Redes Sociais",
       icon: "fa-share-nodes",
       color: "from-blue-500 to-indigo-600",
-      description: "Planeja calendário editorial semanal, define linhas editoriais, ganchos de engajamento e estratégias para marcas no Instagram.",
-      prompt: `Quero que você atue como um Social Media Manager profissional e experiente. Você será responsável por desenvolver um plano estratégico de conteúdo para \${Cliente / Empresa:uma clínica de estética em Maceió - AL}. Sua missão é definir as principais linhas editoriais, sugerir ganchos de alta retenção para posts e Reels, recomendar formatos (carrossel, vídeo, stories com enquete) e criar chamadas para ação (CTAs) que direcionem para o WhatsApp. O tom de voz deve ser \${Tom de Voz:humanizado, profissional e acolhedor}. Responda em tópicos organizados e forneça exemplos práticos prontos para publicação. Minha primeira solicitação é: "\${Primeira Solicitação:Crie um cronograma semanal de 5 postagens focado em atrair novos clientes locais.}"`,
-      tags: ["Instagram", "Planejamento", "Engajamento", "Calendário"],
-      contributor: "prompts.chat (@f) • Adaptado para Alagoas",
+      description: "Planeja calendÃ¡rio editorial semanal, define linhas editoriais, ganchos de engajamento e estratÃ©gias para marcas no Instagram.",
+      prompt: `Quero que vocÃª atue como um Social Media Manager profissional e experiente. VocÃª serÃ¡ responsÃ¡vel por desenvolver um plano estratÃ©gico de conteÃºdo para \${Cliente / Empresa:uma clÃ­nica de estÃ©tica em MaceiÃ³ - AL}. Sua missÃ£o Ã© definir as principais linhas editoriais, sugerir ganchos de alta retenÃ§Ã£o para posts e Reels, recomendar formatos (carrossel, vÃ­deo, stories com enquete) e criar chamadas para aÃ§Ã£o (CTAs) que direcionem para o WhatsApp. O tom de voz deve ser \${Tom de Voz:humanizado, profissional e acolhedor}. Responda em tÃ³picos organizados e forneÃ§a exemplos prÃ¡ticos prontos para publicaÃ§Ã£o. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Crie um cronograma semanal de 5 postagens focado em atrair novos clientes locais.}"`,
+      tags: ["Instagram", "Planejamento", "Engajamento", "CalendÃ¡rio"],
+      contributor: "prompts.chat (@f) â€¢ Adaptado para Alagoas",
       relatedModule: 1
     },
     {
       id: "p-mkt-2",
       act: "Meta Ads Specialist",
-      title: "Especialista em Tráfego Pago & Meta Ads Local",
+      title: "Especialista em TrÃ¡fego Pago & Meta Ads Local",
       category: "marketing",
       categoryLabel: "Marketing & Redes Sociais",
       icon: "fa-bullseye",
       color: "from-blue-600 to-cyan-600",
-      description: "Estrutura campanhas de anúncios no Meta Ads (Facebook e Instagram) com foco em raio geográfico, público local e conversão no WhatsApp.",
-      prompt: `Quero que você atue como um Gestor de Tráfego Pago especialista em Meta Ads para negócios locais. Vou fornecer informações sobre o negócio \${Tipo de Negócio:uma hamburgueria artesanal em Arapiraca - AL} e seu orçamento diário de \${Orçamento Diário:R$ 25,00 por dia}. Você deve estruturar uma campanha completa: objetivo de campanha (Mensagens no WhatsApp ou Tráfego), segmentação detalhada de público (idade, interesses e raio em km), 3 variações de criativos (imagem/vídeo) e 3 opções de textos persuasivos para o anúncio com gatilhos de escassez e proximidade geográfica. Minha primeira solicitação é: "\${Primeira Solicitação:Monte a estrutura da campanha para aumentar pedidos pelo WhatsApp nos finais de semana.}"`,
-      tags: ["Meta Ads", "Tráfego Pago", "Negócios Locais", "WhatsApp"],
-      contributor: "prompts.chat (@f) • Adaptado para Alagoas",
+      description: "Estrutura campanhas de anÃºncios no Meta Ads (Facebook e Instagram) com foco em raio geogrÃ¡fico, pÃºblico local e conversÃ£o no WhatsApp.",
+      prompt: `Quero que vocÃª atue como um Gestor de TrÃ¡fego Pago especialista em Meta Ads para negÃ³cios locais. Vou fornecer informaÃ§Ãµes sobre o negÃ³cio \${Tipo de NegÃ³cio:uma hamburgueria artesanal em Arapiraca - AL} e seu orÃ§amento diÃ¡rio de \${OrÃ§amento DiÃ¡rio:R$ 25,00 por dia}. VocÃª deve estruturar uma campanha completa: objetivo de campanha (Mensagens no WhatsApp ou TrÃ¡fego), segmentaÃ§Ã£o detalhada de pÃºblico (idade, interesses e raio em km), 3 variaÃ§Ãµes de criativos (imagem/vÃ­deo) e 3 opÃ§Ãµes de textos persuasivos para o anÃºncio com gatilhos de escassez e proximidade geogrÃ¡fica. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Monte a estrutura da campanha para aumentar pedidos pelo WhatsApp nos finais de semana.}"`,
+      tags: ["Meta Ads", "TrÃ¡fego Pago", "NegÃ³cios Locais", "WhatsApp"],
+      contributor: "prompts.chat (@f) â€¢ Adaptado para Alagoas",
       relatedModule: 2
     },
     {
@@ -10346,9 +10363,9 @@ function getDefaultPromptsLibrary() {
       categoryLabel: "Marketing & Redes Sociais",
       icon: "fa-video",
       color: "from-rose-500 to-pink-600",
-      description: "Cria roteiros dinâmicos de 15 a 30 segundos com gancho magnético nos primeiros 3 segundos, áudio em alta e CTA envolvente.",
-      prompt: `Quero que você atue como um Roteirista Especialista em Vídeos Curtos (Reels, TikTok e Shorts). Crie roteiros altamente visuais e dinâmicos para \${Nicho:uma loja de roupas femininas}. Cada roteiro deve conter: 1) Gancho visual e verbal nos primeiros 3 segundos para reter a atenção; 2) Desenvolvimento rápido em 3 passos ou cenas; 3) Indicação de trilha sonora ou áudio em alta; 4) Texto em tela sugerido; 5) Chamada para ação irresistível na legenda e no áudio. O vídeo deve ter duração estimada de \${Duração Estimada:25 a 30 segundos}. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva 3 roteiros de Reels mostrando looks versáteis para o dia a dia.}"`,
-      tags: ["Reels", "TikTok", "Roteiro", "Vídeo Curto"],
+      description: "Cria roteiros dinÃ¢micos de 15 a 30 segundos com gancho magnÃ©tico nos primeiros 3 segundos, Ã¡udio em alta e CTA envolvente.",
+      prompt: `Quero que vocÃª atue como um Roteirista Especialista em VÃ­deos Curtos (Reels, TikTok e Shorts). Crie roteiros altamente visuais e dinÃ¢micos para \${Nicho:uma loja de roupas femininas}. Cada roteiro deve conter: 1) Gancho visual e verbal nos primeiros 3 segundos para reter a atenÃ§Ã£o; 2) Desenvolvimento rÃ¡pido em 3 passos ou cenas; 3) IndicaÃ§Ã£o de trilha sonora ou Ã¡udio em alta; 4) Texto em tela sugerido; 5) Chamada para aÃ§Ã£o irresistÃ­vel na legenda e no Ã¡udio. O vÃ­deo deve ter duraÃ§Ã£o estimada de \${DuraÃ§Ã£o Estimada:25 a 30 segundos}. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Escreva 3 roteiros de Reels mostrando looks versÃ¡teis para o dia a dia.}"`,
+      tags: ["Reels", "TikTok", "Roteiro", "VÃ­deo Curto"],
       contributor: "prompts.chat (@f)",
       relatedModule: 3
     },
@@ -10360,8 +10377,8 @@ function getDefaultPromptsLibrary() {
       categoryLabel: "Marketing & Redes Sociais",
       icon: "fa-chart-line",
       color: "from-amber-500 to-rose-500",
-      description: "Audita perfis, otimiza biografia, destaques e propõe estratégias de crescimento orgânico e parcerias.",
-      prompt: `Quero que você atue como um Estrategista de Crescimento para Instagram. Vou te apresentar o perfil de \${Nome ou Tipo do Perfil:um nutricionista que atende online e presencial}. Analise e me entregue: 1) Proposta de Nome de Usuário e Nome Principal em negrito com palavras-chave de busca; 2) Biografia magnética com autoridade + público-alvo + link de ação; 3) Estrutura recomendada de 4 Destaques estratégicos; 4) Ideias de colaborações (Collabs) e parcerias locais para acelerar seguidores qualificados. Minha primeira solicitação é: "\${Primeira Solicitação:Reestruture a bio e os destaques deste perfil para transformá-lo em uma máquina de captação de clientes.}"`,
+      description: "Audita perfis, otimiza biografia, destaques e propÃµe estratÃ©gias de crescimento orgÃ¢nico e parcerias.",
+      prompt: `Quero que vocÃª atue como um Estrategista de Crescimento para Instagram. Vou te apresentar o perfil de \${Nome ou Tipo do Perfil:um nutricionista que atende online e presencial}. Analise e me entregue: 1) Proposta de Nome de UsuÃ¡rio e Nome Principal em negrito com palavras-chave de busca; 2) Biografia magnÃ©tica com autoridade + pÃºblico-alvo + link de aÃ§Ã£o; 3) Estrutura recomendada de 4 Destaques estratÃ©gicos; 4) Ideias de colaboraÃ§Ãµes (Collabs) e parcerias locais para acelerar seguidores qualificados. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Reestruture a bio e os destaques deste perfil para transformÃ¡-lo em uma mÃ¡quina de captaÃ§Ã£o de clientes.}"`,
       tags: ["Instagram", "Bio", "Crescimento", "Auditoria"],
       contributor: "prompts.chat (@f)",
       relatedModule: 1
@@ -10374,41 +10391,41 @@ function getDefaultPromptsLibrary() {
       categoryLabel: "Marketing & Redes Sociais",
       icon: "fa-handshake",
       color: "from-emerald-500 to-teal-600",
-      description: "Elabora mensagens de abordagem profissional para microinfluenciadores de Alagoas, roteiro de briefing e métricas de ROI.",
-      prompt: `Quero que você atue como um Consultor de Marketing de Influência Regional. Desenvolva uma estratégia para \${Segmento:uma cafeteria artesanal} contratar e fechar parcerias com microinfluenciadores (5k a 30k seguidores) em \${Cidade:Penedo - AL}. Forneça: 1) Modelo de mensagem de primeiro contato via Direct do Instagram; 2) Roteiro de Briefing simples em 5 tópicos para o criador de conteúdo seguir sem perder a espontaneidade; 3) Métricas para mensurar se a parceria gerou retorno (cupons de desconto, cliques no link, movimento no local). Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o modelo de mensagem de abordagem profissional para enviar aos influenciadores locais.}"`,
+      description: "Elabora mensagens de abordagem profissional para microinfluenciadores de Alagoas, roteiro de briefing e mÃ©tricas de ROI.",
+      prompt: `Quero que vocÃª atue como um Consultor de Marketing de InfluÃªncia Regional. Desenvolva uma estratÃ©gia para \${Segmento:uma cafeteria artesanal} contratar e fechar parcerias com microinfluenciadores (5k a 30k seguidores) em \${Cidade:Penedo - AL}. ForneÃ§a: 1) Modelo de mensagem de primeiro contato via Direct do Instagram; 2) Roteiro de Briefing simples em 5 tÃ³picos para o criador de conteÃºdo seguir sem perder a espontaneidade; 3) MÃ©tricas para mensurar se a parceria gerou retorno (cupons de desconto, cliques no link, movimento no local). Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Escreva o modelo de mensagem de abordagem profissional para enviar aos influenciadores locais.}"`,
       tags: ["Influenciadores", "Parcerias", "Briefing", "Direct"],
-      contributor: "prompts.chat (@f) • Adaptado",
+      contributor: "prompts.chat (@f) â€¢ Adaptado",
       relatedModule: 6
     },
 
     // -------------------------------------------------------------
-    // CATEGORIA 2: COPYWRITING, VENDAS & PERSUASÃO
+    // CATEGORIA 2: COPYWRITING, VENDAS & PERSUASÃƒO
     // -------------------------------------------------------------
     {
       id: "p-copy-1",
       act: "Advertiser & Copywriter",
-      title: "Copywriter Publicitário (Fórmula AIDA)",
+      title: "Copywriter PublicitÃ¡rio (FÃ³rmula AIDA)",
       category: "copywriting",
       categoryLabel: "Copywriting & Vendas",
       icon: "fa-pen-nib",
       color: "from-purple-500 to-indigo-600",
-      description: "Escreve textos altamente persuasivos aplicando a fórmula Atenção, Interesse, Desejo e Ação para posts e anúncios.",
-      prompt: `Quero que você atue como um Copywriter Publicitário sênior especializado no modelo AIDA (Atenção, Interesse, Desejo, Ação). Vou descrever um produto ou serviço: \${Produto ou Serviço:Curso prático de Canva para empreendedores iniciantes}. Crie uma copy completa dividida claramente em 4 etapas: [ATENÇÃO] - Gancho chocante ou pergunta provocativa; [INTERESSE] - Apresentação do problema comum e conexão empática; [DESEJO] - Benefícios práticos, transformação e prova de valor; [AÇÃO] - Chamada clara e irresistível com urgência. Escreva em linguagem direta, envolvente e com quebras de linha que facilitam a leitura no celular. Minha primeira solicitação é: "\${Primeira Solicitação:Crie a copy para uma postagem de feed no formato carrossel.}"`,
-      tags: ["AIDA", "Persuasão", "Vendas", "Copywriting"],
+      description: "Escreve textos altamente persuasivos aplicando a fÃ³rmula AtenÃ§Ã£o, Interesse, Desejo e AÃ§Ã£o para posts e anÃºncios.",
+      prompt: `Quero que vocÃª atue como um Copywriter PublicitÃ¡rio sÃªnior especializado no modelo AIDA (AtenÃ§Ã£o, Interesse, Desejo, AÃ§Ã£o). Vou descrever um produto ou serviÃ§o: \${Produto ou ServiÃ§o:Curso prÃ¡tico de Canva para empreendedores iniciantes}. Crie uma copy completa dividida claramente em 4 etapas: [ATENÃ‡ÃƒO] - Gancho chocante ou pergunta provocativa; [INTERESSE] - ApresentaÃ§Ã£o do problema comum e conexÃ£o empÃ¡tica; [DESEJO] - BenefÃ­cios prÃ¡ticos, transformaÃ§Ã£o e prova de valor; [AÃ‡ÃƒO] - Chamada clara e irresistÃ­vel com urgÃªncia. Escreva em linguagem direta, envolvente e com quebras de linha que facilitam a leitura no celular. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Crie a copy para uma postagem de feed no formato carrossel.}"`,
+      tags: ["AIDA", "PersuasÃ£o", "Vendas", "Copywriting"],
       contributor: "prompts.chat (@f)",
       relatedModule: 4
     },
     {
       id: "p-copy-2",
       act: "Headline Generator",
-      title: "Gerador de Headlines & Títulos Magnéticos",
+      title: "Gerador de Headlines & TÃ­tulos MagnÃ©ticos",
       category: "copywriting",
       categoryLabel: "Copywriting & Vendas",
       icon: "fa-heading",
       color: "from-indigo-500 to-cyan-500",
-      description: "Gera 10 variações de títulos irresistíveis com gatilhos de curiosidade, benefício claro e quebra de padrão.",
-      prompt: `Quero que você atue como um Especialista em Títulos e Headlines de Alta Conversão. Para o tema \${Tema do Conteúdo:Como vender pelo WhatsApp todos os dias mesmo sem ter muitos seguidores}, gere 10 opções de títulos divididos pelas seguintes categorias de gatilhos mentais: 1) Curiosidade e Segredo; 2) Como Fazer (Passo a Passo); 3) Alerta / Erro Comum a Evitar; 4) Número / Lista Rápida; 5) Promessa Direta com Prazo. Os títulos devem ser curtos, impactantes e perfeitos para a capa de carrosséis ou miniaturas de Reels. Minha primeira solicitação é: "\${Primeira Solicitação:Gere as 10 variações de títulos magnéticos para este tema.}"`,
-      tags: ["Headlines", "Títulos", "Gatilhos Mentais", "Cliques"],
+      description: "Gera 10 variaÃ§Ãµes de tÃ­tulos irresistÃ­veis com gatilhos de curiosidade, benefÃ­cio claro e quebra de padrÃ£o.",
+      prompt: `Quero que vocÃª atue como um Especialista em TÃ­tulos e Headlines de Alta ConversÃ£o. Para o tema \${Tema do ConteÃºdo:Como vender pelo WhatsApp todos os dias mesmo sem ter muitos seguidores}, gere 10 opÃ§Ãµes de tÃ­tulos divididos pelas seguintes categorias de gatilhos mentais: 1) Curiosidade e Segredo; 2) Como Fazer (Passo a Passo); 3) Alerta / Erro Comum a Evitar; 4) NÃºmero / Lista RÃ¡pida; 5) Promessa Direta com Prazo. Os tÃ­tulos devem ser curtos, impactantes e perfeitos para a capa de carrossÃ©is ou miniaturas de Reels. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Gere as 10 variaÃ§Ãµes de tÃ­tulos magnÃ©ticos para este tema.}"`,
+      tags: ["Headlines", "TÃ­tulos", "Gatilhos Mentais", "Cliques"],
       contributor: "prompts.chat (@f)",
       relatedModule: 4
     },
@@ -10420,24 +10437,24 @@ function getDefaultPromptsLibrary() {
       categoryLabel: "Copywriting & Vendas",
       icon: "fa-envelope-open-text",
       color: "from-blue-500 to-purple-600",
-      description: "Desenvolve e-mails persuasivos com linhas de assunto de alta taxa de abertura e narrativa de conversão.",
-      prompt: `Quero que você atue como um Redator Especialista em E-mail Marketing e Newsletters. Crie um e-mail de \${Objetivo do E-mail:boas-vindas e apresentação de oferta especial} para novos inscritos na lista de \${Nicho do Negócio:uma consultoria de marketing digital}. O e-mail deve conter: 1) 3 opções de linhas de assunto (com emojis estratégicos e menos de 45 caracteres); 2) Texto de pré-visualização (preheader); 3) Saudação personalizada com tom amigável; 4) História curta que conecta com as dores do leitor; 5) Oferta clara com botão de chamada para ação (CTA); 6) P.S. (post scriptum) persuasivo ao final. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o e-mail de boas-vindas com oferta para novos clientes.}"`,
-      tags: ["E-mail Marketing", "Newsletter", "Conversão", "Assuntos"],
+      description: "Desenvolve e-mails persuasivos com linhas de assunto de alta taxa de abertura e narrativa de conversÃ£o.",
+      prompt: `Quero que vocÃª atue como um Redator Especialista em E-mail Marketing e Newsletters. Crie um e-mail de \${Objetivo do E-mail:boas-vindas e apresentaÃ§Ã£o de oferta especial} para novos inscritos na lista de \${Nicho do NegÃ³cio:uma consultoria de marketing digital}. O e-mail deve conter: 1) 3 opÃ§Ãµes de linhas de assunto (com emojis estratÃ©gicos e menos de 45 caracteres); 2) Texto de prÃ©-visualizaÃ§Ã£o (preheader); 3) SaudaÃ§Ã£o personalizada com tom amigÃ¡vel; 4) HistÃ³ria curta que conecta com as dores do leitor; 5) Oferta clara com botÃ£o de chamada para aÃ§Ã£o (CTA); 6) P.S. (post scriptum) persuasivo ao final. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Escreva o e-mail de boas-vindas com oferta para novos clientes.}"`,
+      tags: ["E-mail Marketing", "Newsletter", "ConversÃ£o", "Assuntos"],
       contributor: "prompts.chat (@f)",
       relatedModule: 4
     },
     {
       id: "p-copy-4",
       act: "Screenwriter & Sales Pitch",
-      title: "Roteirista de Vídeos de Vendas (VSL) e Pitch",
+      title: "Roteirista de VÃ­deos de Vendas (VSL) e Pitch",
       category: "copywriting",
       categoryLabel: "Copywriting & Vendas",
       icon: "fa-film",
       color: "from-rose-600 to-amber-600",
-      description: "Estrutura pitch de vendas em vídeo de 60 a 90 segundos para apresentar serviços a comerciantes e empresas.",
-      prompt: `Quero que você atue como um Roteirista de Pitch Comercial e Vídeos de Vendas. Escreva um roteiro falado em primeira pessoa de 60 segundos para um profissional recém-formado em Gestão de Mídias Digitais se apresentar para \${Público Alvo / Empresa:donos de restaurantes e pizzarias de Alagoas}. Estrutura obrigatória: 1) Gancho com o problema real do cliente (perder vendas por não ter presença digital); 2) Apresentação profissional e credenciais; 3) O que você faz de diferente (foco em resultados, atendimento rápido e artes profissionais); 4) Oferta de diagnóstico gratuito; 5) Chamada para conversar no WhatsApp. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o roteiro completo do pitch de vendas.}"`,
-      tags: ["Pitch", "Vendas", "Apresentação", "Vídeo"],
-      contributor: "prompts.chat (@f) • Adaptado",
+      description: "Estrutura pitch de vendas em vÃ­deo de 60 a 90 segundos para apresentar serviÃ§os a comerciantes e empresas.",
+      prompt: `Quero que vocÃª atue como um Roteirista de Pitch Comercial e VÃ­deos de Vendas. Escreva um roteiro falado em primeira pessoa de 60 segundos para um profissional recÃ©m-formado em GestÃ£o de MÃ­dias Digitais se apresentar para \${PÃºblico Alvo / Empresa:donos de restaurantes e pizzarias de Alagoas}. Estrutura obrigatÃ³ria: 1) Gancho com o problema real do cliente (perder vendas por nÃ£o ter presenÃ§a digital); 2) ApresentaÃ§Ã£o profissional e credenciais; 3) O que vocÃª faz de diferente (foco em resultados, atendimento rÃ¡pido e artes profissionais); 4) Oferta de diagnÃ³stico gratuito; 5) Chamada para conversar no WhatsApp. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Escreva o roteiro completo do pitch de vendas.}"`,
+      tags: ["Pitch", "Vendas", "ApresentaÃ§Ã£o", "VÃ­deo"],
+      contributor: "prompts.chat (@f) â€¢ Adaptado",
       relatedModule: 4
     },
     {
@@ -10448,56 +10465,56 @@ function getDefaultPromptsLibrary() {
       categoryLabel: "Copywriting & Vendas",
       icon: "fa-book-open-reader",
       color: "from-amber-600 to-orange-500",
-      description: "Transforma a história de superação e criação de um negócio local em uma narrativa emocionante para postagens institucionais.",
-      prompt: `Quero que você atue como um Mestre em Storytelling de Marcas. Vou te contar a história de fundação de \${Nome da Empresa:uma confeitaria artesanal familiar iniciada na cozinha de casa}: "\${História Base:Começou com a dona fazendo bolos para os vizinhos em 2020 para complementar a renda familiar e hoje tem uma loja física com 5 funcionários}". Transforme essa história em um post emocionante para o feed do Instagram (formato carrossel narrativo ou legenda profunda), destacando os desafios iniciais, a perseverança, o amor pelo ofício e a gratidão aos primeiros clientes locais. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o texto completo do post em formato de história emocionante.}"`,
-      tags: ["Storytelling", "História de Marca", "Emoção", "Engajamento"],
+      description: "Transforma a histÃ³ria de superaÃ§Ã£o e criaÃ§Ã£o de um negÃ³cio local em uma narrativa emocionante para postagens institucionais.",
+      prompt: `Quero que vocÃª atue como um Mestre em Storytelling de Marcas. Vou te contar a histÃ³ria de fundaÃ§Ã£o de \${Nome da Empresa:uma confeitaria artesanal familiar iniciada na cozinha de casa}: "\${HistÃ³ria Base:ComeÃ§ou com a dona fazendo bolos para os vizinhos em 2020 para complementar a renda familiar e hoje tem uma loja fÃ­sica com 5 funcionÃ¡rios}". Transforme essa histÃ³ria em um post emocionante para o feed do Instagram (formato carrossel narrativo ou legenda profunda), destacando os desafios iniciais, a perseveranÃ§a, o amor pelo ofÃ­cio e a gratidÃ£o aos primeiros clientes locais. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Escreva o texto completo do post em formato de histÃ³ria emocionante.}"`,
+      tags: ["Storytelling", "HistÃ³ria de Marca", "EmoÃ§Ã£o", "Engajamento"],
       contributor: "prompts.chat (@f)",
       relatedModule: 5
     },
 
     // -------------------------------------------------------------
-    // CATEGORIA 3: GESTÃO, CARREIRA & NEGÓCIOS LOCAIS
+    // CATEGORIA 3: GESTÃƒO, CARREIRA & NEGÃ“CIOS LOCAIS
     // -------------------------------------------------------------
     {
       id: "p-ges-1",
       act: "Job Interviewer",
       title: "Entrevistador de Emprego & RH Simulador",
       category: "gestao",
-      categoryLabel: "Gestão, Carreira & Negócios",
+      categoryLabel: "GestÃ£o, Carreira & NegÃ³cios",
       icon: "fa-user-tie",
       color: "from-slate-700 to-indigo-900",
-      description: "Simula uma entrevista de emprego real para a vaga de Assistente de Mídias Sociais, fazendo perguntas uma a uma e avaliando respostas.",
-      prompt: `Quero que você atue como um Entrevistador de Recursos Humanos experiente em uma agência de publicidade. Eu serei o candidato a uma vaga de \${Cargo Desejado:Assistente de Mídias Sociais e Criação de Conteúdo em Alagoas}. Quero que você faça uma simulação de entrevista comigo. Regras estritas: 1) Faça apenas UMA pergunta por vez e espere a minha resposta antes de prosseguir; 2) Não escreva a conversa inteira de uma vez; 3) Após eu responder, faça um breve comentário sobre o ponto forte da minha resposta e em seguida faça a próxima pergunta técnica ou comportamental. Minha primeira frase é: "\${Primeira Frase:Olá! Estou pronto para iniciar a minha entrevista para a vaga.}"`,
-      tags: ["Entrevista", "Emprego", "Simulação", "Carreira"],
+      description: "Simula uma entrevista de emprego real para a vaga de Assistente de MÃ­dias Sociais, fazendo perguntas uma a uma e avaliando respostas.",
+      prompt: `Quero que vocÃª atue como um Entrevistador de Recursos Humanos experiente em uma agÃªncia de publicidade. Eu serei o candidato a uma vaga de \${Cargo Desejado:Assistente de MÃ­dias Sociais e CriaÃ§Ã£o de ConteÃºdo em Alagoas}. Quero que vocÃª faÃ§a uma simulaÃ§Ã£o de entrevista comigo. Regras estritas: 1) FaÃ§a apenas UMA pergunta por vez e espere a minha resposta antes de prosseguir; 2) NÃ£o escreva a conversa inteira de uma vez; 3) ApÃ³s eu responder, faÃ§a um breve comentÃ¡rio sobre o ponto forte da minha resposta e em seguida faÃ§a a prÃ³xima pergunta tÃ©cnica ou comportamental. Minha primeira frase Ã©: "\${Primeira Frase:OlÃ¡! Estou pronto para iniciar a minha entrevista para a vaga.}"`,
+      tags: ["Entrevista", "Emprego", "SimulaÃ§Ã£o", "Carreira"],
       contributor: "prompts.chat (@f / iltekin)",
       relatedModule: 7
     },
     {
       id: "p-ges-2",
       act: "Local Business Consultant",
-      title: "Consultor de Negócios & Diagnóstico Digital Local",
+      title: "Consultor de NegÃ³cios & DiagnÃ³stico Digital Local",
       category: "gestao",
-      categoryLabel: "Gestão, Carreira & Negócios",
+      categoryLabel: "GestÃ£o, Carreira & NegÃ³cios",
       icon: "fa-store",
       color: "from-emerald-600 to-teal-700",
-      description: "Gera um relatório de diagnóstico digital completo com pontos fracos, oportunidades e plano de ação em 30 dias para pequenos comércios.",
-      prompt: `Quero que você atue como um Consultor Especialista em Transformação Digital de Pequenos Negócios. Vou te fornecer informações sobre um estabelecimento comercial: \${Estabelecimento:uma loja de materiais de construção em Santana do Ipanema - AL com WhatsApp e Instagram pouco atualizados}. Elabore um diagnóstico em 4 etapas: 1) 3 principais erros digitais que fazem esse negócio perder clientes para concorrentes; 2) Oportunidades imediatas no Google Meu Negócio e Instagram; 3) Plano de Ação prático de 30 dias dividido em 4 semanas; 4) Sugestão de pacote mensal de serviços que um gestor de mídias pode vender para este estabelecimento. Minha primeira solicitação é: "\${Primeira Solicitação:Elabore o diagnóstico completo para este estabelecimento.}"`,
-      tags: ["Diagnóstico", "Consultoria", "Pequenos Negócios", "Plano 30 Dias"],
-      contributor: "prompts.chat (@f) • Adaptado",
+      description: "Gera um relatÃ³rio de diagnÃ³stico digital completo com pontos fracos, oportunidades e plano de aÃ§Ã£o em 30 dias para pequenos comÃ©rcios.",
+      prompt: `Quero que vocÃª atue como um Consultor Especialista em TransformaÃ§Ã£o Digital de Pequenos NegÃ³cios. Vou te fornecer informaÃ§Ãµes sobre um estabelecimento comercial: \${Estabelecimento:uma loja de materiais de construÃ§Ã£o em Santana do Ipanema - AL com WhatsApp e Instagram pouco atualizados}. Elabore um diagnÃ³stico em 4 etapas: 1) 3 principais erros digitais que fazem esse negÃ³cio perder clientes para concorrentes; 2) Oportunidades imediatas no Google Meu NegÃ³cio e Instagram; 3) Plano de AÃ§Ã£o prÃ¡tico de 30 dias dividido em 4 semanas; 4) SugestÃ£o de pacote mensal de serviÃ§os que um gestor de mÃ­dias pode vender para este estabelecimento. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Elabore o diagnÃ³stico completo para este estabelecimento.}"`,
+      tags: ["DiagnÃ³stico", "Consultoria", "Pequenos NegÃ³cios", "Plano 30 Dias"],
+      contributor: "prompts.chat (@f) â€¢ Adaptado",
       relatedModule: 6
     },
     {
       id: "p-ges-3",
       act: "Freelance Pricing Calculator",
-      title: "Assistente de Precificação Freelance",
+      title: "Assistente de PrecificaÃ§Ã£o Freelance",
       category: "gestao",
-      categoryLabel: "Gestão, Carreira & Negócios",
+      categoryLabel: "GestÃ£o, Carreira & NegÃ³cios",
       icon: "fa-calculator",
       color: "from-teal-600 to-emerald-600",
-      description: "Calcula o valor da hora de trabalho e precifica pacotes mensais de gestão de mídias com base na realidade do mercado de Alagoas.",
-      prompt: `Quero que você atue como um Mentor Financeiro para Freelancers e Prestadores de Serviços Digitais. Ajude um profissional iniciante a calcular sua tabela de preços para \${Serviços Oferecidos:criação de 12 posts no Canva, 20 stories e gestão básica de Instagram}. Considere que a meta de renda mensal do profissional é de \${Meta de Renda Mensal:R$ 2.000,00 por mês} trabalhando \${Horas por Semana:20 horas por semana} e atendendo na região de \${Região:Alagoas}. Me forneça: 1) O valor mínimo da sua hora de trabalho; 2) A estimativa de horas gastas por cliente; 3) Proposta de 3 pacotes de serviços (Básico, Intermediário e Avançado) com valores recomendados e justificativa comercial. Minha primeira solicitação é: "\${Primeira Solicitação:Calcule a tabela de preços e os pacotes sugeridos.}"`,
-      tags: ["Precificação", "Freelance", "Valores", "Contratos"],
-      contributor: "prompts.chat (@f) • Adaptado",
+      description: "Calcula o valor da hora de trabalho e precifica pacotes mensais de gestÃ£o de mÃ­dias com base na realidade do mercado de Alagoas.",
+      prompt: `Quero que vocÃª atue como um Mentor Financeiro para Freelancers e Prestadores de ServiÃ§os Digitais. Ajude um profissional iniciante a calcular sua tabela de preÃ§os para \${ServiÃ§os Oferecidos:criaÃ§Ã£o de 12 posts no Canva, 20 stories e gestÃ£o bÃ¡sica de Instagram}. Considere que a meta de renda mensal do profissional Ã© de \${Meta de Renda Mensal:R$ 2.000,00 por mÃªs} trabalhando \${Horas por Semana:20 horas por semana} e atendendo na regiÃ£o de \${RegiÃ£o:Alagoas}. Me forneÃ§a: 1) O valor mÃ­nimo da sua hora de trabalho; 2) A estimativa de horas gastas por cliente; 3) Proposta de 3 pacotes de serviÃ§os (BÃ¡sico, IntermediÃ¡rio e AvanÃ§ado) com valores recomendados e justificativa comercial. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Calcule a tabela de preÃ§os e os pacotes sugeridos.}"`,
+      tags: ["PrecificaÃ§Ã£o", "Freelance", "Valores", "Contratos"],
+      contributor: "prompts.chat (@f) â€¢ Adaptado",
       relatedModule: 6
     },
     {
@@ -10505,11 +10522,11 @@ function getDefaultPromptsLibrary() {
       act: "Life and Productivity Coach",
       title: "Coach de Produtividade & Rotina de Estudos",
       category: "gestao",
-      categoryLabel: "Gestão, Carreira & Negócios",
+      categoryLabel: "GestÃ£o, Carreira & NegÃ³cios",
       icon: "fa-stopwatch",
       color: "from-indigo-600 to-purple-700",
       description: "Monta cronograma semanal equilibrado para conciliar estudos do curso, tarefas de casa e projetos profissionais.",
-      prompt: `Quero que você atue como um Coach de Produtividade e Gestão de Tempo. Vou te informar a minha disponibilidade: \${Disponibilidade:Tenho 2 horas por dia à noite e 4 horas nos sábados para estudar e produzir conteúdo}. Monte uma rotina de estudos e produção baseada na técnica Pomodoro e blocos de tempo (Time Blocking) para que eu consiga: 1) Assistir às aulas do módulo; 2) Praticar ferramentas como Canva e CapCut; 3) Prospectar novos clientes; 4) Descansar sem culpa. Forneça o cronograma diário detalhado e dicas práticas para evitar a procrastinação. Minha primeira solicitação é: "\${Primeira Solicitação:Crie meu cronograma semanal de produtividade.}"`,
+      prompt: `Quero que vocÃª atue como um Coach de Produtividade e GestÃ£o de Tempo. Vou te informar a minha disponibilidade: \${Disponibilidade:Tenho 2 horas por dia Ã  noite e 4 horas nos sÃ¡bados para estudar e produzir conteÃºdo}. Monte uma rotina de estudos e produÃ§Ã£o baseada na tÃ©cnica Pomodoro e blocos de tempo (Time Blocking) para que eu consiga: 1) Assistir Ã s aulas do mÃ³dulo; 2) Praticar ferramentas como Canva e CapCut; 3) Prospectar novos clientes; 4) Descansar sem culpa. ForneÃ§a o cronograma diÃ¡rio detalhado e dicas prÃ¡ticas para evitar a procrastinaÃ§Ã£o. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Crie meu cronograma semanal de produtividade.}"`,
       tags: ["Produtividade", "Tempo", "Rotina", "Foco"],
       contributor: "prompts.chat (@devisasari)",
       relatedModule: 7
@@ -10517,15 +10534,15 @@ function getDefaultPromptsLibrary() {
     {
       id: "p-ges-5",
       act: "Sales Negotiator & Objection Handler",
-      title: "Negociador Comercial & Quebra de Objeções",
+      title: "Negociador Comercial & Quebra de ObjeÃ§Ãµes",
       category: "gestao",
-      categoryLabel: "Gestão, Carreira & Negócios",
+      categoryLabel: "GestÃ£o, Carreira & NegÃ³cios",
       icon: "fa-comments-dollar",
       color: "from-amber-600 to-red-600",
-      description: "Ensina respostas elegantes e persuasivas para responder 'está muito caro', 'vou pensar' e 'já tenho um sobrinho que faz'.",
-      prompt: `Quero que você atue como um Especialista em Negociação Comercial e Fechamento de Vendas de Serviços. Forneça respostas estratégicas, educadas e persuasivas para as 3 objeções mais comuns que donos de empresas locais dizem ao receber uma proposta de mídias sociais: 1) "Achei o valor muito caro"; 2) "Vou pensar e te retorno depois"; 3) "Meu sobrinho já faz algumas artes para mim de graça". Para cada objeção, dê a explicação do motivo psicológico por trás dela e 2 modelos de mensagens prontas para enviar pelo WhatsApp que contornam a dúvida e conduzem para o fechamento. Minha primeira solicitação é: "\${Primeira Solicitação:Forneça as respostas para as 3 objeções de vendas.}"`,
-      tags: ["Negociação", "Objeções", "Vendas", "Fechamento"],
-      contributor: "prompts.chat (@f) • Adaptado",
+      description: "Ensina respostas elegantes e persuasivas para responder 'estÃ¡ muito caro', 'vou pensar' e 'jÃ¡ tenho um sobrinho que faz'.",
+      prompt: `Quero que vocÃª atue como um Especialista em NegociaÃ§Ã£o Comercial e Fechamento de Vendas de ServiÃ§os. ForneÃ§a respostas estratÃ©gicas, educadas e persuasivas para as 3 objeÃ§Ãµes mais comuns que donos de empresas locais dizem ao receber uma proposta de mÃ­dias sociais: 1) "Achei o valor muito caro"; 2) "Vou pensar e te retorno depois"; 3) "Meu sobrinho jÃ¡ faz algumas artes para mim de graÃ§a". Para cada objeÃ§Ã£o, dÃª a explicaÃ§Ã£o do motivo psicolÃ³gico por trÃ¡s dela e 2 modelos de mensagens prontas para enviar pelo WhatsApp que contornam a dÃºvida e conduzem para o fechamento. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:ForneÃ§a as respostas para as 3 objeÃ§Ãµes de vendas.}"`,
+      tags: ["NegociaÃ§Ã£o", "ObjeÃ§Ãµes", "Vendas", "Fechamento"],
+      contributor: "prompts.chat (@f) â€¢ Adaptado",
       relatedModule: 6
     },
 
@@ -10535,13 +10552,13 @@ function getDefaultPromptsLibrary() {
     {
       id: "p-des-1",
       act: "Art Director",
-      title: "Diretor de Arte para Mídias Sociais & Identidade",
+      title: "Diretor de Arte para MÃ­dias Sociais & Identidade",
       category: "design",
       categoryLabel: "Design, UX & Criatividade",
       icon: "fa-palette",
       color: "from-fuchsia-500 to-pink-600",
       description: "Define paleta de cores hexadecimais, fontes gratuitas do Canva e elementos visuais com base no nicho do cliente.",
-      prompt: `Quero que você atue como um Diretor de Arte e Designer de Marcas sênior. Para o negócio \${Tipo de Negócio:uma cafeteria aconchegante com pegada rústica e moderna}, elabore um guia de identidade visual rápido para uso no Canva: 1) Paleta de 5 cores com códigos Hexadecimais (#HEX) e o significado de cada cor; 2) Combinação de 2 fontes gratuitas disponíveis no Canva (uma para títulos impactantes e outra para textos corridos de alta legibilidade); 3) Elementos gráficos recomendados (texturas, molduras, iluminação); 4) 3 diretrizes essenciais para manter o feed harmônico e elegante. Minha primeira solicitação é: "\${Primeira Solicitação:Crie a identidade visual completa para este negócio.}"`,
+      prompt: `Quero que vocÃª atue como um Diretor de Arte e Designer de Marcas sÃªnior. Para o negÃ³cio \${Tipo de NegÃ³cio:uma cafeteria aconchegante com pegada rÃºstica e moderna}, elabore um guia de identidade visual rÃ¡pido para uso no Canva: 1) Paleta de 5 cores com cÃ³digos Hexadecimais (#HEX) e o significado de cada cor; 2) CombinaÃ§Ã£o de 2 fontes gratuitas disponÃ­veis no Canva (uma para tÃ­tulos impactantes e outra para textos corridos de alta legibilidade); 3) Elementos grÃ¡ficos recomendados (texturas, molduras, iluminaÃ§Ã£o); 4) 3 diretrizes essenciais para manter o feed harmÃ´nico e elegante. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Crie a identidade visual completa para este negÃ³cio.}"`,
       tags: ["Canva", "Paleta de Cores", "Design", "Tipografia"],
       contributor: "prompts.chat (@devisasari)",
       relatedModule: 5
@@ -10554,8 +10571,8 @@ function getDefaultPromptsLibrary() {
       categoryLabel: "Design, UX & Criatividade",
       icon: "fa-mobile-screen",
       color: "from-blue-500 to-indigo-600",
-      description: "Estrutura árvores de links e páginas de captura mobile com foco em usabilidade, contraste e taxa de conversão.",
-      prompt: `Quero que você atue como um Consultor Especialista em UX/UI e Otimização de Conversão Mobile. Analise e projete a estrutura de uma página de Links da Bio (estilo Linktree/Canva Site) para \${Profissional ou Loja:uma micropigmentadora e designer de sobrancelhas}. Defina: 1) Hierarquia dos botões de cima para baixo em ordem de prioridade comercial; 2) Microtextos dos botões com gatilhos de ação direta; 3) Recomendações de contraste e acessibilidade para pessoas que usam o celular na rua; 4) Elemento de prova social para incluir no topo da página. Minha primeira solicitação é: "\${Primeira Solicitação:Projete a estrutura completa da página de links da bio.}"`,
+      description: "Estrutura Ã¡rvores de links e pÃ¡ginas de captura mobile com foco em usabilidade, contraste e taxa de conversÃ£o.",
+      prompt: `Quero que vocÃª atue como um Consultor Especialista em UX/UI e OtimizaÃ§Ã£o de ConversÃ£o Mobile. Analise e projete a estrutura de uma pÃ¡gina de Links da Bio (estilo Linktree/Canva Site) para \${Profissional ou Loja:uma micropigmentadora e designer de sobrancelhas}. Defina: 1) Hierarquia dos botÃµes de cima para baixo em ordem de prioridade comercial; 2) Microtextos dos botÃµes com gatilhos de aÃ§Ã£o direta; 3) RecomendaÃ§Ãµes de contraste e acessibilidade para pessoas que usam o celular na rua; 4) Elemento de prova social para incluir no topo da pÃ¡gina. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Projete a estrutura completa da pÃ¡gina de links da bio.}"`,
       tags: ["UX/UI", "Links da Bio", "Usabilidade", "Mobile"],
       contributor: "prompts.chat (@devisasari)",
       relatedModule: 5
@@ -10563,32 +10580,32 @@ function getDefaultPromptsLibrary() {
     {
       id: "p-des-3",
       act: "Visual Content Reviewer",
-      title: "Crítico & Revisor de Conteúdo Visual",
+      title: "CrÃ­tico & Revisor de ConteÃºdo Visual",
       category: "design",
       categoryLabel: "Design, UX & Criatividade",
       icon: "fa-wand-magic-sparkles",
       color: "from-purple-600 to-rose-600",
-      description: "Avalia a harmonia, legibilidade de textos sobre imagens e espaçamento de artes criadas no Canva.",
-      prompt: `Quero que você atue como um Revisor Crítico de Design e Comunicação Visual. Vou descrever uma arte de mídia social: "\${Descrição da Arte:Card com fundo vermelho brilhante, texto amarelo em fonte cursiva fina dizendo 'Promoção Relâmpago', foto do produto no canto inferior e 3 logos no topo}". Aponte: 1) Os 3 maiores erros de contraste, legibilidade ou poluição visual desta peça; 2) Como reorganizar a hierarquia de leitura (Z-Pattern ou F-Pattern); 3) Como refazer esta mesma peça no Canva de forma profissional em menos de 10 minutos. Minha primeira solicitação é: "\${Primeira Solicitação:Avalie esta arte e dê as orientações de melhoria.}"`,
-      tags: ["Crítica", "Legibilidade", "Revisão", "Hierarquia"],
+      description: "Avalia a harmonia, legibilidade de textos sobre imagens e espaÃ§amento de artes criadas no Canva.",
+      prompt: `Quero que vocÃª atue como um Revisor CrÃ­tico de Design e ComunicaÃ§Ã£o Visual. Vou descrever uma arte de mÃ­dia social: "\${DescriÃ§Ã£o da Arte:Card com fundo vermelho brilhante, texto amarelo em fonte cursiva fina dizendo 'PromoÃ§Ã£o RelÃ¢mpago', foto do produto no canto inferior e 3 logos no topo}". Aponte: 1) Os 3 maiores erros de contraste, legibilidade ou poluiÃ§Ã£o visual desta peÃ§a; 2) Como reorganizar a hierarquia de leitura (Z-Pattern ou F-Pattern); 3) Como refazer esta mesma peÃ§a no Canva de forma profissional em menos de 10 minutos. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Avalie esta arte e dÃª as orientaÃ§Ãµes de melhoria.}"`,
+      tags: ["CrÃ­tica", "Legibilidade", "RevisÃ£o", "Hierarquia"],
       contributor: "prompts.chat (@nuc)",
       relatedModule: 5
     },
 
     // -------------------------------------------------------------
-    // CATEGORIA 5: TECNOLOGIA, DADOS & AUTOMAÇÃO
+    // CATEGORIA 5: TECNOLOGIA, DADOS & AUTOMAÃ‡ÃƒO
     // -------------------------------------------------------------
     {
       id: "p-tech-1",
       act: "Linux Terminal",
       title: "Terminal Linux Simulado (Console Virtual)",
       category: "tech",
-      categoryLabel: "Tecnologia, Dados & Automação",
+      categoryLabel: "Tecnologia, Dados & AutomaÃ§Ã£o",
       icon: "fa-terminal",
       color: "from-slate-800 to-slate-950",
-      description: "O prompt clássico número 1 do repositório prompts.chat: simula um console Linux interativo com respostas em código.",
+      description: "O prompt clÃ¡ssico nÃºmero 1 do repositÃ³rio prompts.chat: simula um console Linux interativo com respostas em cÃ³digo.",
       prompt: `I want you to act as a Linux terminal. I will type commands and you will reply with what the terminal should show. I want you to only reply with the terminal output inside one unique code block, and nothing else. Do not write explanations. Do not type commands unless I instruct you to do so. When I need to tell you something in Portuguese, I will do so by putting text inside curly brackets {como este}. My first command is pwd`,
-      tags: ["Linux", "Terminal", "Bash", "Clássico prompts.chat"],
+      tags: ["Linux", "Terminal", "Bash", "ClÃ¡ssico prompts.chat"],
       contributor: "prompts.chat (@f)",
       relatedModule: 7
     },
@@ -10597,12 +10614,12 @@ function getDefaultPromptsLibrary() {
       act: "JavaScript Developer",
       title: "Desenvolvedor JavaScript & Front-End",
       category: "tech",
-      categoryLabel: "Tecnologia, Dados & Automação",
+      categoryLabel: "Tecnologia, Dados & AutomaÃ§Ã£o",
       icon: "fa-code",
       color: "from-amber-500 to-yellow-600",
-      description: "Gera scripts em JavaScript moderno, automações web e snippets de código limpo com explicações passo a passo.",
-      prompt: `Quero que você atue como um Desenvolvedor Front-End e JavaScript sênior. Você criará soluções de código limpas, modernas (ES6+) e bem documentadas para \${Objetivo do Código:criar uma função que valida formato de CPF brasileiro e aplica máscara 000.000.000-00 em tempo real em um campo de texto}. Entregue o código completo dentro de um bloco de código, acompanhado de uma explicação simples de cada linha para que um estudante consiga compreender o funcionamento. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva o código em JavaScript com a função de validação de CPF.}"`,
-      tags: ["JavaScript", "Código", "Front-End", "Validação"],
+      description: "Gera scripts em JavaScript moderno, automaÃ§Ãµes web e snippets de cÃ³digo limpo com explicaÃ§Ãµes passo a passo.",
+      prompt: `Quero que vocÃª atue como um Desenvolvedor Front-End e JavaScript sÃªnior. VocÃª criarÃ¡ soluÃ§Ãµes de cÃ³digo limpas, modernas (ES6+) e bem documentadas para \${Objetivo do CÃ³digo:criar uma funÃ§Ã£o que valida formato de CPF brasileiro e aplica mÃ¡scara 000.000.000-00 em tempo real em um campo de texto}. Entregue o cÃ³digo completo dentro de um bloco de cÃ³digo, acompanhado de uma explicaÃ§Ã£o simples de cada linha para que um estudante consiga compreender o funcionamento. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Escreva o cÃ³digo em JavaScript com a funÃ§Ã£o de validaÃ§Ã£o de CPF.}"`,
+      tags: ["JavaScript", "CÃ³digo", "Front-End", "ValidaÃ§Ã£o"],
       contributor: "prompts.chat (@omerimzali)",
       relatedModule: 7
     },
@@ -10611,58 +10628,58 @@ function getDefaultPromptsLibrary() {
       act: "Excel & Sheets Specialist",
       title: "Especialista em Planilhas, Excel & Google Sheets",
       category: "tech",
-      categoryLabel: "Tecnologia, Dados & Automação",
+      categoryLabel: "Tecnologia, Dados & AutomaÃ§Ã£o",
       icon: "fa-table",
       color: "from-emerald-600 to-green-700",
-      description: "Cria fórmulas avançadas (PROCV, PROCX, QUERY, FILTER, CONT.SE), dashboards e automações para controle de clientes.",
-      prompt: `Quero que você atue como um Especialista Avançado em Excel e Google Sheets. Eu preciso de uma fórmula para \${Finalidade da Planilha:calcular automaticamente a média de engajamento dos posts da semana e colorir de verde quem passou de 5% e vermelho quem ficou abaixo de 2%}. Forneça: 1) A fórmula pronta exata em Português e em Inglês; 2) O passo a passo para aplicar a Formatação Condicional; 3) Dica extra de como organizar a planilha de controle de clientes de mídias sociais. Minha primeira solicitação é: "\${Primeira Solicitação:Escreva a fórmula e o passo a passo para esta planilha.}"`,
-      tags: ["Google Sheets", "Excel", "Fórmulas", "Métricas"],
+      description: "Cria fÃ³rmulas avanÃ§adas (PROCV, PROCX, QUERY, FILTER, CONT.SE), dashboards e automaÃ§Ãµes para controle de clientes.",
+      prompt: `Quero que vocÃª atue como um Especialista AvanÃ§ado em Excel e Google Sheets. Eu preciso de uma fÃ³rmula para \${Finalidade da Planilha:calcular automaticamente a mÃ©dia de engajamento dos posts da semana e colorir de verde quem passou de 5% e vermelho quem ficou abaixo de 2%}. ForneÃ§a: 1) A fÃ³rmula pronta exata em PortuguÃªs e em InglÃªs; 2) O passo a passo para aplicar a FormataÃ§Ã£o Condicional; 3) Dica extra de como organizar a planilha de controle de clientes de mÃ­dias sociais. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Escreva a fÃ³rmula e o passo a passo para esta planilha.}"`,
+      tags: ["Google Sheets", "Excel", "FÃ³rmulas", "MÃ©tricas"],
       contributor: "prompts.chat (@f)",
       relatedModule: 7
     },
     {
       id: "p-tech-4",
       act: "Chatbot & Automation Architect",
-      title: "Arquiteto de Automação & Chatbot para WhatsApp",
+      title: "Arquiteto de AutomaÃ§Ã£o & Chatbot para WhatsApp",
       category: "tech",
-      categoryLabel: "Tecnologia, Dados & Automação",
+      categoryLabel: "Tecnologia, Dados & AutomaÃ§Ã£o",
       icon: "fa-robot",
       color: "from-indigo-600 to-cyan-600",
-      description: "Desenvolve fluxogramas de mensagens automáticas, menu numérico e triagem de atendimento para WhatsApp Business.",
-      prompt: `Quero que você atue como um Arquiteto de Automação de Atendimento e Chatbots no WhatsApp Business. Crie um fluxo de atendimento automático para \${Tipo de Empresa:uma clínica odontológica que atende em Maceió}. O fluxo deve conter: 1) Mensagem de saudação automática com menu numérico de 4 opções claras (Ex: 1 - Agendar Consulta, 2 - Dúvidas sobre Tratamentos, 3 - Localização e Horários, 4 - Falar com Atendente Humano); 2) Respostas automáticas para cada opção; 3) Mensagem para horários fora do expediente comercial. Escreva em linguagem acolhedora, objetiva e com emojis estratégicos. Minha primeira solicitação é: "\${Primeira Solicitação:Crie o fluxo completo de mensagens automáticas.}"`,
-      tags: ["WhatsApp", "Chatbot", "Automação", "Atendimento"],
-      contributor: "prompts.chat (@f) • Adaptado",
+      description: "Desenvolve fluxogramas de mensagens automÃ¡ticas, menu numÃ©rico e triagem de atendimento para WhatsApp Business.",
+      prompt: `Quero que vocÃª atue como um Arquiteto de AutomaÃ§Ã£o de Atendimento e Chatbots no WhatsApp Business. Crie um fluxo de atendimento automÃ¡tico para \${Tipo de Empresa:uma clÃ­nica odontolÃ³gica que atende em MaceiÃ³}. O fluxo deve conter: 1) Mensagem de saudaÃ§Ã£o automÃ¡tica com menu numÃ©rico de 4 opÃ§Ãµes claras (Ex: 1 - Agendar Consulta, 2 - DÃºvidas sobre Tratamentos, 3 - LocalizaÃ§Ã£o e HorÃ¡rios, 4 - Falar com Atendente Humano); 2) Respostas automÃ¡ticas para cada opÃ§Ã£o; 3) Mensagem para horÃ¡rios fora do expediente comercial. Escreva em linguagem acolhedora, objetiva e com emojis estratÃ©gicos. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Crie o fluxo completo de mensagens automÃ¡ticas.}"`,
+      tags: ["WhatsApp", "Chatbot", "AutomaÃ§Ã£o", "Atendimento"],
+      contributor: "prompts.chat (@f) â€¢ Adaptado",
       relatedModule: 6
     },
 
     // -------------------------------------------------------------
-    // CATEGORIA 6: EDUCAÇÃO, IDIOMAS & REDAÇÃO
+    // CATEGORIA 6: EDUCAÃ‡ÃƒO, IDIOMAS & REDAÃ‡ÃƒO
     // -------------------------------------------------------------
     {
       id: "p-edu-1",
       act: "AI Writing Tutor",
-      title: "Tutor de Escrita, Gramática & Clareza Textual",
+      title: "Tutor de Escrita, GramÃ¡tica & Clareza Textual",
       category: "educacao",
-      categoryLabel: "Educação, Idiomas & Redação",
+      categoryLabel: "EducaÃ§Ã£o, Idiomas & RedaÃ§Ã£o",
       icon: "fa-graduation-cap",
       color: "from-indigo-600 to-purple-800",
-      description: "Analisa redações, postagens e e-mails corrigindo erros de português, concordância e sugerindo versões mais elegantes.",
-      prompt: `Quero que você atue como um Tutor de Redação e Revisor Gramatical de Língua Portuguesa. Vou te enviar um texto escrito por mim: "\${Texto para Correção:Ola pessoal venho aqui divulgar meu trabalho de midias sociais estou com precos bons e faco artes no canva chama no zap}". Sua missão é: 1) Apontar os erros gramaticais, de pontuação e de concordância com explicações gentis e didáticas; 2) Fornecer uma versão corrigida padrão; 3) Fornecer uma versão aprimorada profissional de alto nível pronta para postar. Minha primeira solicitação é: "\${Primeira Solicitação:Revise e aprimore este texto.}"`,
-      tags: ["Gramática", "Português", "Revisão", "Clareza"],
+      description: "Analisa redaÃ§Ãµes, postagens e e-mails corrigindo erros de portuguÃªs, concordÃ¢ncia e sugerindo versÃµes mais elegantes.",
+      prompt: `Quero que vocÃª atue como um Tutor de RedaÃ§Ã£o e Revisor Gramatical de LÃ­ngua Portuguesa. Vou te enviar um texto escrito por mim: "\${Texto para CorreÃ§Ã£o:Ola pessoal venho aqui divulgar meu trabalho de midias sociais estou com precos bons e faco artes no canva chama no zap}". Sua missÃ£o Ã©: 1) Apontar os erros gramaticais, de pontuaÃ§Ã£o e de concordÃ¢ncia com explicaÃ§Ãµes gentis e didÃ¡ticas; 2) Fornecer uma versÃ£o corrigida padrÃ£o; 3) Fornecer uma versÃ£o aprimorada profissional de alto nÃ­vel pronta para postar. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Revise e aprimore este texto.}"`,
+      tags: ["GramÃ¡tica", "PortuguÃªs", "RevisÃ£o", "Clareza"],
       contributor: "prompts.chat (@devisasari)",
       relatedModule: 1
     },
     {
       id: "p-edu-2",
       act: "English Translator and Improver",
-      title: "Tradutor & Aprimorador de Inglês Profissional",
+      title: "Tradutor & Aprimorador de InglÃªs Profissional",
       category: "educacao",
-      categoryLabel: "Educação, Idiomas & Redação",
+      categoryLabel: "EducaÃ§Ã£o, Idiomas & RedaÃ§Ã£o",
       icon: "fa-language",
       color: "from-blue-600 to-indigo-700",
-      description: "Prompt clássico do repositório: traduz qualquer idioma para o inglês sofisticado, corrigindo erros e elevando o nível do vocabulário.",
-      prompt: `I want you to act as an English translator, spelling corrector and improver. I will speak to you in Portuguese (or any other language) and you will detect the language, translate it and answer in the corrected and improved version of my text, in professional English. I want you to replace my simplified words and sentences with more beautiful, elegant, upper-level English vocabulary suitable for international business and social media. Keep the meaning the same, but make it more impactful. Only reply with the correction and the improvements, do not write explanations. My first sentence is: "\${Primeira Frase em Português:Eu quero trabalhar com marketing digital e criação de conteúdo para empresas do mundo inteiro.}"`,
-      tags: ["Inglês", "Tradução", "Carreira Global", "Clássico prompts.chat"],
+      description: "Prompt clÃ¡ssico do repositÃ³rio: traduz qualquer idioma para o inglÃªs sofisticado, corrigindo erros e elevando o nÃ­vel do vocabulÃ¡rio.",
+      prompt: `I want you to act as an English translator, spelling corrector and improver. I will speak to you in Portuguese (or any other language) and you will detect the language, translate it and answer in the corrected and improved version of my text, in professional English. I want you to replace my simplified words and sentences with more beautiful, elegant, upper-level English vocabulary suitable for international business and social media. Keep the meaning the same, but make it more impactful. Only reply with the correction and the improvements, do not write explanations. My first sentence is: "\${Primeira Frase em PortuguÃªs:Eu quero trabalhar com marketing digital e criaÃ§Ã£o de conteÃºdo para empresas do mundo inteiro.}"`,
+      tags: ["InglÃªs", "TraduÃ§Ã£o", "Carreira Global", "ClÃ¡ssico prompts.chat"],
       contributor: "prompts.chat (@f)",
       relatedModule: 7
     },
@@ -10671,26 +10688,26 @@ function getDefaultPromptsLibrary() {
       act: "Plagiarism Checker and Paraphraser",
       title: "Verificador de Originalidade & Reescrita Textual",
       category: "educacao",
-      categoryLabel: "Educação, Idiomas & Redação",
+      categoryLabel: "EducaÃ§Ã£o, Idiomas & RedaÃ§Ã£o",
       icon: "fa-check-double",
       color: "from-teal-600 to-cyan-700",
-      description: "Reescreve artigos e legendas mantendo a mensagem central com palavras 100% autorais e sem risco de plágio.",
-      prompt: `Quero que você atue como um Especialista em Originalidade Textual e Paráfrase. Vou te enviar um parágrafo de referência: "\${Texto Original:O marketing digital se tornou indispensável para pequenas empresas porque permite alcançar clientes locais com baixo investimento através das redes sociais}". Reescreva essa mesma ideia em 3 estilos diferentes: 1) Estilo Direto e Objetivo para postagem rápida; 2) Estilo Didático com metáfora ou exemplo prático; 3) Estilo Provocativo para gerar debate nos comentários. Todas as versões devem ser 100% originais. Minha primeira solicitação é: "\${Primeira Solicitação:Gere as 3 versões reescritas deste parágrafo.}"`,
-      tags: ["Originalidade", "Paráfrase", "Reescrita", "Estilo"],
+      description: "Reescreve artigos e legendas mantendo a mensagem central com palavras 100% autorais e sem risco de plÃ¡gio.",
+      prompt: `Quero que vocÃª atue como um Especialista em Originalidade Textual e ParÃ¡frase. Vou te enviar um parÃ¡grafo de referÃªncia: "\${Texto Original:O marketing digital se tornou indispensÃ¡vel para pequenas empresas porque permite alcanÃ§ar clientes locais com baixo investimento atravÃ©s das redes sociais}". Reescreva essa mesma ideia em 3 estilos diferentes: 1) Estilo Direto e Objetivo para postagem rÃ¡pida; 2) Estilo DidÃ¡tico com metÃ¡fora ou exemplo prÃ¡tico; 3) Estilo Provocativo para gerar debate nos comentÃ¡rios. Todas as versÃµes devem ser 100% originais. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Gere as 3 versÃµes reescritas deste parÃ¡grafo.}"`,
+      tags: ["Originalidade", "ParÃ¡frase", "Reescrita", "Estilo"],
       contributor: "prompts.chat (@yetk1n)",
       relatedModule: 1
     },
     {
       id: "p-edu-4",
       act: "Critical Debater",
-      title: "Debatedor Crítico & Analista de Cenários",
+      title: "Debatedor CrÃ­tico & Analista de CenÃ¡rios",
       category: "educacao",
-      categoryLabel: "Educação, Idiomas & Redação",
+      categoryLabel: "EducaÃ§Ã£o, Idiomas & RedaÃ§Ã£o",
       icon: "fa-scale-balanced",
       color: "from-slate-700 to-indigo-800",
-      description: "Apresenta os prós e contras de qualquer ferramenta, tendência ou decisão estratégica de mídias com argumentos sólidos.",
-      prompt: `Quero que você atue como um Analista Crítico e Debatedor Estratégico. Para a questão \${Tema em Discussão:Vale a pena pequenos negócios investirem em tráfego pago antes de terem uma base orgânica estruturada no Instagram?}, apresente: 1) Os 3 argumentos mais fortes a favor; 2) Os 3 argumentos mais fortes contra e riscos envolvidos; 3) Uma síntese equilibrada com recomendação prática para um estudante orientar seu cliente. Mantenha uma postura neutra, analítica e fundamentada em dados. Minha primeira solicitação é: "\${Primeira Solicitação:Apresente o debate completo sobre este tema.}"`,
-      tags: ["Debate", "Análise Crítica", "Estratégia", "Tomada de Decisão"],
+      description: "Apresenta os prÃ³s e contras de qualquer ferramenta, tendÃªncia ou decisÃ£o estratÃ©gica de mÃ­dias com argumentos sÃ³lidos.",
+      prompt: `Quero que vocÃª atue como um Analista CrÃ­tico e Debatedor EstratÃ©gico. Para a questÃ£o \${Tema em DiscussÃ£o:Vale a pena pequenos negÃ³cios investirem em trÃ¡fego pago antes de terem uma base orgÃ¢nica estruturada no Instagram?}, apresente: 1) Os 3 argumentos mais fortes a favor; 2) Os 3 argumentos mais fortes contra e riscos envolvidos; 3) Uma sÃ­ntese equilibrada com recomendaÃ§Ã£o prÃ¡tica para um estudante orientar seu cliente. Mantenha uma postura neutra, analÃ­tica e fundamentada em dados. Minha primeira solicitaÃ§Ã£o Ã©: "\${Primeira SolicitaÃ§Ã£o:Apresente o debate completo sobre este tema.}"`,
+      tags: ["Debate", "AnÃ¡lise CrÃ­tica", "EstratÃ©gia", "Tomada de DecisÃ£o"],
       contributor: "prompts.chat (@devisasari)",
       relatedModule: 7
     }
@@ -10698,7 +10715,7 @@ function getDefaultPromptsLibrary() {
 }
 
 // -------------------------------------------------------------
-// ARMAZENAMENTO E PERSISTÊNCIA DE PROMPTS
+// ARMAZENAMENTO E PERSISTÃŠNCIA DE PROMPTS
 // -------------------------------------------------------------
 function loadPromptsDataFromStorage() {
   const defaults = getDefaultPromptsLibrary();
@@ -10721,7 +10738,7 @@ function loadPromptsDataFromStorage() {
     console.warn("Erro ao carregar prompts favoritos:", e);
   }
 
-  // Mescla prompts padrão com customizados criados pelo professor
+  // Mescla prompts padrÃ£o com customizados criados pelo professor
   AppState.promptsLibrary = [...customPrompts, ...defaults];
 }
 
@@ -10732,10 +10749,10 @@ function savePromptsDataToStorage() {
 }
 
 // -------------------------------------------------------------
-// RENDERIZAÇÃO DA ABA: LABORATÓRIO DE PROMPTS & IA
+// RENDERIZAÃ‡ÃƒO DA ABA: LABORATÃ“RIO DE PROMPTS & IA
 // -------------------------------------------------------------
 function renderPromptsTab(container) {
-  // REGRA DE ACESSO: Exige autenticação por CPF
+  // REGRA DE ACESSO: Exige autenticaÃ§Ã£o por CPF
   if (!AppState.currentUser) {
     renderTabAccessRestriction(container, 'prompts');
     return;
@@ -10770,17 +10787,17 @@ function renderPromptsTab(container) {
     { key: "all", label: "Todos os Prompts", icon: "fa-layer-group" },
     { key: "marketing", label: "Marketing & Redes", icon: "fa-share-nodes" },
     { key: "copywriting", label: "Copywriting & Vendas", icon: "fa-pen-nib" },
-    { key: "gestao", label: "Gestão & Negócios", icon: "fa-store" },
+    { key: "gestao", label: "GestÃ£o & NegÃ³cios", icon: "fa-store" },
     { key: "design", label: "Design & Criatividade", icon: "fa-palette" },
     { key: "tech", label: "Tecnologia & Dados", icon: "fa-code" },
-    { key: "educacao", label: "Educação & Redação", icon: "fa-graduation-cap" },
+    { key: "educacao", label: "EducaÃ§Ã£o & RedaÃ§Ã£o", icon: "fa-graduation-cap" },
     { key: "favorites", label: "Favoritos", icon: "fa-star", count: favoriteIds.length }
   ];
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
       
-      <!-- Banner Hero Principal do Repositório prompts.chat -->
+      <!-- Banner Hero Principal do RepositÃ³rio prompts.chat -->
       <div class="relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white shadow-xl border border-indigo-500/30">
         <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div class="space-y-2.5 max-w-2xl">
@@ -10793,7 +10810,7 @@ function renderPromptsTab(container) {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 class="px-3 py-1 rounded-full text-[11px] font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors flex items-center gap-1.5"
-                title="Acessar repositório original no GitHub de Fatih Kadir Akın (@f)"
+                title="Acessar repositÃ³rio original no GitHub de Fatih Kadir AkÄ±n (@f)"
               >
                 <i class="fa-brands fa-github text-sm"></i> prompts.chat (@f) <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
               </a>
@@ -10803,14 +10820,14 @@ function renderPromptsTab(container) {
             </div>
 
             <h1 class="text-xl sm:text-3xl font-black tracking-tight leading-tight">
-              Laboratório de Prompts & Personas de IA
+              LaboratÃ³rio de Prompts & Personas de IA
             </h1>
             <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Transforme o ChatGPT, Gemini e Claude em <strong>especialistas sêniores sob demanda</strong>. Esta página traz todo o acervo do repositório mundial <em>prompts.chat</em> traduzido e adaptado para mídias digitais, com personalizador dinâmico de variáveis.
+              Transforme o ChatGPT, Gemini e Claude em <strong>especialistas sÃªniores sob demanda</strong>. Esta pÃ¡gina traz todo o acervo do repositÃ³rio mundial <em>prompts.chat</em> traduzido e adaptado para mÃ­dias digitais, com personalizador dinÃ¢mico de variÃ¡veis.
             </p>
           </div>
 
-          <!-- Métricas Rápidas & Ações de Docente/Discente -->
+          <!-- MÃ©tricas RÃ¡pidas & AÃ§Ãµes de Docente/Discente -->
           <div class="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto flex-shrink-0">
             <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
               <div class="px-2">
@@ -10819,7 +10836,7 @@ function renderPromptsTab(container) {
               </div>
               <div class="px-2 border-x border-white/10">
                 <span class="block text-base sm:text-lg font-black text-emerald-400">6</span>
-                <span class="text-[9px] uppercase tracking-wider text-slate-300">Áreas</span>
+                <span class="text-[9px] uppercase tracking-wider text-slate-300">Ãreas</span>
               </div>
               <div class="px-2">
                 <span class="block text-base sm:text-lg font-black text-indigo-300">${favoriteIds.length}</span>
@@ -10832,7 +10849,7 @@ function renderPromptsTab(container) {
                 onclick="openCreatePromptModal()" 
                 class="w-full px-4 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
-                <i class="fa-solid fa-plus"></i> + Adicionar Prompt à Turma
+                <i class="fa-solid fa-plus"></i> + Adicionar Prompt Ã  Turma
               </button>
             ` : `
               <div class="flex items-center gap-2">
@@ -10858,7 +10875,7 @@ function renderPromptsTab(container) {
         </div>
       </div>
 
-      <!-- Guia Didático e Passo a Passo Explicativo (Retrátil) -->
+      <!-- Guia DidÃ¡tico e Passo a Passo Explicativo (RetrÃ¡til) -->
       <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
         <div class="flex items-center justify-between cursor-pointer select-none" onclick="togglePromptsGuide()">
           <div class="flex items-center gap-3">
@@ -10867,13 +10884,13 @@ function renderPromptsTab(container) {
             </div>
             <div>
               <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                Como Funciona este Repositório & Passo a Passo de Uso para o Aluno
+                Como Funciona este RepositÃ³rio & Passo a Passo de Uso para o Aluno
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                  Guia Didático Oficial
+                  Guia DidÃ¡tico Oficial
                 </span>
               </h2>
               <p class="text-xs text-slate-500 dark:text-slate-400">
-                Aprenda a metodologia de <strong>Role Prompting ("Aja como...")</strong> para obter resultados 10x melhores na Inteligência Artificial.
+                Aprenda a metodologia de <strong>Role Prompting ("Aja como...")</strong> para obter resultados 10x melhores na InteligÃªncia Artificial.
               </p>
             </div>
           </div>
@@ -10885,14 +10902,14 @@ function renderPromptsTab(container) {
         ${guideExpanded ? `
           <div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-6 text-xs text-slate-600 dark:text-slate-300 fade-in">
             
-            <!-- Explicação do Repositório -->
+            <!-- ExplicaÃ§Ã£o do RepositÃ³rio -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 space-y-1.5">
                 <strong class="text-indigo-900 dark:text-indigo-200 font-bold text-xs flex items-center gap-1.5">
-                  <i class="fa-solid fa-circle-question text-indigo-500"></i> O que é o repositório prompts.chat?
+                  <i class="fa-solid fa-circle-question text-indigo-500"></i> O que Ã© o repositÃ³rio prompts.chat?
                 </strong>
                 <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Criado pelo desenvolvedor Fatih Kadir Akın (<strong>@f</strong>), o <em>Awesome ChatGPT Prompts</em> tornou-se o repositório open-source mais famoso do mundo para inteligência artificial generativa, acumulando dezenas de milhares de estrelas no GitHub.
+                  Criado pelo desenvolvedor Fatih Kadir AkÄ±n (<strong>@f</strong>), o <em>Awesome ChatGPT Prompts</em> tornou-se o repositÃ³rio open-source mais famoso do mundo para inteligÃªncia artificial generativa, acumulando dezenas de milhares de estrelas no GitHub.
                 </p>
               </div>
 
@@ -10901,12 +10918,12 @@ function renderPromptsTab(container) {
                   <i class="fa-solid fa-bullseye text-emerald-500"></i> Para que ele serve no seu aprendizado?
                 </strong>
                 <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Sem um prompt bem estruturado, o ChatGPT dá respostas genéricas e rasas. Ao utilizar o comando <strong>"Aja como [Persona]"</strong>, você ativa os parâmetros de um especialista no modelo, definindo limites, tom de voz e formato de entrega.
+                  Sem um prompt bem estruturado, o ChatGPT dÃ¡ respostas genÃ©ricas e rasas. Ao utilizar o comando <strong>"Aja como [Persona]"</strong>, vocÃª ativa os parÃ¢metros de um especialista no modelo, definindo limites, tom de voz e formato de entrega.
                 </p>
               </div>
             </div>
 
-            <!-- 4 Passos Práticos do Aluno -->
+            <!-- 4 Passos PrÃ¡ticos do Aluno -->
             <div class="space-y-3">
               <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                 <i class="fa-solid fa-route text-indigo-500"></i> Passo a Passo em 4 Fases para Usar Qualquer Prompt:
@@ -10921,14 +10938,14 @@ function renderPromptsTab(container) {
 
                 <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
                   <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-black text-xs flex items-center justify-center">2</span>
-                  <h4 class="font-bold text-slate-800 dark:text-slate-200">Personalize as Variáveis</h4>
+                  <h4 class="font-bold text-slate-800 dark:text-slate-200">Personalize as VariÃ¡veis</h4>
                   <p class="text-[11px] text-slate-500 leading-relaxed">Clique em <strong>"Personalizar"</strong> para preencher os campos com os dados do seu cliente real.</p>
                 </div>
 
                 <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
                   <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-black text-xs flex items-center justify-center">3</span>
                   <h4 class="font-bold text-slate-800 dark:text-slate-200">Copie em 1 Clique</h4>
-                  <p class="text-[11px] text-slate-500 leading-relaxed">Clique no botão <strong>"Copiar Prompt"</strong> para transferir o texto formatado para a área de transferência.</p>
+                  <p class="text-[11px] text-slate-500 leading-relaxed">Clique no botÃ£o <strong>"Copiar Prompt"</strong> para transferir o texto formatado para a Ã¡rea de transferÃªncia.</p>
                 </div>
 
                 <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
@@ -10947,7 +10964,7 @@ function renderPromptsTab(container) {
       <div class="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
         <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           
-          <!-- Pílulas de Categorias -->
+          <!-- PÃ­lulas de Categorias -->
           <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 md:pb-0 scrollbar-none">
             ${categories.map(c => {
               const isActive = activeCategory === c.key;
@@ -10987,7 +11004,7 @@ function renderPromptsTab(container) {
           <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl mx-auto text-slate-400">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
           </div>
-          <h3 class="font-bold text-sm text-slate-700 dark:text-slate-300">Nenhum prompt encontrado para esta seleção</h3>
+          <h3 class="font-bold text-sm text-slate-700 dark:text-slate-300">Nenhum prompt encontrado para esta seleÃ§Ã£o</h3>
           <p class="text-xs max-w-sm mx-auto">Tente selecionar outra categoria ou limpar os termos digitados na busca.</p>
           <button onclick="switchPromptsCategory('all'); handlePromptsSearchInput('');" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors">
             Ver Todos os Prompts
@@ -11003,7 +11020,7 @@ function renderPromptsTab(container) {
                 
                 <div class="space-y-3">
                   
-                  <!-- Header do Card: Ícone, Categoria & Favorito -->
+                  <!-- Header do Card: Ãcone, Categoria & Favorito -->
                   <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
                       <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${p.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
@@ -11025,7 +11042,7 @@ function renderPromptsTab(container) {
                     </button>
                   </div>
 
-                  <!-- Título da Persona e Papel -->
+                  <!-- TÃ­tulo da Persona e Papel -->
                   <div>
                     <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 leading-snug">
                       ${escapeHtml(p.title)}
@@ -11035,12 +11052,12 @@ function renderPromptsTab(container) {
                     </p>
                   </div>
 
-                  <!-- Descrição Didática -->
+                  <!-- DescriÃ§Ã£o DidÃ¡tica -->
                   <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
                     ${escapeHtml(p.description)}
                   </p>
 
-                  <!-- Preview do Prompt com Destaque de Variáveis -->
+                  <!-- Preview do Prompt com Destaque de VariÃ¡veis -->
                   <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 text-[11px] text-slate-700 dark:text-slate-300 font-mono leading-relaxed line-clamp-4 relative group">
                     ${escapeHtml(p.prompt)}
                   </div>
@@ -11056,7 +11073,7 @@ function renderPromptsTab(container) {
 
                 </div>
 
-                <!-- Footer de Ações do Card -->
+                <!-- Footer de AÃ§Ãµes do Card -->
                 <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
                   <div class="flex items-center gap-1.5">
                     
@@ -11071,7 +11088,7 @@ function renderPromptsTab(container) {
                     <button 
                       onclick="openPromptCustomizerModal('${p.id}')" 
                       class="px-3 py-2 rounded-xl font-bold text-xs bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 transition-all flex items-center gap-1 cursor-pointer"
-                      title="Preencher variáveis e personalizar"
+                      title="Preencher variÃ¡veis e personalizar"
                     >
                       <i class="fa-solid fa-sliders"></i> Personalizar
                     </button>
@@ -11123,7 +11140,7 @@ function renderPromptsTab(container) {
 }
 
 // -------------------------------------------------------------
-// AÇÕES E INTERATIVIDADE DA ABA DE PROMPTS
+// AÃ‡Ã•ES E INTERATIVIDADE DA ABA DE PROMPTS
 // -------------------------------------------------------------
 function switchPromptsCategory(category) {
   AppState.promptsActiveCategory = category;
@@ -11161,17 +11178,17 @@ function toggleFavoritePrompt(promptId) {
 function copyPromptText(promptId) {
   const promptItem = AppState.promptsLibrary.find(p => p.id === promptId);
   if (!promptItem) {
-    showToast("Prompt não encontrado.", "error");
+    showToast("Prompt nÃ£o encontrado.", "error");
     return;
   }
 
-  // Limpa os marcadores de variáveis para deixar pronto para envio se desejado
+  // Limpa os marcadores de variÃ¡veis para deixar pronto para envio se desejado
   const cleanPrompt = promptItem.prompt.replace(/\$\{([^:]+):([^}]+)\}/g, "$2");
 
   navigator.clipboard.writeText(cleanPrompt).then(() => {
-    showToast(`Prompt de "${promptItem.title}" copiado para a área de transferência!`, "success");
+    showToast(`Prompt de "${promptItem.title}" copiado para a Ã¡rea de transferÃªncia!`, "success");
   }).catch(() => {
-    showToast("Não foi possível copiar automaticamente.", "warning");
+    showToast("NÃ£o foi possÃ­vel copiar automaticamente.", "warning");
   });
 }
 
@@ -11182,7 +11199,7 @@ function openInAiPlatform(promptId, platform) {
 }
 
 // -------------------------------------------------------------
-// PLAYGROUND / MODAL DE PERSONALIZAÇÃO DE VARIÁVEIS
+// PLAYGROUND / MODAL DE PERSONALIZAÃ‡ÃƒO DE VARIÃVEIS
 // -------------------------------------------------------------
 function openPromptCustomizerModal(promptId) {
   const promptItem = AppState.promptsLibrary.find(p => p.id === promptId);
@@ -11191,7 +11208,7 @@ function openPromptCustomizerModal(promptId) {
   const modalContainer = document.getElementById("modal-container");
   if (!modalContainer) return;
 
-  // Extrai variáveis no formato ${Label:ValorPadrao}
+  // Extrai variÃ¡veis no formato ${Label:ValorPadrao}
   const variableRegex = /\$\{([^:]+):([^}]+)\}/g;
   const extractedVars = [];
   let match;
@@ -11203,9 +11220,9 @@ function openPromptCustomizerModal(promptId) {
     });
   }
 
-  // Se não houver variáveis com `${...}`, detecta chaves `[...]`
+  // Se nÃ£o houver variÃ¡veis com `${...}`, detecta chaves `[...]`
   if (extractedVars.length === 0) {
-    const bracketRegex = /\[([A-ZÀ-Ú\s/]+)\]/g;
+    const bracketRegex = /\[([A-ZÃ€-Ãš\s/]+)\]/g;
     while ((match = bracketRegex.exec(promptItem.prompt)) !== null) {
       extractedVars.push({
         raw: match[0],
@@ -11235,7 +11252,7 @@ function openPromptCustomizerModal(promptId) {
           </button>
         </div>
 
-        <!-- Formulário de Campos Dinâmicos -->
+        <!-- FormulÃ¡rio de Campos DinÃ¢micos -->
         <div class="space-y-4 text-xs">
           ${extractedVars.length > 0 ? `
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -11256,7 +11273,7 @@ function openPromptCustomizerModal(promptId) {
               `).join("")}
             </div>
           ` : `
-            <p class="text-slate-500 italic">Este prompt já está pronto para uso direto sem necessidade de preencher variáveis adicionais.</p>
+            <p class="text-slate-500 italic">Este prompt jÃ¡ estÃ¡ pronto para uso direto sem necessidade de preencher variÃ¡veis adicionais.</p>
           `}
 
           <!-- Preview do Prompt Gerado em Tempo Real -->
@@ -11274,7 +11291,7 @@ function openPromptCustomizerModal(promptId) {
           </div>
         </div>
 
-        <!-- Ações do Modal -->
+        <!-- AÃ§Ãµes do Modal -->
         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <button 
@@ -11336,9 +11353,9 @@ function copyCustomizedPromptFromModal() {
   if (!previewArea || !previewArea.value) return;
 
   navigator.clipboard.writeText(previewArea.value).then(() => {
-    showToast("Prompt personalizado copiado para a área de transferência!", "success");
+    showToast("Prompt personalizado copiado para a Ã¡rea de transferÃªncia!", "success");
   }).catch(() => {
-    showToast("Não foi possível copiar automaticamente.", "warning");
+    showToast("NÃ£o foi possÃ­vel copiar automaticamente.", "warning");
   });
 }
 
@@ -11349,11 +11366,11 @@ function copyAndOpenCustomizedPrompt(platform) {
 }
 
 // -------------------------------------------------------------
-// ESPAÇO DO PROFESSOR: CRIAÇÃO DE NOVOS PROMPTS
+// ESPAÃ‡O DO PROFESSOR: CRIAÃ‡ÃƒO DE NOVOS PROMPTS
 // -------------------------------------------------------------
 function openCreatePromptModal() {
   if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
-    showToast("Apenas professores têm permissão para adicionar novos prompts.", "warning");
+    showToast("Apenas professores tÃªm permissÃ£o para adicionar novos prompts.", "warning");
     return;
   }
 
@@ -11371,7 +11388,7 @@ function openCreatePromptModal() {
             </div>
             <div>
               <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">Criar Novo Prompt para a Turma</h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">Exclusivo para Docentes e Coordenação</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Exclusivo para Docentes e CoordenaÃ§Ã£o</p>
             </div>
           </div>
           <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
@@ -11381,12 +11398,12 @@ function openCreatePromptModal() {
 
         <form onsubmit="handleCreatePromptSubmit(event)" class="space-y-3.5 text-xs">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título da Persona / Função *</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">TÃ­tulo da Persona / FunÃ§Ã£o *</label>
             <input 
               type="text" 
               id="prompt-title-input" 
               required
-              placeholder="Ex: Especialista em Vendas no WhatsApp para Pequenos Negócios" 
+              placeholder="Ex: Especialista em Vendas no WhatsApp para Pequenos NegÃ³cios" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
             />
           </div>
@@ -11400,15 +11417,15 @@ function openCreatePromptModal() {
               >
                 <option value="marketing">Marketing & Redes</option>
                 <option value="copywriting">Copywriting & Vendas</option>
-                <option value="gestao">Gestão & Negócios</option>
+                <option value="gestao">GestÃ£o & NegÃ³cios</option>
                 <option value="design">Design & Criatividade</option>
                 <option value="tech">Tecnologia & Dados</option>
-                <option value="educacao">Educação & Redação</option>
+                <option value="educacao">EducaÃ§Ã£o & RedaÃ§Ã£o</option>
               </select>
             </div>
 
             <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Papel em Inglês (Act as) *</label>
+              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Papel em InglÃªs (Act as) *</label>
               <input 
                 type="text" 
                 id="prompt-act-input" 
@@ -11420,7 +11437,7 @@ function openCreatePromptModal() {
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Descrição Breve da Finalidade *</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">DescriÃ§Ã£o Breve da Finalidade *</label>
             <input 
               type="text" 
               id="prompt-desc-input" 
@@ -11433,23 +11450,23 @@ function openCreatePromptModal() {
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">
               Comando do Prompt Completo * 
-              <span class="font-normal text-slate-400">(use \${Nome:Padrão} para criar variáveis)</span>
+              <span class="font-normal text-slate-400">(use \${Nome:PadrÃ£o} para criar variÃ¡veis)</span>
             </label>
             <textarea 
               id="prompt-text-input" 
               rows="5" 
               required
-              placeholder="Quero que você atue como um especialista em... Minha primeira solicitação é: ..." 
+              placeholder="Quero que vocÃª atue como um especialista em... Minha primeira solicitaÃ§Ã£o Ã©: ..." 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono text-[11px] focus:ring-2 focus:ring-indigo-500 focus:outline-none leading-relaxed"
             ></textarea>
           </div>
 
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tags Separadas por Vírgula</label>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tags Separadas por VÃ­rgula</label>
             <input 
               type="text" 
               id="prompt-tags-input" 
-              placeholder="Ex: WhatsApp, Fechamento, Módulo 6, Vendas" 
+              placeholder="Ex: WhatsApp, Fechamento, MÃ³dulo 6, Vendas" 
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none"
             />
           </div>
@@ -11487,17 +11504,17 @@ function handleCreatePromptSubmit(event) {
   const rawTags = (document.getElementById("prompt-tags-input")?.value || "").trim();
 
   if (!title || !promptText) {
-    showToast("Preencha todos os campos obrigatórios.", "warning");
+    showToast("Preencha todos os campos obrigatÃ³rios.", "warning");
     return;
   }
 
   const categoryLabels = {
     marketing: "Marketing & Redes Sociais",
     copywriting: "Copywriting & Vendas",
-    gestao: "Gestão, Carreira & Negócios",
+    gestao: "GestÃ£o, Carreira & NegÃ³cios",
     design: "Design, UX & Criatividade",
-    tech: "Tecnologia, Dados & Automação",
-    educacao: "Educação, Idiomas & Redação"
+    tech: "Tecnologia, Dados & AutomaÃ§Ã£o",
+    educacao: "EducaÃ§Ã£o, Idiomas & RedaÃ§Ã£o"
   };
 
   const newPrompt = {
@@ -11537,9 +11554,10 @@ function deleteCustomPrompt(promptId) {
   if (confirm("Tem certeza que deseja excluir este prompt customizado da biblioteca da turma?")) {
     AppState.promptsLibrary.splice(idx, 1);
     savePromptsDataToStorage();
-    showToast("Prompt excluído com sucesso.", "success");
+    showToast("Prompt excluÃ­do com sucesso.", "success");
     const contentArea = document.getElementById("main-content-area");
     if (contentArea) renderPromptsTab(contentArea);
   }
 }
+
 
