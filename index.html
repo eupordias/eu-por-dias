@@ -6,12 +6,31 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Eu Por Dias - GestÃƒÂ£o de Alunos Ã¢â‚¬Â¢ Emprega Mais Alagoas</title>
+  <title>Eu Por Dias - Gestão de Alunos • Emprega Mais Alagoas</title>
 
-  <!-- Bulma CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
-  <link href="vendor/bootstrap/css/bulma-overrides.css" rel="stylesheet">
-  <link href="vendor/bootstrap/css/bulma-utility-mapping.css" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
 
   <!-- FontAwesome 6 & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -32,94 +51,90 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 is-flex is-flex-column antialiased transition-colors duration-200">
+<body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col antialiased transition-colors duration-200">
 
   <!-- TOPO / HEADER DO EU POR DIAS -->
   <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="is-flex is-align-items-center is-justify-content-space-between h-16 gap-4">
+      <div class="flex items-center justify-between h-16 gap-4">
         
         <!-- Logo e Nome do Sistema -->
-        <div class="is-flex is-align-items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 is-flex is-align-items-center justify-content-center text-white text-lg font-black shadow-lg shadow-indigo-500/25 is-flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-black shadow-lg shadow-indigo-500/25 flex-shrink-0">
             <i class="fa-solid fa-graduation-cap"></i>
           </div>
           <div>
-            <div class="is-flex is-align-items-center gap-2">
+            <div class="flex items-center gap-2">
               <span class="font-black text-base tracking-tight text-slate-900 dark:text-white">Eu Por Dias</span>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-400 text-slate-900 shadow-sm">
                 Emprega Mais AL
               </span>
             </div>
             <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-              GestÃƒÂ£o de MÃƒÂ­dias Digitais Ã¢â‚¬Â¢ Notas, Contatos & EndereÃƒÂ§os
+              Gestão de Mídias Digitais • Notas, Contatos & Endereços
             </p>
           </div>
         </div>
 
-        <!-- EstatÃƒÂ­sticas RÃƒÂ¡pidas no Topo -->
-        <div id="header-quick-stats" class="hidden md:is-flex is-align-items-center">
+        <!-- Estatísticas Rápidas no Topo -->
+        <div id="header-quick-stats" class="hidden md:flex items-center">
           <!-- Preenchido via JavaScript -->
         </div>
 
-        <!-- AÃƒÂ§ÃƒÂµes do CabeÃƒÂ§alho -->
-        <div class="is-flex is-align-items-center gap-2">
+        <!-- Ações do Cabeçalho -->
+        <div class="flex items-center gap-2">
           
-          <!-- Submenu ConexÃƒÂµes & Modo Deus (Google Sheets, Supabase, Modo Deus) -->
-          <div class="position-relative" id="integrations-submenu-container">
+          <!-- Submenu Conexões & Modo Deus (Google Sheets, Supabase, Modo Deus) -->
+          <div class="relative" id="integrations-submenu-container">
             <button 
               id="integrations-menu-btn"
               onclick="toggleIntegrationsSubmenu(event)" 
-              class="inline-is-flex is-align-items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/90 shadow-sm transition-all transform active:scale-95"
-              title="Menu de ConexÃƒÂµes: Google Sheets, Supabase e Modo Deus"
+              class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/90 shadow-sm transition-all transform active:scale-95"
+              title="Menu de Conexões: Google Sheets, Supabase e Modo Deus"
             >
-              <div class="is-flex is-align-items-center -space-x-1">
-                <span class="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 is-flex is-align-items-center justify-content-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
+              <div class="flex items-center -space-x-1">
+                <span class="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
                   <i class="fa-brands fa-google-drive"></i>
                 </span>
-                <span class="w-5 h-5 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-600 is-flex is-align-items-center justify-content-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
+                <span class="w-5 h-5 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
                   <i class="fa-solid fa-cloud"></i>
                 </span>
-                <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 is-flex is-align-items-center justify-content-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
+                <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
                   <i class="fa-solid fa-bolt"></i>
                 </span>
               </div>
-              <span class="hidden sm:inline font-bold">ConexÃƒÂµes</span>
-              <span id="integrations-badge-status" class="hidden md:inline-is-flex"></span>
+              <span class="hidden sm:inline font-bold">Conexões</span>
+              <span id="integrations-badge-status" class="hidden md:inline-flex"></span>
               <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
             </button>
-            <button id="theme-toggle-btn" onclick="toggleTheme()" class="inline-is-flex is-align-items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/90 shadow-sm transition-all transform active:scale-95" title="Alternar modo claro/escuro">
-              <span class="icon"><i class="fa-solid fa-moon"></i></span>
-              <span>Modo</span>
-            </button>
-            
+
             <!-- Dropdown do Submenu -->
             <div 
               id="integrations-dropdown-menu" 
-              class="hidden position-absolute right-0 mt-2 w-72 sm:w-80 p-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/90 dark:border-slate-800 z-index-3 text-xs fade-in space-y-1"
+              class="hidden absolute right-0 mt-2 w-72 sm:w-80 p-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/90 dark:border-slate-800 z-50 text-xs fade-in space-y-1"
             >
-              <div class="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800 is-flex is-align-items-center is-justify-content-space-between">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 is-flex is-align-items-center gap-1.5">
-                  <i class="fa-solid fa-sliders text-indigo-500"></i> ConexÃƒÂµes &amp; Modo Deus
+              <div class="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-sliders text-indigo-500"></i> Conexões &amp; Modo Deus
                 </span>
               </div>
 
               <!-- Item 1: Google Sheets API -->
-              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors is-flex is-align-items-center is-justify-content-space-between gap-2 group">
-                <div onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" class="is-flex is-align-items-center gap-2.5 is-flex-1 cursor-pointer">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 is-flex is-align-items-center justify-content-center text-sm is-flex-shrink-0 group-hover:scale-105 transition-transform">
+              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-2 group">
+                <div onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" class="flex items-center gap-2.5 flex-1 cursor-pointer">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
                     <i class="fa-brands fa-google-drive"></i>
                   </div>
                   <div>
                     <strong class="block font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Google Sheets API</strong>
-                    <span class="block text-[10px] text-slate-400">Planilha Oficial Ã¢â‚¬Â¢ Importar / Configurar</span>
+                    <span class="block text-[10px] text-slate-400">Planilha Oficial • Importar / Configurar</span>
                   </div>
                 </div>
-                <div class="is-flex is-align-items-center gap-1">
+                <div class="flex items-center gap-1">
                   <button 
                     type="button" 
                     onclick="closeIntegrationsSubmenu(); quickSyncGoogleSheets();" 
-                    class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm is-flex is-align-items-center gap-1 transition-all"
+                    class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-1 transition-all"
                     title="Sincronizar dados da planilha agora"
                   >
                     <i class="fa-solid fa-rotate text-[9px]"></i> Sincronizar
@@ -128,7 +143,7 @@
                     type="button" 
                     onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
                     class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                    title="ConfiguraÃƒÂ§ÃƒÂµes da planilha"
+                    title="Configurações da planilha"
                   >
                     <i class="fa-solid fa-gear text-[11px]"></i>
                   </button>
@@ -136,9 +151,9 @@
               </div>
 
               <!-- Item 2: Supabase Cloud -->
-              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors is-flex is-align-items-center is-justify-content-space-between gap-2 group">
-                <div onclick="closeIntegrationsSubmenu(); openSupabaseModal();" class="is-flex is-align-items-center gap-2.5 is-flex-1 cursor-pointer">
-                  <div class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 is-flex is-align-items-center justify-content-center text-sm is-flex-shrink-0 group-hover:scale-105 transition-transform">
+              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-2 group">
+                <div onclick="closeIntegrationsSubmenu(); openSupabaseModal();" class="flex items-center gap-2.5 flex-1 cursor-pointer">
+                  <div class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
                     <i class="fa-solid fa-cloud"></i>
                   </div>
                   <div>
@@ -149,7 +164,7 @@
                 <button 
                   type="button" 
                   onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
-                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 transition-all is-flex is-align-items-center gap-1"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 transition-all flex items-center gap-1"
                 >
                   <i class="fa-solid fa-cloud-arrow-up text-[9px]"></i> Conectar
                 </button>
@@ -158,38 +173,38 @@
               <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
 
               <!-- Item 3: Modo Deus / LGPD (Container do Modo Deus) -->
-              <div id="header-godmode-container" class="w-100"></div>
+              <div id="header-godmode-container" class="w-full"></div>
             </div>
           </div>
 
-          <!-- BotÃƒÂ£o Novo Aluno Manual -->
+          <!-- Botão Novo Aluno Manual -->
           <button 
             onclick="openStudentModal()" 
-            class="hidden lg:inline-is-flex is-align-items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-primary hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95"
+            class="hidden lg:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95"
           >
             <i class="fa-solid fa-user-plus"></i>
             <span>Novo Aluno</span>
           </button>
 
 
-          <!-- Perfil e Login por CPF do UsuÃƒÂ¡rio -->
-          <div id="header-user-container" class="is-flex is-align-items-center"></div>
+          <!-- Perfil e Login por CPF do Usuário -->
+          <div id="header-user-container" class="flex items-center"></div>
 
           <!-- Alternar Tema Claro/Escuro -->
           <button 
             id="theme-toggle-btn"
             onclick="toggleTheme()" 
-            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 is-flex is-align-items-center justify-content-center transition-colors"
+            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
             title="Alternar Tema"
           >
             <i class="fa-solid fa-moon"></i>
           </button>
 
-          <!-- BotÃƒÂ£o Sobre / Por que o sistema foi construÃƒÂ­do assim -->
+          <!-- Botão Sobre / Por que o sistema foi construído assim -->
           <button 
             onclick="openAboutModal()" 
-            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-indigo-400 is-flex is-align-items-center justify-content-center transition-colors"
-            title="Sobre o Sistema Ã¢â‚¬Â¢ Por que foi construÃƒÂ­do assim?"
+            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition-colors"
+            title="Sobre o Sistema • Por que foi construído assim?"
           >
             <i class="fa-solid fa-circle-question text-base"></i>
           </button>
@@ -198,12 +213,12 @@
       </div>
     </div>
 
-    <!-- NavegaÃƒÂ§ÃƒÂ£o de Abas -->
+    <!-- Navegação de Abas -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 dark:border-slate-800/80">
-      <nav class="is-flex is-align-items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+      <nav class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
         <button 
           data-tab="about"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl fw-semibold text-xs bg-primary text-white shadow-md shadow-indigo-500/20"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
         >
           <i class="fa-solid fa-lightbulb"></i>
           <span>Sobre o Sistema & Manifesto</span>
@@ -211,39 +226,39 @@
 
         <button 
           data-tab="grades"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <i class="fa-solid fa-pen-nib"></i>
-          <span>Notas dos MÃƒÂ³dulos</span>
+          <span>Notas dos Módulos</span>
         </button>
 
         <button 
           data-tab="dashboard"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <i class="fa-solid fa-chart-pie"></i>
-          <span>Dashboard & EstatÃƒÂ­sticas</span>
+          <span>Dashboard & Estatísticas</span>
         </button>
 
         <button 
           data-tab="reports"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <i class="fa-solid fa-file-export"></i>
-          <span>RelatÃƒÂ³rios & Backup</span>
+          <span>Relatórios & Backup</span>
         </button>
 
         <button 
           data-tab="forum"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <i class="fa-solid fa-comments"></i>
-          <span>FÃƒÂ³rum & Chat ao Vivo</span>
+          <span>Fórum & Chat ao Vivo</span>
         </button>
 
         <button 
           data-tab="careers"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <i class="fa-solid fa-briefcase"></i>
           <span>Oportunidades & Trilhas</span>
@@ -251,7 +266,7 @@
 
         <button 
           data-tab="prompts"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
           <span>Prompts & IA (ChatGPT)</span>
@@ -259,7 +274,7 @@
 
         <button 
           data-tab="students"
-          class="nav-tab-btn is-flex is-align-items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <i class="fa-solid fa-users"></i>
           <span>Alunos & Contatos</span>
@@ -268,34 +283,34 @@
     </div>
   </header>
 
-  <!-- ÃƒÂREA DE CONTEÃƒÅ¡DO PRINCIPAL -->
-  <main class="is-flex-1 max-w-7xl w-100 mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div id="main-content-area">
       <!-- Injetado dinamicamente pelo app.js -->
     </div>
   </main>
 
-  <!-- RODAPÃƒâ€° DA PÃƒÂGINA -->
+  <!-- RODAPÉ DA PÁGINA -->
   <footer class="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 py-4 mt-auto text-xs text-slate-500 dark:text-slate-400 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 is-flex is-flex-column sm:is-flex-row is-align-items-center is-justify-content-space-between gap-2">
-      <div class="is-flex is-align-items-center gap-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
         <i class="fa-solid fa-shield-halved text-indigo-500"></i>
-        <span><strong>Eu Por Dias</strong> Ã¢â‚¬Â¢ Programa Emprega Mais Alagoas (MÃƒÂ­dias Digitais)</span>
+        <span><strong>Eu Por Dias</strong> • Programa Emprega Mais Alagoas (Mídias Digitais)</span>
       </div>
-      <div class="is-flex is-align-items-center gap-3">
-        <button onclick="openAboutModal()" class="text-primary text-primary text-decoration-underline fw-semibold is-flex is-align-items-center gap-1">
-          <i class="fa-solid fa-circle-info"></i> Por que o sistema foi construÃƒÂ­do assim?
+      <div class="flex items-center gap-3">
+        <button onclick="openAboutModal()" class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center gap-1">
+          <i class="fa-solid fa-circle-info"></i> Por que o sistema foi construído assim?
         </button>
-        <span>Ã¢â‚¬Â¢</span>
+        <span>•</span>
         <span>Busca de CEP via <strong>ViaCEP</strong></span>
-        <span>Ã¢â‚¬Â¢</span>
+        <span>•</span>
         <span>Atalho direto para <strong>WhatsApp</strong></span>
       </div>
     </div>
   </footer>
 
   <!-- CONTAINER DE TOASTS FLUTUANTES -->
-  <div id="toast-container" class="position-fixed bottom-0 end-0 z-index-3 is-flex is-flex-column gap-2 pointer-events-none max-w-100 w-100">
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full">
     <!-- Injetado dinamicamente -->
   </div>
 
@@ -307,9 +322,5 @@
   <!-- SCRIPTS DO SISTEMA -->
   <script src="mock-data.js?v=2.8"></script>
   <script src="app.js?v=2.8"></script>
-  
 </body>
 </html>
-
-
-
