@@ -1,4 +1,4 @@
-﻿// Dados oficiais importados do Google Sheets: Inscrições e Diagnóstico dos Alunos
+// Dados oficiais importados do Google Sheets: Inscrições e Diagnóstico dos Alunos
 // Programa Emprega Mais Alagoas - Gestão de Mídias Digitais
 // Planilhas IDs: 1XoKY-CW5ed3jJVOWD2klYGqCamiESa8_CAkRYLGEmJQ e 1Paii-Ohq6qo0Xf3SYYqfVMb-cdlJxHR2KxZj2ldKvl4
 
@@ -67826,6 +67826,7 @@ const DEFAULT_CLASSROOMS = [
     "Paripueira",
     "Penedo",
     "Pilar",
+    "Piranhas",
     "Poço das Trincheiras",
     "Porto Calvo",
     "Rio Largo",
