@@ -190,6 +190,23 @@ document.addEventListener("DOMContentLoaded", () => {
   setupGlobalEventListeners();
 });
 
+// Botão de Prioridade "Novo Aluno" — exibido dentro de todos os módulos/abas
+function getNovoAlunoPriorityBtn() {
+  return `
+    <div class="mb-4">
+      <button 
+        onclick="openStudentModal()" 
+        class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl text-sm font-black bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-700 hover:via-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95 ring-2 ring-indigo-400/30"
+        title="Cadastrar novo aluno manualmente"
+      >
+        <i class="fa-solid fa-user-plus text-base"></i>
+        <span>Novo Aluno</span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/20 backdrop-blur-sm uppercase tracking-wider">Prioridade</span>
+      </button>
+    </div>
+  `;
+}
+
 // Normalização e autocura de nomes de módulos (garante acentuação perfeita PT-BR e corrige codificações corrompidas)
 function normalizeSubjectName(str) {
   if (!str || typeof str !== "string") return str || "";
@@ -1444,6 +1461,7 @@ function renderStudentsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
+      ${getNovoAlunoPriorityBtn()}
       <!-- Banner com Conexão de API do Sheets -->
       <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
         <div class="z-10">
@@ -4392,6 +4410,7 @@ function renderGradesTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
+      ${getNovoAlunoPriorityBtn()}
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
         <div>
           <div class="flex items-center gap-2">
@@ -4554,6 +4573,7 @@ function renderDashboard(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
+      ${getNovoAlunoPriorityBtn()}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
@@ -4745,6 +4765,7 @@ function renderReportsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
+      ${getNovoAlunoPriorityBtn()}
       <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
         
         <!-- Barra de Identificação do Usuário Logado -->
@@ -4887,6 +4908,7 @@ function renderReportsTab(container) {
 function renderAboutTab(container) {
   container.innerHTML = `
     <div class="space-y-8 fade-in text-slate-800 dark:text-slate-200">
+      ${getNovoAlunoPriorityBtn()}
       
       <!-- Banner de Apresentação Hero -->
       <div class="relative overflow-hidden p-8 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl">
@@ -7613,6 +7635,7 @@ function renderForumTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
+      ${getNovoAlunoPriorityBtn()}
       
       <!-- Cabeçalho do Fórum & Chat -->
       <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -9143,6 +9166,7 @@ function renderCareersTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
+      ${getNovoAlunoPriorityBtn()}
       
       <!-- Banner Hero Principal -->
       <div class="relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl border border-indigo-500/20">
@@ -10779,6 +10803,7 @@ function renderPromptsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
+      ${getNovoAlunoPriorityBtn()}
       
       <!-- Banner Hero Principal do Repositório prompts.chat -->
       <div class="relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white shadow-xl border border-indigo-500/30">
