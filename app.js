@@ -6773,6 +6773,7 @@ function openCpfLoginModal(redirectTab = null) {
                 required 
                 maxlength="14"
                 placeholder="000.000.000-00" 
+                autocomplete="off"
                 class="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-xs font-mono font-bold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 oninput="formatCpfInput(this)"
               />
@@ -6825,12 +6826,14 @@ function switchCpfLoginRole(role) {
     if (profNameCont) profNameCont.classList.remove("hidden");
     if (cpfLabel) cpfLabel.textContent = "CPF do Professor / Docente";
     if (loginHint) loginHint.textContent = "Docentes têm acesso irrestrito a relatórios, criação de tópicos com anexos e envios de e-mail.";
+    if (cpfInput) cpfInput.value = ""; // Limpa qualquer valor anterior ou do cache
   } else {
     tabAluno.className = "flex-1 py-2 rounded-xl text-center font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all flex items-center justify-center gap-1.5";
     tabProf.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
     if (profNameCont) profNameCont.classList.add("hidden");
     if (cpfLabel) cpfLabel.textContent = "CPF do Aluno Matriculado";
     if (loginHint) loginHint.textContent = `O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados previamente.`;
+    if (cpfInput) cpfInput.value = ""; // Limpa qualquer valor anterior ou do cache
   }
 }
 
