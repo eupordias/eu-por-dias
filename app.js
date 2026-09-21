@@ -970,9 +970,10 @@ function closeIntegrationsSubmenu() {
 // -------------------------------------------------------------
 const AUTHORIZED_GOD_MODE = {
   username: "eupordias",
-  password: "0318188253158",
+  password: "Eve@3265",
   googleEmail: "diasewerson@gmail.com",
-  teacherName: "Ewerson Dias"
+  teacherName: "Éverson Dias",
+  cpf: "10572439490"
 };
 
 function loginGodMode(userProfile) {
@@ -6859,7 +6860,7 @@ function handleCpfLoginSubmit(e) {
   }
 
   if (currentLoginRole === "professor") {
-    const profCpfDigits = AUTHORIZED_GOD_MODE.password.substring(0, 11);
+    const profCpfDigits = AUTHORIZED_GOD_MODE.cpf;
     if (digits !== profCpfDigits) {
       showToast("Acesso Negado: CPF não cadastrado como Professor/Coordenação.", "error");
       return;
@@ -6873,7 +6874,7 @@ function handleCpfLoginSubmit(e) {
       name: profName,
       cpf: rawCpf,
       role: "professor",
-      photo: AppState.godMode?.user?.picture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
+      photo: AppState.godMode?.user?.picture || "assets/professor.jpg",
       email: "docente@empregamais.al.gov.br",
       classroom: "Coordenação Geral",
       loginTime: Date.now()
