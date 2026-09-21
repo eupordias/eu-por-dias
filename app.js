@@ -5904,6 +5904,14 @@ function saveStudentForm(event) {
     if (index !== -1) {
       AppState.students[index] = studentData;
       showToast(`Aluno "${studentData.name}" atualizado!`);
+      
+      if (AppState.currentUser && AppState.currentUser.id === AppState.editingStudentId) {
+        AppState.currentUser.name = studentData.name;
+        AppState.currentUser.cpf = studentData.cpf;
+        AppState.currentUser.photo = studentData.photoUrl;
+        AppState.currentUser.email = studentData.contact.email;
+        localStorage.setItem("eupordias_auth_user", JSON.stringify(AppState.currentUser));
+      }
     }
   } else {
     AppState.students.unshift(studentData);
@@ -6683,6 +6691,9 @@ function renderHeaderUserBadge() {
           ${!isProf ? `
             <button onclick="openStudentProfileModal('${AppState.currentUser.id}')" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
               <i class="fa-solid fa-address-card text-emerald-600"></i> Minha Ficha Cadastral
+            </button>
+            <button onclick="openStudentModal('${AppState.currentUser.id}')" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-user-pen text-blue-600"></i> Editar Meu Cadastro
             </button>
             <button onclick="openBoletimModal('${AppState.currentUser.id}')" class="w-full text-left px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2">
               <i class="fa-solid fa-graduation-cap text-indigo-600"></i> Meu Boletim Escolar
