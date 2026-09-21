@@ -188,6 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyTheme();
   renderApp();
   setupGlobalEventListeners();
+  if (typeof startLiveChatSync === 'function') startLiveChatSync();
 });
 
 // Botão de Prioridade "Novo Aluno" — exibido dentro de todos os módulos/abas
@@ -3799,7 +3800,23 @@ FOR ALL
 USING (true) 
 WITH CHECK (true);
 
--- 4. Criar bucket de armazenamento para Fotos de Alunos (Supabase Storage)
+-- 4. Criar a tabela de mensagens do chat ao vivo (Fórum)
+CREATE TABLE IF NOT EXISTS public.forum_messages (
+    id TEXT PRIMARY KEY,
+    "authorName" TEXT,
+    "authorRole" TEXT,
+    "authorPhoto" TEXT,
+    "createdAt" TEXT,
+    text TEXT
+);
+
+-- 5. Habilitar RLS e criar política de acesso para o chat
+ALTER TABLE public.forum_messages ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Acesso total publico forum_messages" ON public.forum_messages;
+CREATE POLICY "Acesso total publico forum_messages" ON public.forum_messages
+FOR ALL USING (true) WITH CHECK (true);
+
+-- 6. Criar bucket de armazenamento para Fotos de Alunos (Supabase Storage)
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('fotos-alunos', 'fotos-alunos', true)
 ON CONFLICT (id) DO NOTHING;
@@ -8449,11 +8466,63 @@ function handleLiveChatSubmit(e) {
   AppState.forumMessages.push(newMsg);
   saveForumDataToStorage();
 
+  // Sincroniza com Supabase Cloud
+  const client = getSupabaseClient();
+  if (client) {
+    client.from("forum_messages").insert([newMsg]).then(({error}) => {
+      if (error) console.error("Erro ao sincronizar mensagem do chat:", error);
+    });
+  }
+
   input.value = "";
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
 
   setTimeout(scrollChatToBottom, 60);
+}
+
+let chatSyncInterval = null;
+function startLiveChatSync() {
+  if (chatSyncInterval) clearInterval(chatSyncInterval);
+  chatSyncInterval = setInterval(fetchLiveChatMessages, 3000);
+}
+
+async function fetchLiveChatMessages() {
+  const client = getSupabaseClient();
+  if (!client) return;
+  try {
+    const { data, error } = await client.from("forum_messages").select("*").order("createdAt", { ascending: true }).limit(500);
+    if (error) return;
+    if (data) {
+      let hasChanges = false;
+      
+      // Adicionar novas mensagens
+      data.forEach(remoteMsg => {
+        if (!AppState.forumMessages.find(m => m.id === remoteMsg.id)) {
+          AppState.forumMessages.push(remoteMsg);
+          hasChanges = true;
+        }
+      });
+      
+      // Remover mensagens que foram apagadas na nuvem
+      const beforeLen = AppState.forumMessages.length;
+      AppState.forumMessages = AppState.forumMessages.filter(localMsg => {
+         // Mantém se a mensagem do localStorage existir no banco da nuvem
+         return data.find(remoteMsg => remoteMsg.id === localMsg.id);
+      });
+      if (AppState.forumMessages.length !== beforeLen) hasChanges = true;
+
+      if (hasChanges) {
+        AppState.forumMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        saveForumDataToStorage();
+        const contentArea = document.getElementById("main-content-area");
+        if (AppState.currentTab === "forum" && AppState.forumTab === "chat" && contentArea) {
+          renderForumTab(contentArea);
+          setTimeout(scrollChatToBottom, 60);
+        }
+      }
+    }
+  } catch (e) { }
 }
 
 // -------------------------------------------------------------
@@ -8495,15 +8564,23 @@ function deleteChatMessage(messageId) {
   AppState.forumMessages.splice(msgIndex, 1);
   saveForumDataToStorage();
 
+  // Deletar da nuvem Supabase
+  const client = getSupabaseClient();
+  if (client) {
+    client.from("forum_messages").delete().eq("id", messageId).then(({error}) => {
+      if (error) console.error("Erro ao deletar mensagem na nuvem:", error);
+    });
+  }
+
+  showToast(isProf && !isAuthor ? "Mensagem moderada/excluída com sucesso." : "Mensagem apagada com sucesso.", "info");
+
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
-
-  showToast(isProf && !isAuthor ? "Mensagem moderada e excluída pelo docente." : "Sua mensagem foi apagada com sucesso.", "success");
 }
 
 function clearAllChatMessages() {
   if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
-    showToast("Apenas professores têm permissão para limpar o chat.", "error");
+    showToast("Apenas o docente pode limpar o chat da turma.", "error");
     return;
   }
 
@@ -8519,10 +8596,17 @@ function clearAllChatMessages() {
   AppState.forumMessages = [];
   saveForumDataToStorage();
 
+  const client = getSupabaseClient();
+  if (client) {
+    // Para truncar, deletar tudo enviando um match vazio não é suportado pelo .delete(), precisa passar id neq
+    client.from("forum_messages").delete().neq("id", "0").then(({error}) => {
+      if (error) console.error("Erro ao limpar chat na nuvem:", error);
+    });
+  }
+
+  showToast("O chat da turma foi limpo.", "warning");
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
-
-  showToast("Chat da turma limpo com sucesso.", "success");
 }
 
 // Modal para Criação de Novo Tópico com 4 Tipos de Anexos
