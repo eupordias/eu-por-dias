@@ -969,13 +969,18 @@ function closeIntegrationsSubmenu() {
 // -------------------------------------------------------------
 // AUTENTICAÇÃO MESTRE • MODO DEUS (GOOGLE & CREDENCIAIS)
 // -------------------------------------------------------------
-const AUTHORIZED_GOD_MODE = {
-  username: "eupordias",
-  password: "Eve@3265",
-  googleEmail: "diasewerson@gmail.com",
-  teacherName: "Éverson Dias",
-  cpf: "10572439490"
+const AUTHORIZED_GOD_MODE_HASHES = {
+  usernameHash: "361b9153891b90b1e283bcaa3f3425fc68c4b55d474d245db222dcb11eac1187",
+  passwordHash: "7b33b174b504257c8323668801ffaf6147d2d54851c8cde268e6b2dc0afd7c81",
+  googleEmailHash: "94b1b482b2cea254f074453564dd6c092b507ebf0dac4a96c1a9cf5381d7ee7d",
+  cpfHash: "3101315369226f061bccc5d8b0c3e5f52b2f0791b75b2dbf85134e53a5f511cb",
+  teacherName: "Éverson Dias"
 };
+
+async function hashString(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.prototype.map.call(new Uint8Array(buf), x=>(('00'+x.toString(16)).slice(-2))).join('');
+}
 
 function loginGodMode(userProfile) {
   AppState.godMode = {
@@ -1013,7 +1018,7 @@ function logoutGodMode() {
   renderApp();
 }
 
-function handleGoogleCredentialResponse(response) {
+async function handleGoogleCredentialResponse(response) {
   try {
     if (!response || !response.credential) {
       throw new Error("Credencial vazia retornada pelo Google.");
@@ -1023,17 +1028,18 @@ function handleGoogleCredentialResponse(response) {
     const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
     const profile = JSON.parse(jsonPayload);
     const email = (profile.email || "").toLowerCase().trim();
+    const emailHash = await hashString(email);
 
-    if (email === AUTHORIZED_GOD_MODE.googleEmail.toLowerCase()) {
+    if (emailHash === AUTHORIZED_GOD_MODE_HASHES.googleEmailHash) {
       loginGodMode({
-        name: profile.name || AUTHORIZED_GOD_MODE.teacherName,
+        name: profile.name || AUTHORIZED_GOD_MODE_HASHES.teacherName,
         email: profile.email,
         picture: profile.picture || "",
         method: "google_gis",
         sub: profile.sub
       });
     } else {
-      showToast(`Acesso Negado: A conta Google (${email}) não tem privilégios de Modo Deus. Utilize ${AUTHORIZED_GOD_MODE.googleEmail}.`, "error");
+      showToast(`Acesso Negado: A conta Google (${email}) não tem privilégios de Modo Deus. Utilize a conta do professor.`, "error");
     }
   } catch (err) {
     console.error("Erro ao decodificar token do Google:", err);
@@ -1041,7 +1047,7 @@ function handleGoogleCredentialResponse(response) {
   }
 }
 
-function verifyGodModeCredentials() {
+async function verifyGodModeCredentials() {
   const userEl = document.getElementById("god-login-user");
   const passEl = document.getElementById("god-login-pass");
   if (!userEl || !passEl) return;
@@ -1053,11 +1059,14 @@ function verifyGodModeCredentials() {
     return;
   }
 
-  if (user.toLowerCase() === AUTHORIZED_GOD_MODE.username.toLowerCase() && pass === AUTHORIZED_GOD_MODE.password) {
+  const userHash = await hashString(user);
+  const passHash = await hashString(pass);
+
+  if (userHash === AUTHORIZED_GOD_MODE_HASHES.usernameHash && passHash === AUTHORIZED_GOD_MODE_HASHES.passwordHash) {
     loginGodMode({
-      name: `${AUTHORIZED_GOD_MODE.teacherName} (Professor)`,
-      email: AUTHORIZED_GOD_MODE.googleEmail,
-      login: AUTHORIZED_GOD_MODE.username,
+      name: `${AUTHORIZED_GOD_MODE_HASHES.teacherName} (Professor)`,
+      email: "professor@empregamais.com",
+      login: "admin",
       picture: "",
       method: "credentials"
     });
@@ -1068,9 +1077,9 @@ function verifyGodModeCredentials() {
 
 function loginWithAuthorizedGoogleAccount() {
   loginGodMode({
-    name: `${AUTHORIZED_GOD_MODE.teacherName} (Google)`,
-    email: AUTHORIZED_GOD_MODE.googleEmail,
-    login: AUTHORIZED_GOD_MODE.username,
+    name: `${AUTHORIZED_GOD_MODE_HASHES.teacherName} (Google)`,
+    email: "professor@empregamais.com",
+    login: "admin",
     picture: "",
     method: "google_authorized"
   });
@@ -1328,14 +1337,15 @@ function triggerGoogleDirectLogin() {
   loginWithPromptAccount();
 }
 
-function loginWithPromptAccount() {
+async function loginWithPromptAccount() {
   const email = prompt("Informe a conta Google autorizada de Administrador:");
   if (email && email.trim()) {
-    if (email.trim().toLowerCase() === AUTHORIZED_GOD_MODE.googleEmail.toLowerCase()) {
+    const emailHash = await hashString(email.trim());
+    if (emailHash === AUTHORIZED_GOD_MODE_HASHES.googleEmailHash) {
       loginGodMode({
-        name: `${AUTHORIZED_GOD_MODE.teacherName} (Google)`,
-        email: AUTHORIZED_GOD_MODE.googleEmail,
-        login: AUTHORIZED_GOD_MODE.username,
+        name: `${AUTHORIZED_GOD_MODE_HASHES.teacherName} (Google)`,
+        email: "professor@empregamais.com",
+        login: "admin",
         picture: "",
         method: "google_prompt"
       });
@@ -6879,7 +6889,7 @@ function formatCpfInput(el) {
   }
 }
 
-function handleCpfLoginSubmit(e) {
+async function handleCpfLoginSubmit(e) {
   e.preventDefault();
   const cpfInput = document.getElementById("login-cpf-input");
   const rawCpf = cpfInput ? cpfInput.value.trim() : "";
@@ -6891,14 +6901,14 @@ function handleCpfLoginSubmit(e) {
   }
 
   if (currentLoginRole === "professor") {
-    const profCpfDigits = AUTHORIZED_GOD_MODE.cpf;
-    if (digits !== profCpfDigits) {
+    const hash = await hashString(digits);
+    if (hash !== AUTHORIZED_GOD_MODE_HASHES.cpfHash) {
       showToast("Acesso Negado: CPF não cadastrado como Professor/Coordenação.", "error");
       return;
     }
 
     const profNameInput = document.getElementById("login-prof-name");
-    const profName = (profNameInput?.value || "").trim() || "Professor(a) • Coordenação Emprega Mais";
+    const profName = (profNameInput?.value || "").trim() || AUTHORIZED_GOD_MODE_HASHES.teacherName;
 
     AppState.currentUser = {
       id: "PROF-EMA-001",
