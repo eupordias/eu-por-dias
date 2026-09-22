@@ -4620,7 +4620,10 @@ function renderDashboard(container) {
         <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
           <div>
             <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Média Geral do Curso</span>
-            <h3 class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">${generalAvg}</h3>
+            <h3 class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 flex items-baseline gap-2">
+              ${generalAvg} 
+              <span class="text-sm font-bold text-slate-400 dark:text-slate-500">(${totalStudents})</span>
+            </h3>
             <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 mt-1">
               <i class="fa-solid fa-check"></i> Meta mínima: ${AppState.settings.passingGrade.toFixed(1)}
             </span>
