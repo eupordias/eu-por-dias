@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <title>Eu Por Dias - Gestão de Alunos • Emprega Mais Alagoas</title>
-
-  <!-- Tailwind CSS CDN -->
+  <title>Emprega Mais Alagoas - Plataforma de Gestão</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -16,339 +12,259 @@
       theme: {
         extend: {
           colors: {
-            // Mapeando indigo (cor base do app) para Fuchsia (Startup)
             indigo: {
-              50: '#fdf4ff',
-              100: '#fae8ff',
-              200: '#f5d0fe',
-              300: '#f0abfc',
-              400: '#e879f9',
-              500: '#d946ef',
-              600: '#c026d3',
-              700: '#a21caf',
-              800: '#86198f',
-              900: '#701a75',
-              950: '#4a044e',
+              50: '#fdf4ff', 100: '#fae8ff', 200: '#f5d0fe', 300: '#f0abfc',
+              400: '#e879f9', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf',
+              800: '#86198f', 900: '#701a75', 950: '#4a044e',
             },
-            // Mapeando slate (cinza/background) para um tom violeta escuro tecnológico
             slate: {
-              50: '#faf8fc',
-              100: '#f3f0f7',
-              200: '#e4ddeb',
-              300: '#d0c3dd',
-              400: '#b6a1c8',
-              500: '#997eb0',
-              600: '#816398',
-              700: '#6a507d',
-              800: '#584368',
-              900: '#2c1e3a',
-              950: '#150d1e',
+              50: '#faf8fc', 100: '#f3f0f7', 200: '#e4ddeb', 300: '#d0c3dd',
+              400: '#b6a1c8', 500: '#997eb0', 600: '#816398', 700: '#6a507d',
+              800: '#584368', 900: '#2c1e3a', 950: '#150d1e',
             }
           },
           fontFamily: {
             sans: ['Outfit', 'sans-serif'],
           },
-          boxShadow: {
-            // Sombras extravagantes e vibrantes
-            'sm': '0 4px 10px -2px rgba(217, 70, 239, 0.1)',
-            'md': '0 10px 25px -5px rgba(217, 70, 239, 0.25), 0 8px 10px -6px rgba(217, 70, 239, 0.1)',
-            'lg': '0 20px 30px -5px rgba(217, 70, 239, 0.35), 0 10px 15px -5px rgba(217, 70, 239, 0.1)',
-            'xl': '0 30px 40px -10px rgba(217, 70, 239, 0.45)',
-            '2xl': '0 40px 50px -15px rgba(217, 70, 239, 0.6)'
+          animation: {
+            'blob': 'blob 7s infinite',
+            'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
           },
-          borderRadius: {
-            'md': '1rem',
-            'lg': '1.25rem',
-            'xl': '1.75rem',
-            '2xl': '2.25rem',
-            '3xl': '3rem'
+          keyframes: {
+            blob: {
+              '0%': { transform: 'translate(0px, 0px) scale(1)' },
+              '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+              '100%': { transform: 'translate(0px, 0px) scale(1)' },
+            },
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
           }
         }
       }
     }
   </script>
-
-  <!-- FontAwesome 6 & Google Fonts -->
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Chart.js para Dashboard -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Google Identity Services (GIS) para Login Modo Deus -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-  <!-- Supabase JS Client Oficial via CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Estilos Customizados -->
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    body { background-color: #0b0612; color: #f3f0f7; }
+    .glass-nav {
+      background: rgba(21, 13, 30, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glass-card {
+      background: rgba(44, 30, 58, 0.4);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .text-gradient {
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-image: linear-gradient(to right, #e879f9, #c026d3);
+    }
+  </style>
 </head>
+<body class="antialiased overflow-x-hidden selection:bg-indigo-500 selection:text-white">
 
-<body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col antialiased transition-colors duration-200">
+  <!-- Glow Backgrounds -->
+  <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob"></div>
+    <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-blob" style="animation-delay: 2s;"></div>
+    <div class="absolute bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-indigo-900 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob" style="animation-delay: 4s;"></div>
+  </div>
 
-  <!-- TOPO / HEADER DO EU POR DIAS -->
-  <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
+  <!-- Navbar -->
+  <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-4">
-        
-        <!-- Logo e Nome do Sistema -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-black shadow-lg shadow-indigo-500/25 flex-shrink-0">
-            <i class="fa-solid fa-graduation-cap"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-black text-base tracking-tight text-slate-900 dark:text-white">Eu Por Dias</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-400 text-slate-900 shadow-sm">
-                Emprega Mais AL
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-              Gestão de Mídias Digitais • Notas, Contatos & Endereços
-            </p>
-          </div>
-        </div>
-
-        <!-- Estatísticas Rápidas no Topo -->
-        <div id="header-quick-stats" class="hidden md:flex items-center">
-          <!-- Preenchido via JavaScript -->
-        </div>
-
-        <!-- Ações do Cabeçalho -->
+      <div class="flex justify-between items-center h-20">
         <div class="flex items-center gap-2">
-          
-          <!-- Submenu Conexões & Modo Deus (Google Sheets, Supabase, Modo Deus) -->
-          <div class="relative" id="integrations-submenu-container">
-            <button 
-              id="integrations-menu-btn"
-              onclick="toggleIntegrationsSubmenu(event)" 
-              class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/90 shadow-sm transition-all transform active:scale-95"
-              title="Menu de Conexões: Google Sheets, Supabase e Modo Deus"
-            >
-              <div class="flex items-center -space-x-1">
-                <span class="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
-                  <i class="fa-brands fa-google-drive"></i>
-                </span>
-                <span class="w-5 h-5 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
-                  <i class="fa-solid fa-cloud"></i>
-                </span>
-                <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center text-[10px] ring-2 ring-white dark:ring-slate-800 shadow-sm">
-                  <i class="fa-solid fa-bolt"></i>
-                </span>
-              </div>
-              <span class="hidden sm:inline font-bold">Conexões</span>
-              <span id="integrations-badge-status" class="hidden md:inline-flex"></span>
-              <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
-            </button>
-
-            <!-- Dropdown do Submenu -->
-            <div 
-              id="integrations-dropdown-menu" 
-              class="hidden absolute right-0 mt-2 w-72 sm:w-80 p-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/90 dark:border-slate-800 z-50 text-xs fade-in space-y-1"
-            >
-              <div class="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <i class="fa-solid fa-sliders text-indigo-500"></i> Conexões &amp; Modo Deus
-                </span>
-              </div>
-
-              <!-- Item 1: Google Sheets API -->
-              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-2 group">
-                <div onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" class="flex items-center gap-2.5 flex-1 cursor-pointer">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                    <i class="fa-brands fa-google-drive"></i>
-                  </div>
-                  <div>
-                    <strong class="block font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Google Sheets API</strong>
-                    <span class="block text-[10px] text-slate-400">Planilha Oficial • Importar / Configurar</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button 
-                    type="button" 
-                    onclick="closeIntegrationsSubmenu(); quickSyncGoogleSheets();" 
-                    class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-1 transition-all"
-                    title="Sincronizar dados da planilha agora"
-                  >
-                    <i class="fa-solid fa-rotate text-[9px]"></i> Sincronizar
-                  </button>
-                  <button 
-                    type="button" 
-                    onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
-                    class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                    title="Configurações da planilha"
-                  >
-                    <i class="fa-solid fa-gear text-[11px]"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Item 2: Supabase Cloud -->
-              <div class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-2 group">
-                <div onclick="closeIntegrationsSubmenu(); openSupabaseModal();" class="flex items-center gap-2.5 flex-1 cursor-pointer">
-                  <div class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                    <i class="fa-solid fa-cloud"></i>
-                  </div>
-                  <div>
-                    <strong class="block font-bold text-slate-800 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Supabase Cloud</strong>
-                    <span class="block text-[10px] text-slate-400">Banco de Dados em Nuvem (PostgreSQL)</span>
-                  </div>
-                </div>
-                <button 
-                  type="button" 
-                  onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
-                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 transition-all flex items-center gap-1"
-                >
-                  <i class="fa-solid fa-cloud-arrow-up text-[9px]"></i> Conectar
-                </button>
-              </div>
-
-              <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
-
-              <!-- Item 3: Modo Deus / LGPD (Container do Modo Deus) -->
-              <div id="header-godmode-container" class="w-full"></div>
-            </div>
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+            <i class="fa-solid fa-graduation-cap text-xl"></i>
           </div>
-
-
-
-          <!-- Perfil e Login por CPF do Usuário -->
-          <div id="header-user-container" class="flex items-center"></div>
-
-          <!-- Alternar Tema Claro/Escuro -->
-          <button 
-            id="theme-toggle-btn"
-            onclick="toggleTheme()" 
-            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
-            title="Alternar Tema"
-          >
-            <i class="fa-solid fa-moon"></i>
-          </button>
-
-          <!-- Botão Sobre / Por que o sistema foi construído assim -->
-          <button 
-            onclick="openAboutModal()" 
-            class="p-2 w-9 h-9 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-center transition-colors"
-            title="Sobre o Sistema • Por que foi construído assim?"
-          >
-            <i class="fa-solid fa-circle-question text-base"></i>
-          </button>
+          <span class="font-bold text-xl tracking-tight">Emprega<span class="text-indigo-400">Mais</span></span>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+          <a href="#recursos" class="hover:text-white transition-colors">Recursos</a>
+          <a href="#ia" class="hover:text-white transition-colors">Inteligência Artificial</a>
+          <a href="#vagas" class="hover:text-white transition-colors">Mural de Vagas</a>
         </div>
 
+        <div class="flex items-center gap-4">
+          <a href="dashboard.html" class="hidden md:block text-sm font-semibold text-slate-300 hover:text-white transition-colors">
+            Já sou aluno
+          </a>
+          <a href="dashboard.html" class="relative group inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 bg-indigo-600 rounded-full hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-slate-900">
+            <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
+            Acessar Plataforma <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+          </a>
+        </div>
       </div>
     </div>
+  </nav>
 
-    <!-- Navegação de Abas -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 dark:border-slate-800/80">
-      <nav class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
-        <button 
-          data-tab="about"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
-        >
-          <i class="fa-solid fa-lightbulb"></i>
-          <span>Sobre o Sistema & Manifesto</span>
-        </button>
+  <!-- Hero Section -->
+  <main class="pt-32 pb-16 sm:pt-40 sm:pb-24 lg:pb-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
+      
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-8 opacity-0 animate-fade-in-up">
+        <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+        Novo: Laboratório de Prompts de IA
+      </div>
 
-        <button 
-          data-tab="grades"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <i class="fa-solid fa-pen-nib"></i>
-          <span>Notas dos Módulos</span>
-        </button>
+      <h1 class="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight mb-8 opacity-0 animate-fade-in-up" style="animation-delay: 0.1s;">
+        Gestão educacional <br class="hidden sm:block" />
+        <span class="text-gradient">inteligente e moderna.</span>
+      </h1>
+      
+      <p class="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-slate-400 opacity-0 animate-fade-in-up" style="animation-delay: 0.2s;">
+        Uma plataforma completa para gestão de mídias digitais. Centralize boletins, frequência, vagas de emprego e ferramentas de Inteligência Artificial em um só lugar.
+      </p>
+      
+      <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4 opacity-0 animate-fade-in-up" style="animation-delay: 0.3s;">
+        <a href="dashboard.html" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-indigo-600 rounded-2xl hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-slate-900">
+          Entrar no Sistema
+        </a>
+        <a href="#recursos" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-slate-800 border border-slate-700 rounded-2xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-700 focus:ring-offset-slate-900">
+          Conhecer Recursos
+        </a>
+      </div>
 
-        <button 
-          data-tab="dashboard"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <i class="fa-solid fa-chart-pie"></i>
-          <span>Dashboard & Estatísticas</span>
-        </button>
-
-        <button 
-          data-tab="reports"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <i class="fa-solid fa-file-export"></i>
-          <span>Relatórios & Backup</span>
-        </button>
-
-        <button 
-          data-tab="forum"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <i class="fa-solid fa-comments"></i>
-          <span>Fórum & Chat ao Vivo</span>
-        </button>
-
-        <button 
-          data-tab="careers"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <i class="fa-solid fa-briefcase"></i>
-          <span>Oportunidades & Trilhas</span>
-        </button>
-
-        <button 
-          data-tab="prompts"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
-          <span>Prompts & IA (ChatGPT)</span>
-        </button>
-
-        <button 
-          data-tab="students"
-          class="nav-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <i class="fa-solid fa-users"></i>
-          <span>Alunos & Contatos</span>
-        </button>
-      </nav>
-    </div>
-  </header>
-
-  <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div id="main-content-area">
-      <!-- Injetado dinamicamente pelo app.js -->
+      <!-- Dashboard Mockup -->
+      <div class="mt-20 relative max-w-5xl mx-auto opacity-0 animate-fade-in-up" style="animation-delay: 0.4s;">
+        <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-20"></div>
+        <div class="relative rounded-2xl bg-slate-900 border border-slate-700/50 shadow-2xl overflow-hidden aspect-video flex items-center justify-center">
+          <i class="fa-solid fa-laptop-code text-6xl text-slate-700 mb-4"></i>
+          <p class="absolute bottom-10 text-slate-500 font-medium">Interface do Emprega Mais Alagoas</p>
+        </div>
+      </div>
     </div>
   </main>
 
-  <!-- RODAPÉ DA PÁGINA -->
-  <footer class="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 py-4 mt-auto text-xs text-slate-500 dark:text-slate-400 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-shield-halved text-indigo-500"></i>
-        <span><strong>Eu Por Dias</strong> • Programa Emprega Mais Alagoas (Mídias Digitais)</span>
+  <!-- Features Section -->
+  <section id="recursos" class="py-24 bg-slate-950/50 relative border-t border-slate-800/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Tudo que você precisa para decolar</h2>
+        <p class="mt-4 text-lg text-slate-400">Ferramentas desenhadas especificamente para o fluxo de turmas de marketing digital e tecnologia.</p>
       </div>
-      <div class="flex items-center gap-3">
-        <button onclick="openAboutModal()" class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center gap-1">
-          <i class="fa-solid fa-circle-info"></i> Por que o sistema foi construído assim?
-        </button>
-        <span>•</span>
-        <span>Busca de CEP via <strong>ViaCEP</strong></span>
-        <span>•</span>
-        <span>Atalho direto para <strong>WhatsApp</strong></span>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6">
+            <i class="fa-solid fa-chart-pie text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-white">Gestão Acadêmica</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Boletins automáticos, controle de faltas e cálculo instantâneo de médias para os 7 módulos do curso. Tudo exportável em um clique.
+          </p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
+            <i class="fa-solid fa-briefcase text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-white">Mural de Vagas</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Conecte alunos às oportunidades locais de Arapiraca, Maceió e região. Algoritmo integrado para match de habilidades.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300">
+          <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 mb-6">
+            <i class="fa-solid fa-comments text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-white">Fórum em Tempo Real</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Chat integrado e sincronizado na nuvem para tirar dúvidas ao vivo, trocar experiências e criar networking com a turma.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Section Highlight -->
+  <section id="ia" class="py-24 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="glass-card rounded-[2.5rem] p-8 md:p-16 border border-indigo-500/20 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-indigo-500 rounded-full mix-blend-screen filter blur-[100px] opacity-20"></div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6">
+              <i class="fa-solid fa-bolt"></i> IA Integrada
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Laboratório de Prompts <br/><span class="text-gradient">Inteligentes</span></h2>
+            <p class="text-slate-400 text-lg mb-8 leading-relaxed">
+              Dê superpoderes aos alunos com nosso repositório de personas. Copywriting, Tráfego Pago, Social Media e Criação de Conteúdo a um clique de distância.
+            </p>
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-center gap-3 text-slate-300"><i class="fa-solid fa-check text-indigo-400"></i> +20 Prompts validados de mercado</li>
+              <li class="flex items-center gap-3 text-slate-300"><i class="fa-solid fa-check text-indigo-400"></i> Personalização interativa com IA</li>
+              <li class="flex items-center gap-3 text-slate-300"><i class="fa-solid fa-check text-indigo-400"></i> Suporte para criação de campanhas Reais</li>
+            </ul>
+            <a href="dashboard.html" class="inline-flex items-center gap-2 font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
+              Explorar Laboratório <i class="fa-solid fa-arrow-right text-sm"></i>
+            </a>
+          </div>
+          
+          <div class="relative">
+            <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl shadow-xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+              <div class="flex items-center gap-3 mb-4 border-b border-slate-800 pb-4">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 flex items-center justify-center text-white">
+                  <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-white text-sm">Gestor de Tráfego Pago</h4>
+                  <p class="text-xs text-slate-500">Meta Ads & Conversão</p>
+                </div>
+              </div>
+              <p class="text-sm text-slate-400 mb-4 font-mono">
+                "Atue como Gestor de Tráfego especialista em Meta Ads para negócios locais. Estruture uma campanha para <span class="text-indigo-400">[Hamburgueria em Maceió]</span> com orçamento de <span class="text-indigo-400">[R$ 30/dia]</span>..."
+              </p>
+              <button class="w-full py-2 bg-indigo-600/20 text-indigo-400 rounded-lg text-sm font-bold border border-indigo-500/30">Copiar Prompt</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 border-t border-slate-800/50">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-black mb-6">Pronto para transformar sua sala de aula?</h2>
+      <p class="text-xl text-slate-400 mb-10">Acesse a plataforma agora mesmo com seu CPF cadastrado.</p>
+      <a href="dashboard.html" class="inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-white transition-all duration-200 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-slate-900">
+        Acessar Plataforma Emprega Mais <i class="fa-solid fa-arrow-right ml-2"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/50 bg-slate-950/80 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+          <i class="fa-solid fa-graduation-cap text-2xl text-slate-400"></i>
+          <span class="font-bold text-xl text-slate-400">Emprega<span class="text-slate-500">Mais</span></span>
+        </div>
+        <p class="text-slate-500 text-sm">
+          &copy; 2026 Programa Emprega Mais Alagoas. Todos os direitos reservados.
+        </p>
       </div>
     </div>
   </footer>
 
-  <!-- CONTAINER DE TOASTS FLUTUANTES -->
-  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full">
-    <!-- Injetado dinamicamente -->
-  </div>
-
-  <!-- CONTAINER DE MODAIS -->
-  <div id="modal-container">
-    <!-- Injetado dinamicamente -->
-  </div>
-
-  <!-- SCRIPTS DO SISTEMA -->
-  <script src="mock-data.js?v=2.8"></script>
-  <script src="app.js?v=2.8"></script>
 </body>
 </html>
