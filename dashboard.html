@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,71 +8,17 @@
   <meta http-equiv="Expires" content="0" />
   <title>Eu Por Dias - Gestão de Alunos • Emprega Mais Alagoas</title>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            // Mapeando indigo (cor base do app) para Fuchsia (Startup)
-            indigo: {
-              50: '#fdf4ff',
-              100: '#fae8ff',
-              200: '#f5d0fe',
-              300: '#f0abfc',
-              400: '#e879f9',
-              500: '#d946ef',
-              600: '#c026d3',
-              700: '#a21caf',
-              800: '#86198f',
-              900: '#701a75',
-              950: '#4a044e',
-            },
-            // Mapeando slate (cinza/background) para um tom violeta escuro tecnológico
-            slate: {
-              50: '#faf8fc',
-              100: '#f3f0f7',
-              200: '#e4ddeb',
-              300: '#d0c3dd',
-              400: '#b6a1c8',
-              500: '#997eb0',
-              600: '#816398',
-              700: '#6a507d',
-              800: '#584368',
-              900: '#2c1e3a',
-              950: '#150d1e',
-            }
-          },
-          fontFamily: {
-            sans: ['Outfit', 'sans-serif'],
-          },
-          boxShadow: {
-            // Sombras extravagantes e vibrantes
-            'sm': '0 4px 10px -2px rgba(217, 70, 239, 0.1)',
-            'md': '0 10px 25px -5px rgba(217, 70, 239, 0.25), 0 8px 10px -6px rgba(217, 70, 239, 0.1)',
-            'lg': '0 20px 30px -5px rgba(217, 70, 239, 0.35), 0 10px 15px -5px rgba(217, 70, 239, 0.1)',
-            'xl': '0 30px 40px -10px rgba(217, 70, 239, 0.45)',
-            '2xl': '0 40px 50px -15px rgba(217, 70, 239, 0.6)'
-          },
-          borderRadius: {
-            'md': '1rem',
-            'lg': '1.25rem',
-            'xl': '1.75rem',
-            '2xl': '2.25rem',
-            '3xl': '3rem'
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YcnS/1GRIOhJATo7WKfwxqzHVLJN8V5vGJpH" crossorigin="anonymous">
 
   <!-- FontAwesome 6 & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Custom Theme (Fuchsia/Roxo) -->
+  <link rel="stylesheet" href="bootstrap-custom.css">
 
   <!-- Chart.js para Dashboard -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -348,7 +294,8 @@
   </div>
 
   <!-- SCRIPTS DO SISTEMA -->
-  <script src="mock-data.js?v=2.8"></script>
-  <script src="app.js?v=2.8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="mock-data.js?v=3.0"></script>
+  <script src="app.js?v=3.0"></script>
 </body>
 </html>

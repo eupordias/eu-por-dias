@@ -1,57 +1,23 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emprega Mais Alagoas - Plataforma de Gestão</title>
   
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            indigo: {
-              50: '#fdf4ff', 100: '#fae8ff', 200: '#f5d0fe', 300: '#f0abfc',
-              400: '#e879f9', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf',
-              800: '#86198f', 900: '#701a75', 950: '#4a044e',
-            },
-            slate: {
-              50: '#faf8fc', 100: '#f3f0f7', 200: '#e4ddeb', 300: '#d0c3dd',
-              400: '#b6a1c8', 500: '#997eb0', 600: '#816398', 700: '#6a507d',
-              800: '#584368', 900: '#2c1e3a', 950: '#150d1e',
-            }
-          },
-          fontFamily: {
-            sans: ['Outfit', 'sans-serif'],
-          },
-          animation: {
-            'blob': 'blob 7s infinite',
-            'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-          },
-          keyframes: {
-            blob: {
-              '0%': { transform: 'translate(0px, 0px) scale(1)' },
-              '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-              '100%': { transform: 'translate(0px, 0px) scale(1)' },
-            },
-            fadeInUp: {
-              '0%': { opacity: '0', transform: 'translateY(20px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YcnS/1GRIOhJATo7WKfwxqzHVLJN8V5vGJpH" crossorigin="anonymous">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bootstrap-custom.css">
   
   <style>
-    body { background-color: #0b0612; color: #f3f0f7; }
+    body { 
+      background-color: #0b0612; 
+      color: #f3f0f7;
+      font-family: 'Outfit', sans-serif;
+    }
     .glass-nav {
       background: rgba(21, 13, 30, 0.7);
       backdrop-filter: blur(12px);
@@ -69,41 +35,51 @@
       -webkit-text-fill-color: transparent;
       background-image: linear-gradient(to right, #e879f9, #c026d3);
     }
+    @keyframes blob {
+      0% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+      100% { transform: translate(0px, 0px) scale(1); }
+    }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-blob { animation: blob 7s infinite; }
+    .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+    .hover-lift:hover { transform: translateY(-4px); }
   </style>
 </head>
-<body class="antialiased overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<body class="overflow-x-hidden">
 
   <!-- Glow Backgrounds -->
-  <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob"></div>
-    <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-blob" style="animation-delay: 2s;"></div>
-    <div class="absolute bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-indigo-900 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob" style="animation-delay: 4s;"></div>
+  <div class="position-fixed top-0 start-0 w-100 h-100" style="z-index: -1; overflow: hidden; pointer-events: none;">
+    <div class="position-absolute rounded-circle animate-blob" style="top: -10%; left: -10%; width: 24rem; height: 24rem; background: #c026d3; mix-blend-mode: screen; filter: blur(128px); opacity: 0.3;"></div>
+    <div class="position-absolute rounded-circle animate-blob" style="top: 20%; right: -10%; width: 24rem; height: 24rem; background: #7c3aed; mix-blend-mode: screen; filter: blur(128px); opacity: 0.2; animation-delay: 2s;"></div>
+    <div class="position-absolute rounded-circle animate-blob" style="bottom: -20%; left: 20%; width: 500px; height: 500px; background: #701a75; mix-blend-mode: screen; filter: blur(128px); opacity: 0.3; animation-delay: 4s;"></div>
   </div>
 
   <!-- Navbar -->
-  <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-20">
-        <div class="flex items-center gap-2">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-            <i class="fa-solid fa-graduation-cap text-xl"></i>
+  <nav class="position-fixed w-100 glass-nav" style="z-index: 50;">
+    <div class="container-xl">
+      <div class="d-flex justify-content-between align-items-center py-3">
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center justify-content-center rounded-3 text-white shadow-lg" style="width: 40px; height: 40px; background: linear-gradient(135deg, #e879f9, #c026d3);">
+            <i class="fa-solid fa-graduation-cap fs-5"></i>
           </div>
-          <span class="font-bold text-xl tracking-tight">Emprega<span class="text-indigo-400">Mais</span></span>
+          <span class="fw-bold fs-5">Emprega<span style="color: #e879f9;">Mais</span></span>
         </div>
         
-        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-          <a href="#recursos" class="hover:text-white transition-colors">Recursos</a>
-          <a href="#ia" class="hover:text-white transition-colors">Inteligência Artificial</a>
-          <a href="#vagas" class="hover:text-white transition-colors">Mural de Vagas</a>
+        <div class="d-none d-md-flex align-items-center gap-4">
+          <a href="#recursos" class="text-decoration-none text-light opacity-75" style="transition: opacity 0.2s;">Recursos</a>
+          <a href="#ia" class="text-decoration-none text-light opacity-75" style="transition: opacity 0.2s;">Inteligência Artificial</a>
+          <a href="#vagas" class="text-decoration-none text-light opacity-75" style="transition: opacity 0.2s;">Mural de Vagas</a>
         </div>
 
-        <div class="flex items-center gap-4">
-          <a href="dashboard.html" class="hidden md:block text-sm font-semibold text-slate-300 hover:text-white transition-colors">
-            Já sou aluno
-          </a>
-          <a href="dashboard.html" class="relative group inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 bg-indigo-600 rounded-full hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-slate-900">
-            <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
-            Acessar Plataforma <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+        <div class="d-flex align-items-center gap-3">
+          <a href="dashboard.html" class="d-none d-md-block text-decoration-none text-light opacity-75 small fw-semibold">Já sou aluno</a>
+          <a href="dashboard.html" class="btn btn-primary rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2" style="background: #c026d3; border-color: #c026d3;">
+            Acessar Plataforma <i class="fa-solid fa-arrow-right"></i>
           </a>
         </div>
       </div>
@@ -111,128 +87,134 @@
   </nav>
 
   <!-- Hero Section -->
-  <main class="pt-32 pb-16 sm:pt-40 sm:pb-24 lg:pb-32 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
+  <main style="padding-top: 8rem; padding-bottom: 4rem;">
+    <div class="container-xl text-center position-relative">
       
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-8 opacity-0 animate-fade-in-up">
-        <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill border small fw-semibold text-uppercase mb-4 opacity-0 animate-fade-in-up" style="border-color: rgba(192, 38, 211, 0.3) !important; background: rgba(192, 38, 211, 0.1); color: #f0abfc; letter-spacing: 0.05em;">
+        <span class="rounded-circle bg-primary d-inline-block" style="width: 8px; height: 8px; background: #e879f9 !important;"></span>
         Novo: Laboratório de Prompts de IA
       </div>
 
-      <h1 class="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight mb-8 opacity-0 animate-fade-in-up" style="animation-delay: 0.1s;">
-        Gestão educacional <br class="hidden sm:block" />
+      <h1 class="display-3 fw-bolder mb-4 opacity-0 animate-fade-in-up" style="animation-delay: 0.1s; letter-spacing: -0.02em;">
+        Gestão educacional <br class="d-none d-sm-block" />
         <span class="text-gradient">inteligente e moderna.</span>
       </h1>
       
-      <p class="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-slate-400 opacity-0 animate-fade-in-up" style="animation-delay: 0.2s;">
+      <p class="mx-auto fs-5 opacity-0 animate-fade-in-up" style="max-width: 640px; animation-delay: 0.2s; color: #b6a1c8;">
         Uma plataforma completa para gestão de mídias digitais. Centralize boletins, frequência, vagas de emprego e ferramentas de Inteligência Artificial em um só lugar.
       </p>
       
-      <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4 opacity-0 animate-fade-in-up" style="animation-delay: 0.3s;">
-        <a href="dashboard.html" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-indigo-600 rounded-2xl hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-slate-900">
+      <div class="mt-4 d-flex flex-column flex-sm-row justify-content-center gap-3 opacity-0 animate-fade-in-up" style="animation-delay: 0.3s;">
+        <a href="dashboard.html" class="btn btn-lg rounded-4 px-5 py-3 fw-bold text-white" style="background: #c026d3; border-color: #c026d3;">
           Entrar no Sistema
         </a>
-        <a href="#recursos" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-slate-800 border border-slate-700 rounded-2xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-700 focus:ring-offset-slate-900">
+        <a href="#recursos" class="btn btn-lg btn-outline-light rounded-4 px-5 py-3 fw-bold" style="border-color: #584368;">
           Conhecer Recursos
         </a>
       </div>
 
       <!-- Dashboard Mockup -->
-      <div class="mt-20 relative max-w-5xl mx-auto opacity-0 animate-fade-in-up" style="animation-delay: 0.4s;">
-        <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-20"></div>
-        <div class="relative rounded-2xl bg-slate-900 border border-slate-700/50 shadow-2xl overflow-hidden aspect-video flex items-center justify-center">
-          <i class="fa-solid fa-laptop-code text-6xl text-slate-700 mb-4"></i>
-          <p class="absolute bottom-10 text-slate-500 font-medium">Interface do Emprega Mais Alagoas</p>
+      <div class="mt-5 position-relative mx-auto opacity-0 animate-fade-in-up" style="max-width: 900px; animation-delay: 0.4s;">
+        <div class="position-absolute top-0 start-0 w-100 h-100 rounded-4" style="background: linear-gradient(to right, #c026d3, #7c3aed); filter: blur(20px); opacity: 0.2; margin: -4px;"></div>
+        <div class="position-relative rounded-4 border overflow-hidden d-flex align-items-center justify-content-center" style="border-color: rgba(106, 80, 125, 0.5) !important; background: #2c1e3a; aspect-ratio: 16/9;">
+          <i class="fa-solid fa-laptop-code display-1" style="color: #6a507d;"></i>
+          <p class="position-absolute bottom-0 mb-4 fw-medium" style="color: #997eb0;">Interface do Emprega Mais Alagoas</p>
         </div>
       </div>
     </div>
   </main>
 
   <!-- Features Section -->
-  <section id="recursos" class="py-24 bg-slate-950/50 relative border-t border-slate-800/50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Tudo que você precisa para decolar</h2>
-        <p class="mt-4 text-lg text-slate-400">Ferramentas desenhadas especificamente para o fluxo de turmas de marketing digital e tecnologia.</p>
+  <section id="recursos" class="py-5 border-top" style="border-color: rgba(88, 67, 104, 0.5) !important; background: rgba(21, 13, 30, 0.5);">
+    <div class="container-xl py-5">
+      <div class="text-center mx-auto mb-5" style="max-width: 700px;">
+        <h2 class="display-6 fw-bold mb-3">Tudo que você precisa para decolar</h2>
+        <p class="fs-5" style="color: #b6a1c8;">Ferramentas desenhadas especificamente para o fluxo de turmas de marketing digital e tecnologia.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="row g-4">
         <!-- Feature 1 -->
-        <div class="glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6">
-            <i class="fa-solid fa-chart-pie text-xl"></i>
+        <div class="col-md-4">
+          <div class="glass-card p-4 rounded-4 h-100 hover-lift" style="transition: transform 0.3s;">
+            <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width: 48px; height: 48px; background: rgba(192, 38, 211, 0.2); color: #e879f9;">
+              <i class="fa-solid fa-chart-pie fs-5"></i>
+            </div>
+            <h3 class="fs-5 fw-bold text-white mb-2">Gestão Acadêmica</h3>
+            <p class="small" style="color: #b6a1c8;">
+              Boletins automáticos, controle de faltas e cálculo instantâneo de médias para os 7 módulos do curso. Tudo exportável em um clique.
+            </p>
           </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Gestão Acadêmica</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">
-            Boletins automáticos, controle de faltas e cálculo instantâneo de médias para os 7 módulos do curso. Tudo exportável em um clique.
-          </p>
         </div>
         
         <!-- Feature 2 -->
-        <div class="glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
-            <i class="fa-solid fa-briefcase text-xl"></i>
+        <div class="col-md-4">
+          <div class="glass-card p-4 rounded-4 h-100 hover-lift" style="transition: transform 0.3s;">
+            <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.2); color: #34d399;">
+              <i class="fa-solid fa-briefcase fs-5"></i>
+            </div>
+            <h3 class="fs-5 fw-bold text-white mb-2">Mural de Vagas</h3>
+            <p class="small" style="color: #b6a1c8;">
+              Conecte alunos às oportunidades locais de Arapiraca, Maceió e região. Algoritmo integrado para match de habilidades.
+            </p>
           </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Mural de Vagas</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">
-            Conecte alunos às oportunidades locais de Arapiraca, Maceió e região. Algoritmo integrado para match de habilidades.
-          </p>
         </div>
 
         <!-- Feature 3 -->
-        <div class="glass-card p-8 rounded-3xl hover:-translate-y-1 transition-transform duration-300">
-          <div class="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 mb-6">
-            <i class="fa-solid fa-comments text-xl"></i>
+        <div class="col-md-4">
+          <div class="glass-card p-4 rounded-4 h-100 hover-lift" style="transition: transform 0.3s;">
+            <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width: 48px; height: 48px; background: rgba(236, 72, 153, 0.2); color: #f472b6;">
+              <i class="fa-solid fa-comments fs-5"></i>
+            </div>
+            <h3 class="fs-5 fw-bold text-white mb-2">Fórum em Tempo Real</h3>
+            <p class="small" style="color: #b6a1c8;">
+              Chat integrado e sincronizado na nuvem para tirar dúvidas ao vivo, trocar experiências e criar networking com a turma.
+            </p>
           </div>
-          <h3 class="text-xl font-bold mb-3 text-white">Fórum em Tempo Real</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">
-            Chat integrado e sincronizado na nuvem para tirar dúvidas ao vivo, trocar experiências e criar networking com a turma.
-          </p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- AI Section Highlight -->
-  <section id="ia" class="py-24 relative overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="glass-card rounded-[2.5rem] p-8 md:p-16 border border-indigo-500/20 relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-indigo-500 rounded-full mix-blend-screen filter blur-[100px] opacity-20"></div>
+  <section id="ia" class="py-5">
+    <div class="container-xl py-5">
+      <div class="glass-card rounded-5 p-4 p-md-5 position-relative overflow-hidden" style="border-color: rgba(192, 38, 211, 0.2) !important;">
+        <div class="position-absolute rounded-circle" style="top: -80px; right: -80px; width: 320px; height: 320px; background: #c026d3; mix-blend-mode: screen; filter: blur(100px); opacity: 0.2;"></div>
         
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-6">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill small fw-bold text-uppercase mb-4" style="background: rgba(192, 38, 211, 0.2); color: #f0abfc; letter-spacing: 0.05em;">
               <i class="fa-solid fa-bolt"></i> IA Integrada
             </div>
-            <h2 class="text-3xl md:text-4xl font-black mb-6">Laboratório de Prompts <br/><span class="text-gradient">Inteligentes</span></h2>
-            <p class="text-slate-400 text-lg mb-8 leading-relaxed">
+            <h2 class="display-6 fw-bolder mb-4">Laboratório de Prompts <br/><span class="text-gradient">Inteligentes</span></h2>
+            <p class="fs-5 mb-4" style="color: #b6a1c8; line-height: 1.8;">
               Dê superpoderes aos alunos com nosso repositório de personas. Copywriting, Tráfego Pago, Social Media e Criação de Conteúdo a um clique de distância.
             </p>
-            <ul class="space-y-4 mb-8">
-              <li class="flex items-center gap-3 text-slate-300"><i class="fa-solid fa-check text-indigo-400"></i> +20 Prompts validados de mercado</li>
-              <li class="flex items-center gap-3 text-slate-300"><i class="fa-solid fa-check text-indigo-400"></i> Personalização interativa com IA</li>
-              <li class="flex items-center gap-3 text-slate-300"><i class="fa-solid fa-check text-indigo-400"></i> Suporte para criação de campanhas Reais</li>
+            <ul class="list-unstyled mb-4">
+              <li class="d-flex align-items-center gap-2 mb-3" style="color: #d0c3dd;"><i class="fa-solid fa-check" style="color: #e879f9;"></i> +20 Prompts validados de mercado</li>
+              <li class="d-flex align-items-center gap-2 mb-3" style="color: #d0c3dd;"><i class="fa-solid fa-check" style="color: #e879f9;"></i> Personalização interativa com IA</li>
+              <li class="d-flex align-items-center gap-2 mb-3" style="color: #d0c3dd;"><i class="fa-solid fa-check" style="color: #e879f9;"></i> Suporte para criação de campanhas Reais</li>
             </ul>
-            <a href="dashboard.html" class="inline-flex items-center gap-2 font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
-              Explorar Laboratório <i class="fa-solid fa-arrow-right text-sm"></i>
+            <a href="dashboard.html" class="d-inline-flex align-items-center gap-2 fw-bold text-decoration-none" style="color: #e879f9;">
+              Explorar Laboratório <i class="fa-solid fa-arrow-right small"></i>
             </a>
           </div>
           
-          <div class="relative">
-            <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl shadow-xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-              <div class="flex items-center gap-3 mb-4 border-b border-slate-800 pb-4">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 flex items-center justify-center text-white">
+          <div class="col-lg-6">
+            <div class="border rounded-4 p-4 shadow-lg" style="background: #2c1e3a; border-color: #6a507d !important; transform: rotate(3deg); transition: transform 0.5s;">
+              <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom" style="border-color: #584368 !important;">
+                <div class="d-flex align-items-center justify-content-center rounded-circle text-white" style="width: 40px; height: 40px; background: linear-gradient(135deg, #2563eb, #06b6d4);">
                   <i class="fa-solid fa-robot"></i>
                 </div>
                 <div>
-                  <h4 class="font-bold text-white text-sm">Gestor de Tráfego Pago</h4>
-                  <p class="text-xs text-slate-500">Meta Ads & Conversão</p>
+                  <h4 class="fw-bold text-white small mb-0">Gestor de Tráfego Pago</h4>
+                  <p class="mb-0" style="font-size: 0.75rem; color: #997eb0;">Meta Ads & Conversão</p>
                 </div>
               </div>
-              <p class="text-sm text-slate-400 mb-4 font-mono">
-                "Atue como Gestor de Tráfego especialista em Meta Ads para negócios locais. Estruture uma campanha para <span class="text-indigo-400">[Hamburgueria em Maceió]</span> com orçamento de <span class="text-indigo-400">[R$ 30/dia]</span>..."
+              <p class="small font-monospace mb-3" style="color: #b6a1c8;">
+                "Atue como Gestor de Tráfego especialista em Meta Ads para negócios locais. Estruture uma campanha para <span style="color: #e879f9;">[Hamburgueria em Maceió]</span> com orçamento de <span style="color: #e879f9;">[R$ 30/dia]</span>..."
               </p>
-              <button class="w-full py-2 bg-indigo-600/20 text-indigo-400 rounded-lg text-sm font-bold border border-indigo-500/30">Copiar Prompt</button>
+              <button class="btn w-100 py-2 rounded-3 small fw-bold" style="background: rgba(192, 38, 211, 0.2); color: #e879f9; border: 1px solid rgba(192, 38, 211, 0.3);">Copiar Prompt</button>
             </div>
           </div>
         </div>
@@ -241,30 +223,31 @@
   </section>
 
   <!-- CTA Section -->
-  <section class="py-24 border-t border-slate-800/50">
-    <div class="max-w-4xl mx-auto px-4 text-center">
-      <h2 class="text-4xl font-black mb-6">Pronto para transformar sua sala de aula?</h2>
-      <p class="text-xl text-slate-400 mb-10">Acesse a plataforma agora mesmo com seu CPF cadastrado.</p>
-      <a href="dashboard.html" class="inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-white transition-all duration-200 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-slate-900">
-        Acessar Plataforma Emprega Mais <i class="fa-solid fa-arrow-right ml-2"></i>
+  <section class="py-5 border-top" style="border-color: rgba(88, 67, 104, 0.5) !important;">
+    <div class="container py-5 text-center" style="max-width: 700px;">
+      <h2 class="display-5 fw-bolder mb-4">Pronto para transformar sua sala de aula?</h2>
+      <p class="fs-5 mb-5" style="color: #b6a1c8;">Acesse a plataforma agora mesmo com seu CPF cadastrado.</p>
+      <a href="dashboard.html" class="btn btn-lg rounded-pill px-5 py-3 fw-bold text-white d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #c026d3, #7c3aed); border: none; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        Acessar Plataforma Emprega Mais <i class="fa-solid fa-arrow-right"></i>
       </a>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-800/50 bg-slate-950/80 pt-16 pb-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
-          <i class="fa-solid fa-graduation-cap text-2xl text-slate-400"></i>
-          <span class="font-bold text-xl text-slate-400">Emprega<span class="text-slate-500">Mais</span></span>
+  <footer class="border-top py-5" style="border-color: rgba(88, 67, 104, 0.5) !important; background: rgba(21, 13, 30, 0.8);">
+    <div class="container-xl">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2 opacity-50">
+          <i class="fa-solid fa-graduation-cap fs-4" style="color: #b6a1c8;"></i>
+          <span class="fw-bold fs-5" style="color: #b6a1c8;">Emprega<span style="color: #997eb0;">Mais</span></span>
         </div>
-        <p class="text-slate-500 text-sm">
+        <p class="mb-0 small" style="color: #997eb0;">
           &copy; 2026 Programa Emprega Mais Alagoas. Todos os direitos reservados.
         </p>
       </div>
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
