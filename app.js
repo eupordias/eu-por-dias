@@ -197,7 +197,7 @@ function getNovoAlunoPriorityBtn() {
     <div class="mb-4">
       <button 
         onclick="openStudentModal()" 
-        class="d-inline-flex align-items-center gap-2.5 px-5 py-3 rounded-2xl text-sm fw-bolder bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95 ring-2 ring-indigo-400/30"
+        class="d-inline-flex align-items-center gap-2.5 px-5 py-3 rounded-2xl text-sm fw-bolder text-white shadow-lg transition-all transform active:scale-95" style="background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%) !important; color: #ffffff !important; box-shadow: 0 8px 20px -4px rgba(192, 38, 211, 0.45) !important;"
         title="Cadastrar novo aluno manualmente"
       >
         <i class="fa-solid fa-user-plus text-base"></i>
@@ -823,9 +823,12 @@ function updateNavActiveState() {
     }
 
     if (tab === AppState.currentTab) {
-      btn.className = "nav-tab-btn flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-500/20 transition-all";
+      btn.className = "nav-tab-btn active d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-bold";
+      try {
+        btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      } catch (err) {}
     } else {
-      btn.className = "nav-tab-btn flex items-center gap-2 px-4 py-2.5 rounded-2xl font-semibold text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all";
+      btn.className = "nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold";
     }
   });
 }
@@ -4942,7 +4945,7 @@ function renderAboutTab(container) {
       ${getNovoAlunoPriorityBtn()}
       
       <!-- Banner de Apresentação Hero -->
-      <div class="position-relative overflow-hidden p-8 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl">
+      <div class="position-relative overflow-hidden p-8 rounded-3xl text-white shadow-xl" style="background: linear-gradient(135deg, #1e112a 0%, #3b0764 50%, #581c87 100%) !important; color: #ffffff !important;">
         <div class="position-relative z-10 max-w-4xl space-y-4">
           <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="px-3 py-1 rounded-circle text-xs fw-bolder bg-amber-400 text-slate-950 text-uppercase tracking-wider shadow">
@@ -4960,7 +4963,7 @@ function renderAboutTab(container) {
             Eu Por Dias: Inteligência Pedagógica e Gestão Humana de Alunos
           </h1>
 
-          <p class="text-sm sm:text-base text-indigo-100 fw-normal leading-relaxed">
+          <p class="text-sm sm:text-base fw-normal leading-relaxed" style="color: rgba(255, 255, 255, 0.92) !important;">
             Uma plataforma desenvolvida sob medida para o professor do curso de <strong>Gestão de Mídias Digitais</strong>. 
             Nascida da necessidade real de transformar mais de <strong>600 linhas estáticas de planilha</strong> em uma experiência 
             pedagógica viva, ágil e focada na emancipação profissional de cada estudante em Alagoas.
@@ -6556,6 +6559,42 @@ function removeSubject(name) {
 // -------------------------------------------------------------
 // EVENTOS GLOBAIS
 // -------------------------------------------------------------
+
+// -------------------------------------------------------------
+// ROLAGEM INTERATIVA DA BARRA DE ABAS
+// -------------------------------------------------------------
+function scrollNavTabs(direction) {
+  const nav = document.getElementById("main-nav-tabs");
+  if (!nav) return;
+  const scrollAmount = 260;
+  nav.scrollBy({
+    left: direction === "left" ? -scrollAmount : scrollAmount,
+    behavior: "smooth"
+  });
+}
+
+function updateNavScrollButtons() {
+  const nav = document.getElementById("main-nav-tabs");
+  const btnLeft = document.getElementById("nav-scroll-btn-left");
+  const btnRight = document.getElementById("nav-scroll-btn-right");
+  if (!nav || !btnLeft || !btnRight) return;
+
+  const scrollLeft = nav.scrollLeft;
+  const maxScroll = nav.scrollWidth - nav.clientWidth;
+
+  if (scrollLeft > 10) {
+    btnLeft.classList.remove("hidden");
+  } else {
+    btnLeft.classList.add("hidden");
+  }
+
+  if (maxScroll > 10 && scrollLeft < maxScroll - 10) {
+    btnRight.classList.remove("hidden");
+  } else {
+    btnRight.classList.add("hidden");
+  }
+}
+
 function setupGlobalEventListeners() {
   document.querySelectorAll(".nav-tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -6563,6 +6602,50 @@ function setupGlobalEventListeners() {
       switchTab(tab);
     });
   });
+
+  // Interatividade da barra de rolagem de abas
+  const mainNavTabs = document.getElementById("main-nav-tabs");
+  if (mainNavTabs) {
+    mainNavTabs.addEventListener("scroll", updateNavScrollButtons, { passive: true });
+    window.addEventListener("resize", updateNavScrollButtons, { passive: true });
+    
+    // Rolagem horizontal com a roda do mouse (wheel)
+    mainNavTabs.addEventListener("wheel", (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        mainNavTabs.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+
+    // Arraste suave com o mouse (Drag-to-Scroll)
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    mainNavTabs.addEventListener("mousedown", (e) => {
+      isDown = true;
+      startX = e.pageX - mainNavTabs.offsetLeft;
+      scrollLeft = mainNavTabs.scrollLeft;
+      mainNavTabs.style.cursor = "grabbing";
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (isDown) {
+        isDown = false;
+        mainNavTabs.style.cursor = "grab";
+      }
+    });
+
+    mainNavTabs.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - mainNavTabs.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      mainNavTabs.scrollLeft = scrollLeft - walk;
+    });
+
+    setTimeout(updateNavScrollButtons, 250);
+  }
 
   // Fechar dropdowns ao clicar fora
   document.addEventListener("click", (e) => {

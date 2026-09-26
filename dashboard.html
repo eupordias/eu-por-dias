@@ -186,73 +186,105 @@
       </div>
     </div>
 
-    <!-- Navegação de Abas -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100">
-      <nav class="d-flex align-items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+    <!-- Navegação de Abas com Rolagem Interativa -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 position-relative">
+      <div class="nav-carousel-wrapper position-relative py-2">
+        
+        <!-- Botão Rolagem Esquerda -->
         <button 
-          data-tab="about"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-semibold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+          id="nav-scroll-btn-left" 
+          type="button"
+          onclick="scrollNavTabs('left')" 
+          class="nav-scroll-arrow nav-scroll-left hidden"
+          title="Rolar abas para a esquerda"
+          aria-label="Rolar para esquerda"
         >
-          <i class="fa-solid fa-lightbulb"></i>
-          <span>Sobre o Sistema & Manifesto</span>
+          <i class="fa-solid fa-chevron-left"></i>
         </button>
 
-        <button 
-          data-tab="grades"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-medium text-xs text-slate-600"
+        <!-- Container de rolagem das abas -->
+        <nav 
+          id="main-nav-tabs" 
+          class="nav-tabs-scroll-container d-flex align-items-center gap-2 overflow-x-auto no-scrollbar"
         >
-          <i class="fa-solid fa-pen-nib"></i>
-          <span>Notas dos Módulos</span>
+          <button 
+            data-tab="about"
+            class="nav-tab-btn active d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-bold"
+          >
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Sobre o Sistema & Manifesto</span>
+          </button>
+
+          <button 
+            data-tab="grades"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-pen-nib"></i>
+            <span>Notas dos Módulos</span>
+          </button>
+
+          <button 
+            data-tab="dashboard"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard & Estatísticas</span>
+          </button>
+
+          <button 
+            data-tab="reports"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-file-export"></i>
+            <span>Relatórios & Backup</span>
+          </button>
+
+          <button 
+            data-tab="forum"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-comments"></i>
+            <span>Fórum & Chat ao Vivo</span>
+          </button>
+
+          <button 
+            data-tab="careers"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Oportunidades & Trilhas</span>
+          </button>
+
+          <button 
+            data-tab="prompts"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
+            <span>Prompts & IA (ChatGPT)</span>
+          </button>
+
+          <button 
+            data-tab="students"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-users"></i>
+            <span>Alunos & Contatos</span>
+          </button>
+        </nav>
+
+        <!-- Botão Rolagem Direita -->
+        <button 
+          id="nav-scroll-btn-right" 
+          type="button"
+          onclick="scrollNavTabs('right')" 
+          class="nav-scroll-arrow nav-scroll-right"
+          title="Rolar abas para a direita"
+          aria-label="Rolar para direita"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <button 
-          data-tab="dashboard"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-medium text-xs text-slate-600"
-        >
-          <i class="fa-solid fa-chart-pie"></i>
-          <span>Dashboard & Estatísticas</span>
-        </button>
-
-        <button 
-          data-tab="reports"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-medium text-xs text-slate-600"
-        >
-          <i class="fa-solid fa-file-export"></i>
-          <span>Relatórios & Backup</span>
-        </button>
-
-        <button 
-          data-tab="forum"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-medium text-xs text-slate-600"
-        >
-          <i class="fa-solid fa-comments"></i>
-          <span>Fórum & Chat ao Vivo</span>
-        </button>
-
-        <button 
-          data-tab="careers"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-medium text-xs text-slate-600"
-        >
-          <i class="fa-solid fa-briefcase"></i>
-          <span>Oportunidades & Trilhas</span>
-        </button>
-
-        <button 
-          data-tab="prompts"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-medium text-xs text-slate-600"
-        >
-          <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
-          <span>Prompts & IA (ChatGPT)</span>
-        </button>
-
-        <button 
-          data-tab="students"
-          class="nav-tab-btn d-flex align-items-center gap-2 px-4 py-2 rounded-xl fw-medium text-xs text-slate-600"
-        >
-          <i class="fa-solid fa-users"></i>
-          <span>Alunos & Contatos</span>
-        </button>
-      </nav>
+      </div>
     </div>
   </header>
 
