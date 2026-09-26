@@ -193,19 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Botão de Prioridade "Novo Aluno" — exibido dentro de todos os módulos/abas
 function getNovoAlunoPriorityBtn() {
-  return `
-    <div class="mb-4">
-      <button 
-        onclick="openStudentModal()" 
-        class="d-inline-flex align-items-center gap-2.5 px-5 py-3 rounded-2xl text-sm fw-bolder text-white shadow-lg transition-all transform active:scale-95" style="background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%) !important; color: #ffffff !important; box-shadow: 0 8px 20px -4px rgba(192, 38, 211, 0.45) !important;"
-        title="Cadastrar novo aluno manualmente"
-      >
-        <i class="fa-solid fa-user-plus text-base"></i>
-        <span>Novo Aluno</span>
-        <span class="px-2 py-0.5 rounded-circle text-[10px] fw-bolder bg-white/20 backdrop-blur-sm text-uppercase tracking-wider">Prioridade</span>
-      </button>
-    </div>
-  `;
+  return "";
 }
 
 // Normalização e autocura de nomes de módulos (garante acentuação perfeita PT-BR e corrige codificações corrompidas)
@@ -1519,7 +1507,6 @@ function renderStudentsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      ${getNovoAlunoPriorityBtn()}
       <!-- Banner com Conexão de API do Sheets -->
       <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/10 d-flex flex-column md:flex-row align-items-start md:items-center justify-content-between gap-4 position-relative overflow-hidden">
         <div class="z-10">
@@ -1561,7 +1548,7 @@ function renderStudentsTab(container) {
           
           <button 
             onclick="openStudentModal()"
-            class="flex-grow-1 sm:flex-none d-flex align-items-center justify-content-center gap-2 px-4 py-3 rounded-2xl bg-indigo-500/40 border border-white/20 text-white fw-bold text-xs transition-all"
+            class="flex-grow-1 sm:flex-none d-flex align-items-center justify-content-center gap-2 px-4 py-3 rounded-2xl bg-amber-400 text-slate-950 fw-bold text-xs shadow-lg transition-all border-0"
           >
             <i class="fa-solid fa-user-plus"></i>
             <span>Novo Aluno</span>
@@ -4484,7 +4471,6 @@ function renderGradesTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      ${getNovoAlunoPriorityBtn()}
       <div class="d-flex flex-column sm:flex-row align-items-start sm:items-center justify-content-between gap-4 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
         <div>
           <div class="d-flex align-items-center gap-2">
@@ -4647,7 +4633,6 @@ function renderDashboard(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      ${getNovoAlunoPriorityBtn()}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm d-flex align-items-center justify-content-between">
@@ -4842,7 +4827,6 @@ function renderReportsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      ${getNovoAlunoPriorityBtn()}
       <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
         
         <!-- Barra de Identificação do Usuário Logado -->
@@ -4985,7 +4969,6 @@ function renderReportsTab(container) {
 function renderAboutTab(container) {
   container.innerHTML = `
     <div class="space-y-8 fade-in text-slate-800 ">
-      ${getNovoAlunoPriorityBtn()}
       
       <!-- Banner de Apresentação Hero -->
       <div class="position-relative overflow-hidden p-8 rounded-3xl text-white shadow-xl" style="background: linear-gradient(135deg, #1e112a 0%, #3b0764 50%, #581c87 100%) !important; color: #ffffff !important;">
@@ -7821,7 +7804,6 @@ function renderForumTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      ${getNovoAlunoPriorityBtn()}
       
       <!-- Cabeçalho do Fórum & Chat -->
       <div class="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-4">
@@ -9419,10 +9401,9 @@ function renderCareersTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      ${getNovoAlunoPriorityBtn()}
       
       <!-- Banner Hero Principal -->
-      <div class="position-relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl border border-indigo-500/20">
+      <div class="position-relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl border border-indigo-500/20" style="background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%) !important; color: #ffffff !important;">
         <div class="position-relative z-10 d-flex flex-column md:flex-row align-items-start md:items-center justify-content-between gap-6">
           <div class="space-y-2 max-w-2xl">
             <div class="d-flex flex-wrap align-items-center gap-2">
@@ -9452,33 +9433,35 @@ function renderCareersTab(container) {
           </div>
 
           <!-- Métricas Rápidas & Botão de Currículo do Aluno -->
-          <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-            <div class="row gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
+          <div class="d-flex flex-column align-items-stretch sm:align-items-end gap-3 flex-shrink-0">
+            <!-- Métricas em cápsula unificada -->
+            <div class="d-flex align-items-center justify-content-center gap-3 text-center bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 shadow-sm">
               <div class="px-2">
                 <span class="d-block text-base sm:text-lg fw-bolder text-amber-400">${AppState.jobVacancies.length}</span>
-                <span class="text-[9px] text-uppercase tracking-wider text-slate-300">Vagas</span>
+                <span class="text-[10px] text-uppercase tracking-wider text-slate-200">Vagas</span>
               </div>
-              <div class="px-2 border-x border-white/10">
+              <div class="px-2 border-start border-end border-white/15">
                 <span class="d-block text-base sm:text-lg fw-bolder text-emerald-400">${AppState.learningTrails.length}</span>
-                <span class="text-[9px] text-uppercase tracking-wider text-slate-300">Trilhas</span>
+                <span class="text-[10px] text-uppercase tracking-wider text-slate-200">Trilhas</span>
               </div>
               <div class="px-2">
                 <span class="d-block text-base sm:text-lg fw-bolder text-indigo-300">${AppState.usefulResources.length}</span>
-                <span class="text-[9px] text-uppercase tracking-wider text-slate-300">Modelos</span>
+                <span class="text-[10px] text-uppercase tracking-wider text-slate-200">Modelos</span>
               </div>
             </div>
 
             ${isAluno ? `
               <button 
                 onclick="openStudentResumeModal('${AppState.currentUser.id}')" 
-                class="w-100 px-4 py-2.5 rounded-xl fw-bold text-xs bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all d-flex align-items-center justify-content-center gap-2 cursor-pointer active:scale-95"
+                class="d-inline-flex align-items-center justify-content-center gap-2 px-4 py-2.5 rounded-pill fw-bold text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/25 transition-all cursor-pointer active:scale-95 border-0"
               >
                 <i class="fa-solid fa-id-card"></i> Ver Meu Minicurrículo
               </button>
             ` : `
               <button 
                 onclick="openCreateVacancyModal()" 
-                class="w-100 px-4 py-2.5 rounded-xl fw-bold text-xs bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all d-flex align-items-center justify-content-center gap-2 cursor-pointer active:scale-95"
+                class="d-inline-flex align-items-center justify-content-center gap-2 px-4 py-2.5 rounded-pill fw-bold text-xs text-white shadow-md transition-all cursor-pointer active:scale-95 border-0"
+                style="background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%) !important;"
               >
                 <i class="fa-solid fa-plus"></i> Publicar Nova Vaga
               </button>
@@ -11056,10 +11039,9 @@ function renderPromptsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      ${getNovoAlunoPriorityBtn()}
       
       <!-- Banner Hero Principal do Repositório prompts.chat -->
-      <div class="position-relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white shadow-xl border border-indigo-500/30">
+      <div class="position-relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white shadow-xl border border-indigo-500/30" style="background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%) !important; color: #ffffff !important;">
         <div class="position-relative z-10 d-flex flex-column md:flex-row align-items-start md:items-center justify-content-between gap-6">
           <div class="space-y-2.5 max-w-2xl">
             <div class="d-flex flex-wrap align-items-center gap-2">
@@ -11089,28 +11071,30 @@ function renderPromptsTab(container) {
           </div>
 
           <!-- Métricas Rápidas & Ações de Docente/Discente -->
-          <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-            <div class="row gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
+          <div class="d-flex flex-column align-items-stretch sm:align-items-end gap-3 flex-shrink-0">
+            <!-- Métricas em cápsula unificada -->
+            <div class="d-flex align-items-center justify-content-center gap-3 text-center bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 shadow-sm">
               <div class="px-2">
                 <span class="d-block text-base sm:text-lg fw-bolder text-amber-400">${AppState.promptsLibrary.length}</span>
-                <span class="text-[9px] text-uppercase tracking-wider text-slate-300">Prompts</span>
+                <span class="text-[10px] text-uppercase tracking-wider text-slate-200">Prompts</span>
               </div>
-              <div class="px-2 border-x border-white/10">
+              <div class="px-2 border-start border-end border-white/15">
                 <span class="d-block text-base sm:text-lg fw-bolder text-emerald-400">6</span>
-                <span class="text-[9px] text-uppercase tracking-wider text-slate-300">Áreas</span>
+                <span class="text-[10px] text-uppercase tracking-wider text-slate-200">Áreas</span>
               </div>
               <div class="px-2">
                 <span class="d-block text-base sm:text-lg fw-bolder text-indigo-300">${favoriteIds.length}</span>
-                <span class="text-[9px] text-uppercase tracking-wider text-slate-300">Favoritos</span>
+                <span class="text-[10px] text-uppercase tracking-wider text-slate-200">Favoritos</span>
               </div>
             </div>
 
             ${isProf ? `
               <button 
                 onclick="openCreatePromptModal()" 
-                class="w-100 px-4 py-2.5 rounded-xl fw-bold text-xs bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all d-flex align-items-center justify-content-center gap-2 cursor-pointer active:scale-95"
+                class="d-inline-flex align-items-center justify-content-center gap-2 px-4 py-2.5 rounded-pill fw-bold text-xs text-white shadow-md transition-all cursor-pointer active:scale-95 border-0"
+                style="background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%) !important;"
               >
-                <i class="fa-solid fa-plus"></i> + Adicionar Prompt à Turma
+                <i class="fa-solid fa-plus"></i> Adicionar Prompt à Turma
               </button>
             ` : `
               <div class="d-flex align-items-center gap-2">
@@ -11118,17 +11102,17 @@ function renderPromptsTab(container) {
                   href="https://chatgpt.com" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  class="flex-grow-1 px-3 py-2.5 rounded-xl fw-bold text-xs bg-emerald-600 text-white shadow-md transition-all d-flex align-items-center justify-content-center gap-1.5 cursor-pointer text-center"
+                  class="px-3.5 py-2 rounded-pill fw-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all d-inline-flex align-items-center justify-content-center gap-1.5 cursor-pointer text-decoration-none"
                 >
-                  <i class="fa-solid fa-robot"></i> Abrir ChatGPT
+                  <i class="fa-solid fa-robot"></i> ChatGPT
                 </a>
                 <a 
                   href="https://gemini.google.com" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  class="flex-grow-1 px-3 py-2.5 rounded-xl fw-bold text-xs bg-blue-600 text-white shadow-md transition-all d-flex align-items-center justify-content-center gap-1.5 cursor-pointer text-center"
+                  class="px-3.5 py-2 rounded-pill fw-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all d-inline-flex align-items-center justify-content-center gap-1.5 cursor-pointer text-decoration-none"
                 >
-                  <i class="fa-brands fa-google"></i> Abrir Gemini
+                  <i class="fa-brands fa-google"></i> Gemini
                 </a>
               </div>
             `}
