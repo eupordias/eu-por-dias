@@ -1127,7 +1127,7 @@ function openGodModeAuthModal() {
       </div>
 
       <!-- Botões de Controle Rápido do Modo Deus -->
-      <div class="row gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <button 
           onclick="togglePrivacyMode()" 
           class="w-100 py-3 px-4 rounded-xl text-xs fw-bold ${AppState.privacyMode ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20'} d-flex align-items-center justify-content-center gap-2 transition-all"
@@ -1709,7 +1709,7 @@ function renderStudentsTab(container) {
 
 function renderStudentCardsGrid(students) {
   return `
-    <div class="row md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       ${students.map(student => {
         const stats = calculateStudentOverallStats(student);
         const isRevealed = AppState.revealedStudentIds.has(student.id) || !AppState.privacyMode;
@@ -1755,7 +1755,7 @@ function renderStudentCardsGrid(students) {
                   >
                     ${student.photoUrl ? `
                       <img src="${student.photoUrl}" alt="${displayName}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                      <div class="d-none w-100 h-100 align-items-center justify-content-center">${initials}</div>
+                      <div class="hidden w-100 h-100 align-items-center justify-content-center">${initials}</div>
                     ` : `
                       <span>${initials}</span>
                     `}
@@ -1893,7 +1893,7 @@ function renderStudentCardsGrid(students) {
                   </div>
                 ` : ''}
 
-                <div class="row gap-2 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   ${student.education ? `
                     <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 ">
                       <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block leading-tight">Escolaridade</span>
@@ -1949,7 +1949,7 @@ function renderStudentCardsGrid(students) {
                     <i id="diag-icon-${student.id}" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
                   </button>
 
-                  <div id="diag-drawer-${student.id}" class="d-none mt-2 p-3 rounded-2xl bg-amber-50/40 border border-amber-200/60 space-y-2.5 text-[11px] text-slate-700 ">
+                  <div id="diag-drawer-${student.id}" class="hidden mt-2 p-3 rounded-2xl bg-amber-50/40 border border-amber-200/60 space-y-2.5 text-[11px] text-slate-700 ">
                     
                     ${student.challenges ? `
                       <div>
@@ -2097,7 +2097,7 @@ function renderStudentTable(students) {
                       >
                         ${student.photoUrl ? `
                           <img src="${student.photoUrl}" alt="${displayName}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                          <div class="d-none w-100 h-100 align-items-center justify-content-center">${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
+                          <div class="hidden w-100 h-100 align-items-center justify-content-center">${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
                         ` : `
                           <span>${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
                         `}
@@ -2225,7 +2225,7 @@ function renderSecureStudentCards(students) {
       </div>
 
       <!-- Grade de Cards Pedagógicos Seguros -->
-      <div class="row lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         ${students.map(student => {
           const stats = calculateStudentOverallStats(student);
           const isRevealed = AppState.revealedStudentIds.has(student.id);
@@ -2288,7 +2288,7 @@ function renderSecureStudentCards(students) {
                   </div>
 
                   <!-- Bloco 2: Motivação e Expectativas -->
-                  <div class="row gap-2.5 text-xs">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                     <div class="p-3 rounded-2xl bg-amber-50/50 border border-amber-100 ">
                       <span class="fw-bold text-amber-700 d-flex align-items-center gap-1 text-[10px] text-uppercase mb-1">
                         <i class="fa-solid fa-fire"></i> Motivação para o Curso:
@@ -2309,7 +2309,7 @@ function renderSecureStudentCards(students) {
                   </div>
 
                   <!-- Bloco 3: Ferramentas & Bagagem Prévia -->
-                  <div class="row sm:grid-cols-3 gap-2 text-xs">
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                     <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 ">
                       <span class="text-[10px] text-uppercase fw-bold text-slate-400 d-block">Profissão / Área</span>
                       <span class="fw-semibold text-slate-800 text-truncate d-block text-[11px]" title="${student.profession || 'Não informada'}">
@@ -2338,7 +2338,7 @@ function renderSecureStudentCards(students) {
                       <span><i class="fa-solid fa-layer-group mr-1"></i> Desempenho nos Módulos:</span>
                       <span class="text-slate-500 fw-normal">Faltas: ${stats.totalAbsences}</span>
                     </span>
-                    <div class="row sm:grid-cols-4 gap-1.5 text-[11px]">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px]">
                       ${AppState.subjects.slice(0, 4).map(sub => {
                         const gradeObj = student.grades?.[sub] || { b1: 9.0, b2: 9.0 };
                         const avg = ((gradeObj.b1 || 0) + (gradeObj.b2 || 0)) / 2;
@@ -2369,7 +2369,7 @@ function renderSecureStudentCards(students) {
                     </div>
 
                     ${isRevealed ? `
-                      <div class="row gap-2 text-[11px] font-monospace pt-1 text-slate-800 ">
+                      <div class="grid grid-cols-2 gap-2 text-[11px] font-mono pt-1 text-slate-800">
                         <div><strong>CPF:</strong> ${student.cpf || 'Não informado'}</div>
                         <div><strong>WhatsApp:</strong> ${student.contact?.phone || 'Não informado'}</div>
                         <div class="col-span-2 text-truncate"><strong>E-mail:</strong> ${student.contact?.email || 'Não informado'}</div>
@@ -2513,7 +2513,7 @@ function openStudentProfileModal(studentId) {
               >
                 ${student.photoUrl ? `
                   <img src="${student.photoUrl}" alt="${displayName}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                  <div class="d-none w-100 h-100 align-items-center justify-content-center">${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
+                  <div class="hidden w-100 h-100 align-items-center justify-content-center">${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
                 ` : `
                   <span>${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
                 `}
@@ -2557,7 +2557,7 @@ function openStudentProfileModal(studentId) {
           </div>
 
           <!-- Grade de Informações Cadastrais e Redes -->
-          <div class="row gap-4 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             
             <!-- Box Contatos -->
             <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
@@ -2640,7 +2640,7 @@ function openStudentProfileModal(studentId) {
               <i class="fa-solid fa-brain text-indigo-600 "></i> Diagnóstico Pedagógico e Expectativas de Aprendizado
             </h3>
 
-            <div class="row gap-3.5 text-xs">
+            <div class="grid grid-cols-1 gap-3.5 text-xs">
               
               <div class="p-3.5 rounded-2xl bg-white border border-slate-200 ">
                 <span class="fw-bold text-rose-600 d-flex align-items-center gap-1.5 text-uppercase text-[11px] mb-1">
@@ -2669,7 +2669,7 @@ function openStudentProfileModal(studentId) {
                 </p>
               </div>
 
-              <div class="row gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="p-3 rounded-2xl bg-white border border-slate-200 ">
                   <span class="fw-bold text-slate-500 text-uppercase text-[10px] d-block mb-1">Redes Sociais Mais Utilizadas:</span>
                   <span class="fw-medium text-slate-800 ">${student.frequentNetworks || 'Não informado'}</span>
@@ -2920,10 +2920,10 @@ function openPhotoUploadModal(studentId) {
           </div>
 
           <!-- Painel 2: Webcam / Câmera -->
-          <div id="photo-pane-camera" class="space-y-3 d-none">
+          <div id="photo-pane-camera" class="space-y-3 hidden">
             <div class="position-relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 d-flex flex-column align-items-center justify-content-center min-h-[220px]">
-              <video id="photo-modal-video" autoplay playsinline class="w-100 h-56 object-fit-cover d-none"></video>
-              <canvas id="photo-modal-canvas" class="d-none"></canvas>
+              <video id="photo-modal-video" autoplay playsinline class="w-100 h-56 object-fit-cover hidden"></video>
+              <canvas id="photo-modal-canvas" class="hidden"></canvas>
               
               <div id="photo-modal-camera-placeholder" class="text-center p-6 space-y-2">
                 <i class="fa-solid fa-camera text-3xl text-slate-600 d-block"></i>
@@ -2960,7 +2960,7 @@ function openPhotoUploadModal(studentId) {
           </div>
 
           <!-- Painel 3: URL Direta -->
-          <div id="photo-pane-url" class="space-y-3 d-none">
+          <div id="photo-pane-url" class="space-y-3 hidden">
             <div>
               <label class="d-block text-xs fw-semibold text-slate-700 mb-1">Cole o link da imagem (URL da internet):</label>
               <div class="d-flex gap-2">
@@ -2982,7 +2982,7 @@ function openPhotoUploadModal(studentId) {
           </div>
 
           <!-- Painel 4: Galeria de Avatares -->
-          <div id="photo-pane-presets" class="space-y-3 d-none">
+          <div id="photo-pane-presets" class="space-y-3 hidden">
             <p class="text-xs text-slate-500 ">Selecione um avatar ilustrativo para o perfil do aluno:</p>
             <div class="row sm:grid-cols-6 gap-2.5 max-h-48 overflow-y-auto p-1">
               ${presetAvatars.map((url, idx) => `
@@ -3379,7 +3379,7 @@ function openGoogleSheetsImportModal() {
               </div>
             </div>
 
-            <div class="row gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="d-block text-xs fw-semibold text-slate-700 mb-1">Intervalo / Aba (Opcional)</label>
                 <input 
@@ -3410,7 +3410,7 @@ function openGoogleSheetsImportModal() {
           </div>
 
           <!-- Aba 2: Copiar e Colar -->
-          <div id="import-pane-paste" class="space-y-4 d-none">
+          <div id="import-pane-paste" class="space-y-4 hidden">
             <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-xs text-indigo-900 space-y-1">
               <span class="fw-bold d-flex align-items-center gap-1.5"><i class="fa-solid fa-lightbulb text-amber-500"></i> Dica de ouro:</span>
               <p>Copie (Ctrl+C) as linhas no Google Planilhas e cole (Ctrl+V) aqui. O sistema reconhece tudo automaticamente!</p>
@@ -3435,7 +3435,7 @@ function openGoogleSheetsImportModal() {
           </div>
 
           <!-- Aba 3: Arquivo CSV -->
-          <div id="import-pane-file" class="space-y-4 d-none">
+          <div id="import-pane-file" class="space-y-4 hidden">
             <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center">
               <i class="fa-solid fa-file-csv text-3xl text-emerald-500 mb-2 d-block"></i>
               <input 
@@ -3449,7 +3449,7 @@ function openGoogleSheetsImportModal() {
           </div>
 
           <!-- Área de Pré-Visualização -->
-          <div id="import-preview-area" class="d-none pt-4 border-t border-slate-100 space-y-3">
+          <div id="import-preview-area" class="hidden pt-4 border-t border-slate-100 space-y-3">
             <div class="d-flex align-items-center justify-content-between">
               <h4 class="fw-bold text-xs text-slate-900 d-flex align-items-center gap-2">
                 <i class="fa-solid fa-list-check text-emerald-600"></i> Alunos Identificados (<span id="import-preview-count">0</span>)
@@ -4317,8 +4317,8 @@ function openSupabaseModal() {
           </div>
 
           <!-- ABA 2: BACKUP & SINCRONIZAÇÃO -->
-          <div id="supabase-pane-sync" class="space-y-4 d-none">
-            <div class="row gap-4">
+          <div id="supabase-pane-sync" class="space-y-4 hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <!-- Enviar para Nuvem -->
               <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
                 <div class="d-flex align-items-center gap-2 fw-bold text-slate-900 text-sm">
@@ -4373,7 +4373,7 @@ function openSupabaseModal() {
           </div>
 
           <!-- ABA 3: SCRIPT SQL & PASSO A PASSO -->
-          <div id="supabase-pane-sql" class="space-y-4 d-none">
+          <div id="supabase-pane-sql" class="space-y-4 hidden">
             <div class="space-y-3">
               <div class="text-xs text-slate-600 space-y-2">
                 <p class="fw-bold text-slate-800 ">Como criar seu banco gratuito em 2 minutos:</p>
@@ -4602,7 +4602,7 @@ function renderDashboard(container) {
   container.innerHTML = `
     <div class="space-y-6 fade-in">
       ${getNovoAlunoPriorityBtn()}
-      <div class="row gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm d-flex align-items-center justify-content-between">
           <div>
@@ -4661,7 +4661,7 @@ function renderDashboard(container) {
 
       </div>
 
-      <div class="row gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
           <div class="d-flex align-items-center justify-content-between mb-4">
             <div>
@@ -4833,7 +4833,7 @@ function renderReportsTab(container) {
 
         ${isProf ? `
           <!-- Painel do Professor / Coordenação (Exportações Completas) -->
-          <div class="row md:grid-cols-3 gap-5">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             
             <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 d-flex flex-column justify-content-between">
               <div>
@@ -4888,7 +4888,7 @@ function renderReportsTab(container) {
           </div>
         ` : `
           <!-- Painel do Aluno Autenticado -->
-          <div class="row md:grid-cols-2 gap-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             
             <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 d-flex flex-column justify-content-between">
               <div>
@@ -4986,7 +4986,7 @@ function renderAboutTab(container) {
       </div>
 
       <!-- Comparativo: Da Planilha Bruta ao Painel Vivo -->
-      <div class="row lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- O Problema Antes -->
         <div class="p-6 rounded-3xl bg-rose-50/60 border border-rose-200/80 space-y-4">
@@ -5070,7 +5070,7 @@ function renderAboutTab(container) {
           </p>
         </div>
 
-        <div class="row md:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           
           <!-- Pilar 1 -->
           <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
@@ -5187,7 +5187,7 @@ function renderAboutTab(container) {
           </button>
         </div>
 
-        <div class="row gap-3 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           ${AppState.subjects.map((s, idx) => `
             <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
               <span class="text-[10px] fw-bold text-indigo-600 font-monospace">MÓDULO ${String(idx + 1).padStart(2, '0')}</span>
@@ -5203,22 +5203,22 @@ function renderAboutTab(container) {
         <h4 class="fw-bold text-slate-900 d-flex align-items-center gap-2">
           <i class="fa-solid fa-code text-indigo-600"></i> Especificações de Engenharia & Tecnologias
         </h4>
-        <div class="row sm:grid-cols-4 gap-3 font-monospace text-[11px]">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-[11px]">
           <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
             <span class="text-slate-400 d-block text-[10px]">Linguagem</span>
             <span class="fw-bold text-slate-800 ">Vanilla JavaScript (ES6+)</span>
           </div>
           <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
             <span class="text-slate-400 d-block text-[10px]">Estilização</span>
-            <span class="fw-bold text-slate-800 ">Tailwind CSS (JIT CDN)</span>
+            <span class="fw-bold text-slate-800 ">Bootstrap 5.3 + CSS Customizado</span>
           </div>
           <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
             <span class="text-slate-400 d-block text-[10px]">Integração</span>
-            <span class="fw-bold text-slate-800 ">Google Sheets API v4</span>
+            <span class="fw-bold text-slate-800 ">Google Sheets API v4 + Supabase</span>
           </div>
           <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
             <span class="text-slate-400 d-block text-[10px]">Armazenamento</span>
-            <span class="fw-bold text-slate-800 ">LocalStorage + JSON Sync</span>
+            <span class="fw-bold text-slate-800 ">LocalStorage + Supabase (PostgreSQL)</span>
           </div>
         </div>
       </div>
@@ -5415,7 +5415,7 @@ function openStudentModal(studentId = null) {
 
               <input type="hidden" name="photoUrl" id="form-photo-url-input" value="${student.photoUrl || ''}">
               <input type="hidden" name="avatarColor" id="form-avatar-color-input" value="${student.avatarColor || 'from-indigo-500 to-purple-600'}">
-              <input type="file" id="form-photo-file-input" accept="image/*" onchange="handleFormPhotoFileSelect(event)" class="d-none">
+              <input type="file" id="form-photo-file-input" accept="image/*" onchange="handleFormPhotoFileSelect(event)" class="hidden">
 
               <div class="d-flex flex-wrap align-items-center justify-content-center sm:justify-start gap-2">
                 <button 
@@ -5468,7 +5468,7 @@ function openStudentModal(studentId = null) {
             <h3 class="text-xs fw-bold text-uppercase tracking-wider text-indigo-600 mb-3 d-flex align-items-center gap-1.5">
               <i class="fa-solid fa-id-card"></i> 1. Identificação do Aluno
             </h3>
-            <div class="row gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               
               <div class="sm:col-span-2">
                 <label class="d-block text-xs fw-semibold text-slate-700 mb-1">Nome Completo *</label>
@@ -5521,7 +5521,7 @@ function openStudentModal(studentId = null) {
             <h3 class="text-xs fw-bold text-uppercase tracking-wider text-indigo-600 mb-3 d-flex align-items-center gap-1.5">
               <i class="fa-solid fa-address-book"></i> 2. Contatos & Comunicação
             </h3>
-            <div class="row gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               
               <div>
                 <label class="d-block text-xs fw-semibold text-slate-700 mb-1">Telefone / WhatsApp</label>
@@ -5556,7 +5556,7 @@ function openStudentModal(studentId = null) {
                 >
               </div>
 
-              <div class="row gap-2">
+              <div class="grid grid-cols-2 gap-2">
                 <div>
                   <label class="d-block text-xs fw-semibold text-slate-700 mb-1">Parentesco</label>
                   <input 
@@ -5589,7 +5589,7 @@ function openStudentModal(studentId = null) {
               <span class="text-[11px] text-slate-400">Busca rápida ViaCEP</span>
             </div>
 
-            <div class="row sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               
               <div>
                 <label class="d-block text-xs fw-semibold text-slate-700 mb-1">CEP</label>
@@ -5693,7 +5693,7 @@ function openStudentModal(studentId = null) {
               <i class="fa-solid fa-brain"></i> 4. Diagnóstico, Redes Sociais & Perfil
             </h3>
 
-            <div class="row gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label class="d-block text-xs fw-semibold text-slate-700 mb-1">Área de Atuação / Profissão</label>
                 <input 
@@ -6195,7 +6195,7 @@ function openBoletimModal(studentId) {
             <h2 class="text-xs fw-bold mt-2 text-uppercase tracking-widest bg-slate-100 py-1 rounded">Boletim Individual do Aluno</h2>
           </div>
 
-          <div class="row sm:grid-cols-5 gap-3 p-4 rounded-2xl border border-slate-200 bg-slate-50/50 text-xs">
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl border border-slate-200 bg-slate-50/50 text-xs">
             <div class="sm:col-span-2">
               <span class="d-block text-slate-500 text-[10px] text-uppercase fw-bold">Aluno(a)</span>
               <span class="fw-bold text-sm text-slate-900 d-flex align-items-center gap-1.5">
@@ -6279,7 +6279,7 @@ function openBoletimModal(studentId) {
             </table>
           </div>
 
-          <div class="pt-6 row gap-8 text-center text-xs text-slate-600 ">
+          <div class="pt-6 grid grid-cols-2 gap-8 text-center text-xs text-slate-600">
             <div class="pt-10 border-t border-slate-400">
               <span class="d-block fw-semibold text-slate-800 ">Professor / Coordenação</span>
               <span>Emprega Mais Alagoas</span>
@@ -6690,7 +6690,7 @@ function renderHeaderUserBadge() {
           <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
         </button>
 
-        <div id="user-header-dropdown" class="d-none position-absolute end-0 mt-1.5 w-56 py-2 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 text-xs">
+        <div id="user-header-dropdown" class="hidden position-absolute end-0 mt-1.5 w-56 py-2 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 text-xs">
           <div class="px-3 py-2 border-b border-slate-100 ">
             <p class="fw-bold text-slate-900 text-truncate">${AppState.currentUser.name}</p>
             <p class="text-[10px] text-slate-400 text-truncate">CPF: ${maskCpf(AppState.currentUser.cpf, false)}</p>
@@ -6793,7 +6793,7 @@ function openCpfLoginModal(redirectTab = null) {
 
         <form onsubmit="handleCpfLoginSubmit(event)" class="space-y-4">
           
-          <div id="prof-name-container" class="d-none space-y-1">
+          <div id="prof-name-container" class="hidden space-y-1">
             <label class="d-block text-xs fw-semibold text-slate-700 ">Nome do Docente / Coordenador</label>
             <input 
               type="text" 
@@ -7057,13 +7057,13 @@ function openUserPhotoUploadModal() {
               alt="Foto Atual" 
               class="w-100 h-100 object-fit-cover"
             />
-            <video id="user-webcam-video" autoplay playsinline class="d-none position-absolute inset-0 w-100 h-100 object-fit-cover"></video>
+            <video id="user-webcam-video" autoplay playsinline class="hidden position-absolute inset-0 w-100 h-100 object-fit-cover"></video>
           </div>
 
           <div class="d-flex align-items-center gap-2 flex-wrap justify-content-center">
             <label class="px-3.5 py-2 rounded-xl text-xs fw-bold bg-slate-100 text-slate-700 cursor-pointer d-flex align-items-center gap-1.5 transition-all">
               <i class="fa-solid fa-upload"></i> Enviar do Arquivo
-              <input type="file" accept="image/*" class="d-none" onchange="handleUserPhotoFileInput(event)" />
+              <input type="file" accept="image/*" class="hidden" onchange="handleUserPhotoFileInput(event)" />
             </label>
             <button 
               type="button" 
@@ -7273,7 +7273,7 @@ function openSendEmailReportModal(studentId) {
 
         <div class="flex-grow-1 overflow-y-auto space-y-4 pr-1 text-xs">
           
-          <div class="row gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="d-block fw-semibold text-slate-700 mb-1">E-mail do Aluno (Destinatário)</label>
               <input 
@@ -7316,7 +7316,7 @@ function openSendEmailReportModal(studentId) {
             </div>
 
             <!-- Dados do Diagnóstico deixados pelo aluno -->
-            <div class="row gap-2 text-[11px]">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
               <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
                 <span class="text-rose-600 fw-bold d-block mb-0.5"><i class="fa-solid fa-triangle-exclamation"></i> Desafios com Conteúdo:</span>
                 <p class="text-slate-600 italic">"${student.challenges || 'Nenhum desafio registrado.'}"</p>
@@ -7837,7 +7837,7 @@ function renderForumTopicsContent() {
       
       ${renderEligibilityBanner('criar tópicos')}
 
-      <div class="row md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         ${AppState.forumTopics.map(t => {
           const commentsCount = t.comments ? t.comments.length : 0;
           const hasPhoto = t.attachments?.some(a => a.type === 'photo');
@@ -7973,7 +7973,7 @@ function renderForumTopicDetail(topicId) {
             <h4 class="fw-bold text-xs text-slate-800 d-flex align-items-center gap-1.5">
               <i class="fa-solid fa-paperclip text-indigo-600"></i> Anexos e Materiais de Apoio:
             </h4>
-            <div class="row gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               ${topic.attachments.map(att => renderAttachmentCard(att)).join("")}
             </div>
           </div>
@@ -8705,7 +8705,7 @@ function openCreateTopicModal() {
           <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
             <label class="d-block fw-bold text-slate-800 ">Adicionar Anexos ao Tópico:</label>
             
-            <div class="row sm:grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button 
                 type="button" 
                 onclick="promptAddAttachment('photo')" 
@@ -9315,7 +9315,7 @@ function renderCareersTab(container) {
           </div>
 
           <!-- Métricas Rápidas & Botão de Currículo do Aluno -->
-          <div class="d-flex flex-column sm:flex-row md:flex-col gap-2.5 w-100 md:w-auto flex-shrink-0">
+          <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
             <div class="row gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
               <div class="px-2">
                 <span class="d-block text-base sm:text-lg fw-bolder text-amber-400">${AppState.jobVacancies.length}</span>
@@ -9488,7 +9488,7 @@ function renderCareersVacanciesContent(isAluno, student) {
           <p class="text-xs max-w-sm mx-auto">Tente selecionar outro polo de Alagoas ou limpar o campo de busca.</p>
         </div>
       ` : `
-        <div class="row md:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           ${filtered.map(v => {
             const matchInfo = isAluno && student ? calculateCurriculumMatch(student, v) : null;
 
@@ -9629,7 +9629,7 @@ function renderCareersTrailsContent(isProf) {
           </div>
         </div>
 
-        <div class="row md:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           ${AppState.learningTrails.map(trilha => `
             <div class="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4 d-flex flex-column justify-content-between">
               <div class="space-y-3">
@@ -9702,7 +9702,7 @@ function renderCareersTrailsContent(isProf) {
           ` : ''}
         </div>
 
-        <div class="row gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           ${AppState.usefulResources.map(rec => `
             <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm d-flex flex-column justify-content-between space-y-3">
               <div class="space-y-2">
@@ -9861,7 +9861,7 @@ function openStudentResumeModal(studentId) {
         </div>
 
         <!-- Diagnóstico Pedagógico & Perfil de Trabalho -->
-        <div class="row gap-3 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
             <span class="fw-bold text-slate-800 d-flex align-items-center gap-1">
               <i class="fa-solid fa-bullseye text-amber-500"></i> Expectativa Profissional:
@@ -10018,7 +10018,7 @@ function openCreateVacancyModal() {
             />
           </div>
 
-          <div class="row gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="d-block fw-bold text-slate-700 mb-1">Empresa / Contratante *</label>
               <input 
@@ -10041,7 +10041,7 @@ function openCreateVacancyModal() {
             </div>
           </div>
 
-          <div class="row gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="d-block fw-bold text-slate-700 mb-1">Tipo de Contratação</label>
               <select 
@@ -10086,7 +10086,7 @@ function openCreateVacancyModal() {
             ></textarea>
           </div>
 
-          <div class="row gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="d-block fw-bold text-slate-700 mb-1">WhatsApp para Candidatura</label>
               <input 
@@ -10237,7 +10237,7 @@ function openAddResourceModal() {
             />
           </div>
 
-          <div class="row gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="d-block fw-bold text-slate-700 mb-1">Categoria</label>
               <select 
@@ -10952,7 +10952,7 @@ function renderPromptsTab(container) {
           </div>
 
           <!-- Métricas Rápidas & Ações de Docente/Discente -->
-          <div class="d-flex flex-column sm:flex-row md:flex-col gap-2.5 w-100 md:w-auto flex-shrink-0">
+          <div class="grid grid-cols-3 gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
             <div class="row gap-2 text-center bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
               <div class="px-2">
                 <span class="d-block text-base sm:text-lg fw-bolder text-amber-400">${AppState.promptsLibrary.length}</span>
@@ -11027,7 +11027,7 @@ function renderPromptsTab(container) {
           <div class="pt-4 border-t border-slate-100 space-y-6 text-xs text-slate-600 fade-in">
             
             <!-- Explicação do Repositório -->
-            <div class="row md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-1.5">
                 <strong class="text-indigo-900 fw-bold text-xs d-flex align-items-center gap-1.5">
                   <i class="fa-solid fa-circle-question text-indigo-500"></i> O que é o repositório prompts.chat?
@@ -11053,7 +11053,7 @@ function renderPromptsTab(container) {
                 <i class="fa-solid fa-route text-indigo-500"></i> Passo a Passo em 4 Fases para Usar Qualquer Prompt:
               </h3>
 
-              <div class="row gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
                   <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white fw-bolder text-xs d-flex align-items-center justify-content-center">1</span>
                   <h4 class="fw-bold text-slate-800 ">Escolha a Persona</h4>
@@ -11135,7 +11135,7 @@ function renderPromptsTab(container) {
           </button>
         </div>
       ` : `
-        <div class="row md:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           ${filteredPrompts.map(p => {
             const isFav = favoriteIds.includes(p.id);
 
@@ -11379,7 +11379,7 @@ function openPromptCustomizerModal(promptId) {
         <!-- Formulário de Campos Dinâmicos -->
         <div class="space-y-4 text-xs">
           ${extractedVars.length > 0 ? `
-            <div class="row gap-3.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               ${extractedVars.map((v, i) => `
                 <div class="space-y-1">
                   <label class="d-block fw-bold text-slate-700 ">
@@ -11532,7 +11532,7 @@ function openCreatePromptModal() {
             />
           </div>
 
-          <div class="row gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="d-block fw-bold text-slate-700 mb-1">Categoria *</label>
               <select 
