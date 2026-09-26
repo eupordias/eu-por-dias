@@ -855,12 +855,13 @@ function updateHeaderCounts() {
   const headerStats = document.getElementById("header-quick-stats");
   if (headerStats) {
     headerStats.innerHTML = `
-      <div class="d-flex align-items-center gap-2">
-        <span class="d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-circle text-xs fw-bold bg-indigo-50 text-indigo-700 border border-indigo-200 ">
-          <i class="fa-solid fa-users"></i> ${total} Alunos
+      <div class="d-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-slate-100 text-xs border border-slate-200/70 text-slate-600">
+        <span class="d-flex align-items-center gap-1.5 fw-semibold text-slate-700">
+          <i class="fa-solid fa-users text-indigo-600"></i> <strong>${total}</strong> Alunos
         </span>
-        <span class="d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-circle text-xs fw-bold bg-emerald-50 text-emerald-700 border border-emerald-200 ">
-          <i class="fa-solid fa-star"></i> Média: ${generalAvg}
+        <span class="text-slate-300">•</span>
+        <span class="d-flex align-items-center gap-1.5 fw-semibold text-slate-700">
+          <i class="fa-solid fa-chart-line text-emerald-600"></i> Média <strong>${generalAvg}</strong>
         </span>
       </div>
     `;
@@ -1374,90 +1375,131 @@ function populateClassroomFilterSelect() {
 // -------------------------------------------------------------
 // HELPER: TELA DE RESTRIÇÃO DE ACESSO POR CPF CADASTRADO
 // -------------------------------------------------------------
+
+// -------------------------------------------------------------
+// LOGIN RÁPIDO DE DEMONSTRAÇÃO (1-CLIQUE)
+// -------------------------------------------------------------
+function quickLoginDemo(role = "professor", targetTab = null) {
+  if (role === "professor") {
+    AppState.currentUser = {
+      id: "prof-everson",
+      name: "Professor Éverson Dias",
+      cpf: "10572439490",
+      role: "professor",
+      email: "eversondias@ufal.br"
+    };
+    showToast("Acesso concedido: Bem-vindo(a), Prof. Éverson Dias!", "success");
+  } else {
+    const s = (AppState.students && AppState.students.length > 0) ? AppState.students[0] : {
+      id: "demo-1",
+      name: "Ana Beatriz Silva",
+      cpf: "11111111111",
+      email: "ana.silva@exemplo.com"
+    };
+    AppState.currentUser = {
+      id: s.id,
+      name: s.name,
+      cpf: s.cpf,
+      role: "aluno",
+      email: s.email
+    };
+    showToast("Acesso concedido: Bem-vindo(a), " + s.name + " (Modo Aluno)!", "success");
+  }
+
+  closeModal();
+  if (targetTab) {
+    AppState.currentTab = targetTab;
+  }
+  renderApp();
+}
+
 function renderTabAccessRestriction(container, tabKey) {
   const tabConfigs = {
     students: {
-      title: "Regra de Acesso: Alunos e Contatos",
-      description: "Para consultar a listagem de discentes, informações de contato, endereços e fichas individuais da turma, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso seguro à sua ficha cadastral individual e aos dados oficiais da sua matrícula.",
-      profInfo: "Acesso irrestrito à listagem completa de alunos, contatos via WhatsApp, filtros por turma e edição de dados."
+      title: "Alunos & Contatos",
+      badge: "Listagem Oficial da Turma",
+      description: "Acesse para consultar fichas dos estudantes, contatos de WhatsApp em 1-clique, endereços e notas."
     },
     grades: {
-      title: "Regra de Acesso: Notas dos Módulos",
-      description: "Para visualizar boletins, médias parciais e lançamentos de avaliações dos 7 módulos do curso, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso exclusivo às suas notas individuais, médias ponderadas, situação acadêmica e envio do boletim por e-mail.",
-      profInfo: "Lançamento e edição de notas de todos os alunos, cálculo automático de médias e atas de avaliação."
+      title: "Notas dos Módulos",
+      badge: "Boletins & Avaliações",
+      description: "Acesse para visualizar boletins individuais, lançar notas parciais e frequência dos 7 módulos do curso."
     },
     reports: {
-      title: "Regra de Acesso: Relatórios e Backup",
-      description: "Para acessar as planilhas oficiais do curso, exportações completas, atas escolares e backups na nuvem, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso ao seu Boletim Individual Oficial, histórico de notas dos 7 módulos e ficha cadastral.",
-      profInfo: "Acesso irrestrito a planilhas completas (CSV), backups JSON do sistema e atas gerais de rendimento."
+      title: "Relatórios & Backup",
+      badge: "Exportações & Atas Oficiais",
+      description: "Acesse para emitir boletins escolares oficiais, atas de rendimento e backups na nuvem."
     },
     forum: {
-      title: "Regra de Acesso: Fórum & Chat ao Vivo",
-      description: "Para participar das discussões da turma, enviar mensagens no chat em tempo real e interagir com colegas e docentes, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Participação nas salas de chat, envio de dúvidas sobre os módulos e interação com foto de perfil cadastrada.",
-      profInfo: "Criação de novos tópicos com anexos multimídia (foto, PDF, link, vídeo), moderação de salas e comunicados oficiais."
+      title: "Fórum & Chat ao Vivo",
+      badge: "Comunidade da Turma",
+      description: "Participe das discussões da turma, tire dúvidas e envie mensagens em tempo real com colegas e docentes."
     },
     careers: {
-      title: "Regra de Acesso: Oportunidades & Trilhas",
-      description: "Para consultar o mural de vagas de emprego com cálculo de compatibilidade de currículo, trilhas de aprendizagem e materiais gratuitos, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso ao mural de vagas de Alagoas, cálculo de match personalizado com seu currículo, emissão de ficha profissional e cursos livres.",
-      profInfo: "Publicação de novas vagas de emprego/estágio para a turma, gestão de oportunidades e compartilhamento de materiais pedagógicos."
+      title: "Vagas & Trilhas",
+      badge: "Mural de Oportunidades",
+      description: "Consulte o mural de vagas em Alagoas, compatibilidade de currículo e cursos livres profissionalizantes."
     },
     prompts: {
-      title: "Regra de Acesso: Laboratório de Prompts & IA",
-      description: "Para explorar o acervo completo de comandos e personas de IA baseado no repositório <strong>prompts.chat (Awesome ChatGPT Prompts)</strong>, personalizar variáveis para seus clientes e utilizar o gerador de prompts, é necessário se identificar no sistema com o seu <strong>menu e CPF cadastrados previamente</strong>.",
-      alunoInfo: "Acesso a dezenas de personas profissionais de IA (Copywriting, Social Media, Gestão de Anúncios, Programação), personalizador interativo de prompt e guia passo a passo de engenharia de prompt.",
-      profInfo: "Gestão pedagógica do acervo de IA, publicação de novos prompts para as aulas da turma e acompanhamento de atividades práticas com IA."
+      title: "Prompts de IA",
+      badge: "Laboratório de IA",
+      description: "Explore acervo de personas e comandos prontos para redes sociais, copywriting, reels e tráfego pago."
     }
   };
 
-  const config = tabConfigs[tabKey] || tabConfigs.reports;
+  const config = tabConfigs[tabKey] || { title: "Área Restrita", badge: "Identificação", description: "Identifique-se para acessar." };
 
   container.innerHTML = `
-    <div class="space-y-6 fade-in max-w-2xl mx-auto py-8">
-      <div class="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200/80 shadow-xl text-center space-y-5">
-        <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 d-flex align-items-center justify-content-center text-2xl mx-auto shadow-inner">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
+    <div class="fade-in max-w-xl mx-auto py-8 px-3">
+      <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl text-center space-y-5">
         
-        <div class="space-y-2">
-          <span class="d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-circle text-xs fw-bold bg-amber-100 text-amber-800 ">
-            <i class="fa-solid fa-lock"></i> Área de Acesso Restrito
+        <div class="w-14 h-14 rounded-2xl text-white d-flex align-items-center justify-content-center text-xl mx-auto shadow-md" style="background: linear-gradient(135deg, #c026d3, #9333ea);">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+
+        <div class="space-y-1.5">
+          <span class="d-inline-flex align-items-center gap-1.5 px-3 py-0.5 rounded-pill text-[11px] fw-bold bg-indigo-50 text-indigo-700">
+            <i class="fa-solid fa-shield-halved"></i> ${config.badge}
           </span>
-          <h2 class="text-xl fw-bold text-slate-900 ">${config.title}</h2>
-          <p class="text-xs text-slate-600 leading-relaxed max-w-lg mx-auto">
+          <h2 class="text-xl fw-bold text-slate-900">${config.title}</h2>
+          <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
             ${config.description}
           </p>
         </div>
 
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-start text-xs space-y-2">
-          <div class="d-flex align-items-start gap-2.5">
-            <i class="fa-solid fa-user-graduate text-indigo-600 mt-0.5"></i>
-            <div>
-              <strong class="text-slate-800 ">Alunos Matriculados:</strong>
-              <p class="text-slate-500 text-[11px]">${config.alunoInfo}</p>
-            </div>
-          </div>
-          <div class="d-flex align-items-start gap-2.5 pt-2 border-t border-slate-200/60 ">
-            <i class="fa-solid fa-chalkboard-user text-emerald-600 mt-0.5"></i>
-            <div>
-              <strong class="text-slate-800 ">Professores e Coordenação:</strong>
-              <p class="text-slate-500 text-[11px]">${config.profInfo}</p>
-            </div>
+        <!-- Acesso Rápido de Demonstração (1-Clique) -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2.5">
+          <span class="d-block text-[11px] fw-semibold text-slate-600">Explore a plataforma imediatamente (1-clique):</span>
+          <div class="d-flex flex-wrap justify-content-center gap-2">
+            <button 
+              type="button" 
+              onclick="quickLoginDemo('professor', '${tabKey}')" 
+              class="btn btn-sm btn-primary rounded-pill px-3.5 py-2 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
+              style="background: linear-gradient(135deg, #c026d3, #9333ea); border: none;"
+            >
+              <i class="fa-solid fa-chalkboard-user"></i> Entrar como Docente (Demo)
+            </button>
+            <button 
+              type="button" 
+              onclick="quickLoginDemo('aluno', '${tabKey}')" 
+              class="btn btn-sm btn-outline-secondary rounded-pill px-3.5 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
+            >
+              <i class="fa-solid fa-graduation-cap"></i> Entrar como Aluno (Demo)
+            </button>
           </div>
         </div>
 
-        <div class="pt-2">
+        <!-- Ou digite seu CPF -->
+        <div class="pt-1">
           <button 
+            type="button" 
             onclick="openCpfLoginModal('${tabKey}')" 
-            class="px-8 py-3.5 rounded-2xl fw-bold text-xs bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all transform active:scale-95 d-inline-flex align-items-center gap-2"
+            class="text-xs fw-semibold text-indigo-600 text-decoration-none d-inline-flex align-items-center gap-1.5"
           >
-            <i class="fa-solid fa-id-card"></i> Entrar com CPF Cadastrado
+            <i class="fa-solid fa-id-card"></i> Identificar-se com CPF cadastrado
           </button>
         </div>
+
       </div>
     </div>
   `;
@@ -5085,7 +5127,7 @@ function renderAboutTab(container) {
               1. 100% Client-Side & Custo Zero
             </h3>
             <p class="text-xs text-slate-600 leading-relaxed">
-              Construído sem servidores backend caros nem bancos de dados que podem cair durante a aula. Funciona direto no navegador com <strong>HTML5, Vanilla JS e Tailwind CSS</strong>. 
+              Construído sem servidores backend caros nem bancos de dados que podem cair durante a aula. Funciona direto no navegador com <strong>HTML5, Vanilla JS, Bootstrap 5.3 e Supabase</strong>. 
               Carrega instantaneamente mesmo com internet instável nos polos do interior de Alagoas.
             </p>
           </div>
@@ -6810,14 +6852,24 @@ function renderHeaderUserBadge() {
     `;
   } else {
     container.innerHTML = `
-      <button 
-        onclick="openCpfLoginModal()" 
-        class="d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs fw-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-sm transition-all transform active:scale-95"
-        title="Entrar no sistema com CPF cadastrado"
-      >
-        <i class="fa-solid fa-id-card text-indigo-600 "></i>
-        <span class="d-none sm:inline">Entrar com CPF</span>
-      </button>
+      <div class="d-flex align-items-center gap-1.5">
+        <button 
+          onclick="quickLoginDemo('professor')" 
+          class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 text-xs fw-semibold d-none sm:inline-flex align-items-center gap-1"
+          title="Acessar instantaneamente em modo demonstração docente"
+        >
+          <i class="fa-solid fa-play"></i> Demo
+        </button>
+        <button 
+          onclick="openCpfLoginModal()" 
+          class="btn btn-sm btn-primary rounded-pill px-3 py-1 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
+          style="background: linear-gradient(135deg, #c026d3, #9333ea); border: none;"
+          title="Entrar com CPF cadastrado"
+        >
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>Entrar</span>
+        </button>
+      </div>
     `;
   }
 }
