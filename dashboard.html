@@ -186,8 +186,8 @@
       </div>
     </div>
 
-    <!-- Navegação de Abas com Rolagem Interativa -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 position-relative">
+    <!-- Navegação de Abas com Rolagem Interativa & Alta Usabilidade -->
+    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 border-t border-slate-100 position-relative">
       <div class="nav-carousel-wrapper position-relative py-2">
         
         <!-- Botão Rolagem Esquerda -->
@@ -195,7 +195,7 @@
           id="nav-scroll-btn-left" 
           type="button"
           onclick="scrollNavTabs('left')" 
-          class="nav-scroll-arrow nav-scroll-left hidden"
+          class="nav-scroll-arrow nav-scroll-left"
           title="Rolar abas para a esquerda"
           aria-label="Rolar para esquerda"
         >
@@ -205,14 +205,14 @@
         <!-- Container de rolagem das abas -->
         <nav 
           id="main-nav-tabs" 
-          class="nav-tabs-scroll-container d-flex align-items-center gap-2 overflow-x-auto no-scrollbar"
+          class="nav-tabs-scroll-container d-flex align-items-center gap-2 overflow-x-auto no-scrollbar w-100"
         >
           <button 
-            data-tab="about"
+            data-tab="students"
             class="nav-tab-btn active d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-bold"
           >
-            <i class="fa-solid fa-lightbulb"></i>
-            <span>Sobre o Sistema & Manifesto</span>
+            <i class="fa-solid fa-users"></i>
+            <span>Alunos & Contatos</span>
           </button>
 
           <button 
@@ -228,7 +228,31 @@
             class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
           >
             <i class="fa-solid fa-chart-pie"></i>
-            <span>Dashboard & Estatísticas</span>
+            <span>Dashboard</span>
+          </button>
+
+          <button 
+            data-tab="forum"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-comments"></i>
+            <span>Fórum & Chat</span>
+          </button>
+
+          <button 
+            data-tab="prompts"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
+            <span>Prompts IA</span>
+          </button>
+
+          <button 
+            data-tab="careers"
+            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
+          >
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Vagas & Trilhas</span>
           </button>
 
           <button 
@@ -240,35 +264,11 @@
           </button>
 
           <button 
-            data-tab="forum"
+            data-tab="about"
             class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
           >
-            <i class="fa-solid fa-comments"></i>
-            <span>Fórum & Chat ao Vivo</span>
-          </button>
-
-          <button 
-            data-tab="careers"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-briefcase"></i>
-            <span>Oportunidades & Trilhas</span>
-          </button>
-
-          <button 
-            data-tab="prompts"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
-            <span>Prompts & IA (ChatGPT)</span>
-          </button>
-
-          <button 
-            data-tab="students"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-users"></i>
-            <span>Alunos & Contatos</span>
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Sobre o Sistema</span>
           </button>
         </nav>
 

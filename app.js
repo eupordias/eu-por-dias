@@ -39,7 +39,7 @@ const AppState = {
     supabaseConnected: true,
     lastSupabaseSync: "2026-09-07T14:32:00.000Z"
   },
-  currentTab: "about", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum' | 'careers' | 'prompts'
+  currentTab: "students", // 'about' | 'grades' | 'dashboard' | 'reports' | 'students' | 'forum' | 'careers' | 'prompts'
   // Usuário Autenticado por CPF (Menu & Identificação)
   currentUser: null, // { id, name, cpf, role: 'professor' | 'aluno', photo, email, classroom, loginTime }
   // Fórum & Chat ao Vivo
@@ -831,6 +831,7 @@ function updateNavActiveState() {
       btn.className = "nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold";
     }
   });
+  updateNavScrollButtons();
 }
 
 function updateHeaderCounts() {
@@ -6582,16 +6583,17 @@ function updateNavScrollButtons() {
   const scrollLeft = nav.scrollLeft;
   const maxScroll = nav.scrollWidth - nav.clientWidth;
 
-  if (scrollLeft > 10) {
-    btnLeft.classList.remove("hidden");
+  // Se houver overflow horizontal, exibe as setas com estado habilitado/desabilitado
+  if (maxScroll > 15) {
+    btnLeft.style.display = "flex";
+    btnRight.style.display = "flex";
+    btnLeft.disabled = scrollLeft <= 10;
+    btnLeft.style.opacity = scrollLeft <= 10 ? "0.2" : "1";
+    btnRight.disabled = scrollLeft >= maxScroll - 10;
+    btnRight.style.opacity = scrollLeft >= maxScroll - 10 ? "0.2" : "1";
   } else {
-    btnLeft.classList.add("hidden");
-  }
-
-  if (maxScroll > 10 && scrollLeft < maxScroll - 10) {
-    btnRight.classList.remove("hidden");
-  } else {
-    btnRight.classList.add("hidden");
+    btnLeft.style.display = "none";
+    btnRight.style.display = "none";
   }
 }
 
