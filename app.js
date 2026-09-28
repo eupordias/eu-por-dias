@@ -1441,7 +1441,7 @@ function renderTabAccessRestriction(container, tabKey) {
     <div class="fade-in max-w-xl mx-auto py-8 px-3">
       <div class="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl text-center space-y-5">
         
-        <div class="w-14 h-14 rounded-2xl text-white d-flex align-items-center justify-content-center text-xl mx-auto shadow-md" style="background: linear-gradient(135deg, #c026d3, #9333ea);">
+        <div class="w-14 h-14 rounded-2xl text-white d-flex align-items-center justify-content-center text-xl mx-auto shadow-md" style="background: linear-gradient(135deg, #4f46e5, #6366f1);">
           <i class="fa-solid fa-lock"></i>
         </div>
 
@@ -1463,7 +1463,7 @@ function renderTabAccessRestriction(container, tabKey) {
               type="button" 
               onclick="quickLoginDemo('professor', '${tabKey}')" 
               class="btn btn-sm btn-primary rounded-pill px-3.5 py-2 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
-              style="background: linear-gradient(135deg, #c026d3, #9333ea); border: none;"
+              style="background: linear-gradient(135deg, #4f46e5, #6366f1); border: none;"
             >
               <i class="fa-solid fa-chalkboard-user"></i> Entrar como Docente (Demo)
             </button>
@@ -2237,320 +2237,179 @@ function openStudentProfileModal(studentId) {
   const modalContainer = document.getElementById("modal-container");
   if (!modalContainer) return;
 
-  let socialUrl = student.socialMedia || "";
-  let socialDisplay = student.socialMedia || "";
-  let isInstagram = false;
-  let isTiktok = false;
+  const statusBadgeClass = stats.status === 'Aprovado' 
+    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+    : stats.status === 'Em Recuperação' 
+      ? 'bg-amber-50 text-amber-700 border-amber-200' 
+      : stats.status === 'Reprovado' 
+        ? 'bg-rose-50 text-rose-700 border-rose-200' 
+        : 'bg-slate-50 text-slate-600 border-slate-200';
 
-  if (socialUrl) {
-    if (socialUrl.startsWith("@")) {
-      socialUrl = `https://www.instagram.com/${socialUrl.replace('@', '')}`;
-      isInstagram = true;
-    } else if (socialUrl.includes("instagram.com")) {
-      isInstagram = true;
-    } else if (socialUrl.includes("tiktok.com")) {
-      isTiktok = true;
-    } else if (!socialUrl.startsWith("http")) {
-      socialUrl = `https://www.instagram.com/${socialUrl}`;
-      isInstagram = true;
-    }
-  }
+  const initials = (student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/75 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-3xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[92vh] d-flex flex-column">
+    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white w-100 max-w-2xl rounded-2xl border border-slate-200 shadow-xl overflow-hidden scale-in max-h-[90vh] d-flex flex-column">
         
-        <!-- Header Modal -->
-        <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/60 no-print">
+        <!-- Header Modal Limpo & Unificado -->
+        <div class="px-5 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50">
           <div class="d-flex align-items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white d-flex align-items-center justify-content-center text-lg fw-bold shadow-md shadow-indigo-600/20">
-              <i class="fa-solid fa-id-card-clip"></i>
+            <div 
+              onclick="openPhotoUploadModal('${student.id}')"
+              class="position-relative w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} d-flex align-items-center justify-content-center text-white fw-bold text-sm shadow-xs flex-shrink-0 cursor-pointer"
+              title="Trocar foto"
+            >
+              ${student.photoUrl ? `
+                <img src="${student.photoUrl}" alt="${displayName}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="hidden w-100 h-100 align-items-center justify-content-center">${initials}</div>
+              ` : `<span>${initials}</span>`}
+              <div class="position-absolute bottom-0 end-0 w-3.5 h-3.5 rounded-tl bg-white/90 d-flex align-items-center justify-content-center text-[7px] text-slate-700">
+                <i class="fa-solid fa-camera"></i>
+              </div>
             </div>
+
             <div>
-              <h2 class="text-base fw-bold text-slate-900 ">Ficha Individual do Aluno</h2>
-              <p class="text-xs text-slate-500 ">Programa Emprega Mais Alagoas • Gestão de Mídias Digitais</p>
+              <div class="d-flex align-items-center gap-2">
+                <h2 class="text-sm sm:text-base fw-bold text-slate-900 mb-0">${displayName}</h2>
+                <span class="badge border rounded-pill px-2 py-0.5 text-[10px] fw-medium ${statusBadgeClass}">${stats.status}</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-xs text-slate-500 mt-0.5">
+                <span><i class="fa-solid fa-location-dot text-[10px] text-slate-400 mr-1"></i>${student.unitCity || student.polo || student.classroom || 'Alagoas'}</span>
+                <span>•</span>
+                <span class="font-monospace text-[11px]">${student.id}</span>
+                ${student.cpf ? `<span>• CPF: ${displayCpf}</span>` : ''}
+              </div>
             </div>
           </div>
-          <div class="d-flex align-items-center gap-2">
-            <button 
-              onclick="window.print()" 
-              class="px-3.5 py-2 rounded-xl text-xs fw-bold bg-indigo-600 text-white shadow-md d-flex align-items-center gap-1.5"
-            >
-              <i class="fa-solid fa-print"></i> Imprimir Ficha
+
+          <div class="d-flex align-items-center gap-1.5">
+            <button onclick="window.print()" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 text-xs d-none sm:inline-flex align-items-center gap-1">
+              <i class="fa-solid fa-print"></i> Imprimir
             </button>
-            <button onclick="closeModal()" class="w-8 h-8 rounded-circle text-slate-400 d-flex align-items-center justify-content-center ">
-              <i class="fa-solid fa-xmark text-lg"></i>
+            <button onclick="closeModal()" class="btn btn-sm btn-ghost p-1 text-slate-400 hover:text-slate-600 border-0">
+              <i class="fa-solid fa-xmark text-sm"></i>
             </button>
           </div>
         </div>
 
-        <!-- Conteúdo da Ficha -->
-        <div class="p-6 overflow-y-auto flex-grow-1 space-y-5 text-slate-800 ">
+        <!-- Conteúdo do Perfil -->
+        <div class="p-5 overflow-y-auto flex-grow-1 space-y-4 text-xs text-slate-700">
           
-          <!-- Banner Principal com Identificação -->
-          <div class="p-5 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-lg d-flex flex-column sm:flex-row align-items-start sm:items-center justify-content-between gap-4">
-            <div class="d-flex align-items-center gap-4">
-              <div 
-                onclick="openPhotoUploadModal('${student.id}')"
-                class="position-relative group/profavatar w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-400 to-purple-500'} text-white fw-bolder text-2xl d-flex align-items-center justify-content-center shadow-inner border border-white/20 flex-shrink-0 cursor-pointer"
-                title="Clique para alterar foto"
-              >
-                ${student.photoUrl ? `
-                  <img src="${student.photoUrl}" alt="${displayName}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                  <div class="hidden w-100 h-100 align-items-center justify-content-center">${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</div>
-                ` : `
-                  <span>${(student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}</span>
-                `}
-                <div class="position-absolute inset-0 bg-slate-900/60 opacity-0 group-hover/profavatar:opacity-100 transition-opacity d-flex flex-column align-items-center justify-content-center text-white text-[9px] fw-bold">
-                  <i class="fa-solid fa-camera text-xs mb-0.5"></i>
-                  <span>Foto</span>
-                </div>
-                <div class="position-absolute bottom-0 end-0 w-4 h-4 rounded-tl bg-white text-indigo-900 d-flex align-items-center justify-content-center text-[8px] shadow">
-                  <i class="fa-solid fa-camera"></i>
-                </div>
-              </div>
-              <div>
-                <h1 class="text-xl fw-bolder tracking-tight d-flex align-items-center gap-2">
-                  <span>${displayName}</span>
-                  ${AppState.privacyMode ? `
-                    <button 
-                      onclick="toggleRevealStudent('${student.id}'); openStudentProfileModal('${student.id}')" 
-                      class="text-sm ${isRevealed ? 'text-indigo-300 hover:text-white' : 'text-amber-300 hover:text-amber-200'} transition-colors no-print"
-                      title="${isRevealed ? 'Ocultar dados (LGPD)' : 'Revelar dados pessoais (Modo Deus)'}"
-                    >
-                      <i class="fa-solid ${isRevealed ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                    </button>
-                  ` : ''}
-                </h1>
-                <div class="d-flex flex-wrap align-items-center gap-2 mt-1">
-                  <span class="text-xs fw-bold px-2.5 py-0.5 rounded-circle bg-white/20 backdrop-blur-sm">
-                    <i class="fa-solid fa-location-dot mr-1 text-amber-300"></i>${student.unitCity || student.classroom || 'Alagoas'}
-                  </span>
-                  <span class="text-xs font-monospace text-indigo-200">ID: ${student.id}</span>
-                  ${student.cpf ? `<span class="text-xs font-monospace text-amber-300 fw-semibold">• CPF: ${displayCpf}</span>` : ''}
-                </div>
-              </div>
+          <!-- Linha de Métricas Acadêmicas -->
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 d-flex align-items-center justify-content-around text-center">
+            <div>
+              <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Média Geral</span>
+              <strong class="text-sm font-bold text-indigo-600">${stats.overallAvg.toFixed(1)}</strong>
             </div>
-
-            <div class="d-flex sm:flex-col align-items-center sm:items-end gap-2 bg-white/10 sm:bg-transparent p-2.5 sm:p-0 rounded-2xl w-100 sm:w-auto justify-content-between">
-              <span class="px-3 py-1 rounded-circle text-xs font-extrabold ${stats.status === 'Aprovado' ? 'bg-emerald-500 text-white' : stats.status === 'Em Recuperação' ? 'bg-amber-500 text-slate-950' : 'bg-rose-500 text-white'}">
-                ${stats.status}
-              </span>
-              <span class="text-xs text-indigo-200 fw-medium">Média: <strong>${stats.overallAvg.toFixed(1)}</strong></span>
+            <div class="border-start border-slate-200 ps-4">
+              <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Total de Faltas</span>
+              <strong class="text-sm font-bold text-slate-800">${stats.totalAbsences}</strong>
+            </div>
+            <div class="border-start border-slate-200 ps-4">
+              <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Frequência</span>
+              <strong class="text-sm font-bold ${(student.attendance || 100) >= 75 ? 'text-emerald-600' : 'text-rose-600'}">${student.attendance || 100}%</strong>
             </div>
           </div>
 
-          <!-- Grade de Informações Cadastrais e Redes -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <!-- Grade 2 Colunas: Contato & Carreira -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             
-            <!-- Box Contatos -->
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-              <h3 class="fw-bold text-slate-900 d-flex align-items-center gap-2 text-uppercase tracking-wider text-[11px] text-indigo-600 ">
-                <i class="fa-solid fa-address-book"></i> Contatos & Comunicação
-              </h3>
+            <div class="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-2">
+              <span class="fw-bold text-[11px] text-uppercase tracking-wider text-slate-400 d-block">Contatos & Comunicação</span>
               
               <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Telefone / WhatsApp:</span>
+                <span class="text-slate-500">WhatsApp:</span>
                 ${cleanPhone ? (isRevealed ? `
-                  <a href="https://wa.me/55${cleanPhone}" target="_blank" class="fw-bold text-emerald-600 d-flex align-items-center gap-1">
+                  <a href="https://wa.me/55${cleanPhone}" target="_blank" class="fw-semibold text-emerald-600 d-inline-flex align-items-center gap-1">
                     <i class="fa-brands fa-whatsapp"></i> ${displayPhone}
                   </a>
                 ` : `
-                  <span class="fw-bold text-slate-700 d-flex align-items-center gap-1.5">
-                    <span>${displayPhone}</span>
-                    <button onclick="toggleRevealStudent('${student.id}'); openStudentProfileModal('${student.id}')" class="text-amber-500 text-xs" title="Desbloquear contato com Modo Deus">
-                      <i class="fa-solid fa-lock"></i>
-                    </button>
-                  </span>
-                `) : '<span class="italic text-slate-400">Não informado</span>'}
+                  <span class="fw-semibold text-slate-600">${displayPhone} <i class="fa-solid fa-lock text-[9px] text-amber-500"></i></span>
+                `) : '<span class="text-slate-400">Não informado</span>'}
               </div>
 
               <div class="d-flex align-items-center justify-content-between">
                 <span class="text-slate-500">E-mail:</span>
-                ${student.contact?.email ? (isRevealed ? `
-                  <a href="mailto:${student.contact.email}" class="fw-semibold text-indigo-600 text-truncate max-w-[200px]">
-                    ${displayEmail}
-                  </a>
-                ` : `
-                  <span class="fw-semibold text-slate-700 text-truncate max-w-[200px]">${displayEmail}</span>
-                `) : '<span class="italic text-slate-400">Não informado</span>'}
+                <span class="text-slate-700 text-truncate max-w-[170px]">${displayEmail || 'Não informado'}</span>
               </div>
 
               <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Rede Social / Perfil:</span>
-                ${student.socialMedia ? `
-                  <a href="${socialUrl}" target="_blank" class="fw-bold text-indigo-600 d-flex align-items-center gap-1 text-truncate max-w-[200px]">
-                    <i class="${isInstagram ? 'fa-brands fa-instagram text-pink-500' : isTiktok ? 'fa-brands fa-tiktok text-slate-900 dark:text-white' : 'fa-solid fa-share-nodes'}"></i>
-                    <span class="text-truncate">${socialDisplay}</span>
-                  </a>
-                ` : '<span class="italic text-slate-400">Não informado</span>'}
-              </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Data de Inscrição:</span>
-                <span class="font-monospace text-slate-700 ">${student.registrationDate || 'Não informada'}</span>
+                <span class="text-slate-500">Inscrição:</span>
+                <span class="font-monospace text-slate-600">${student.registrationDate || 'Não informada'}</span>
               </div>
             </div>
 
-            <!-- Box Perfil Profissional -->
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-              <h3 class="fw-bold text-slate-900 d-flex align-items-center gap-2 text-uppercase tracking-wider text-[11px] text-indigo-600 ">
-                <i class="fa-solid fa-user-graduate"></i> Perfil Profissional & Acadêmico
-              </h3>
-
-              <div>
-                <span class="text-slate-500 d-block text-[10px] text-uppercase fw-semibold">Área de Atuação / Profissão:</span>
-                <span class="fw-bold text-slate-800 text-xs">${student.profession || 'Não informada'}</span>
-              </div>
-
-              <div>
-                <span class="text-slate-500 d-block text-[10px] text-uppercase fw-semibold">Escolaridade:</span>
-                <span class="fw-semibold text-slate-700 text-xs">${student.education || 'Não informada'}</span>
-              </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Experiência com Gestão de Redes:</span>
-                <span class="fw-bold ${student.experience?.toLowerCase().includes('sim') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">
-                  ${student.experience || 'Não'}
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Diagnóstico Pedagógico Aprofundado -->
-          <div class="p-5 rounded-3xl bg-indigo-50/50 border border-indigo-100 space-y-4">
-            <h3 class="fw-bold text-sm text-slate-900 d-flex align-items-center gap-2">
-              <i class="fa-solid fa-brain text-indigo-600 "></i> Diagnóstico Pedagógico e Expectativas de Aprendizado
-            </h3>
-
-            <div class="grid grid-cols-1 gap-3.5 text-xs">
+            <div class="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-2">
+              <span class="fw-bold text-[11px] text-uppercase tracking-wider text-slate-400 d-block">Perfil Profissional</span>
               
-              <div class="p-3.5 rounded-2xl bg-white border border-slate-200 ">
-                <span class="fw-bold text-rose-600 d-flex align-items-center gap-1.5 text-uppercase text-[11px] mb-1">
-                  <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios ao Produzir Conteúdo
-                </span>
-                <p class="text-slate-700 italic text-xs leading-relaxed">
-                  "${student.challenges || 'Nenhum desafio registrado no formulário.'}"
-                </p>
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="text-slate-500">Profissão:</span>
+                <span class="fw-semibold text-slate-800 text-truncate max-w-[150px]">${student.profession || 'Não informada'}</span>
               </div>
 
-              <div class="p-3.5 rounded-2xl bg-white border border-slate-200 ">
-                <span class="fw-bold text-amber-600 d-flex align-items-center gap-1.5 text-uppercase text-[11px] mb-1">
-                  <i class="fa-solid fa-fire"></i> Motivação para se Inscrever no Curso
-                </span>
-                <p class="text-slate-700 italic text-xs leading-relaxed">
-                  "${student.motivation || 'Nenhuma motivação registrada.'}"
-                </p>
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="text-slate-500">Escolaridade:</span>
+                <span class="text-slate-700 text-truncate max-w-[150px]">${student.education || 'Não informada'}</span>
               </div>
 
-              <div class="p-3.5 rounded-2xl bg-white border border-slate-200 ">
-                <span class="fw-bold text-emerald-600 d-flex align-items-center gap-1.5 text-uppercase text-[11px] mb-1">
-                  <i class="fa-solid fa-bullseye"></i> Expectativas em Relação ao Curso
-                </span>
-                <p class="text-slate-700 italic text-xs leading-relaxed">
-                  "${student.expectations || 'Nenhuma expectativa registrada.'}"
-                </p>
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="text-slate-500">Gestão de Redes:</span>
+                <span class="fw-semibold ${student.experience?.toLowerCase().includes('sim') ? 'text-emerald-600' : 'text-slate-600'}">${student.experience || 'Não'}</span>
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="p-3 rounded-2xl bg-white border border-slate-200 ">
-                  <span class="fw-bold text-slate-500 text-uppercase text-[10px] d-block mb-1">Redes Sociais Mais Utilizadas:</span>
-                  <span class="fw-medium text-slate-800 ">${student.frequentNetworks || 'Não informado'}</span>
-                </div>
-                <div class="p-3 rounded-2xl bg-white border border-slate-200 ">
-                  <span class="fw-bold text-slate-500 text-uppercase text-[10px] d-block mb-1">Ferramentas que já utilizou:</span>
-                  <span class="fw-medium text-slate-800 ">${student.tools || 'Nenhuma'}</span>
-                </div>
-              </div>
-
             </div>
+
           </div>
 
-          <!-- Rodapé do Modal -->
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-3 border-t border-slate-100 no-print">
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-              <button 
-                onclick="openGradesModal('${student.id}')"
-                class="px-4 py-2 rounded-xl fw-bold text-xs bg-indigo-50 text-indigo-700 transition-all"
-              >
-                <i class="fa-solid fa-pen-to-square mr-1"></i> Lançar Notas
-              </button>
-              <button 
-                onclick="openSendEmailReportModal('${student.id}')"
-                class="px-4 py-2 rounded-xl fw-bold text-xs bg-emerald-600 text-white d-flex align-items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all transform active:scale-95"
-                title="Enviar relatório de diagnóstico e notas diretamente por e-mail"
-              >
-                <i class="fa-solid fa-paper-plane"></i> Enviar Relatório por E-mail
-              </button>
+          <!-- Diagnóstico Pedagógico (Renderizado de forma elegante SOMENTE se preenchido) -->
+          ${(student.challenges || student.motivation || student.expectations) ? `
+            <div class="p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-2.5">
+              <span class="fw-bold text-[11px] text-uppercase tracking-wider text-indigo-900 d-block">
+                <i class="fa-solid fa-brain text-indigo-600 mr-1"></i> Diagnóstico Pedagógico
+              </span>
+              
+              ${student.challenges ? `
+                <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
+                  <span class="text-[10px] fw-bold text-rose-700 d-block">Desafios Pessoais ao Produzir Conteúdo:</span>
+                  <p class="text-slate-700 mb-0 mt-0.5">${student.challenges}</p>
+                </div>
+              ` : ''}
+
+              ${student.motivation ? `
+                <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
+                  <span class="text-[10px] fw-bold text-amber-700 d-block">Motivação para o Curso:</span>
+                  <p class="text-slate-700 mb-0 mt-0.5">${student.motivation}</p>
+                </div>
+              ` : ''}
+
+              ${student.expectations ? `
+                <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
+                  <span class="text-[10px] fw-bold text-emerald-700 d-block">Expectativas:</span>
+                  <p class="text-slate-700 mb-0 mt-0.5">${student.expectations}</p>
+                </div>
+              ` : ''}
             </div>
-            <button 
-              onclick="closeModal()" 
-              class="px-5 py-2 rounded-xl fw-bold text-xs bg-slate-100 text-slate-700 transition-all"
-            >
-              Fechar
+          ` : ''}
+
+        </div>
+
+        <!-- Rodapé do Modal -->
+        <div class="px-5 py-3 border-t border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50">
+          <div class="d-flex align-items-center gap-1.5">
+            <button onclick="openGradesModal('${student.id}')" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 text-xs fw-semibold">
+              <i class="fa-solid fa-pen-to-square"></i> Lançar Notas
+            </button>
+            <button onclick="openBoletimModal('${student.id}')" class="btn btn-sm btn-light border border-slate-200 rounded-pill px-3 py-1.5 text-xs fw-semibold text-slate-700">
+              <i class="fa-solid fa-file-invoice"></i> Boletim
             </button>
           </div>
-
+          <button onclick="closeModal()" class="btn btn-sm btn-light rounded-pill px-4 py-1.5 text-xs fw-semibold text-slate-600">
+            Fechar
+          </button>
         </div>
 
       </div>
     </div>
   `;
-}
-
-// -------------------------------------------------------------
-// GESTÃO DE FOTOS DOS ALUNOS (COMPRESSÃO, UPLOAD & WEBCAM)
-// -------------------------------------------------------------
-
-function compressAndCropImage(file, maxSize = 400, quality = 0.85) {
-  return new Promise((resolve, reject) => {
-    if (!file || !file.type.startsWith("image/")) {
-      reject(new Error("Arquivo inválido. Selecione uma imagem JPG, PNG ou WEBP."));
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
-
-        // Recorte quadrado central
-        let cropX = 0;
-        let cropY = 0;
-        let cropSize = Math.min(width, height);
-
-        if (width > height) {
-          cropX = (width - height) / 2;
-        } else {
-          cropY = (height - width) / 2;
-        }
-
-        canvas.width = Math.min(maxSize, cropSize);
-        canvas.height = Math.min(maxSize, cropSize);
-
-        const ctx = canvas.getContext("2d");
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-
-        ctx.drawImage(
-          img,
-          cropX, cropY, cropSize, cropSize,
-          0, 0, canvas.width, canvas.height
-        );
-
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve(dataUrl);
-      };
-      img.onerror = () => reject(new Error("Erro ao carregar a imagem."));
-      img.src = e.target.result;
-    };
-    reader.onerror = () => reject(new Error("Erro ao ler o arquivo."));
-    reader.readAsDataURL(file);
-  });
 }
 
 function openPhotoUploadModal(studentId) {
@@ -4719,286 +4578,138 @@ function renderReportsTab(container) {
 // -------------------------------------------------------------
 function renderAboutTab(container) {
   container.innerHTML = `
-    <div class="space-y-8 fade-in text-slate-800 ">
+    <div class="space-y-6 fade-in text-slate-800">
       
-      <!-- Banner de Apresentação Hero -->
-      <div class="position-relative overflow-hidden p-8 rounded-3xl text-white shadow-xl" style="background: linear-gradient(135deg, #1e112a 0%, #3b0764 50%, #581c87 100%) !important; color: #ffffff !important;">
-        <div class="position-relative z-10 max-w-4xl space-y-4">
-          <div class="d-flex flex-wrap align-items-center gap-2">
-            <span class="px-3 py-1 rounded-circle text-xs fw-bolder bg-amber-400 text-slate-950 text-uppercase tracking-wider shadow">
-              <i class="fa-solid fa-certificate mr-1"></i> Emprega Mais Alagoas
+      <!-- Hero Header do Manifesto (Elegante, Limpo & Inspirador) -->
+      <div class="p-6 sm:p-8 rounded-2xl text-white shadow-sm position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%) !important;">
+        <div class="position-relative z-10 max-w-3xl space-y-3">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-white/15 text-white backdrop-blur-sm px-2.5 py-1 rounded-pill text-[10px] fw-semibold tracking-wide">
+              EMPREGA MAIS ALAGOAS
             </span>
-            <span class="px-3 py-1 rounded-circle text-xs fw-semibold bg-white/20 backdrop-blur-sm">
-              <i class="fa-solid fa-graduation-cap mr-1"></i> Gestão de Mídias Digitais
+            <span class="badge bg-amber-400 text-slate-950 px-2.5 py-1 rounded-pill text-[10px] fw-bold">
+              Mídias Digitais
             </span>
-            <span class="px-3 py-1 rounded-circle text-xs fw-semibold bg-emerald-500/80 text-white">
-              <i class="fa-solid fa-users mr-1"></i> ${AppState.students.length || 715}+ Alunos Mapeados
+            <span class="badge bg-emerald-400 text-slate-950 px-2.5 py-1 rounded-pill text-[10px] fw-semibold">
+              <i class="fa-solid fa-users mr-1"></i> ${AppState.students.length || 715}+ Estudantes Mapeados
             </span>
           </div>
 
-          <h1 class="text-2xl sm:text-4xl fw-bolder tracking-tight leading-tight">
-            Eu Por Dias: Inteligência Pedagógica e Gestão Humana de Alunos
+          <h1 class="text-xl sm:text-3xl fw-bold text-white tracking-tight leading-tight">
+            Manifesto: Inteligência Pedagógica & Gestão Humana
           </h1>
 
-          <p class="text-sm sm:text-base fw-normal leading-relaxed" style="color: rgba(255, 255, 255, 0.92) !important;">
-            Uma plataforma desenvolvida sob medida para o professor do curso de <strong>Gestão de Mídias Digitais</strong>. 
-            Nascida da necessidade real de transformar mais de <strong>600 linhas estáticas de planilha</strong> em uma experiência 
-            pedagógica viva, ágil e focada na emancipação profissional de cada estudante em Alagoas.
+          <p class="text-xs sm:text-sm text-indigo-100 leading-relaxed max-w-2xl mb-0">
+            O <strong>Eu Por Dias</strong> nasceu da prática real em sala de aula para transformar planilhas estáticas em uma experiência docente viva, ágil e focada na emancipação profissional e humana de cada estudante em Alagoas.
           </p>
 
-          <div class="pt-2 d-flex flex-wrap align-items-center gap-3">
+          <div class="pt-2 d-flex align-items-center gap-3">
             <button 
               onclick="switchTab('students')" 
-              class="px-5 py-2.5 rounded-2xl bg-white text-indigo-900 fw-bold text-xs shadow-lg transition-transform active:scale-95 d-flex align-items-center gap-2"
+              class="btn btn-sm btn-light rounded-pill px-4 py-2 text-xs fw-semibold shadow-xs d-inline-flex align-items-center gap-2"
             >
-              <i class="fa-solid fa-users text-indigo-600"></i> Ir para o Painel de Alunos
+              <i class="fa-solid fa-arrow-left text-indigo-600"></i> Voltar ao Painel de Alunos
             </button>
             <button 
               onclick="openAboutModal()" 
-              class="px-5 py-2.5 rounded-2xl bg-white/10 border border-white/20 text-white fw-semibold text-xs backdrop-blur-sm transition-all d-flex align-items-center gap-2"
+              class="btn btn-sm bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-pill px-4 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 transition-colors"
             >
-              <i class="fa-solid fa-book-open"></i> Ler Manifesto em Modal
+              <i class="fa-solid fa-book-open"></i> Resumo Executivo
             </button>
           </div>
         </div>
 
-        <div class="position-absolute -right-10 -bottom-16 w-80 h-80 bg-purple-500/20 rounded-circle blur-3xl pointer-events-none"></div>
+        <div class="position-absolute -right-8 -bottom-10 w-60 h-60 bg-white/10 rounded-circle blur-3xl pointer-events-none"></div>
       </div>
 
-      <!-- Comparativo: Da Planilha Bruta ao Painel Vivo -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Três Princípios Centrais (Cards Claros, Modernos & Sem Ruído) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         
-        <!-- O Problema Antes -->
-        <div class="p-6 rounded-3xl bg-rose-50/60 border border-rose-200/80 space-y-4">
-          <div class="d-flex align-items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-rose-500 text-white d-flex align-items-center justify-content-center text-lg shadow-md shadow-rose-500/20">
-              <i class="fa-solid fa-file-excel"></i>
-            </div>
-            <div>
-              <h3 class="fw-bold text-sm text-rose-950 ">Como era antes: A Planilha Fria</h3>
-              <p class="text-xs text-rose-700/80 ">Google Sala de Aula & Formulários tradicionais</p>
-            </div>
+        <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs space-y-2.5">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-lg flex-shrink-0">
+            <i class="fa-solid fa-heart-pulse"></i>
           </div>
-
-          <ul class="space-y-2.5 text-xs text-rose-900/90 ">
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>648 linhas x 15 colunas densas:</strong> Impossível navegar rapidamente em sala de aula, no celular ou no projetor.</span>
-            </li>
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>Diagnósticos esquecidos:</strong> Medos reais dos alunos (*"vergonha de gravar vídeos"*, *"não sei editar reels"*) ficavam perdidos na coluna 14.</span>
-            </li>
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>Comunicação truncada:</strong> Para avisar um aluno ou tirar dúvida, era necessário copiar o número, abrir o WhatsApp e salvar o contato manualmente.</span>
-            </li>
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
-              <span><strong>Sem identidade visual:</strong> Nomes sem rosto, dificultando a chamada, a empatia pedagógica e o reconhecimento em turmas grandes.</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- A Solução Agora -->
-        <div class="p-6 rounded-3xl bg-emerald-50/60 border border-emerald-200/80 space-y-4">
-          <div class="d-flex align-items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white d-flex align-items-center justify-content-center text-lg shadow-md shadow-emerald-600/20">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-            </div>
-            <div>
-              <h3 class="fw-bold text-sm text-emerald-950 ">Como é agora: O Eu Por Dias</h3>
-              <p class="text-xs text-emerald-700/80 ">Plataforma pedagógica ágil e humanizada</p>
-            </div>
-          </div>
-
-          <ul class="space-y-2.5 text-xs text-emerald-900/90 ">
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-              <span><strong>Cards Pedagógicos Vivos:</strong> Foto, nome, polo SINE, matrícula, situação acadêmica e endereço a um toque de distância.</span>
-            </li>
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-              <span><strong>Gaveta de Diagnóstico Individual:</strong> Principais desafios, motivação e expectativas visíveis diretamente em cada card para mentoria pontual.</span>
-            </li>
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-              <span><strong>WhatsApp e Instagram em 1-Clique:</strong> Abertura imediata de conversa formatada para avisos de aula e feedback de posts.</span>
-            </li>
-            <li class="d-flex align-items-start gap-2">
-              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-              <span><strong>Documentos Oficiais Prontos:</strong> Emissão de boletins escolares e atas gerais em PDF para prestação de contas governamental.</span>
-            </li>
-          </ul>
-        </div>
-
-      </div>
-
-      <!-- Os 7 Pilares: Por que foi construído assim? -->
-      <div class="space-y-5">
-        <div>
-          <div class="d-flex align-items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-md text-[10px] fw-bold bg-indigo-100 text-indigo-700 ">
-              ARQUITETURA & DESIGN
-            </span>
-          </div>
-          <h2 class="text-xl fw-bold text-slate-900 mt-1">
-            Por que o Eu Por Dias foi construído exatamente assim?
-          </h2>
-          <p class="text-xs text-slate-500 ">
-            Entenda as decisões técnicas, pedagógicas e de usabilidade que moldaram o sistema.
+          <h3 class="fw-bold text-sm text-slate-900 mb-1">1. Olhar Humanizado</h3>
+          <p class="text-xs text-slate-600 leading-relaxed mb-0">
+            Cada aluno tem nome, rosto, histórico e desafios particulares. O sistema permite identificar medos de gravação, objetivos de renda e expectativas individuais para intervenções pedagógicas pontuais.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          
-          <!-- Pilar 1 -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-lg">
-              <i class="fa-solid fa-bolt"></i>
-            </div>
-            <h3 class="fw-bold text-sm text-slate-900 ">
-              1. 100% Client-Side & Custo Zero
-            </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Construído sem servidores backend caros nem bancos de dados que podem cair durante a aula. Funciona direto no navegador com <strong>HTML5, Vanilla JS, Bootstrap 5.3 e Supabase</strong>. 
-              Carrega instantaneamente mesmo com internet instável nos polos do interior de Alagoas.
-            </p>
+        <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs space-y-2.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 d-flex align-items-center justify-content-center text-lg flex-shrink-0">
+            <i class="fa-solid fa-bolt"></i>
           </div>
+          <h3 class="fw-bold text-sm text-slate-900 mb-1">2. Agilidade & LGPD</h3>
+          <p class="text-xs text-slate-600 leading-relaxed mb-0">
+            Chamada visual com foto, contato no WhatsApp em 1 clique e lançamento de notas instantâneo. Em sala de aula com datashow, os dados sensíveis permanecem estritamente protegidos sob a LGPD.
+          </p>
+        </div>
 
-          <!-- Pilar 2 -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-            <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 d-flex align-items-center justify-content-center text-lg">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <h3 class="fw-bold text-sm text-slate-900 ">
-              2. Privacidade de Dados & LGPD
-            </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Os dados pessoais dos alunos (atualmente ${AppState.students.length || 715}+ cadastrados, com CPFs, telefones, endereços e notas) permanecem protegidos por padrão. 
-              Acesso Modo Deus exclusivo autenticado e controle rigoroso de exibição para sala de aula.
-            </p>
+        <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs space-y-2.5">
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 d-flex align-items-center justify-content-center text-lg flex-shrink-0">
+            <i class="fa-solid fa-briefcase"></i>
           </div>
+          <h3 class="fw-bold text-sm text-slate-900 mb-1">3. Empregabilidade & Renda</h3>
+          <p class="text-xs text-slate-600 leading-relaxed mb-0">
+            Integração direta com o mural de vagas do SINE/Alagoas, trilhas de capacitação certificadas e prompts de inteligência artificial para que os formandos atendam seus primeiros clientes de mídias digitais.
+          </p>
+        </div>
 
-          <!-- Pilar 3 -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 d-flex align-items-center justify-content-center text-lg">
-              <i class="fa-solid fa-brain"></i>
-            </div>
-            <h3 class="fw-bold text-sm text-slate-900 ">
-              3. Diagnóstico Pedagógico Vivo
-            </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              O curso de Mídias Digitais forma criadores de conteúdo e profissionais do mercado. 
-              Saber se o aluno tem <strong>vergonha da câmera</strong> ou quer <strong>divulgar o negócio da família</strong> permite ao professor 
-              orientar a prática de forma cirúrgica e empática.
-            </p>
-          </div>
+      </div>
 
-          <!-- Pilar 4 -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-            <div class="w-10 h-10 rounded-2xl bg-green-50 text-green-600 d-flex align-items-center justify-content-center text-lg">
-              <i class="fa-brands fa-whatsapp"></i>
-            </div>
-            <h3 class="fw-bold text-sm text-slate-900 ">
-              4. Conexão Imediata (WhatsApp & Redes)
-            </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Integração ativa com a API do WhatsApp (<code class="text-[10px] bg-slate-100 px-1 py-0.5 rounded">wa.me</code>) e atalhos para Instagram/TikTok. 
-              O professor cobra frequência, dá feedback nas postagens dos alunos e envia oportunidades de emprego do SINE em segundos.
-            </p>
-          </div>
-
-          <!-- Pilar 5 -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-            <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 d-flex align-items-center justify-content-center text-lg">
-              <i class="fa-solid fa-camera"></i>
-            </div>
-            <h3 class="fw-bold text-sm text-slate-900 ">
-              5. Fotos Otimizadas & Câmera em Sala
-            </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Reconhecimento visual imediato. O sistema possui compressor nativo em Canvas (fotos de celular de 10MB viram leves 25KB), 
-              captura com webcam ao vivo na sala de aula e biblioteca de avatares inclusivos.
-            </p>
-          </div>
-
-          <!-- Pilar 6 -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-            <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 d-flex align-items-center justify-content-center text-lg">
-              <i class="fa-solid fa-file-signature"></i>
-            </div>
-            <h3 class="fw-bold text-sm text-slate-900 ">
-              6. Prestação de Contas Governamental
-            </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Cálculo automático de médias com notas por módulo de mídias digitais, controle de faltas e geração de 
-              <strong>Boletins Oficiais</strong> e <strong>Atas em PDF</strong> prontas para impressão e envio aos órgãos estaduais (SINE / SEDH / Alagoas).
-            </p>
-          </div>
-
-          <!-- Pilar 7 -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-            <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 d-flex align-items-center justify-content-center text-lg">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-            </div>
-            <h3 class="fw-bold text-sm text-slate-900 ">
-              7. Nuvem Gratuita Supabase & GitHub Pages
-            </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Hospedado gratuitamente no <strong>GitHub Pages</strong> com HTTPS/SSL mundial. Integrado ao <strong>Supabase</strong> (PostgreSQL 500MB + Storage 1GB 100% gratuitos) para backup, restauração e uso em múltiplos computadores e celulares em 1-clique.
-            </p>
-          </div>
-
+      <!-- Comparativo Síntese (Visual Limpo e Organizado) -->
+      <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs">
+        <h3 class="fw-bold text-sm text-slate-900 mb-3 d-flex align-items-center gap-2">
+          <i class="fa-solid fa-scale-balanced text-indigo-600"></i> Evolução da Experiência Docente
+        </h3>
+        
+        <div class="table-responsive">
+          <table class="table table-sm text-xs mb-0 align-middle">
+            <thead class="bg-slate-50 text-slate-600 border-bottom">
+              <tr>
+                <th class="py-2.5 px-3 fw-semibold w-25">Critério</th>
+                <th class="py-2.5 px-3 fw-semibold text-rose-700 w-35">Planilha Tradicional (Antes)</th>
+                <th class="py-2.5 px-3 fw-semibold text-emerald-700 w-40">Eu Por Dias (Agora)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Identificação do Aluno</td>
+                <td class="py-2.5 px-3 text-slate-500">Apenas linhas de texto sem rosto</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Cards com foto, presença e situação visual</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Comunicação e Avisos</td>
+                <td class="py-2.5 px-3 text-slate-500">Copiar número manualmente e salvar contato</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Abertura de WhatsApp com mensagem formatada em 1 clique</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Segurança em Projeção</td>
+                <td class="py-2.5 px-3 text-slate-500">Risco de expor CPF e telefone no projetor</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Camada LGPD nativa com mascaramento automático</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Prestação de Contas</td>
+                <td class="py-2.5 px-3 text-slate-500">Cálculo manual e compilação demorada</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Boletins individuais e atas de rendimento em PDF instantâneos</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Módulos do Curso de Gestão de Mídias Digitais -->
-      <div class="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
-        <div class="d-flex align-items-center justify-content-between">
+      <!-- Ficha Técnica & Informações Institucionais (Discreta & Compacta) -->
+      <div class="card border border-slate-200/80 rounded-2xl bg-slate-50/70 p-4 shadow-xs">
+        <div class="d-flex flex-column sm:flex-row align-items-start sm:items-center justify-content-between gap-3 text-xs text-slate-600">
           <div>
-            <h3 class="fw-bold text-sm text-slate-900 d-flex align-items-center gap-2">
-              <i class="fa-solid fa-layer-group text-indigo-600"></i> Matriz Curricular & Módulos Avaliados
-            </h3>
-            <p class="text-xs text-slate-500 ">Competências práticas avaliadas no Programa Emprega Mais Alagoas</p>
+            <strong class="text-slate-900 d-block mb-0.5">Programa Emprega Mais Alagoas</strong>
+            <span>Curso de Gestão de Mídias Digitais • Coordenação Pedagógica: Prof. Éverson Dias</span>
           </div>
-          <button onclick="openSubjectsConfigModal()" class="px-3.5 py-1.5 rounded-xl text-xs fw-bold border border-slate-200 text-slate-700 d-flex align-items-center gap-1.5">
-            <i class="fa-solid fa-gear"></i> Configurar Módulos
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-          ${AppState.subjects.map((s, idx) => `
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span class="text-[10px] fw-bold text-indigo-600 font-monospace">MÓDULO ${String(idx + 1).padStart(2, '0')}</span>
-              <h4 class="fw-bold text-slate-800 ">${s}</h4>
-              <p class="text-[11px] text-slate-400">4 atividades avaliativas + frequência</p>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-
-      <!-- Especificações Técnicas -->
-      <div class="p-6 rounded-3xl bg-slate-100/70 border border-slate-200 space-y-3 text-xs">
-        <h4 class="fw-bold text-slate-900 d-flex align-items-center gap-2">
-          <i class="fa-solid fa-code text-indigo-600"></i> Especificações de Engenharia & Tecnologias
-        </h4>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-[11px]">
-          <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
-            <span class="text-slate-400 d-block text-[10px]">Linguagem</span>
-            <span class="fw-bold text-slate-800 ">Vanilla JavaScript (ES6+)</span>
-          </div>
-          <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
-            <span class="text-slate-400 d-block text-[10px]">Estilização</span>
-            <span class="fw-bold text-slate-800 ">Bootstrap 5.3 + CSS Customizado</span>
-          </div>
-          <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
-            <span class="text-slate-400 d-block text-[10px]">Integração</span>
-            <span class="fw-bold text-slate-800 ">Google Sheets API v4 + Supabase</span>
-          </div>
-          <div class="p-2.5 rounded-xl bg-white border border-slate-200 ">
-            <span class="text-slate-400 d-block text-[10px]">Armazenamento</span>
-            <span class="fw-bold text-slate-800 ">LocalStorage + Supabase (PostgreSQL)</span>
+          <div class="d-flex align-items-center gap-2 font-monospace text-[11px] text-slate-500">
+            <span class="badge bg-white border border-slate-200 text-slate-700">Bootstrap 5.3</span>
+            <span class="badge bg-white border border-slate-200 text-slate-700">Vanilla JS</span>
+            <span class="badge bg-white border border-slate-200 text-slate-700">Sheets API v4</span>
+            <span class="badge bg-white border border-slate-200 text-slate-700">Supabase</span>
           </div>
         </div>
       </div>
@@ -5012,85 +4723,55 @@ function openAboutModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/75 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-2xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[92vh] d-flex flex-column">
+    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white w-100 max-w-xl rounded-2xl border border-slate-200 shadow-xl overflow-hidden scale-in">
         
-        <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/60 ">
-          <div class="d-flex align-items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white d-flex align-items-center justify-content-center text-lg fw-bold shadow-md shadow-indigo-600/20">
+        <div class="px-5 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50">
+          <div class="d-flex align-items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
               <i class="fa-solid fa-circle-question"></i>
             </div>
             <div>
-              <h2 class="text-base fw-bold text-slate-900 ">Sobre o Eu Por Dias</h2>
-              <p class="text-xs text-slate-500 ">Por que o sistema foi construído dessa forma?</p>
+              <h2 class="text-sm fw-bold text-slate-900 mb-0">Sobre o Eu Por Dias</h2>
+              <p class="text-[11px] text-slate-500 mb-0">Propósito & Arquitetura do Sistema</p>
             </div>
           </div>
-          <button onclick="closeModal()" class="w-8 h-8 rounded-circle text-slate-400 d-flex align-items-center justify-content-center ">
-            <i class="fa-solid fa-xmark text-lg"></i>
+          <button onclick="closeModal()" class="btn btn-sm btn-ghost p-1 text-slate-400 hover:text-slate-600 border-0">
+            <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
-        <div class="p-6 overflow-y-auto flex-grow-1 space-y-5 text-xs text-slate-700 leading-relaxed">
-          
-          <div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-950 space-y-1.5">
-            <h3 class="fw-bold text-sm d-flex align-items-center gap-1.5">
-              <i class="fa-solid fa-lightbulb text-amber-500"></i> O Propósito do Eu Por Dias
-            </h3>
-            <p>
-              O sistema foi concebido para o professor do curso de <strong>Gestão de Mídias Digitais</strong> do programa <strong>Emprega Mais Alagoas</strong>. 
-              Ele une a gestão de notas com um <strong>diagnóstico humano profundo</strong> de mais de ${AppState.students.length || 715} estudantes alagoanos.
-            </p>
+        <div class="p-5 space-y-3 text-xs text-slate-700 leading-relaxed">
+          <p class="mb-2">
+            O <strong>Eu Por Dias</strong> é uma solução pedagógica desenvolvida sob medida para o curso de <strong>Gestão de Mídias Digitais</strong> do programa <strong>Emprega Mais Alagoas</strong>.
+          </p>
+
+          <div class="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 text-indigo-950 space-y-1">
+            <strong class="d-block text-indigo-900">Princípios Fundamentais:</strong>
+            <ul class="mb-0 ps-3 space-y-1 text-[11px]">
+              <li><strong>Gestão Humanizada:</strong> Acompanhamento personalizado com foto, situação acadêmica e histórico individual.</li>
+              <li><strong>Agilidade Operacional:</strong> Chamada rápida, sincronização com Google Sheets e WhatsApp em 1 clique.</li>
+              <li><strong>Segurança & LGPD:</strong> Mascaramento nativo de CPF, telefone e endereço para projeção em sala de aula.</li>
+            </ul>
           </div>
 
-          <div class="space-y-3">
-            <h4 class="fw-bold text-slate-900 text-xs text-uppercase tracking-wider text-indigo-600 ">
-              Principais Razões de Arquitetura & Design:
-            </h4>
-            
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span class="fw-bold text-slate-900 d-block">1. Da Planilha Estática aos Cards Vivos:</span>
-              <p class="text-slate-600 ">
-                Planilhas com 648 linhas são frias e lentas para usar em aula. O Eu Por Dias transforma cada linha em um card com foto, WhatsApp em 1-clique e desafios pessoais.
-              </p>
-            </div>
-
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span class="fw-bold text-slate-900 d-block">2. Custo Zero & 100% Client-Side:</span>
-              <p class="text-slate-600 ">
-                Não depende de servidores caros nem bancos de dados que possam cair. Funciona instantaneamente mesmo no interior de Alagoas com conexões instáveis.
-              </p>
-            </div>
-
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span class="fw-bold text-slate-900 d-block">3. Privacidade e LGPD Sob Posse do Professor:</span>
-              <p class="text-slate-600 ">
-                Os dados dos alunos (CPF, telefones e endereços) não são enviados para serviços terceiros inseguros. Tudo fica gravado localmente com backup JSON.
-              </p>
-            </div>
-
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
-              <span class="fw-bold text-slate-900 d-block">4. Mentoria Direta & Emancipação de Renda:</span>
-              <p class="text-slate-600 ">
-                Ao saber exatamente quais ferramentas o aluno domina (Canva, CapCut, Meta Ads) e quais são seus medos, o professor orienta com foco em geração de renda rápida.
-              </p>
+          <div class="pt-2 d-flex align-items-center justify-content-between border-t border-slate-100">
+            <span class="text-[11px] text-slate-500">Coordenação: Prof. Éverson Dias</span>
+            <div class="d-flex align-items-center gap-2">
+              <button 
+                onclick="closeModal(); switchTab('about');" 
+                class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 text-xs fw-semibold"
+              >
+                Ver Manifesto Completo
+              </button>
+              <button 
+                onclick="closeModal()" 
+                class="btn btn-sm btn-light rounded-pill px-3 py-1.5 text-xs fw-semibold"
+              >
+                Fechar
+              </button>
             </div>
           </div>
-
-          <div class="pt-2 d-flex align-items-center justify-content-end gap-2 border-t border-slate-100 ">
-            <button 
-              onclick="closeModal(); switchTab('about');" 
-              class="px-4 py-2 rounded-xl text-xs fw-bold bg-indigo-600 text-white shadow"
-            >
-              Abrir Aba Completa do Sistema
-            </button>
-            <button 
-              onclick="closeModal()" 
-              class="px-4 py-2 rounded-xl text-xs fw-semibold bg-slate-100 text-slate-700 "
-            >
-              Fechar
-            </button>
-          </div>
-
         </div>
 
       </div>
@@ -5098,9 +4779,6 @@ function openAboutModal() {
   `;
 }
 
-// -------------------------------------------------------------
-// MODAL: CADASTRO E EDIÇÃO DE ALUNO
-// -------------------------------------------------------------
 function openStudentModal(studentId = null) {
   AppState.editingStudentId = studentId;
   const isEditing = !!studentId;
@@ -6597,7 +6275,7 @@ function renderHeaderUserBadge() {
         <button 
           onclick="openCpfLoginModal()" 
           class="btn btn-sm btn-primary rounded-pill px-3 py-1 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
-          style="background: linear-gradient(135deg, #c026d3, #9333ea); border: none;"
+          style="background: linear-gradient(135deg, #4f46e5, #6366f1); border: none;"
           title="Entrar com CPF cadastrado"
         >
           <i class="fa-solid fa-arrow-right-to-bracket"></i>
@@ -6624,31 +6302,31 @@ function openCpfLoginModal(redirectTab = null) {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-md rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-7 scale-in space-y-5">
+    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop fade-in">
+      <div class="bg-white w-100 max-w-md rounded-2xl border border-slate-200 shadow-xl p-5 sm:p-6 scale-in space-y-4">
         
-        <div class="d-flex align-items-center justify-content-between">
-          <div class="d-flex align-items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-lg">
+        <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100">
+          <div class="d-flex align-items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
               <i class="fa-solid fa-id-card"></i>
             </div>
             <div>
-              <h3 class="fw-bold text-sm text-slate-900 ">Login de Acesso ao Sistema</h3>
-              <p class="text-[11px] text-slate-500 ">Emprega Mais Alagoas • Mídias Digitais</p>
+              <h3 class="fw-bold text-sm text-slate-900 mb-0">Login de Acesso ao Sistema</h3>
+              <p class="text-[11px] text-slate-500 mb-0">Emprega Mais Alagoas • Mídias Digitais</p>
             </div>
           </div>
-          <button onclick="closeModal()" class="text-slate-400 ">
-            <i class="fa-solid fa-xmark"></i>
+          <button onclick="closeModal()" class="btn btn-sm btn-ghost p-1 text-slate-400 hover:text-slate-600 border-0">
+            <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
-        <!-- Seletor de Perfil / Menu -->
-        <div class="p-1 rounded-2xl bg-slate-100 d-flex align-items-center gap-1 text-xs fw-semibold">
+        <!-- Seletor de Perfil Aluno / Professor -->
+        <div class="p-1 rounded-xl bg-slate-100 d-flex align-items-center gap-1 text-xs fw-semibold">
           <button 
             type="button" 
             id="role-tab-aluno" 
             onclick="switchCpfLoginRole('aluno')" 
-            class="flex-grow-1 py-2 rounded-xl text-center fw-bold bg-white text-indigo-600 shadow-sm transition-all d-flex align-items-center justify-content-center gap-1.5"
+            class="flex-grow-1 py-1.5 rounded-lg text-center fw-bold bg-white text-indigo-600 shadow-xs transition-all d-flex align-items-center justify-content-center gap-1.5 border-0"
           >
             <i class="fa-solid fa-graduation-cap"></i> Aluno
           </button>
@@ -6656,26 +6334,26 @@ function openCpfLoginModal(redirectTab = null) {
             type="button" 
             id="role-tab-professor" 
             onclick="switchCpfLoginRole('professor')" 
-            class="flex-grow-1 py-2 rounded-xl text-center text-slate-600 transition-all d-flex align-items-center justify-content-center gap-1.5"
+            class="flex-grow-1 py-1.5 rounded-lg text-center text-slate-600 transition-all d-flex align-items-center justify-content-center gap-1.5 border-0"
           >
             <i class="fa-solid fa-chalkboard-user"></i> Professor
           </button>
         </div>
 
-        <form onsubmit="handleCpfLoginSubmit(event)" class="space-y-4">
+        <form onsubmit="handleCpfLoginSubmit(event)" class="space-y-3">
           
           <div id="prof-name-container" class="hidden space-y-1">
-            <label class="d-block text-xs fw-semibold text-slate-700 ">Nome do Docente / Coordenador</label>
+            <label class="d-block text-xs fw-semibold text-slate-700">Nome do Docente / Coordenador</label>
             <input 
               type="text" 
               id="login-prof-name" 
               value="Professor(a) • Coordenação Emprega Mais"
-              class="w-100 px-3.5 py-2.5 rounded-xl text-xs border border-slate-200 bg-slate-50 text-slate-900 "
+              class="form-control form-control-sm text-xs rounded-xl border-slate-200"
             />
           </div>
 
           <div class="space-y-1">
-            <label class="d-block text-xs fw-semibold text-slate-700 ">
+            <label class="d-block text-xs fw-semibold text-slate-700">
               <span id="login-cpf-label">CPF do Aluno Matriculado</span>
             </label>
             <div class="position-relative">
@@ -6686,27 +6364,27 @@ function openCpfLoginModal(redirectTab = null) {
                 maxlength="14"
                 placeholder="000.000.000-00" 
                 autocomplete="off"
-                class="w-100 pl-9 pr-3.5 py-2.5 rounded-xl text-xs font-monospace fw-bold border border-slate-200 bg-slate-50 text-slate-900 "
+                class="form-control form-control-sm pl-8 text-xs font-monospace rounded-xl border-slate-200"
                 oninput="formatCpfInput(this)"
               />
-              <i class="fa-solid fa-address-card position-absolute left-3 top-3 text-slate-400 text-xs"></i>
+              <i class="fa-solid fa-address-card position-absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             </div>
-            <p id="login-hint" class="text-[10px] text-slate-500 mt-1">
-              O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados previamente.
+            <p id="login-hint" class="text-[10px] text-slate-400 mt-1 mb-0">
+              O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados.
             </p>
           </div>
 
-          <div class="pt-2 d-flex align-items-center justify-content-end gap-2">
+          <div class="pt-2 d-flex align-items-center justify-content-end gap-2 border-t border-slate-100">
             <button 
               type="button" 
               onclick="closeModal()" 
-              class="px-4 py-2.5 rounded-xl text-xs fw-semibold text-slate-600 "
+              class="btn btn-sm btn-light rounded-pill px-3 py-1.5 text-xs fw-semibold text-slate-600"
             >
               Cancelar
             </button>
             <button 
               type="submit" 
-              class="px-5 py-2.5 rounded-xl text-xs fw-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/25 transition-all d-flex align-items-center gap-2"
+              class="btn btn-sm btn-primary rounded-pill px-4 py-1.5 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
             >
               <i class="fa-solid fa-right-to-bracket"></i> Acessar o Sistema
             </button>
@@ -6714,8 +6392,7 @@ function openCpfLoginModal(redirectTab = null) {
         </form>
 
       </div>
-    </div>
-  `;
+    </div>`;
 
   setTimeout(() => {
     const input = document.getElementById("login-cpf-input");
@@ -9212,7 +8889,7 @@ function renderCareersTab(container) {
               <button 
                 onclick="openCreateVacancyModal()" 
                 class="d-inline-flex align-items-center justify-content-center gap-2 px-4 py-2.5 rounded-pill fw-bold text-xs text-white shadow-md transition-all cursor-pointer active:scale-95 border-0"
-                style="background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%) !important;"
+                style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;"
               >
                 <i class="fa-solid fa-plus"></i> Publicar Nova Vaga
               </button>
@@ -10843,7 +10520,7 @@ function renderPromptsTab(container) {
               <button 
                 onclick="openCreatePromptModal()" 
                 class="d-inline-flex align-items-center justify-content-center gap-2 px-4 py-2.5 rounded-pill fw-bold text-xs text-white shadow-md transition-all cursor-pointer active:scale-95 border-0"
-                style="background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%) !important;"
+                style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;"
               >
                 <i class="fa-solid fa-plus"></i> Adicionar Prompt à Turma
               </button>
