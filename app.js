@@ -2248,165 +2248,165 @@ function openStudentProfileModal(studentId) {
   const initials = (student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-2xl rounded-2xl border border-slate-200 shadow-xl overflow-hidden scale-in max-h-[90vh] d-flex flex-column">
-        
-        <!-- Header Modal Limpo & Unificado -->
-        <div class="px-5 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50">
-          <div class="d-flex align-items-center gap-3">
-            <div 
-              onclick="openPhotoUploadModal('${student.id}')"
-              class="position-relative w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} d-flex align-items-center justify-content-center text-white fw-bold text-sm shadow-xs flex-shrink-0 cursor-pointer"
-              title="Trocar foto"
-            >
-              ${student.photoUrl ? `
-                <img src="${student.photoUrl}" alt="${displayName}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="hidden w-100 h-100 align-items-center justify-content-center">${initials}</div>
-              ` : `<span>${initials}</span>`}
-              <div class="position-absolute bottom-0 end-0 w-3.5 h-3.5 rounded-tl bg-white/90 d-flex align-items-center justify-content-center text-[7px] text-slate-700">
-                <i class="fa-solid fa-camera"></i>
-              </div>
-            </div>
-
-            <div>
-              <div class="d-flex align-items-center gap-2">
-                <h2 class="text-sm sm:text-base fw-bold text-slate-900 mb-0">${displayName}</h2>
-                <span class="badge border rounded-pill px-2 py-0.5 text-[10px] fw-medium ${statusBadgeClass}">${stats.status}</span>
-              </div>
-              <div class="d-flex align-items-center gap-2 text-xs text-slate-500 mt-0.5">
-                <span><i class="fa-solid fa-location-dot text-[10px] text-slate-400 mr-1"></i>${student.unitCity || student.polo || student.classroom || 'Alagoas'}</span>
-                <span>•</span>
-                <span class="font-monospace text-[11px]">${student.id}</span>
-                ${student.cpf ? `<span>• CPF: ${displayCpf}</span>` : ''}
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center gap-1.5">
-            <button onclick="window.print()" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 text-xs d-none sm:inline-flex align-items-center gap-1">
-              <i class="fa-solid fa-print"></i> Imprimir
-            </button>
-            <button onclick="closeModal()" class="btn btn-sm btn-ghost p-1 text-slate-400 hover:text-slate-600 border-0">
-              <i class="fa-solid fa-xmark text-sm"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Conteúdo do Perfil -->
-        <div class="p-5 overflow-y-auto flex-grow-1 space-y-4 text-xs text-slate-700">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden">
           
-          <!-- Linha de Métricas Acadêmicas -->
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 d-flex align-items-center justify-content-around text-center">
-            <div>
-              <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Média Geral</span>
-              <strong class="text-sm font-bold text-indigo-600">${stats.overallAvg.toFixed(1)}</strong>
+          <!-- Header -->
+          <div class="modal-header border-bottom py-3 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div 
+                onclick="openPhotoUploadModal('${student.id}')"
+                class="position-relative w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} d-flex align-items-center justify-content-center text-white fw-bold text-sm shadow-xs flex-shrink-0 cursor-pointer"
+                title="Trocar foto"
+              >
+                ${student.photoUrl ? `
+                  <img src="${student.photoUrl}" alt="${displayName}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                  <div class="hidden w-100 h-100 align-items-center justify-content-center">${initials}</div>
+                ` : `<span>${initials}</span>`}
+                <div class="position-absolute bottom-0 end-0 w-3.5 h-3.5 rounded-tl bg-white/90 d-flex align-items-center justify-content-center text-[7px] text-slate-700">
+                  <i class="fa-solid fa-camera"></i>
+                </div>
+              </div>
+
+              <div>
+                <div class="d-flex align-items-center gap-2">
+                  <h2 class="text-sm sm:text-base fw-bold text-slate-900 mb-0">${displayName}</h2>
+                  <span class="badge border rounded-pill px-2 py-0.5 text-[10px] fw-medium ${statusBadgeClass}">${stats.status}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-xs text-slate-500 mt-0.5 flex-wrap">
+                  <span><i class="fa-solid fa-location-dot text-[10px] text-slate-400 mr-1"></i>${student.unitCity || student.polo || student.classroom || 'Alagoas'}</span>
+                  <span>•</span>
+                  <span class="font-monospace text-[11px]">${student.id}</span>
+                  ${student.cpf ? `<span>• CPF: ${displayCpf}</span>` : ''}
+                </div>
+              </div>
             </div>
-            <div class="border-start border-slate-200 ps-4">
-              <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Total de Faltas</span>
-              <strong class="text-sm font-bold text-slate-800">${stats.totalAbsences}</strong>
-            </div>
-            <div class="border-start border-slate-200 ps-4">
-              <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Frequência</span>
-              <strong class="text-sm font-bold ${(student.attendance || 100) >= 75 ? 'text-emerald-600' : 'text-rose-600'}">${student.attendance || 100}%</strong>
+
+            <div class="d-flex align-items-center gap-1.5">
+              <button onclick="window.print()" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 text-xs d-none sm:inline-flex align-items-center gap-1">
+                <i class="fa-solid fa-print"></i> Imprimir
+              </button>
+              <button onclick="closeModal()" class="btn-close" aria-label="Fechar"></button>
             </div>
           </div>
 
-          <!-- Grade 2 Colunas: Contato & Carreira -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            
-            <div class="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-2">
-              <span class="fw-bold text-[11px] text-uppercase tracking-wider text-slate-400 d-block">Contatos & Comunicação</span>
-              
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">WhatsApp:</span>
-                ${cleanPhone ? (isRevealed ? `
-                  <a href="https://wa.me/55${cleanPhone}" target="_blank" class="fw-semibold text-emerald-600 d-inline-flex align-items-center gap-1">
-                    <i class="fa-brands fa-whatsapp"></i> ${displayPhone}
-                  </a>
-                ` : `
-                  <span class="fw-semibold text-slate-600">${displayPhone} <i class="fa-solid fa-lock text-[9px] text-amber-500"></i></span>
-                `) : '<span class="text-slate-400">Não informado</span>'}
+          <!-- Body -->
+          <div class="modal-body p-4 space-y-4 text-xs text-slate-700">
+            <!-- Linha de Métricas Acadêmicas -->
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 d-flex align-items-center justify-content-around text-center">
+              <div>
+                <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Média Geral</span>
+                <strong class="text-sm font-bold text-indigo-600">${stats.overallAvg.toFixed(1)}</strong>
               </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">E-mail:</span>
-                <span class="text-slate-700 text-truncate max-w-[170px]">${displayEmail || 'Não informado'}</span>
+              <div class="border-start border-slate-200 ps-3 sm:ps-4">
+                <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Total de Faltas</span>
+                <strong class="text-sm font-bold text-slate-800">${stats.totalAbsences}</strong>
               </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Inscrição:</span>
-                <span class="font-monospace text-slate-600">${student.registrationDate || 'Não informada'}</span>
+              <div class="border-start border-slate-200 ps-3 sm:ps-4">
+                <span class="text-[10px] text-slate-400 text-uppercase fw-semibold d-block">Frequência</span>
+                <strong class="text-sm font-bold ${(student.attendance || 100) >= 75 ? 'text-emerald-600' : 'text-rose-600'}">${student.attendance || 100}%</strong>
               </div>
             </div>
 
-            <div class="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-2">
-              <span class="fw-bold text-[11px] text-uppercase tracking-wider text-slate-400 d-block">Perfil Profissional</span>
-              
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Profissão:</span>
-                <span class="fw-semibold text-slate-800 text-truncate max-w-[150px]">${student.profession || 'Não informada'}</span>
+            <!-- Grade 2 Colunas: Contato & Carreira -->
+            <div class="row g-3">
+              <div class="col-12 col-sm-6">
+                <div class="p-3.5 rounded-xl bg-white border border-slate-200/80 h-100 space-y-2">
+                  <span class="fw-bold text-[11px] text-uppercase tracking-wider text-slate-400 d-block">Contatos & Comunicação</span>
+                  
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-slate-500">WhatsApp:</span>
+                    ${cleanPhone ? (isRevealed ? `
+                      <a href="https://wa.me/55${cleanPhone}" target="_blank" class="fw-semibold text-emerald-600 d-inline-flex align-items-center gap-1">
+                        <i class="fa-brands fa-whatsapp"></i> ${displayPhone}
+                      </a>
+                    ` : `
+                      <span class="fw-semibold text-slate-600">${displayPhone} <i class="fa-solid fa-lock text-[9px] text-amber-500"></i></span>
+                    `) : '<span class="text-slate-400">Não informado</span>'}
+                  </div>
+
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-slate-500">E-mail:</span>
+                    <span class="text-slate-700 text-truncate max-w-[170px]">${displayEmail || 'Não informado'}</span>
+                  </div>
+
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-slate-500">Inscrição:</span>
+                    <span class="font-monospace text-slate-600">${student.registrationDate || 'Não informada'}</span>
+                  </div>
+                </div>
               </div>
 
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Escolaridade:</span>
-                <span class="text-slate-700 text-truncate max-w-[150px]">${student.education || 'Não informada'}</span>
-              </div>
+              <div class="col-12 col-sm-6">
+                <div class="p-3.5 rounded-xl bg-white border border-slate-200/80 h-100 space-y-2">
+                  <span class="fw-bold text-[11px] text-uppercase tracking-wider text-slate-400 d-block">Perfil Profissional</span>
+                  
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-slate-500">Profissão:</span>
+                    <span class="fw-semibold text-slate-800 text-truncate max-w-[150px]">${student.profession || 'Não informada'}</span>
+                  </div>
 
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="text-slate-500">Gestão de Redes:</span>
-                <span class="fw-semibold ${student.experience?.toLowerCase().includes('sim') ? 'text-emerald-600' : 'text-slate-600'}">${student.experience || 'Não'}</span>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-slate-500">Escolaridade:</span>
+                    <span class="text-slate-700 text-truncate max-w-[150px]">${student.education || 'Não informada'}</span>
+                  </div>
+
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-slate-500">Gestão de Redes:</span>
+                    <span class="fw-semibold ${student.experience?.toLowerCase().includes('sim') ? 'text-emerald-600' : 'text-slate-600'}">${student.experience || 'Não'}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
+            <!-- Diagnóstico Pedagógico (Apenas se houver dados) -->
+            ${(student.challenges || student.motivation || student.expectations) ? `
+              <div class="p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-2">
+                <span class="fw-bold text-[11px] text-uppercase tracking-wider text-indigo-900 d-block">
+                  <i class="fa-solid fa-brain text-indigo-600 mr-1"></i> Diagnóstico Pedagógico
+                </span>
+                
+                ${student.challenges ? `
+                  <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
+                    <span class="text-[10px] fw-bold text-rose-700 d-block">Desafios Pessoais ao Produzir Conteúdo:</span>
+                    <p class="text-slate-700 mb-0 mt-0.5">${student.challenges}</p>
+                  </div>
+                ` : ''}
+
+                ${student.motivation ? `
+                  <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
+                    <span class="text-[10px] fw-bold text-amber-700 d-block">Motivação para o Curso:</span>
+                    <p class="text-slate-700 mb-0 mt-0.5">${student.motivation}</p>
+                  </div>
+                ` : ''}
+
+                ${student.expectations ? `
+                  <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
+                    <span class="text-[10px] fw-bold text-emerald-700 d-block">Expectativas:</span>
+                    <p class="text-slate-700 mb-0 mt-0.5">${student.expectations}</p>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
           </div>
 
-          <!-- Diagnóstico Pedagógico (Renderizado de forma elegante SOMENTE se preenchido) -->
-          ${(student.challenges || student.motivation || student.expectations) ? `
-            <div class="p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-2.5">
-              <span class="fw-bold text-[11px] text-uppercase tracking-wider text-indigo-900 d-block">
-                <i class="fa-solid fa-brain text-indigo-600 mr-1"></i> Diagnóstico Pedagógico
-              </span>
-              
-              ${student.challenges ? `
-                <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
-                  <span class="text-[10px] fw-bold text-rose-700 d-block">Desafios Pessoais ao Produzir Conteúdo:</span>
-                  <p class="text-slate-700 mb-0 mt-0.5">${student.challenges}</p>
-                </div>
-              ` : ''}
-
-              ${student.motivation ? `
-                <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
-                  <span class="text-[10px] fw-bold text-amber-700 d-block">Motivação para o Curso:</span>
-                  <p class="text-slate-700 mb-0 mt-0.5">${student.motivation}</p>
-                </div>
-              ` : ''}
-
-              ${student.expectations ? `
-                <div class="p-2.5 rounded-lg bg-white border border-slate-200/70">
-                  <span class="text-[10px] fw-bold text-emerald-700 d-block">Expectativas:</span>
-                  <p class="text-slate-700 mb-0 mt-0.5">${student.expectations}</p>
-                </div>
-              ` : ''}
+          <!-- Footer -->
+          <div class="modal-footer border-top py-2.5 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-1.5">
+              <button onclick="openGradesModal('${student.id}')" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 text-xs fw-semibold">
+                <i class="fa-solid fa-pen-to-square"></i> Lançar Notas
+              </button>
+              <button onclick="openBoletimModal('${student.id}')" class="btn btn-sm btn-light border border-slate-200 rounded-pill px-3 py-1.5 text-xs fw-semibold text-slate-700">
+                <i class="fa-solid fa-file-invoice"></i> Boletim
+              </button>
             </div>
-          ` : ''}
+            <button onclick="closeModal()" class="btn btn-sm btn-light rounded-pill px-4 py-1.5 text-xs fw-semibold text-slate-600">
+              Fechar
+            </button>
+          </div>
 
         </div>
-
-        <!-- Rodapé do Modal -->
-        <div class="px-5 py-3 border-t border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50">
-          <div class="d-flex align-items-center gap-1.5">
-            <button onclick="openGradesModal('${student.id}')" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 text-xs fw-semibold">
-              <i class="fa-solid fa-pen-to-square"></i> Lançar Notas
-            </button>
-            <button onclick="openBoletimModal('${student.id}')" class="btn btn-sm btn-light border border-slate-200 rounded-pill px-3 py-1.5 text-xs fw-semibold text-slate-700">
-              <i class="fa-solid fa-file-invoice"></i> Boletim
-            </button>
-          </div>
-          <button onclick="closeModal()" class="btn btn-sm btn-light rounded-pill px-4 py-1.5 text-xs fw-semibold text-slate-600">
-            Fechar
-          </button>
-        </div>
-
       </div>
     </div>
   `;
@@ -4580,7 +4580,7 @@ function renderAboutTab(container) {
   container.innerHTML = `
     <div class="space-y-6 fade-in text-slate-800">
       
-      <!-- Hero Header do Manifesto (Elegante, Limpo & Inspirador) -->
+      <!-- Hero Header do Manifesto -->
       <div class="p-6 sm:p-8 rounded-2xl text-white shadow-sm position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%) !important;">
         <div class="position-relative z-10 max-w-3xl space-y-3">
           <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -4591,30 +4591,24 @@ function renderAboutTab(container) {
               Mídias Digitais
             </span>
             <span class="badge bg-emerald-400 text-slate-950 px-2.5 py-1 rounded-pill text-[10px] fw-semibold">
-              <i class="fa-solid fa-users mr-1"></i> ${AppState.students.length || 715}+ Estudantes Mapeados
+              <i class="fa-solid fa-users mr-1"></i> ${AppState.students.length || 715}+ Alunos Mapeados
             </span>
           </div>
 
           <h1 class="text-xl sm:text-3xl fw-bold text-white tracking-tight leading-tight">
-            Manifesto: Inteligência Pedagógica & Gestão Humana
+            Manifesto Pedagógico: Da Planilha ao Cuidado Real
           </h1>
 
           <p class="text-xs sm:text-sm text-indigo-100 leading-relaxed max-w-2xl mb-0">
             O <strong>Eu Por Dias</strong> nasceu da prática real em sala de aula para transformar planilhas estáticas em uma experiência docente viva, ágil e focada na emancipação profissional e humana de cada estudante em Alagoas.
           </p>
 
-          <div class="pt-2 d-flex align-items-center gap-3">
+          <div class="pt-2 d-flex align-items-center gap-3 flex-wrap">
             <button 
               onclick="switchTab('students')" 
               class="btn btn-sm btn-light rounded-pill px-4 py-2 text-xs fw-semibold shadow-xs d-inline-flex align-items-center gap-2"
             >
-              <i class="fa-solid fa-arrow-left text-indigo-600"></i> Voltar ao Painel de Alunos
-            </button>
-            <button 
-              onclick="openAboutModal()" 
-              class="btn btn-sm bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-pill px-4 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 transition-colors"
-            >
-              <i class="fa-solid fa-book-open"></i> Resumo Executivo
+              <i class="fa-solid fa-arrow-left text-indigo-600"></i> Ir para a Lista de Alunos
             </button>
           </div>
         </div>
@@ -4622,94 +4616,96 @@ function renderAboutTab(container) {
         <div class="position-absolute -right-8 -bottom-10 w-60 h-60 bg-white/10 rounded-circle blur-3xl pointer-events-none"></div>
       </div>
 
-      <!-- Três Princípios Centrais (Cards Claros, Modernos & Sem Ruído) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
-        <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs space-y-2.5">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-lg flex-shrink-0">
-            <i class="fa-solid fa-heart-pulse"></i>
+      <!-- Três Pilares Centrais -->
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="card border border-slate-200/80 rounded-2xl bg-white p-4 h-100 shadow-xs space-y-2">
+            <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-base flex-shrink-0">
+              <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <h3 class="fw-bold text-sm text-slate-900 mb-1">1. Olhar Humanizado</h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-0">
+              Cada aluno possui rosto, histórico e aspirações únicas. O sistema permite identificar desafios individuais de aprendizagem para mentoria cirúrgica e empática.
+            </p>
           </div>
-          <h3 class="fw-bold text-sm text-slate-900 mb-1">1. Olhar Humanizado</h3>
-          <p class="text-xs text-slate-600 leading-relaxed mb-0">
-            Cada aluno tem nome, rosto, histórico e desafios particulares. O sistema permite identificar medos de gravação, objetivos de renda e expectativas individuais para intervenções pedagógicas pontuais.
-          </p>
         </div>
 
-        <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs space-y-2.5">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 d-flex align-items-center justify-content-center text-lg flex-shrink-0">
-            <i class="fa-solid fa-bolt"></i>
+        <div class="col-12 col-md-4">
+          <div class="card border border-slate-200/80 rounded-2xl bg-white p-4 h-100 shadow-xs space-y-2">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 d-flex align-items-center justify-content-center text-base flex-shrink-0">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h3 class="fw-bold text-sm text-slate-900 mb-1">2. Agilidade & LGPD</h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-0">
+              Chamada visual, contato rápido pelo WhatsApp e lançamento instantâneo de notas com total conformidade com a LGPD para projeção em sala de aula.
+            </p>
           </div>
-          <h3 class="fw-bold text-sm text-slate-900 mb-1">2. Agilidade & LGPD</h3>
-          <p class="text-xs text-slate-600 leading-relaxed mb-0">
-            Chamada visual com foto, contato no WhatsApp em 1 clique e lançamento de notas instantâneo. Em sala de aula com datashow, os dados sensíveis permanecem estritamente protegidos sob a LGPD.
-          </p>
         </div>
 
-        <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs space-y-2.5">
-          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 d-flex align-items-center justify-content-center text-lg flex-shrink-0">
-            <i class="fa-solid fa-briefcase"></i>
+        <div class="col-12 col-md-4">
+          <div class="card border border-slate-200/80 rounded-2xl bg-white p-4 h-100 shadow-xs space-y-2">
+            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 d-flex align-items-center justify-content-center text-base flex-shrink-0">
+              <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <h3 class="fw-bold text-sm text-slate-900 mb-1">3. Mercado & Renda</h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-0">
+              Conexão direta com o mural de vagas, trilhas de capacitação certificadas e ferramentas de inteligência artificial para inserção no mercado de trabalho.
+            </p>
           </div>
-          <h3 class="fw-bold text-sm text-slate-900 mb-1">3. Empregabilidade & Renda</h3>
-          <p class="text-xs text-slate-600 leading-relaxed mb-0">
-            Integração direta com o mural de vagas do SINE/Alagoas, trilhas de capacitação certificadas e prompts de inteligência artificial para que os formandos atendam seus primeiros clientes de mídias digitais.
-          </p>
         </div>
-
       </div>
 
-      <!-- Comparativo Síntese (Visual Limpo e Organizado) -->
-      <div class="card border border-slate-200/80 rounded-2xl bg-white p-5 shadow-xs">
+      <!-- Da Planilha Tradicional ao Eu Por Dias (Tabela Sintética) -->
+      <div class="card border border-slate-200/80 rounded-2xl bg-white p-4 shadow-xs">
         <h3 class="fw-bold text-sm text-slate-900 mb-3 d-flex align-items-center gap-2">
-          <i class="fa-solid fa-scale-balanced text-indigo-600"></i> Evolução da Experiência Docente
+          <i class="fa-solid fa-scale-balanced text-indigo-600"></i> Da Planilha Tradicional ao Eu Por Dias
         </h3>
-        
         <div class="table-responsive">
           <table class="table table-sm text-xs mb-0 align-middle">
             <thead class="bg-slate-50 text-slate-600 border-bottom">
               <tr>
-                <th class="py-2.5 px-3 fw-semibold w-25">Critério</th>
-                <th class="py-2.5 px-3 fw-semibold text-rose-700 w-35">Planilha Tradicional (Antes)</th>
+                <th class="py-2.5 px-3 fw-semibold w-25">Aspecto</th>
+                <th class="py-2.5 px-3 fw-semibold text-slate-500 w-35">Planilha Fria (Antes)</th>
                 <th class="py-2.5 px-3 fw-semibold text-emerald-700 w-40">Eu Por Dias (Agora)</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
               <tr>
-                <td class="py-2.5 px-3 fw-medium text-slate-900">Identificação do Aluno</td>
-                <td class="py-2.5 px-3 text-slate-500">Apenas linhas de texto sem rosto</td>
-                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Cards com foto, presença e situação visual</td>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Identificação</td>
+                <td class="py-2.5 px-3 text-slate-500">Linhas de texto sem foto</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Cards vivos com foto, situação e presença</td>
               </tr>
               <tr>
-                <td class="py-2.5 px-3 fw-medium text-slate-900">Comunicação e Avisos</td>
-                <td class="py-2.5 px-3 text-slate-500">Copiar número manualmente e salvar contato</td>
-                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Abertura de WhatsApp com mensagem formatada em 1 clique</td>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Comunicação</td>
+                <td class="py-2.5 px-3 text-slate-500">Copiar número e salvar contato</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">WhatsApp com mensagem formatada em 1 clique</td>
               </tr>
               <tr>
-                <td class="py-2.5 px-3 fw-medium text-slate-900">Segurança em Projeção</td>
-                <td class="py-2.5 px-3 text-slate-500">Risco de expor CPF e telefone no projetor</td>
-                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Camada LGPD nativa com mascaramento automático</td>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Privacidade</td>
+                <td class="py-2.5 px-3 text-slate-500">Exposição de dados no datashow</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Proteção LGPD nativa e automática</td>
               </tr>
               <tr>
-                <td class="py-2.5 px-3 fw-medium text-slate-900">Prestação de Contas</td>
-                <td class="py-2.5 px-3 text-slate-500">Cálculo manual e compilação demorada</td>
-                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Boletins individuais e atas de rendimento em PDF instantâneos</td>
+                <td class="py-2.5 px-3 fw-medium text-slate-900">Documentação</td>
+                <td class="py-2.5 px-3 text-slate-500">Cálculo manual de médias</td>
+                <td class="py-2.5 px-3 text-emerald-800 fw-medium">Boletins individuais e atas em PDF instantâneas</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Ficha Técnica & Informações Institucionais (Discreta & Compacta) -->
-      <div class="card border border-slate-200/80 rounded-2xl bg-slate-50/70 p-4 shadow-xs">
-        <div class="d-flex flex-column sm:flex-row align-items-start sm:items-center justify-content-between gap-3 text-xs text-slate-600">
+      <!-- Ficha Institucional -->
+      <div class="card border border-slate-200/80 rounded-2xl bg-slate-50/70 p-3.5 shadow-xs">
+        <div class="d-flex flex-column sm:flex-row align-items-start sm:items-center justify-content-between gap-2 text-xs text-slate-600">
           <div>
-            <strong class="text-slate-900 d-block mb-0.5">Programa Emprega Mais Alagoas</strong>
-            <span>Curso de Gestão de Mídias Digitais • Coordenação Pedagógica: Prof. Éverson Dias</span>
+            <strong class="text-slate-900 d-block">Programa Emprega Mais Alagoas</strong>
+            <span>Gestão de Mídias Digitais • Prof. Éverson Dias</span>
           </div>
-          <div class="d-flex align-items-center gap-2 font-monospace text-[11px] text-slate-500">
+          <div class="d-flex align-items-center gap-1.5 font-monospace text-[11px]">
+            <span class="badge bg-white border border-slate-200 text-slate-700">v3.5.0</span>
             <span class="badge bg-white border border-slate-200 text-slate-700">Bootstrap 5.3</span>
             <span class="badge bg-white border border-slate-200 text-slate-700">Vanilla JS</span>
-            <span class="badge bg-white border border-slate-200 text-slate-700">Sheets API v4</span>
-            <span class="badge bg-white border border-slate-200 text-slate-700">Supabase</span>
           </div>
         </div>
       </div>
@@ -4818,8 +4814,7 @@ function openStudentModal(studentId = null) {
   const classrooms = Array.from(new Set(AppState.classrooms.concat(AppState.students.map(s => s.classroom)))).sort();
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-2xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[90vh] d-flex flex-column">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()"><div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3"><div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden">
         
         <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50 ">
           <div class="d-flex align-items-center gap-3">
@@ -5423,8 +5418,7 @@ function openGradesModal(studentId, focusSubject = null) {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-3xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[90vh] d-flex flex-column">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()"><div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl my-3"><div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden">
         
         <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50 ">
           <div class="d-flex align-items-center gap-3">
