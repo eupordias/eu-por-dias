@@ -1507,88 +1507,89 @@ function renderStudentsTab(container) {
 
   container.innerHTML = `
     <div class="space-y-6 fade-in">
-      <!-- Banner com Conexão de API do Sheets -->
-      <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/10 d-flex flex-column md:flex-row align-items-start md:items-center justify-content-between gap-4 position-relative overflow-hidden">
+      <!-- Banner Hero Refinado & Compacto -->
+      <div class="p-4 sm:p-5 rounded-2xl text-white shadow-sm d-flex flex-column md:flex-row align-items-start md:items-center justify-content-between gap-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%) !important;">
         <div class="z-10">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <span class="px-3 py-1 rounded-circle text-[11px] fw-bold bg-white/20 backdrop-blur-md tracking-wide">
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+            <span class="badge bg-white/15 text-white backdrop-blur-sm px-2.5 py-1 rounded-pill text-[10px] fw-semibold tracking-wide">
               EMPREGA MAIS ALAGOAS
             </span>
-            <span class="px-2.5 py-0.5 rounded-circle text-[11px] fw-semibold bg-amber-400 text-slate-900">
-              Gestão de Mídias Digitais
+            <span class="badge bg-amber-400 text-slate-950 px-2.5 py-1 rounded-pill text-[10px] fw-bold">
+              Mídias Digitais
             </span>
-            <span class="d-none d-sm-inline-flex px-2.5 py-0.5 rounded-circle text-[11px] fw-semibold bg-emerald-400 text-slate-950">
-              <i class="fa-brands fa-google-drive mr-1 mt-0.5"></i> Google Sheets API v4
+            <span class="d-none d-sm-inline-flex badge bg-emerald-400 text-slate-950 px-2.5 py-1 rounded-pill text-[10px] fw-semibold">
+              <i class="fa-brands fa-google-drive mr-1"></i> Sheets API v4
             </span>
           </div>
-          <h1 class="text-xl sm:text-2xl fw-bolder tracking-tight">Eu Por Dias - Painel do Professor</h1>
-          <p class="text-xs sm:text-sm text-indigo-100 max-w-2xl mt-1">
-            Integração direta com o Google Planilhas, WhatsApp, ViaCEP de Alagoas e lançamento de notas dos módulos.
+          <h1 class="text-lg sm:text-xl fw-bold text-white mb-1 tracking-tight">
+            Gestão da Turma & Contatos
+          </h1>
+          <p class="text-xs text-indigo-200 mb-0 max-w-xl leading-relaxed">
+            Painel docente integrado com Google Planilhas, WhatsApp, ViaCEP de Alagoas e lançamento de notas.
           </p>
         </div>
 
-        <div class="d-flex flex-wrap align-items-center gap-2 z-10 w-100 sm:w-auto">
-          <button 
-            onclick="openGoogleSheetsImportModal()"
-            class="flex-grow-1 sm:flex-none d-flex align-items-center justify-content-center gap-2 px-4 py-3 rounded-2xl bg-white text-indigo-700 fw-bold text-xs shadow-lg transition-all transform active:scale-95"
-            title="Importar ou sincronizar via Google Sheets API"
-          >
-            <i class="fa-brands fa-google-drive text-emerald-600 text-sm"></i>
-            <span>Google Sheets API</span>
-          </button>
-
-          <button 
-            onclick="openSupabaseModal()"
-            class="flex-grow-1 sm:flex-none d-flex align-items-center justify-content-center gap-2 px-4 py-3 rounded-2xl bg-emerald-600 text-white fw-bold text-xs shadow-lg transition-all transform active:scale-95"
-            title="Banco de Dados em Nuvem Supabase"
-          >
-            <i class="fa-solid fa-cloud text-emerald-200 text-sm"></i>
-            <span>Supabase Nuvem</span>
-          </button>
-          
+        <div class="d-flex align-items-center gap-2 z-10 w-100 sm:w-auto flex-wrap">
           <button 
             onclick="openStudentModal()"
-            class="flex-grow-1 sm:flex-none d-flex align-items-center justify-content-center gap-2 px-4 py-3 rounded-2xl bg-amber-400 text-slate-950 fw-bold text-xs shadow-lg transition-all border-0"
+            class="btn btn-sm text-white rounded-pill px-3.5 py-2 text-xs fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5 border-0 active:scale-95 transition-transform"
+            style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);"
           >
             <i class="fa-solid fa-user-plus"></i>
             <span>Novo Aluno</span>
           </button>
-        </div>
+          
+          <button 
+            onclick="openGoogleSheetsImportModal()"
+            class="btn btn-sm btn-light rounded-pill px-3 py-2 text-xs fw-semibold text-slate-800 d-inline-flex align-items-center gap-1.5 shadow-xs border-0"
+            title="Importar ou sincronizar via Google Sheets API"
+          >
+            <i class="fa-brands fa-google-drive text-emerald-600"></i>
+            <span>Planilha</span>
+          </button>
 
-        <div class="position-absolute -right-8 -bottom-10 w-48 h-48 bg-white/10 rounded-circle blur-2xl pointer-events-none"></div>
+          <button 
+            onclick="openSupabaseModal()"
+            class="btn btn-sm bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-pill px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 transition-colors"
+            title="Banco de Dados Supabase em Nuvem"
+          >
+            <i class="fa-solid fa-cloud text-emerald-300"></i>
+            <span>Nuvem</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Barra de Filtros e Busca -->
-      <div class="d-flex flex-column lg:flex-row items-stretch lg:items-center justify-content-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+      <!-- Barra de Filtros e Busca de Alta Usabilidade -->
+      <div class="d-flex flex-column lg:flex-row items-stretch lg:items-center justify-content-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs">
         
         <div class="position-relative flex-grow-1">
-          <i class="fa-solid fa-magnifying-glass position-absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <i class="fa-solid fa-magnifying-glass position-absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input 
             type="text" 
             id="student-search-input"
             value="${AppState.searchTerm}"
-            placeholder="Buscar por nome, CPF, WhatsApp, cidade/unidade SINE, profissão, rede social, ferramentas, desafios..." 
-            class="w-100 pl-10 pr-4 py-2.5 rounded-xl text-sm border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 transition-all"
+            placeholder="Buscar por nome, CPF, WhatsApp, cidade/unidade SINE..." 
+            class="form-control form-control-sm pl-9 pr-8 py-2 text-xs rounded-xl border-slate-200 bg-slate-50/50 text-slate-800"
           >
           ${AppState.searchTerm ? `
-            <button onclick="clearSearch()" class="position-absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 ">
-              <i class="fa-solid fa-xmark"></i>
+            <button onclick="clearSearch()" class="position-absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 border-0 bg-transparent p-0 cursor-pointer">
+              <i class="fa-solid fa-xmark text-xs"></i>
             </button>
           ` : ''}
         </div>
 
-        <div class="d-flex flex-wrap align-items-center gap-2.5">
+        <div class="d-flex flex-wrap align-items-center gap-2">
           <select 
             id="filter-classroom-select"
             onchange="handleClassroomFilterChange(this.value)"
-            class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 bg-slate-50/50 text-slate-800 "
+            class="form-select form-select-sm text-xs rounded-xl border-slate-200 bg-slate-50/50 w-auto"
           >
             <option value="all">Todas as Turmas</option>
           </select>
 
           <select 
             onchange="handleSituationFilterChange(this.value)"
-            class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 bg-slate-50/50 text-slate-800 "
+            class="form-select form-select-sm text-xs rounded-xl border-slate-200 bg-slate-50/50 w-auto"
           >
             <option value="all" ${AppState.filterSituation === "all" ? "selected" : ""}>Todas as Situações</option>
             <option value="Aprovado" ${AppState.filterSituation === "Aprovado" ? "selected" : ""}>Aprovados</option>
@@ -1598,119 +1599,67 @@ function renderStudentsTab(container) {
 
           <select 
             onchange="handlePhotoFilterChange(this.value)"
-            class="px-3 py-2.5 rounded-xl text-sm border border-slate-200 bg-slate-50/50 text-slate-800 "
+            class="form-select form-select-sm text-xs rounded-xl border-slate-200 bg-slate-50/50 w-auto"
           >
-            <option value="all" ${AppState.filterPhoto === "all" ? "selected" : ""}>📷 Todas as Fotos</option>
+            <option value="all" ${AppState.filterPhoto === "all" ? "selected" : ""}>Todas as Fotos</option>
             <option value="with_photo" ${AppState.filterPhoto === "with_photo" ? "selected" : ""}>Com Foto</option>
             <option value="without_photo" ${AppState.filterPhoto === "without_photo" ? "selected" : ""}>Sem Foto</option>
           </select>
 
-          <div class="d-flex align-items-center bg-slate-100 p-1 rounded-xl border border-slate-200 ">
+          <!-- Alternar Modo de Visualização (Cards vs Tabela) -->
+          <div class="btn-group btn-group-sm rounded-xl p-0.5 bg-slate-100 border border-slate-200/80" role="group">
             <button 
+              type="button"
               onclick="setViewMode('grid')" 
-              class="p-2 rounded-lg text-xs fw-semibold ${AppState.settings.viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
+              class="btn btn-sm ${AppState.settings.viewMode === 'grid' ? 'bg-white shadow-xs fw-bold text-indigo-600' : 'text-slate-500'} rounded-lg py-1 px-2.5 text-xs border-0"
               title="Visualização em Cards"
             >
-              <i class="fa-solid fa-grip text-sm"></i>
+              <i class="fa-solid fa-grip"></i>
             </button>
             <button 
+              type="button"
               onclick="setViewMode('table')" 
-              class="p-2 rounded-lg text-xs fw-semibold ${AppState.settings.viewMode === 'table' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-300' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
+              class="btn btn-sm ${AppState.settings.viewMode === 'table' ? 'bg-white shadow-xs fw-bold text-indigo-600' : 'text-slate-500'} rounded-lg py-1 px-2.5 text-xs border-0"
               title="Visualização em Tabela"
             >
-              <i class="fa-solid fa-list text-sm"></i>
-            </button>
-            <button 
-              onclick="setViewMode('secure')" 
-              class="p-2 rounded-lg text-xs fw-semibold ${AppState.settings.viewMode === 'secure' ? 'bg-emerald-600 shadow text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}"
-              title="Visualização Segura (Modo LGPD / Projeção em Sala)"
-            >
-              <i class="fa-solid fa-shield-halved text-sm"></i>
+              <i class="fa-solid fa-list"></i>
             </button>
           </div>
-
-          <!-- Botão de Alternância da Camada de Segurança LGPD -->
-          <button 
-            onclick="togglePrivacyMode()" 
-            class="px-3.5 py-2 rounded-xl text-xs fw-bold transition-all d-flex align-items-center gap-1.5 shadow-sm ${
-              isGodModeActive() 
-                ? (AppState.privacyMode ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-400' : 'bg-amber-500 text-slate-950 ring-2 ring-amber-300 font-extrabold')
-                : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm'
-            }"
-            title="${
-              isGodModeActive()
-                ? (AppState.privacyMode ? 'Modo Deus: Clique para suspender LGPD e ver dados reais' : 'Modo Deus: Clique para reativar Modo LGPD')
-                : 'Modo LGPD Permanente (Requer login Modo Deus via Google para alterar)'
-            }"
-          >
-            <i class="fa-solid ${
-              isGodModeActive() 
-                ? (AppState.privacyMode ? 'fa-shield-halved' : 'fa-bolt text-amber-950')
-                : 'fa-lock'
-            }"></i>
-            <span>${
-              isGodModeActive()
-                ? (AppState.privacyMode ? 'LGPD Ativo (Deus)' : 'LGPD Suspenso ⚡')
-                : 'LGPD Travado 🔒'
-            }</span>
-          </button>
         </div>
       </div>
 
-      <!-- Banner de Alerta do Modo Seguro / Privacidade -->
-      ${(AppState.privacyMode || AppState.settings.viewMode === 'secure') ? `
-        <div class="p-4 rounded-3xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 d-flex flex-column sm:flex-row align-items-start sm:items-center justify-content-between gap-3 shadow-sm fade-in">
-          <div class="d-flex align-items-center gap-3.5">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white d-flex align-items-center justify-content-center text-lg flex-shrink-0 shadow-md shadow-emerald-600/20">
-              <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <div>
-              <div class="d-flex align-items-center gap-2">
-                <h4 class="fw-bold text-xs">Camada de Segurança Permanente (Privacidade & LGPD)</h4>
-                <span class="px-2 py-0.5 rounded-circle text-[9px] fw-bolder bg-emerald-200 text-emerald-900 text-uppercase">
-                  100% Seguro para Sala
-                </span>
-                ${isGodModeActive() ? `
-                  <span class="px-2 py-0.5 rounded-circle text-[9px] fw-bolder bg-amber-300 text-amber-950 text-uppercase d-flex align-items-center gap-1">
-                    <i class="fa-solid fa-bolt"></i> Modo Deus Conectado
-                  </span>
-                ` : `
-                  <span class="px-2 py-0.5 rounded-circle text-[9px] fw-bolder bg-slate-200 text-slate-800 text-uppercase">
-                    🔒 Travado sem Google
-                  </span>
-                `}
-              </div>
-              <p class="text-[11px] text-emerald-800/90 mt-0.5">
-                Os dados pessoais sensíveis (CPF, WhatsApp, e-mail e endereços) estão estritamente protegidos. Para desativar o mascaramento ou revelar dados de alunos no Datashow, é obrigatório autenticar-se no <strong>Modo Deus via Google</strong>.
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-items-center gap-2 flex-shrink-0 w-100 sm:w-auto justify-content-end">
-            ${isGodModeActive() ? `
-              <button 
-                onclick="togglePrivacyMode()" 
-                class="px-3.5 py-2 rounded-xl text-xs fw-bold bg-white text-emerald-800 border border-emerald-300 shadow-sm transition-all"
-              >
-                ${AppState.privacyMode ? 'Suspender Mascaramento' : 'Reativar Proteção Geral'}
-              </button>
-            ` : `
-              <button 
-                onclick="openGodModeAuthModal()" 
-                class="px-3.5 py-2 rounded-xl text-xs fw-bold bg-emerald-700 text-white shadow-sm d-flex align-items-center gap-1.5 transition-all"
-                title="Acessar com Google no Modo Deus"
-              >
-                <i class="fa-brands fa-google text-xs"></i>
-                <span>Acesso Modo Deus</span>
-              </button>
-            `}
-          </div>
+      <!-- Barra de Status LGPD Discreta e Elegante (36px) -->
+      <div class="d-flex align-items-center justify-content-between p-2.5 px-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 text-xs text-emerald-950">
+        <div class="d-flex align-items-center gap-2 text-truncate">
+          <i class="fa-solid fa-shield-halved text-emerald-600 flex-shrink-0"></i>
+          <span class="text-truncate">
+            <strong>Proteção LGPD Ativa:</strong> Dados sensíveis estão mascarados para exibição em sala de aula.
+          </span>
         </div>
-      ` : ''}
+        <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-2">
+          ${isGodModeActive() ? `
+            <button 
+              onclick="togglePrivacyMode()" 
+              class="btn btn-xs btn-outline-success rounded-pill py-0.5 px-2.5 text-[11px] fw-semibold"
+            >
+              ${AppState.privacyMode ? 'Suspender Proteção' : 'Reativar Proteção'}
+            </button>
+          ` : `
+            <button 
+              onclick="openGodModeAuthModal()" 
+              class="btn btn-xs btn-outline-success rounded-pill py-0.5 px-2.5 text-[11px] fw-semibold d-inline-flex align-items-center gap-1"
+              title="Acessar com Google no Modo Deus"
+            >
+              <i class="fa-brands fa-google text-[10px]"></i> Modo Deus
+            </button>
+          `}
+        </div>
+      </div>
 
       <div class="d-flex align-items-center justify-content-between text-xs text-slate-500 px-1">
         <span>Exibindo <strong>${filtered.length}</strong> de <strong>${AppState.students.length}</strong> alunos matriculados</span>
         ${(AppState.searchTerm || AppState.filterClassroom !== 'all' || AppState.filterSituation !== 'all' || AppState.filterPhoto !== 'all') ? `
-          <button onclick="resetAllFilters()" class="text-indigo-600 d-flex align-items-center gap-1 fw-medium">
+          <button onclick="resetAllFilters()" class="text-indigo-600 d-flex align-items-center gap-1 fw-medium border-0 bg-transparent p-0">
             <i class="fa-solid fa-rotate-left"></i> Limpar filtros
           </button>
         ` : ''}
@@ -1742,48 +1691,33 @@ function renderStudentsTab(container) {
 
 function renderStudentCardsGrid(students) {
   return `
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       ${students.map(student => {
         const stats = calculateStudentOverallStats(student);
         const isRevealed = AppState.revealedStudentIds.has(student.id) || !AppState.privacyMode;
         const displayName = maskName(student.name, isRevealed);
         const displayCpf = maskCpf(student.cpf, isRevealed);
         const displayPhone = maskPhone(student.contact?.phone, isRevealed);
-        const displayEmail = maskEmail(student.contact?.email, isRevealed);
         const initials = (student.name || "AL").split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
         const cleanPhone = (student.contact?.phone || "").replace(/\D/g, "");
-        
-        let socialUrl = student.socialMedia || "";
-        let socialDisplay = student.socialMedia || "";
-        let isInstagram = false;
-        let isTiktok = false;
 
-        if (socialUrl) {
-          if (socialUrl.startsWith("@")) {
-            socialUrl = `https://www.instagram.com/${socialUrl.replace('@', '')}`;
-            isInstagram = true;
-          } else if (socialUrl.includes("instagram.com")) {
-            isInstagram = true;
-          } else if (socialUrl.includes("tiktok.com")) {
-            isTiktok = true;
-          } else if (!socialUrl.startsWith("http")) {
-            socialUrl = `https://www.instagram.com/${socialUrl}`;
-            isInstagram = true;
-          }
-        }
+        const statusBadgeClass = stats.status === 'Aprovado' 
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200/70' 
+          : stats.status === 'Em Recuperação' 
+            ? 'bg-amber-50 text-amber-700 border-amber-200/70' 
+            : stats.status === 'Reprovado' 
+              ? 'bg-rose-50 text-rose-700 border-rose-200/70' 
+              : 'bg-slate-50 text-slate-600 border-slate-200';
 
         return `
-          <div class="group bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm transition-all d-flex flex-column justify-content-between position-relative overflow-hidden">
-            
+          <div class="card border border-slate-200/90 rounded-2xl bg-white shadow-xs p-4 d-flex flex-column justify-content-between h-100 position-relative transition-all" style="transition: box-shadow 0.2s ease, transform 0.2s ease;">
             <div>
-              <!-- Cabeçalho do Card: Foto/Avatar, Nome, Polo/Cidade e Matrícula -->
-              <div class="d-flex align-items-start justify-content-between gap-3 mb-3.5">
-                <div class="d-flex align-items-center gap-3.5">
-                  
-                  <!-- Container da Foto / Avatar com trigger de upload -->
+              <!-- Cabeçalho: Avatar + Nome + Polo/ID + Status -->
+              <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                <div class="d-flex align-items-center gap-3 min-w-0">
                   <div 
                     onclick="openPhotoUploadModal('${student.id}')"
-                    class="position-relative group/avatar w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} d-flex align-items-center justify-content-center text-white fw-bolder text-base shadow-inner flex-shrink-0 cursor-pointer border border-slate-200/80 transition-transform active:scale-95"
+                    class="position-relative w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-tr ${student.avatarColor || 'from-indigo-500 to-purple-600'} d-flex align-items-center justify-content-center text-white fw-bold text-sm shadow-xs flex-shrink-0 cursor-pointer"
                     title="Clique para adicionar ou trocar a foto de ${displayName}"
                   >
                     ${student.photoUrl ? `
@@ -1792,300 +1726,117 @@ function renderStudentCardsGrid(students) {
                     ` : `
                       <span>${initials}</span>
                     `}
-                    
-                    <!-- Overlay ao passar o mouse -->
-                    <div class="position-absolute inset-0 bg-slate-900/60 opacity-0 group-hover/avatar:opacity-100 transition-opacity d-flex flex-column align-items-center justify-content-center text-white text-[9px] fw-bold">
-                      <i class="fa-solid fa-camera text-xs mb-0.5"></i>
-                      <span>Foto</span>
-                    </div>
-
-                    <!-- Mini ícone de câmera no canto -->
-                    <div class="position-absolute bottom-0 end-0 w-4 h-4 rounded-tl-lg bg-white/90 backdrop-blur-sm d-flex align-items-center justify-content-center text-[8px] text-indigo-600 shadow">
+                    <div class="position-absolute bottom-0 end-0 w-3.5 h-3.5 rounded-tl bg-white/90 d-flex align-items-center justify-content-center text-[7px] text-slate-700 shadow-xs">
                       <i class="fa-solid fa-camera"></i>
                     </div>
                   </div>
 
-                  <div>
+                  <div class="min-w-0">
                     <h3 
                       onclick="openStudentProfileModal('${student.id}')"
-                      class="fw-bold text-base text-slate-900 transition-colors cursor-pointer line-clamp-1"
+                      class="fw-semibold text-sm text-slate-900 mb-0.5 text-truncate cursor-pointer hover:text-indigo-600 transition-colors"
                       title="Ver ficha de ${displayName}"
                     >
                       ${displayName}
                     </h3>
-                    <div class="d-flex align-items-center flex-wrap gap-1.5 mt-0.5">
-                      <span class="text-[10px] fw-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 ">
-                        <i class="fa-solid fa-location-dot mr-1"></i>${student.unitCity || student.classroom || 'Alagoas'}
+                    <div class="d-flex align-items-center gap-1.5 text-xs text-slate-500 flex-wrap">
+                      <span class="text-slate-600 text-truncate max-w-[120px]">
+                        <i class="fa-solid fa-location-dot text-[10px] text-slate-400 mr-1"></i>${student.unitCity || student.polo || student.classroom || 'Alagoas'}
                       </span>
-                      <span class="text-[10px] text-slate-400 font-monospace">
-                        ${student.id}
-                      </span>
+                      <span class="text-slate-300">•</span>
+                      <span class="font-monospace text-[11px] text-slate-400">${student.id}</span>
                     </div>
                   </div>
                 </div>
 
-                <span class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs fw-bold border ${stats.statusClass} flex-shrink-0">
-                  <span class="w-1.5 h-1.5 rounded-circle ${stats.status === 'Aprovado' ? 'bg-emerald-500' : stats.status === 'Em Recuperação' ? 'bg-amber-500' : stats.status === 'Reprovado' ? 'bg-rose-500' : 'bg-slate-400'}"></span>
+                <span class="badge border rounded-pill px-2.5 py-1 text-[11px] fw-medium flex-shrink-0 ${statusBadgeClass}">
                   ${stats.status}
                 </span>
               </div>
 
-              <!-- Data de Inscrição e Resumo de Desempenho -->
-              <div class="d-flex align-items-center justify-content-between text-[11px] text-slate-500 mb-3 px-1">
-                ${student.registrationDate ? `
-                  <span class="d-flex align-items-center gap-1">
-                    <i class="fa-regular fa-calendar-check text-emerald-500"></i> Inscrição: ${student.registrationDate}
-                  </span>
-                ` : '<span></span>'}
-                <span class="fw-semibold text-slate-700 ">
-                  Média: <strong class="text-indigo-600 ">${stats.overallAvg.toFixed(1)}</strong> • Faltas: <strong>${stats.totalAbsences}</strong>
-                </span>
-              </div>
-
-              <!-- Bloco 1: Contatos, CPF e Redes Sociais -->
-              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 mb-3.5 text-xs">
-                
-                <!-- Linha CPF & WhatsApp -->
+              <!-- Barra Compacta de Contatos & Desempenho -->
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 mb-3 text-xs space-y-2">
                 <div class="d-flex align-items-center justify-content-between gap-2">
                   <div class="d-flex align-items-center gap-1.5 text-slate-600 text-truncate">
-                    <i class="fa-solid fa-id-card text-indigo-500 w-4 text-center"></i>
-                    <span class="font-monospace text-[11px]">${displayCpf || 'CPF não informado'}</span>
-                    ${!isRevealed ? `<span class="text-[9px] px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded fw-bold">LGPD</span>` : ''}
+                    <i class="fa-solid fa-id-card text-slate-400 text-[11px]"></i>
+                    <span class="font-monospace text-[11px]">${displayCpf || 'Sem CPF'}</span>
+                    ${!isRevealed ? `<span class="badge bg-slate-200 text-slate-600 text-[9px] px-1 py-0.5">LGPD</span>` : ''}
                   </div>
                   ${cleanPhone ? (isRevealed ? `
                     <a 
-                      href="https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá ${student.name.split(' ')[0]}! Aqui é o professor do curso de Gestão de Mídias Digitais (Emprega Mais Alagoas).`)}" 
+                      href="https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá ${student.name.split(' ')[0]}! Aqui é o professor do curso de Gestão de Mídias Digitais.`)}" 
                       target="_blank" 
-                      class="d-flex align-items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500 text-white fw-bold text-[11px] shadow-sm transition-all flex-shrink-0"
+                      class="badge bg-emerald-600 hover:bg-emerald-700 text-white rounded-pill px-2.5 py-1 text-[10px] fw-semibold text-decoration-none d-inline-flex align-items-center gap-1 transition-colors flex-shrink-0"
                       title="Chamar no WhatsApp"
                     >
-                      <i class="fa-brands fa-whatsapp text-xs"></i>
-                      <span>${displayPhone}</span>
+                      <i class="fa-brands fa-whatsapp text-xs"></i> WhatsApp
                     </a>
                   ` : `
                     <button 
-                      onclick="toggleRevealStudent('${student.id}')"
-                      class="d-flex align-items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-200/80 text-slate-700 fw-bold text-[11px] transition-all flex-shrink-0"
+                      onclick="toggleRevealStudent('${student.id}')" 
+                      class="badge bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-pill px-2.5 py-1 text-[10px] fw-semibold border-0 d-inline-flex align-items-center gap-1 transition-colors flex-shrink-0"
                       title="Contato protegido por LGPD. Clique para revelar."
                     >
-                      <i class="fa-solid fa-lock text-[10px] text-amber-500"></i>
-                      <span>${displayPhone}</span>
+                      <i class="fa-solid fa-lock text-[9px]"></i> Mascarado
                     </button>
                   `) : `
-                    <span class="text-slate-400 text-[11px] italic">Sem WhatsApp</span>
+                    <span class="text-slate-400 text-[10px]">Sem telefone</span>
                   `}
                 </div>
 
-                <!-- Linha E-mail -->
-                <div class="d-flex align-items-center justify-content-between gap-2">
-                  <div class="d-flex align-items-center gap-1.5 text-slate-600 text-truncate">
-                    <i class="fa-solid fa-envelope text-slate-400 w-4 text-center"></i>
-                    <span class="text-truncate text-[11px]">${displayEmail || 'Sem e-mail'}</span>
-                  </div>
-                  ${student.contact?.email && isRevealed ? `
-                    <a 
-                      href="mailto:${student.contact.email}?subject=${encodeURIComponent(`Emprega Mais Alagoas - Mídias Digitais: ${student.name}`)}"
-                      class="text-indigo-600 text-[11px] fw-semibold flex-shrink-0"
-                    >
-                      Enviar
-                    </a>
-                  ` : ''}
+                <div class="d-flex align-items-center justify-content-between pt-1.5 border-t border-slate-200/60 text-[11px] text-slate-600">
+                  <span>Média: <strong class="text-slate-900">${stats.overallAvg.toFixed(1)}</strong></span>
+                  <span>Faltas: <strong class="text-slate-900">${stats.totalAbsences}</strong></span>
+                  <span>Freq: <strong class="${(student.attendance || 100) >= 75 ? 'text-emerald-600' : 'text-rose-600'}">${student.attendance || 100}%</strong></span>
                 </div>
-
-                <!-- Linha Rede Social / Perfil -->
-                ${student.socialMedia ? `
-                  <div class="d-flex align-items-center justify-content-between gap-2 pt-1 border-t border-slate-200/60 ">
-                    <div class="d-flex align-items-center gap-1.5 text-truncate">
-                      <i class="${isInstagram ? 'fa-brands fa-instagram text-pink-500' : isTiktok ? 'fa-brands fa-tiktok text-slate-900 dark:text-white' : 'fa-solid fa-share-nodes text-indigo-500'} w-4 text-center"></i>
-                      <span class="text-truncate text-[11px] fw-medium text-slate-700 ">${socialDisplay}</span>
-                    </div>
-                    <a 
-                      href="${socialUrl}" 
-                      target="_blank" 
-                      class="text-indigo-600 text-[11px] fw-bold d-flex align-items-center gap-1 flex-shrink-0"
-                      title="Abrir rede social do aluno"
-                    >
-                      <span>Acessar</span>
-                      <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                    </a>
-                  </div>
-                ` : ''}
-
               </div>
 
-              <!-- Bloco 2: Perfil Profissional & Escolaridade -->
-              <div class="space-y-2 mb-3.5">
-                
-                ${student.profession ? `
-                  <div class="d-flex align-items-center gap-2 p-2 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs">
-                    <i class="fa-solid fa-briefcase text-indigo-600 w-4 text-center flex-shrink-0"></i>
-                    <div class="text-truncate">
-                      <span class="text-[10px] text-uppercase fw-bold text-indigo-700 d-block leading-tight">Área / Profissão</span>
-                      <span class="fw-semibold text-slate-800 text-xs text-truncate d-block">${student.profession}</span>
-                    </div>
-                  </div>
-                ` : ''}
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <!-- Tags de Carreira e Perfil -->
+              ${student.profession ? `
+                <div class="mb-3 d-flex align-items-center gap-1.5 flex-wrap">
+                  <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg px-2 py-1 text-[11px] fw-medium text-truncate max-w-100">
+                    <i class="fa-solid fa-briefcase text-[10px] mr-1"></i>${student.profession}
+                  </span>
                   ${student.education ? `
-                    <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 ">
-                      <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block leading-tight">Escolaridade</span>
-                      <span class="fw-medium text-slate-700 text-[11px] text-truncate d-block" title="${student.education}">
-                        ${student.education}
-                      </span>
-                    </div>
-                  ` : ''}
-
-                  ${student.experience ? `
-                    <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 ">
-                      <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block leading-tight">Gestão de Redes</span>
-                      <span class="fw-semibold text-[11px] text-truncate d-block ${student.experience.toLowerCase().includes('sim') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">
-                        ${student.experience}
-                      </span>
-                    </div>
-                  ` : ''}
-                </div>
-
-                <!-- Redes mais frequentes & Ferramentas -->
-                ${(student.frequentNetworks || student.tools) ? `
-                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-[11px] space-y-1.5">
-                    ${student.frequentNetworks ? `
-                      <div class="d-flex align-items-start gap-1.5">
-                        <i class="fa-solid fa-users text-indigo-500 text-[10px] mt-0.5 flex-shrink-0"></i>
-                        <span class="text-slate-600 line-clamp-1"><strong class="text-slate-800 ">Redes:</strong> ${student.frequentNetworks}</span>
-                      </div>
-                    ` : ''}
-                    ${student.tools ? `
-                      <div class="d-flex align-items-start gap-1.5">
-                        <i class="fa-solid fa-screwdriver-wrench text-amber-500 text-[10px] mt-0.5 flex-shrink-0"></i>
-                        <span class="text-slate-600 line-clamp-1"><strong class="text-slate-800 ">Ferramentas:</strong> ${student.tools}</span>
-                      </div>
-                    ` : ''}
-                  </div>
-                ` : ''}
-
-              </div>
-
-              <!-- Bloco 3: Gaveta Expansível de Diagnóstico Pedagógico (Desafios, Motivação, Expectativas) -->
-              ${(student.challenges || student.motivation || student.expectations) ? `
-                <div class="mb-3.5">
-                  <button 
-                    type="button"
-                    onclick="toggleDiagnosticDrawer('${student.id}')"
-                    id="diag-btn-${student.id}"
-                    class="w-100 py-1.5 px-3 rounded-xl text-[11px] fw-bold bg-indigo-50/80 text-indigo-700 d-flex align-items-center justify-content-between transition-colors border border-indigo-100 "
-                  >
-                    <span class="d-flex align-items-center gap-1.5">
-                      <i class="fa-solid fa-brain text-indigo-600 "></i>
-                      <span>Diagnóstico & Expectativas</span>
+                    <span class="badge bg-slate-100 text-slate-600 rounded-lg px-2 py-1 text-[10px] fw-normal text-truncate max-w-[130px]" title="${student.education}">
+                      ${student.education}
                     </span>
-                    <i id="diag-icon-${student.id}" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
-                  </button>
-
-                  <div id="diag-drawer-${student.id}" class="hidden mt-2 p-3 rounded-2xl bg-amber-50/40 border border-amber-200/60 space-y-2.5 text-[11px] text-slate-700 ">
-                    
-                    ${student.challenges ? `
-                      <div>
-                        <span class="fw-bold text-rose-600 d-flex align-items-center gap-1 text-[10px] text-uppercase">
-                          <i class="fa-solid fa-triangle-exclamation"></i> Principais Desafios:
-                        </span>
-                        <p class="mt-0.5 text-slate-700 italic pl-1 border-l-2 border-rose-300 ">
-                          "${student.challenges}"
-                        </p>
-                      </div>
-                    ` : ''}
-
-                    ${student.motivation ? `
-                      <div>
-                        <span class="fw-bold text-amber-600 d-flex align-items-center gap-1 text-[10px] text-uppercase">
-                          <i class="fa-solid fa-fire"></i> Motivação para o Curso:
-                        </span>
-                        <p class="mt-0.5 text-slate-700 italic pl-1 border-l-2 border-amber-300 ">
-                          "${student.motivation}"
-                        </p>
-                      </div>
-                    ` : ''}
-
-                    ${student.expectations ? `
-                      <div>
-                        <span class="fw-bold text-emerald-600 d-flex align-items-center gap-1 text-[10px] text-uppercase">
-                          <i class="fa-solid fa-bullseye"></i> Expectativas:
-                        </span>
-                        <p class="mt-0.5 text-slate-700 italic pl-1 border-l-2 border-emerald-300 ">
-                          "${student.expectations}"
-                        </p>
-                      </div>
-                    ` : ''}
-
-                  </div>
+                  ` : ''}
                 </div>
               ` : ''}
-
             </div>
 
-            <!-- Rodapé com Ações -->
-            <div class="pt-3 border-t border-slate-100 d-flex align-items-center justify-content-between gap-1.5">
-              
-              <div class="d-flex align-items-center gap-1.5">
-                <button 
-                  onclick="openStudentProfileModal('${student.id}')"
-                  class="px-2.5 py-1.5 rounded-xl text-xs fw-bold bg-indigo-600 text-white shadow-sm transition-colors d-flex align-items-center gap-1"
-                  title="Abrir ficha completa do aluno"
-                >
-                  <i class="fa-solid fa-id-card-clip"></i> Ficha
-                </button>
-                <button 
-                  onclick="openPhotoUploadModal('${student.id}')"
-                  class="px-2.5 py-1.5 rounded-xl text-xs fw-bold bg-purple-50 text-purple-700 transition-colors d-flex align-items-center gap-1"
-                  title="Adicionar ou alterar foto do aluno"
-                >
-                  <i class="fa-solid fa-camera"></i> Foto
-                </button>
-                <button 
-                  onclick="openGradesModal('${student.id}')"
-                  class="px-2.5 py-1.5 rounded-xl text-xs fw-bold bg-indigo-50 text-indigo-700 transition-colors d-flex align-items-center gap-1"
-                  title="Lançar Notas"
-                >
-                  <i class="fa-solid fa-pen-to-square"></i> Notas
-                </button>
-                <button 
-                  onclick="openBoletimModal('${student.id}')"
-                  class="px-2.5 py-1.5 rounded-xl text-xs fw-bold bg-slate-100 text-slate-700 transition-colors d-flex align-items-center gap-1"
-                  title="Gerar Boletim Oficial"
-                >
-                  <i class="fa-solid fa-file-invoice"></i> Boletim
-                </button>
-              </div>
-
-              <div class="d-flex align-items-center gap-1">
-                ${AppState.privacyMode ? `
-                  <button 
-                    onclick="toggleRevealStudent('${student.id}')"
-                    class="px-2 py-1.5 rounded-xl fw-bold text-xs ${isRevealed ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'} d-flex align-items-center gap-1 transition-colors"
-                    title="${isRevealed ? 'Ocultar dados pessoais deste aluno' : 'Revelar dados pessoais deste aluno temporariamente'}"
-                  >
-                    <i class="fa-solid ${isRevealed ? 'fa-eye-slash' : 'fa-eye'}"></i>
-                    <span>${isRevealed ? 'Ocultar' : 'Revelar'}</span>
-                  </button>
-                ` : ''}
-                <button 
-                  onclick="openStudentModal('${student.id}')"
-                  class="w-8 h-8 rounded-xl text-slate-500 d-flex align-items-center justify-content-center transition-colors"
-                  title="Editar Aluno"
-                >
-                  <i class="fa-solid fa-user-pen text-xs"></i>
-                </button>
-                <button 
-                  onclick="confirmDeleteStudent('${student.id}')"
-                  class="w-8 h-8 rounded-xl text-slate-500 d-flex align-items-center justify-content-center transition-colors"
-                  title="Excluir Aluno"
-                >
-                  <i class="fa-solid fa-trash-can text-xs"></i>
-                </button>
-              </div>
-
+            <!-- Rodapé de Ações: Limpo, Profissional & Unificado -->
+            <div class="pt-2.5 border-t border-slate-100 d-flex align-items-center justify-content-between gap-1.5 mt-auto">
+              <button 
+                onclick="openStudentProfileModal('${student.id}')" 
+                class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 text-xs fw-semibold flex-grow-1 d-flex align-items-center justify-content-center gap-1.5"
+              >
+                <i class="fa-solid fa-id-card-clip"></i>
+                <span>Ver Ficha</span>
+              </button>
+              <button 
+                onclick="openGradesModal('${student.id}')" 
+                class="btn btn-sm btn-light border border-slate-200 rounded-circle w-8 h-8 p-0 text-slate-600 d-flex align-items-center justify-content-center" 
+                title="Lançar Notas"
+              >
+                <i class="fa-solid fa-pen-to-square text-xs"></i>
+              </button>
+              <button 
+                onclick="openBoletimModal('${student.id}')" 
+                class="btn btn-sm btn-light border border-slate-200 rounded-circle w-8 h-8 p-0 text-slate-600 d-flex align-items-center justify-content-center" 
+                title="Boletim Escolar"
+              >
+                <i class="fa-solid fa-file-invoice text-xs"></i>
+              </button>
+              <button 
+                onclick="openStudentModal('${student.id}')" 
+                class="btn btn-sm btn-light border border-slate-200 rounded-circle w-8 h-8 p-0 text-slate-600 d-flex align-items-center justify-content-center" 
+                title="Editar Aluno"
+              >
+                <i class="fa-solid fa-user-pen text-xs"></i>
+              </button>
             </div>
-
           </div>
         `;
       }).join("")}
