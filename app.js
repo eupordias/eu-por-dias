@@ -1246,10 +1246,10 @@ function openGodModeAuthModal() {
   }
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-950/80 backdrop-blur-md modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-lg rounded-3xl border border-amber-400/40 shadow-2xl overflow-hidden scale-in d-flex flex-column position-relative">
-        
-        <!-- Faixa de Destaque Mestre -->
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <!-- Faixa de Destaque Mestre -->
         <div class="h-2 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 w-100"></div>
 
         <!-- Cabeçalho -->
@@ -1279,7 +1279,7 @@ function openGodModeAuthModal() {
         <div class="px-6 pb-6 space-y-5">
           ${bodyContent}
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -2444,10 +2444,10 @@ function openPhotoUploadModal(studentId) {
   ];
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/75 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[92vh] d-flex flex-column">
-        
-        <!-- Header -->
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <!-- Header -->
         <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/60 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white d-flex align-items-center justify-content-center text-lg fw-bold shadow-md shadow-indigo-600/20">
@@ -2669,7 +2669,7 @@ function openPhotoUploadModal(studentId) {
             </button>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -2949,10 +2949,10 @@ function openGoogleSheetsImportModal() {
   const currentRange = AppState.settings.googleSheetRange || "A1:Z500";
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-3xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[92vh] d-flex flex-column">
-        
-        <!-- Header -->
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <!-- Header -->
         <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-emerald-500 text-white d-flex align-items-center justify-content-center text-lg fw-bold shadow-md shadow-emerald-500/20">
@@ -3135,7 +3135,7 @@ function openGoogleSheetsImportModal() {
           </div>
 
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -3838,10 +3838,10 @@ function openSupabaseModal() {
     : "Nunca";
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-3xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[92vh] d-flex flex-column">
-        
-        <!-- Header -->
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <!-- Header -->
         <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-emerald-50/40 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white d-flex align-items-center justify-content-center text-lg fw-bold shadow-md shadow-emerald-600/20">
@@ -4060,7 +4060,7 @@ function openSupabaseModal() {
             Fechar
           </button>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -4719,57 +4719,67 @@ function openAboutModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-xl rounded-2xl border border-slate-200 shadow-xl overflow-hidden scale-in">
-        
-        <div class="px-5 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50">
-          <div class="d-flex align-items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
-              <i class="fa-solid fa-circle-question"></i>
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          
+          <div class="modal-header border-bottom py-3 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white d-flex align-items-center justify-content-center shadow-xs">
+                <i class="fa-solid fa-graduation-cap text-xs"></i>
+              </div>
+              <div>
+                <h3 class="text-sm fw-bold text-slate-900 mb-0">Sobre o Sistema • Eu Por Dias</h3>
+                <p class="text-[11px] text-slate-500 mb-0">Gestão Pedagógica • Emprega Mais Alagoas</p>
+              </div>
             </div>
-            <div>
-              <h2 class="text-sm fw-bold text-slate-900 mb-0">Sobre o Eu Por Dias</h2>
-              <p class="text-[11px] text-slate-500 mb-0">Propósito & Arquitetura do Sistema</p>
+            <button onclick="closeModal()" class="btn-close" aria-label="Fechar"></button>
+          </div>
+
+          <div class="modal-body p-4 p-sm-5 text-slate-700 space-y-4 overflow-y-auto">
+            <div class="p-4 rounded-xl bg-gradient-to-r from-indigo-50/60 to-purple-50/40 border border-indigo-100/80 space-y-2">
+              <span class="badge bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">Missão & Propósito</span>
+              <h4 class="text-base fw-bold text-slate-900 mb-1">Qualificação que Transforma Vidas em Alagoas</h4>
+              <p class="text-xs text-slate-600 leading-relaxed mb-0">
+                O <strong>Eu Por Dias</strong> é uma plataforma moderna desenvolvida para centralizar a frequência, avaliação e acompanhamento integral dos alunos do curso de <em>Gestão de Mídias Digitais</em>, garantindo transparência, proteção LGPD e conformidade com os padrões educacionais de excelência.
+              </p>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12 col-sm-4">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 h-100">
+                  <i class="fa-solid fa-shield-halved text-indigo-600 text-sm mb-2 d-block"></i>
+                  <strong class="text-xs text-slate-900 d-block mb-1">Privacidade LGPD</strong>
+                  <p class="text-[11px] text-slate-500 mb-0">Mascaramento ativo de CPFs, telefones e e-mails com controle granular de acesso.</p>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-4">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 h-100">
+                  <i class="fa-solid fa-cloud-arrow-down text-indigo-600 text-sm mb-2 d-block"></i>
+                  <strong class="text-xs text-slate-900 d-block mb-1">Integração Contínua</strong>
+                  <p class="text-[11px] text-slate-500 mb-0">Sincronização em tempo real com Google Sheets, Supabase e exportação CSV/JSON.</p>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-4">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 h-100">
+                  <i class="fa-solid fa-brain text-indigo-600 text-sm mb-2 d-block"></i>
+                  <strong class="text-xs text-slate-900 d-block mb-1">Assistente com IA</strong>
+                  <p class="text-[11px] text-slate-500 mb-0">Geração de relatórios pedagógicos, prompts customizados e diagnósticos individuais.</p>
+                </div>
+              </div>
             </div>
           </div>
-          <button onclick="closeModal()" class="btn btn-sm btn-ghost p-1 text-slate-400 hover:text-slate-600 border-0">
-            <i class="fa-solid fa-xmark text-sm"></i>
-          </button>
+
+          <div class="modal-footer border-top py-2.5 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between">
+            <span class="text-[11px] text-slate-500">Versão 3.6.0 • Plus Jakarta Sans & Indigo Theme</span>
+            <button onclick="closeModal()" class="btn btn-sm btn-primary rounded-pill px-4 py-1.5 text-xs fw-semibold">
+              Entendido
+            </button>
+          </div>
+
         </div>
-
-        <div class="p-5 space-y-3 text-xs text-slate-700 leading-relaxed">
-          <p class="mb-2">
-            O <strong>Eu Por Dias</strong> é uma solução pedagógica desenvolvida sob medida para o curso de <strong>Gestão de Mídias Digitais</strong> do programa <strong>Emprega Mais Alagoas</strong>.
-          </p>
-
-          <div class="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 text-indigo-950 space-y-1">
-            <strong class="d-block text-indigo-900">Princípios Fundamentais:</strong>
-            <ul class="mb-0 ps-3 space-y-1 text-[11px]">
-              <li><strong>Gestão Humanizada:</strong> Acompanhamento personalizado com foto, situação acadêmica e histórico individual.</li>
-              <li><strong>Agilidade Operacional:</strong> Chamada rápida, sincronização com Google Sheets e WhatsApp em 1 clique.</li>
-              <li><strong>Segurança & LGPD:</strong> Mascaramento nativo de CPF, telefone e endereço para projeção em sala de aula.</li>
-            </ul>
-          </div>
-
-          <div class="pt-2 d-flex align-items-center justify-content-between border-t border-slate-100">
-            <span class="text-[11px] text-slate-500">Coordenação: Prof. Éverson Dias</span>
-            <div class="d-flex align-items-center gap-2">
-              <button 
-                onclick="closeModal(); switchTab('about');" 
-                class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 text-xs fw-semibold"
-              >
-                Ver Manifesto Completo
-              </button>
-              <button 
-                onclick="closeModal()" 
-                class="btn btn-sm btn-light rounded-pill px-3 py-1.5 text-xs fw-semibold"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   `;
@@ -5618,140 +5628,145 @@ function openBoletimModal(studentId) {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-3xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden scale-in max-h-[95vh] d-flex flex-column">
-        
-        <div class="px-6 py-4 border-b border-slate-100 d-flex align-items-center justify-content-between bg-slate-50/50 no-print">
-          <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-file-invoice text-indigo-600 text-lg"></i>
-            <h2 class="text-base fw-bold text-slate-900 ">Boletim de Rendimento Escolar</h2>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <button 
-              onclick="window.print()" 
-              class="px-4 py-2 rounded-xl text-xs fw-bold bg-indigo-600 text-white shadow d-flex align-items-center gap-1.5"
-            >
-              <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
-            </button>
-            <button onclick="closeModal()" class="w-8 h-8 rounded-circle text-slate-400 d-flex align-items-center justify-content-center ">
-              <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-          </div>
-        </div>
-
-        <div id="printable-content" class="overflow-y-auto flex-grow-1 p-8 text-slate-900 bg-white space-y-6">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
           
-          <div class="border-b-2 border-slate-900 pb-4 text-center">
-            <h1 class="text-xl fw-bolder tracking-tight text-uppercase">${AppState.settings.schoolName}</h1>
-            <p class="text-xs text-slate-600 ">${AppState.settings.courseName} • Ano Letivo ${AppState.settings.schoolYear}</p>
-            <h2 class="text-xs fw-bold mt-2 text-uppercase tracking-widest bg-slate-100 py-1 rounded">Boletim Individual do Aluno</h2>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl border border-slate-200 bg-slate-50/50 text-xs">
-            <div class="sm:col-span-2">
-              <span class="d-block text-slate-500 text-[10px] text-uppercase fw-bold">Aluno(a)</span>
-              <span class="fw-bold text-sm text-slate-900 d-flex align-items-center gap-1.5">
-                <span>${displayName}</span>
-                ${AppState.privacyMode ? `
-                  <button 
-                    onclick="toggleRevealStudent('${student.id}'); openBoletimModal('${student.id}')" 
-                    class="text-xs ${isRevealed ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 hover:text-amber-500'} transition-colors no-print"
-                    title="${isRevealed ? 'Ocultar nome' : 'Revelar nome completo (Modo Deus)'}"
-                  >
-                    <i class="fa-solid ${isRevealed ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                  </button>
-                ` : ''}
-              </span>
-              <span class="d-block text-[10px] text-slate-400 font-monospace">${student.id}</span>
+          <div class="modal-header border-bottom py-3 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between no-print">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-file-invoice text-indigo-600 text-lg"></i>
+              <h2 class="text-sm sm:text-base fw-bold text-slate-900 mb-0">Boletim de Rendimento Escolar</h2>
             </div>
-            <div>
-              <span class="d-block text-slate-500 text-[10px] text-uppercase fw-bold">CPF</span>
-              <span class="font-monospace fw-semibold">${student.cpf ? displayCpf : 'Não informado'}</span>
-            </div>
-            <div>
-              <span class="d-block text-slate-500 text-[10px] text-uppercase fw-bold">Turma</span>
-              <span class="fw-semibold">${student.classroom}</span>
-            </div>
-            <div>
-              <span class="d-block text-slate-500 text-[10px] text-uppercase fw-bold">Situação Final</span>
-              <span class="fw-bold ${stats.status === 'Aprovado' ? 'text-emerald-600' : stats.status === 'Em Recuperação' ? 'text-amber-600' : 'text-rose-600'}">
-                ${stats.status}
-              </span>
+            <div class="d-flex align-items-center gap-2">
+              <button 
+                onclick="window.print()" 
+                class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 text-xs fw-semibold d-flex align-items-center gap-1.5 shadow-sm"
+              >
+                <i class="fa-solid fa-print"></i> Imprimir / PDF
+              </button>
+              <button onclick="closeModal()" class="btn-close" aria-label="Fechar"></button>
             </div>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-100 text-xs text-start border-collapse border border-slate-300 ">
-              <thead>
-                <tr class="bg-slate-100 fw-bold text-slate-800 ">
-                  <th class="py-2.5 px-3 border border-slate-300 ">Módulo do Curso</th>
-                  <th class="py-2.5 px-2 text-center border border-slate-300 ">Ativ. 1</th>
-                  <th class="py-2.5 px-2 text-center border border-slate-300 ">Ativ. 2</th>
-                  <th class="py-2.5 px-2 text-center border border-slate-300 ">Ativ. 3</th>
-                  <th class="py-2.5 px-2 text-center border border-slate-300 ">Ativ. 4</th>
-                  <th class="py-2.5 px-2 text-center border border-slate-300 ">Faltas</th>
-                  <th class="py-2.5 px-3 text-center border border-slate-300 ">Média</th>
-                  <th class="py-2.5 px-3 text-center border border-slate-300 ">Resultado</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${AppState.subjects.map(subject => {
-                  const data = student.grades?.[subject] || {};
-                  const { avg, hasGrades } = calculateSubjectAverage(data);
-                  const isPass = avg >= AppState.settings.passingGrade;
-                  const isRec = avg >= AppState.settings.recoveryGrade;
+          <div id="printable-content" class="modal-body p-4 p-sm-5 text-slate-900 bg-white space-y-5 overflow-y-auto">
+            
+            <div class="border-b-2 border-slate-900 pb-4 text-center">
+              <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 text-xs fw-bold rounded-pill mb-2 text-uppercase">Emprega Mais Alagoas</span>
+              <h1 class="text-lg sm:text-xl fw-bolder tracking-tight text-uppercase mb-1">${AppState.settings.schoolName}</h1>
+              <p class="text-xs text-slate-600 mb-2">${AppState.settings.courseName} • Ano Letivo ${AppState.settings.schoolYear}</p>
+              <h2 class="text-xs fw-bold text-uppercase tracking-wider bg-slate-100 py-1.5 rounded-lg border border-slate-200 mb-0">Boletim Oficial de Rendimento</h2>
+            </div>
 
-                  return `
-                    <tr class="border-b border-slate-200 ">
-                      <td class="py-2 px-3 fw-semibold border border-slate-300 ">${subject}</td>
-                      <td class="py-2 px-2 text-center border border-slate-300 font-monospace">${data.b1 !== null && data.b1 !== undefined ? Number(data.b1).toFixed(1) : '-'}</td>
-                      <td class="py-2 px-2 text-center border border-slate-300 font-monospace">${data.b2 !== null && data.b2 !== undefined ? Number(data.b2).toFixed(1) : '-'}</td>
-                      <td class="py-2 px-2 text-center border border-slate-300 font-monospace">${data.b3 !== null && data.b3 !== undefined ? Number(data.b3).toFixed(1) : '-'}</td>
-                      <td class="py-2 px-2 text-center border border-slate-300 font-monospace">${data.b4 !== null && data.b4 !== undefined ? Number(data.b4).toFixed(1) : '-'}</td>
-                      <td class="py-2 px-2 text-center border border-slate-300 ">${data.absences || 0}</td>
-                      <td class="py-2 px-3 text-center fw-bold font-monospace border border-slate-300 ${!hasGrades ? '' : isPass ? 'text-emerald-700' : isRec ? 'text-amber-700' : 'text-rose-700'}">
-                        ${hasGrades ? avg.toFixed(1) : '-'}
-                      </td>
-                      <td class="py-2 px-3 text-center fw-semibold border border-slate-300 text-[11px]">
-                        ${!hasGrades ? '-' : isPass ? 'Aprovado' : isRec ? 'Recuperação' : 'Reprovado'}
-                      </td>
-                    </tr>
-                  `;
-                }).join("")}
-              </tbody>
-              <tfoot>
-                <tr class="bg-slate-100 fw-bold border-t-2 border-slate-400">
-                  <td class="py-2.5 px-3 border border-slate-300 ">MÉDIA GERAL DO CURSO</td>
-                  <td colspan="4" class="border border-slate-300 "></td>
-                  <td class="py-2.5 px-2 text-center border border-slate-300 ">${stats.totalAbsences}</td>
-                  <td class="py-2.5 px-3 text-center text-sm fw-bolder border border-slate-300 ">${stats.overallAvg.toFixed(1)}</td>
-                  <td class="py-2.5 px-3 text-center border border-slate-300 ">${stats.status}</td>
-                </tr>
-              </tfoot>
-            </table>
+            <div class="row g-2 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+              <div class="col-12 col-sm-6">
+                <span class="text-slate-500">Aluno(a):</span> <strong class="text-slate-900">${displayName}</strong>
+              </div>
+              <div class="col-6 col-sm-3">
+                <span class="text-slate-500">Matrícula:</span> <strong class="font-monospace text-slate-900">${student.id}</strong>
+              </div>
+              <div class="col-6 col-sm-3">
+                <span class="text-slate-500">CPF:</span> <strong class="font-monospace text-slate-900">${displayCpf}</strong>
+              </div>
+              <div class="col-12 col-sm-6">
+                <span class="text-slate-500">Polo / Unidade:</span> <strong class="text-slate-900">${student.unitCity || student.polo || student.classroom || 'Maceió - AL'}</strong>
+              </div>
+              <div class="col-6 col-sm-3">
+                <span class="text-slate-500">Frequência:</span> <strong class="${(student.attendance || 100) >= 75 ? 'text-emerald-700' : 'text-rose-700'}">${student.attendance || 100}%</strong>
+              </div>
+              <div class="col-6 col-sm-3">
+                <span class="text-slate-500">Emitido em:</span> <strong class="text-slate-900">${new Date().toLocaleDateString('pt-BR')}</strong>
+              </div>
+            </div>
+
+            <div class="table-responsive rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+              <table class="table table-sm table-hover align-middle mb-0 text-xs text-slate-800">
+                <thead class="table-light text-slate-700 fw-bold border-bottom">
+                  <tr>
+                    <th class="py-2.5 px-3">Módulo Curricular</th>
+                    <th class="py-2.5 px-2 text-center">Ativ. 1</th>
+                    <th class="py-2.5 px-2 text-center">Ativ. 2</th>
+                    <th class="py-2.5 px-2 text-center">Ativ. 3</th>
+                    <th class="py-2.5 px-2 text-center">Ativ. 4</th>
+                    <th class="py-2.5 px-2 text-center">Faltas</th>
+                    <th class="py-2.5 px-3 text-center">Média</th>
+                    <th class="py-2.5 px-3 text-center">Resultado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${AppState.subjects.map(subject => {
+                    const data = student.grades?.[subject] || {};
+                    const { avg, hasGrades } = calculateSubjectAverage(data);
+                    const isPass = avg >= AppState.settings.passingGrade;
+                    const isRec = avg >= AppState.settings.recoveryGrade;
+
+                    return `
+                      <tr class="border-bottom border-slate-100">
+                        <td class="py-2.5 px-3 fw-semibold text-slate-900">${subject}</td>
+                        <td class="py-2.5 px-2 text-center font-monospace text-slate-600">${data.b1 !== null && data.b1 !== undefined ? Number(data.b1).toFixed(1) : '-'}</td>
+                        <td class="py-2.5 px-2 text-center font-monospace text-slate-600">${data.b2 !== null && data.b2 !== undefined ? Number(data.b2).toFixed(1) : '-'}</td>
+                        <td class="py-2.5 px-2 text-center font-monospace text-slate-600">${data.b3 !== null && data.b3 !== undefined ? Number(data.b3).toFixed(1) : '-'}</td>
+                        <td class="py-2.5 px-2 text-center font-monospace text-slate-600">${data.b4 !== null && data.b4 !== undefined ? Number(data.b4).toFixed(1) : '-'}</td>
+                        <td class="py-2.5 px-2 text-center text-slate-600">${data.absences || 0}</td>
+                        <td class="py-2.5 px-3 text-center fw-bold font-monospace ${!hasGrades ? 'text-slate-400' : isPass ? 'text-emerald-600' : isRec ? 'text-amber-600' : 'text-rose-600'}">
+                          ${hasGrades ? avg.toFixed(1) : '-'}
+                        </td>
+                        <td class="py-2.5 px-3 text-center text-[11px]">
+                          ${!hasGrades ? '<span class="text-slate-400">-</span>' : isPass 
+                            ? '<span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-pill px-2 py-0.5">Aprovado</span>' 
+                            : isRec 
+                              ? '<span class="badge bg-amber-50 text-amber-700 border border-amber-200 rounded-pill px-2 py-0.5">Recuperação</span>' 
+                              : '<span class="badge bg-rose-50 text-rose-700 border border-rose-200 rounded-pill px-2 py-0.5">Reprovado</span>'}
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+                <tfoot class="table-light fw-bold border-top-2 border-slate-300">
+                  <tr>
+                    <td class="py-2.5 px-3 text-slate-900">MÉDIA GERAL DO CURSO</td>
+                    <td colspan="4"></td>
+                    <td class="py-2.5 px-2 text-center text-slate-800">${stats.totalAbsences}</td>
+                    <td class="py-2.5 px-3 text-center text-sm fw-bolder text-indigo-700 font-monospace">${stats.overallAvg.toFixed(1)}</td>
+                    <td class="py-2.5 px-3 text-center">
+                      <span class="badge ${stats.status === 'Aprovado' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : stats.status === 'Em Recuperação' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-rose-100 text-rose-800 border border-rose-300'} rounded-pill px-2.5 py-1">
+                        ${stats.status}
+                      </span>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="pt-4 row text-center text-xs text-slate-600 g-4">
+              <div class="col-6">
+                <div class="pt-8 border-top border-slate-300">
+                  <span class="d-block fw-semibold text-slate-800">Coordenação Pedagógica</span>
+                  <span>Emprega Mais Alagoas</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="pt-8 border-top border-slate-300">
+                  <span class="d-block fw-semibold text-slate-800">Assinatura do Aluno(a)</span>
+                  <span>Data: ___/___/_______</span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <div class="pt-6 grid grid-cols-2 gap-8 text-center text-xs text-slate-600">
-            <div class="pt-10 border-t border-slate-400">
-              <span class="d-block fw-semibold text-slate-800 ">Professor / Coordenação</span>
-              <span>Emprega Mais Alagoas</span>
-            </div>
-            <div class="pt-10 border-t border-slate-400">
-              <span class="d-block fw-semibold text-slate-800 ">Assinatura do Aluno</span>
-              <span>Data: ___/___/_______</span>
-            </div>
+          <div class="modal-footer border-top py-2.5 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between no-print">
+            <span class="text-[11px] text-slate-500">Documento gerado automaticamente pelo Sistema Eu Por Dias</span>
+            <button onclick="closeModal()" class="btn btn-sm btn-secondary rounded-pill px-4 py-1.5 text-xs fw-semibold">
+              Fechar
+            </button>
           </div>
 
         </div>
-
       </div>
     </div>
   `;
 }
 
-// -------------------------------------------------------------
-// EXPORTAÇÕES E BACKUP
-// -------------------------------------------------------------
 function exportStudentsToCSV(forcePrivacy = false) {
   if (AppState.students.length === 0) {
     showToast("Não há alunos para exportar.", "warning");
@@ -5855,9 +5870,10 @@ function openRestoreModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-md rounded-3xl border border-slate-200 shadow-2xl p-6 scale-in space-y-4">
-        <div class="d-flex align-items-center gap-3">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center gap-3">
           <div class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-600 d-flex align-items-center justify-content-center text-lg">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
@@ -5881,6 +5897,7 @@ function openRestoreModal() {
           <button onclick="processBackupFile()" class="px-5 py-2 rounded-xl text-xs fw-bold bg-purple-600 text-white shadow">
             Restaurar Dados
           </button>
+        </div>
         </div>
       </div>
     </div>
@@ -5927,10 +5944,10 @@ function openSubjectsConfigModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-md rounded-3xl border border-slate-200 shadow-2xl p-6 scale-in space-y-4">
-        
-        <div class="d-flex align-items-center justify-content-between">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
               <i class="fa-solid fa-book-open"></i>
@@ -5970,7 +5987,7 @@ function openSubjectsConfigModal() {
             Concluir
           </button>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -6296,10 +6313,10 @@ function openCpfLoginModal(redirectTab = null) {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-md rounded-2xl border border-slate-200 shadow-xl p-5 sm:p-6 scale-in space-y-4">
-        
-        <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100">
           <div class="d-flex align-items-center gap-2.5">
             <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
               <i class="fa-solid fa-id-card"></i>
@@ -6384,9 +6401,10 @@ function openCpfLoginModal(redirectTab = null) {
             </button>
           </div>
         </form>
-
+        </div>
       </div>
-    </div>`;
+    </div>
+  `;
 
   setTimeout(() => {
     const input = document.getElementById("login-cpf-input");
@@ -6533,9 +6551,10 @@ function openPromptUserPhotoModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-sm rounded-3xl border border-slate-200 shadow-2xl p-6 text-center space-y-4 scale-in">
-        <div class="w-16 h-16 rounded-3xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-2xl mx-auto shadow-inner">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="w-16 h-16 rounded-3xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-2xl mx-auto shadow-inner">
           <i class="fa-solid fa-camera"></i>
         </div>
         <div class="space-y-1">
@@ -6558,6 +6577,7 @@ function openPromptUserPhotoModal() {
             Continuar sem Foto por Enquanto
           </button>
         </div>
+        </div>
       </div>
     </div>
   `;
@@ -6573,10 +6593,10 @@ function openUserPhotoUploadModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in">
-      <div class="bg-white w-100 max-w-md rounded-3xl border border-slate-200 shadow-2xl p-6 scale-in space-y-5">
-        
-        <div class="d-flex align-items-center justify-content-between">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
               <i class="fa-solid fa-camera"></i>
@@ -6631,7 +6651,7 @@ function openUserPhotoUploadModal() {
             Concluir
           </button>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -6795,10 +6815,10 @@ function openSendEmailReportModal(studentId) {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
-      <div class="bg-white w-100 max-w-2xl rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-7 scale-in space-y-5 my-8 max-h-[92vh] d-flex flex-column">
-        
-        <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-lg shadow-sm">
               <i class="fa-solid fa-paper-plane"></i>
@@ -6929,7 +6949,7 @@ function openSendEmailReportModal(studentId) {
             </button>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -8191,10 +8211,10 @@ function openCreateTopicModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
-      <div class="bg-white w-100 max-w-lg rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-7 scale-in space-y-4 my-8 max-h-[92vh] d-flex flex-column">
-        
-        <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100 ">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100 ">
           <div class="d-flex align-items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
               <i class="fa-solid fa-folder-plus"></i>
@@ -8299,7 +8319,7 @@ function openCreateTopicModal() {
             <i class="fa-solid fa-check"></i> Publicar Tópico
           </button>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -9341,10 +9361,10 @@ function openStudentResumeModal(studentId) {
   const photoUrl = student.photoUrl || student.photo || fallbackPhoto;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
-      <div class="bg-white w-100 max-w-2xl rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 space-y-6 scale-in my-8">
-        
-        <!-- Cabeçalho do Currículo -->
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <!-- Cabeçalho do Currículo -->
         <div class="d-flex flex-column sm:flex-row align-items-start sm:items-center justify-content-between gap-4 pb-6 border-b border-slate-100 ">
           <div class="d-flex align-items-center gap-4">
             <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden ring-4 ring-indigo-500/20 shadow-md flex-shrink-0">
@@ -9447,7 +9467,7 @@ function openStudentResumeModal(studentId) {
             </button>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -9530,10 +9550,10 @@ function openCreateVacancyModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
-      <div class="bg-white w-100 max-w-lg rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-7 space-y-5 scale-in my-8">
-        
-        <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-lg">
               <i class="fa-solid fa-briefcase"></i>
@@ -9665,7 +9685,7 @@ function openCreateVacancyModal() {
             </button>
           </div>
         </form>
-
+        </div>
       </div>
     </div>
   `;
@@ -9749,10 +9769,10 @@ function openAddResourceModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
-      <div class="bg-white w-100 max-w-md rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-7 space-y-4 scale-in my-8">
-        
-        <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-lg">
               <i class="fa-solid fa-file-arrow-up"></i>
@@ -9841,7 +9861,7 @@ function openAddResourceModal() {
             </button>
           </div>
         </form>
-
+        </div>
       </div>
     </div>
   `;
@@ -10900,10 +10920,10 @@ function openPromptCustomizerModal(promptId) {
   }
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
-      <div class="bg-white w-100 max-w-2xl rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 space-y-6 scale-in my-8">
-        
-        <!-- Header do Modal -->
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <!-- Header do Modal -->
         <div class="d-flex align-items-center justify-content-between pb-4 border-b border-slate-100 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-lg shadow-sm">
@@ -10986,7 +11006,7 @@ function openPromptCustomizerModal(promptId) {
             Fechar
           </button>
         </div>
-
+        </div>
       </div>
     </div>
   `;
@@ -11045,10 +11065,10 @@ function openCreatePromptModal() {
   if (!modalContainer) return;
 
   modalContainer.innerHTML = `
-    <div class="position-fixed inset-0 z-50 d-flex align-items-center justify-content-center p-4 bg-slate-900/70 backdrop-blur-sm modal-backdrop fade-in overflow-y-auto">
-      <div class="bg-white w-100 max-w-lg rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-7 space-y-5 scale-in my-8">
-        
-        <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          <div class="d-flex align-items-center justify-content-between pb-3 border-b border-slate-100 ">
           <div class="d-flex align-items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-lg">
               <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -11154,7 +11174,7 @@ function openCreatePromptModal() {
             </button>
           </div>
         </form>
-
+        </div>
       </div>
     </div>
   `;
