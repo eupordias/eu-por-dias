@@ -2355,6 +2355,28 @@ function openStudentProfileModal(studentId) {
               </div>
             </div>
 
+            
+            <!-- Botão de Auditoria de Instagram -->
+            ${student.socialMedia ? `
+              <div class="p-3 rounded-xl bg-gradient-to-r from-rose-50 to-purple-50 border border-rose-100 d-flex align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-rose-600 text-white d-flex align-items-center justify-content-center text-sm shadow-xs flex-shrink-0">
+                    <i class="fa-brands fa-instagram"></i>
+                  </div>
+                  <div>
+                    <strong class="text-xs text-slate-900 d-block">${student.socialMedia}</strong>
+                    <span class="text-[10px] text-slate-500">Perfil informado no formulário</span>
+                  </div>
+                </div>
+                <button 
+                  onclick="runInstagramAuditForStudent('${student.socialMedia}')"
+                  class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
+                >
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Auditar Perfil IA
+                </button>
+              </div>
+            ` : ''}
+  
             <!-- Grade 2 Colunas: Contato & Carreira -->
             <div class="row g-3">
               <div class="col-12 col-sm-6">
@@ -11300,3 +11322,470 @@ function deleteCustomPrompt(promptId) {
   }
 }
 
+
+
+// -------------------------------------------------------------
+// AUDITOR DE INSTAGRAM & FEEDBACK PEDAGÓGICO IA
+// -------------------------------------------------------------
+let instagramAuditState = {
+  handle: "",
+  niche: "comercio",
+  goal: "vendas",
+  bio: "",
+  loading: false,
+  result: null,
+  completedTasks: new Set()
+};
+
+function runInstagramAuditForStudent(handle, niche = 'geral') {
+  instagramAuditState.handle = handle || '';
+  if (niche && niche !== 'geral') instagramAuditState.niche = niche;
+  closeModal();
+  switchTab('instagram');
+  setTimeout(() => {
+    executeInstagramAudit();
+  }, 150);
+}
+
+function renderInstagramAuditTab(container) {
+  // Se houver aluno logado e o campo handle estiver vazio, pré-preenche
+  if (!instagramAuditState.handle && AppState.currentUser) {
+    if (AppState.currentUser.role === 'aluno') {
+      const studentObj = AppState.students.find(s => s.id === AppState.currentUser.id);
+      if (studentObj && studentObj.socialMedia) {
+        instagramAuditState.handle = studentObj.socialMedia;
+      } else {
+        instagramAuditState.handle = '@' + AppState.currentUser.name.toLowerCase().replace(/\s+/g, '.');
+      }
+    }
+  }
+
+  const res = instagramAuditState.result;
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in pb-12">
+      
+      <!-- HERO BANNER -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl relative overflow-hidden">
+        <div class="position-absolute end-0 top-0 w-96 h-96 bg-gradient-to-br from-rose-500/10 via-purple-500/15 to-transparent rounded-circle blur-3xl pointer-events-none"></div>
+        <div class="position-relative z-10 max-w-2xl space-y-2.5">
+          <span class="badge bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1 rounded-pill text-xs fw-bold d-inline-flex align-items-center gap-1.5">
+            <i class="fa-brands fa-instagram"></i> Auditoria Pedagógica 360°
+          </span>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-1">Auditor de Perfil do Instagram com IA</h1>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-0">
+            Avalie o perfil do seu negócio ou projeto de acordo com as melhores práticas de <strong>Mídias Digitais</strong> do Emprega Mais Alagoas: diagnóstico de bio, estratégia de destaques, roteiros para Reels e checklist prático.
+          </p>
+        </div>
+      </div>
+
+      <!-- FORMULÁRIO DE AUDITORIA -->
+      <div class="row g-4">
+        
+        <div class="col-12 ${res ? 'col-lg-4' : 'col-lg-6 mx-auto'}">
+          <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+            <div class="d-flex align-items-center gap-2.5 pb-2 border-b border-slate-100">
+              <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 d-flex align-items-center justify-content-center text-sm shadow-xs">
+                <i class="fa-brands fa-instagram"></i>
+              </div>
+              <div>
+                <h3 class="fw-bold text-sm text-slate-900 mb-0">Configurar Análise</h3>
+                <span class="text-[11px] text-slate-500">Insira os dados do perfil do aluno</span>
+              </div>
+            </div>
+
+            <form onsubmit="handleInstagramAuditSubmit(event)" class="space-y-3.5">
+              
+              <div class="space-y-1">
+                <label class="d-block text-xs fw-semibold text-slate-700">Link ou @ do Instagram</label>
+                <div class="position-relative">
+                  <span class="position-absolute start-0 top-50 translate-middle-y ps-3 text-slate-400 text-xs">
+                    <i class="fa-brands fa-instagram"></i>
+                  </span>
+                  <input 
+                    type="text" 
+                    id="insta-handle-input" 
+                    required 
+                    placeholder="@seunome ou link do perfil" 
+                    value="${instagramAuditState.handle}"
+                    class="form-control text-xs ps-5 py-2.5 rounded-xl border border-slate-200"
+                  />
+                </div>
+              </div>
+
+              <div class="space-y-1">
+                <label class="d-block text-xs fw-semibold text-slate-700">Nicho / Segmento</label>
+                <select id="insta-niche-select" class="form-select text-xs py-2.5 rounded-xl border border-slate-200">
+                  <option value="comercio" ${instagramAuditState.niche === 'comercio' ? 'selected' : ''}>Comércio Local & Varejo</option>
+                  <option value="moda" ${instagramAuditState.niche === 'moda' ? 'selected' : ''}>Moda, Vestuário & Acessórios</option>
+                  <option value="gastronomia" ${instagramAuditState.niche === 'gastronomia' ? 'selected' : ''}>Gastronomia, Doceria & Delivery</option>
+                  <option value="servicos" ${instagramAuditState.niche === 'servicos' ? 'selected' : ''}>Prestação de Serviços & Freelancer</option>
+                  <option value="artesanato" ${instagramAuditState.niche === 'artesanato' ? 'selected' : ''}>Artesanato Regional & Arte</option>
+                  <option value="beleza" ${instagramAuditState.niche === 'beleza' ? 'selected' : ''}>Estética, Beleza & Barbearia</option>
+                  <option value="creator" ${instagramAuditState.niche === 'creator' ? 'selected' : ''}>Criador de Conteúdo / Influencer</option>
+                </select>
+              </div>
+
+              <div class="space-y-1">
+                <label class="d-block text-xs fw-semibold text-slate-700">Objetivo Principal</label>
+                <select id="insta-goal-select" class="form-select text-xs py-2.5 rounded-xl border border-slate-200">
+                  <option value="vendas" ${instagramAuditState.goal === 'vendas' ? 'selected' : ''}>Atrair clientes e vender pelo WhatsApp</option>
+                  <option value="engajamento" ${instagramAuditState.goal === 'engajamento' ? 'selected' : ''}>Aumentar alcance e engajamento orgânico</option>
+                  <option value="autoridade" ${instagramAuditState.goal === 'autoridade' ? 'selected' : ''}>Construir autoridade e posicionamento profissional</option>
+                  <option value="portfolio" ${instagramAuditState.goal === 'portfolio' ? 'selected' : ''}>Apresentar portfólio para conseguir empregos/freelas</option>
+                </select>
+              </div>
+
+              <div class="space-y-1">
+                <label class="d-block text-xs fw-semibold text-slate-700">Bio Atual ou Proposta (Opcional)</label>
+                <textarea 
+                  id="insta-bio-input" 
+                  rows="3" 
+                  placeholder="Cole aqui o texto da bio atual para refinarmos o copywriting..."
+                  class="form-control text-xs rounded-xl border border-slate-200 p-2.5"
+                >${instagramAuditState.bio}</textarea>
+              </div>
+
+              <button 
+                type="submit" 
+                ${instagramAuditState.loading ? 'disabled' : ''}
+                class="w-100 btn btn-primary py-2.5 rounded-xl text-xs fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                style="background: linear-gradient(135deg, #e11d48, #9333ea); border: none;"
+              >
+                ${instagramAuditState.loading ? `
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Analisando Perfil com IA...
+                ` : `
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Diagnóstico Pedagógico
+                `}
+              </button>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- ÁREA DE RESULTADOS -->
+        ${res ? `
+          <div class="col-12 col-lg-8 space-y-4" id="audit-printable-area">
+            
+            <!-- CARD DE SCORE GERAL -->
+            <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm d-flex flex-column sm:flex-row align-items-center justify-content-between gap-4">
+              <div class="space-y-1 text-center sm:text-start">
+                <div class="d-flex align-items-center justify-content-center sm:justify-content-start gap-2">
+                  <h2 class="text-base fw-bold text-slate-900 mb-0">Diagnóstico de ${res.handle}</h2>
+                  <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">${res.nicheLabel}</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-0">Avaliação baseada no framework do curso de Gestão de Mídias Digitais</p>
+              </div>
+
+              <div class="d-flex align-items-center gap-3">
+                <div class="text-center p-3 rounded-2xl bg-slate-50 border border-slate-200 min-w-[120px]">
+                  <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block">Score Geral</span>
+                  <span class="text-2xl font-black text-indigo-600 font-monospace">${res.score}/100</span>
+                </div>
+                <button onclick="window.print()" class="btn btn-sm btn-outline-secondary rounded-xl px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 no-print" title="Salvar em PDF">
+                  <i class="fa-solid fa-print"></i> PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- BIO REESCRITA & PROPOSTA DE VALOR -->
+            <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-signature text-indigo-600 text-base"></i>
+                <h3 class="text-sm fw-bold text-slate-900 mb-0">Recomendação de Copywriting para Bio</h3>
+              </div>
+              <p class="text-xs text-slate-600">Aplique a fórmula de alto impacto: <em>[Proposta de Valor] + [Autoridade/Diferencial] + [Localização] + [Chamada para Ação]</em>.</p>
+
+              <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 font-monospace text-xs text-indigo-950 space-y-1">
+                ${res.suggestedBio.map(line => `<div>${line}</div>`).join('')}
+              </div>
+              
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                <strong class="text-slate-800 d-block mb-0.5">Dica de Ouro do Professor:</strong>
+                ${res.bioTip}
+              </div>
+            </div>
+
+            <!-- ESTRUTURA DE DESTAQUES (HIGHLIGHTS) -->
+            <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-circle-dot text-rose-500 text-base"></i>
+                <h3 class="text-sm fw-bold text-slate-900 mb-0">Os 5 Destaques Estratégicos Indispensáveis</h3>
+              </div>
+              <p class="text-xs text-slate-600">Organize os destaques para que um visitante entenda sua oferta em menos de 10 segundos:</p>
+
+              <div class="row g-2">
+                ${res.highlights.map(h => `
+                  <div class="col-12 col-sm-6">
+                    <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 h-100 space-y-1">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="w-6 h-6 rounded-circle bg-white text-indigo-600 border border-slate-200 d-flex align-items-center justify-content-center text-xs fw-bold">${h.icon}</span>
+                        <strong class="text-xs text-slate-900">${h.title}</strong>
+                      </div>
+                      <p class="text-[11px] text-slate-500 mb-0">${h.desc}</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- 3 ROTEIROS DE REELS PRONTOS -->
+            <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-video text-purple-600 text-base"></i>
+                <h3 class="text-sm fw-bold text-slate-900 mb-0">3 Roteiros Práticos de Reels para seu Nicho</h3>
+              </div>
+              
+              <div class="space-y-3">
+                ${res.reelsScripts.map((reel, idx) => `
+                  <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <span class="badge bg-purple-100 text-purple-800 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">Vídeo ${idx + 1} • ${reel.objective}</span>
+                      <span class="text-[10px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i> ${reel.duration}</span>
+                    </div>
+                    <strong class="text-xs text-slate-900 d-block">${reel.theme}</strong>
+                    
+                    <div class="text-xs text-slate-700 space-y-1">
+                      <div><strong class="text-rose-600">🎯 Gancho (3s iniciais):</strong> "${reel.hook}"</div>
+                      <div><strong class="text-indigo-600">💡 Desenvolvimento:</strong> ${reel.body}</div>
+                      <div><strong class="text-emerald-600">📣 Chamada para Ação (CTA):</strong> "${reel.cta}"</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- CHECKLIST DE 7 DIAS -->
+            <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-list-check text-emerald-600 text-base"></i>
+                  <h3 class="text-sm fw-bold text-slate-900 mb-0">Checklist de Otimização (7 Dias)</h3>
+                </div>
+                <span class="text-[11px] text-slate-400">Marque ao concluir</span>
+              </div>
+
+              <div class="space-y-2">
+                ${res.checklist.map((task, idx) => `
+                  <label class="d-flex align-items-start gap-2.5 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer mb-0">
+                    <input 
+                      type="checkbox" 
+                      class="form-check-input mt-0.5" 
+                      ${instagramAuditState.completedTasks.has(idx) ? 'checked' : ''}
+                      onchange="toggleInstagramChecklist(${idx})"
+                    />
+                    <span class="text-xs ${instagramAuditState.completedTasks.has(idx) ? 'text-decoration-line-through text-slate-400' : 'text-slate-700'}">
+                      ${task}
+                    </span>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+
+          </div>
+        ` : `
+          <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center">
+            <div class="p-8 rounded-3xl bg-white border border-dashed border-slate-200 text-center space-y-3 max-w-sm">
+              <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 d-flex align-items-center justify-content-center text-2xl mx-auto">
+                <i class="fa-brands fa-instagram"></i>
+              </div>
+              <h4 class="text-sm fw-bold text-slate-800 mb-0">Aguardando Perfil</h4>
+              <p class="text-xs text-slate-500 leading-relaxed mb-0">
+                Preencha o link ou @ ao lado e clique em <strong>Gerar Diagnóstico</strong> para receber a análise completa de engajamento, bio e roteiros.
+              </p>
+            </div>
+          </div>
+        `}
+
+      </div>
+
+    </div>
+  `;
+}
+
+function handleInstagramAuditSubmit(e) {
+  e.preventDefault();
+  const handleInput = document.getElementById("insta-handle-input");
+  const nicheSelect = document.getElementById("insta-niche-select");
+  const goalSelect = document.getElementById("insta-goal-select");
+  const bioInput = document.getElementById("insta-bio-input");
+
+  instagramAuditState.handle = (handleInput?.value || "").trim();
+  instagramAuditState.niche = nicheSelect?.value || "comercio";
+  instagramAuditState.goal = goalSelect?.value || "vendas";
+  instagramAuditState.bio = (bioInput?.value || "").trim();
+
+  executeInstagramAudit();
+}
+
+function executeInstagramAudit() {
+  if (!instagramAuditState.handle) {
+    showToast("Por favor, informe o @ ou link do Instagram.", "warning");
+    return;
+  }
+
+  instagramAuditState.loading = true;
+  renderApp();
+
+  setTimeout(() => {
+    instagramAuditState.result = generatePedagogicalInstagramAudit(
+      instagramAuditState.handle,
+      instagramAuditState.niche,
+      instagramAuditState.goal,
+      instagramAuditState.bio
+    );
+    instagramAuditState.loading = false;
+    renderApp();
+    showToast("Diagnóstico de Instagram gerado com sucesso!", "success");
+  }, 600);
+}
+
+function toggleInstagramChecklist(idx) {
+  if (instagramAuditState.completedTasks.has(idx)) {
+    instagramAuditState.completedTasks.delete(idx);
+  } else {
+    instagramAuditState.completedTasks.add(idx);
+  }
+  renderApp();
+}
+
+function generatePedagogicalInstagramAudit(handle, niche, goal, currentBio) {
+  const cleanHandle = handle.startsWith('@') ? handle : ('@' + handle.replace(/https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, ''));
+  
+  const nicheMap = {
+    comercio: {
+      label: "Comércio Local & Varejo",
+      score: 84,
+      suggestedBio: [
+        "🛍️ Os melhores produtos com pronta entrega em Alagoas",
+        "📦 Enviamos para todo o estado • Retirada facilitada",
+        "⭐ + de 500 clientes satisfeitos",
+        "👇 Peça pelo WhatsApp no link abaixo:"
+      ],
+      bioTip: "Sempre inclua sua cidade e o botão direto para o catálogo ou WhatsApp. Clientes locais compram por proximidade e confiança.",
+      highlights: [
+        { icon: "📍", title: "Como Comprar", desc: "Passo a passo simples de pedido, pagamento e entrega." },
+        { icon: "⭐", title: "Depoimentos", desc: "Prints de clientes elogiando a entrega e qualidade." },
+        { icon: "📦", title: "Novidades", desc: "Produtos recém-chegados organizados por semana." },
+        { icon: "❓", title: "Dúvidas / FAQ", desc: "Formas de pagamento, prazos de envio e trocas." },
+        { icon: "💬", title: "WhatsApp", desc: "Chamada clara com o link direto para atendimento." }
+      ],
+      reelsScripts: [
+        { objective: "Atrair Novos Seguidores", duration: "25s", theme: "Tour Rápido pelos 3 Produtos Mais Vendidos", hook: "Se você mora em Alagoas e ainda não conhece esses 3 itens, você está perdendo tempo...", body: "Apresente os 3 produtos com closes rápidos e preços na tela.", cta: "Comente 'QUERO' que te mando o link no direct!" },
+        { objective: "Gerar Confiança", duration: "30s", theme: "Bastidores: Embalando um Pedido Real", hook: "Olha o carinho que a gente coloca em cada pacotinho que sai daqui hoje!", body: "Mostre o processo de embalagem, brinde e bilhete de agradecimento.", cta: "Garanta o seu hoje pelo link da bio!" },
+        { objective: "Venda Direta", duration: "20s", theme: "Combinação Perfeita / Oferta Relâmpago", hook: "Quer levar mais pagando menos? Essa combinação é a queridinha da semana.", body: "Demonstre como usar ou combinar os itens na prática.", cta: "Chame no WhatsApp antes que acabe o estoque." }
+      ],
+      checklist: [
+        "Ajustar a foto de perfil para uma logo limpa com bom contraste.",
+        "Atualizar a Bio com a fórmula de 4 linhas e link do WhatsApp.",
+        "Criar capas padronizadas com a paleta do negócio para os 5 destaques.",
+        "Fixar 3 posts estratégicos no topo (Apresentação, Produto Campeão, Depoimento).",
+        "Gravar e publicar 3 Reels na semana nos horários de maior pico (12h e 19h)."
+      ]
+    },
+    moda: {
+      label: "Moda & Vestuário",
+      score: 88,
+      suggestedBio: [
+        "✨ Estilo, conforto e autenticidade para o seu dia a dia",
+        "👗 Peças selecionadas com envio rápido para todo o Brasil",
+        "📍 Maceió - AL • Atendimento humanizado",
+        "👇 Garanta seu look no link:"
+      ],
+      bioTip: "No nicho de moda, o apelo visual é tudo. Use foto de perfil com iluminação profissional e vídeos mostrando caimento real no corpo.",
+      highlights: [
+        { icon: "👗", title: "Coleção", desc: "Looks da estação com tamanhos e tecidos informados." },
+        { icon: "📏", title: "Tamanhos", desc: "Tabela de medidas para evitar dúvidas na compra." },
+        { icon: "✨", title: "No Corpo", desc: "Vídeos e fotos de clientes reais usando as peças." },
+        { icon: "🚚", title: "Envios", desc: "Comprovantes e prazos de entrega em Alagoas." },
+        { icon: "💳", title: "Pagamento", desc: "Pix, Cartão em até 6x e links de pagamento." }
+      ],
+      reelsScripts: [
+        { objective: "Alcance", duration: "20s", theme: "1 Peça, 3 Looks Diferentes", hook: "Você usa essa peça sempre do mesmo jeito? Vou te provar que ela rende 3 looks incríveis!", body: "Transições rápidas trocando calçados e sobreposições.", cta: "Qual look foi seu favorito? 1, 2 ou 3?" },
+        { objective: "Desejo", duration: "25s", theme: "Detalhes que Fazem a Diferença", hook: "O segredo de um look elegante está nesses detalhes que pouca gente nota...", body: "Mostre o tecido, costura e caimento de perto.", cta: "Clica no link da bio para conferir a grade de tamanhos." },
+        { objective: "Prova Social", duration: "30s", theme: "Clientes Reais com Nossas Peças", hook: "Olha a perfeição que ficou esse look na nossa cliente!", body: "Compilação dinâmica de fotos/vídeos autorizados.", cta: "Envie para aquela amiga que vai amar esse estilo!" }
+      ],
+      checklist: [
+        "Criar paleta de cores consistente para o feed.",
+        "Organizar os destaques com nomes curtos de 1 palavra.",
+        "Postar stories diários mostrando detalhes de estoque e looks do dia.",
+        "Incluir preço visível nos stories para facilitar a decisão de compra.",
+        "Fazer uma live shop ou provador semanal."
+      ]
+    },
+    gastronomia: {
+      label: "Gastronomia & Delivery",
+      score: 86,
+      suggestedBio: [
+        "🍕 O sabor inconfundível que você merece hoje",
+        "🔥 Ingredientes frescos e entrega rápida e quentinha",
+        "⏰ Terça a Domingo a partir das 18h",
+        "👇 Peça pelo cardápio online ou WhatsApp:"
+      ],
+      bioTip: "Deixe horário de funcionamento e link do cardápio extremamente visíveis. A fome é imediatista: 1 clique a mais faz você perder vendas.",
+      highlights: [
+        { icon: "📋", title: "Cardápio", desc: "Opções, combos e valores atualizados." },
+        { icon: "🛵", title: "Delivery", desc: "Bairros atendidos e taxa de entrega." },
+        { icon: "⭐", title: "Clientes", desc: "Fotos de pratos recebidos pelos clientes." },
+        { icon: "🎉", title: "Promoções", desc: "Combos especiais da semana." },
+        { icon: "📍", title: "Localização", desc: "Endereço físico para retirada se houver." }
+      ],
+      reelsScripts: [
+        { objective: "Gatilho de Vontade", duration: "15s", theme: "Close Lento de Preparo / Queijo Puxando", hook: "Se esse vídeo apareceu pra você, é sinal de que você merece pedir isso hoje!", body: "Áudio ASMR com som de fritura, corte ou molho sendo servido.", cta: "Clica no link da bio e pede antes que feche a cozinha!" },
+        { objective: "Bastidores", duration: "25s", theme: "Como Fazemos Nosso Item Mais Pedido", hook: "O segredo por trás do nosso prato mais amado da casa...", body: "Montagem rápida e higiênica em alta velocidade.", cta: "Marca quem vai dividir essa delícia com você hoje!" },
+        { objective: "Engajamento", duration: "20s", theme: "Batalha de Sabores", hook: "Qual desses dois você escolheria hoje sem pensar duas vezes?", body: "Mostre opção A versus opção B.", cta: "Vote nos comentários!" }
+      ],
+      checklist: [
+        "Garantir link do iFood ou WhatsApp funcionando com 1 clique.",
+        "Postar stories no horário de pico de fome (11h às 13h e 17h às 20h).",
+        "Tirar fotos com iluminação natural ou luz quente.",
+        "Responder avaliações de clientes nos stories repostando.",
+        "Criar um cupom de primeira compra para divulgar na bio."
+      ]
+    },
+    servicos: {
+      label: "Prestação de Serviços & Freelancer",
+      score: 89,
+      suggestedBio: [
+        "🚀 Ajudo negócios e pessoas a alcançarem resultados com excelência",
+        "🎯 Soluções personalizadas em gestão digital e atendimento",
+        "📊 + de 4 anos de experiência comprovada",
+        "👇 Solicite seu orçamento sem compromisso:"
+      ],
+      bioTip: "Foque na transformação que você gera para o cliente, e não apenas nas ferramentas técnicas que você utiliza.",
+      highlights: [
+        { icon: "💼", title: "Serviços", desc: "O que você faz e como funciona a contratação." },
+        { icon: "📈", title: "Resultados", desc: "Gráficos, métricas e cases de sucesso." },
+        { icon: "💬", title: "Depoimentos", desc: "Prints de clientes satisfeitos recomendando." },
+        { icon: "🎓", title: "Certificados", desc: "Qualificações pelo Emprega Mais Alagoas." },
+        { icon: "📲", title: "Contato", desc: "Canal direto para orçamentos e reuniões." }
+      ],
+      reelsScripts: [
+        { objective: "Autoridade", duration: "30s", theme: "O Maior Erro que Vejo as Pessoas Cometendo", hook: "Se você faz isso no seu negócio, está perdendo dinheiro todos os dias...", body: "Explique o problema e entregue uma solução prática em 3 passos.", cta: "Salve este post para consultar depois e me siga para mais dicas!" },
+        { objective: "Estudo de Caso", duration: "40s", theme: "Como Ajudamos o Cliente X a Dobrar Resultados", hook: "O cliente chegou desesperado com esse problema e veja o que fizemos...", body: "Mostre o diagnóstico inicial, a estratégia aplicada e o resultado final.", cta: "Quer um diagnóstico para o seu caso? Mande mensagem no direct." },
+        { objective: "Didático", duration: "25s", theme: "Tutorial Rápido em 3 Passos", hook: "Como resolver [problema comum] em menos de 2 minutos sem complicação.", body: "Passo 1, passo 2 e passo 3 direto ao ponto.", cta: "Compartilhe com quem precisa saber disso!" }
+      ],
+      checklist: [
+        "Usar foto de perfil nítida de rosto com olhar direto para a câmera.",
+        "Inserir link profissional (Linktree, WhatsApp ou portfólio Notion).",
+        "Fixar post de apresentação pessoal com sua trajetória.",
+        "Produzir conteúdo respondendo as 5 dúvidas mais frequentes dos clientes.",
+        "Pedir depoimento em texto/áudio a cada serviço concluído."
+      ]
+    }
+  };
+
+  const selectedData = nicheMap[niche] || nicheMap.comercio;
+
+  return {
+    handle: cleanHandle,
+    nicheLabel: selectedData.label,
+    score: selectedData.score,
+    suggestedBio: selectedData.suggestedBio,
+    bioTip: selectedData.bioTip,
+    highlights: selectedData.highlights,
+    reelsScripts: selectedData.reelsScripts,
+    checklist: selectedData.checklist
+  };
+}
