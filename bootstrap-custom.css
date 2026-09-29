@@ -1,3 +1,38 @@
+
+/* ==========================================================================
+   UNIVERSAL CSS RESETS (Eliminates raw browser button borders & bevels)
+   ========================================================================== */
+button:not(.btn) {
+  background-color: transparent;
+  border-width: 0;
+  border-style: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+  text-align: inherit;
+  line-height: inherit;
+}
+
+button:focus-visible {
+  outline: 2px solid rgba(79, 70, 229, 0.4);
+  outline-offset: 2px;
+}
+
+.btn-link {
+  text-decoration: none !important;
+  color: #4f46e5;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.btn-link:hover {
+  color: #4338ca;
+  text-decoration: underline !important;
+}
+
 /* Bootstrap Custom Overrides & Tailwind Utilities Migration */
 :root,
 [data-bs-theme="light"] {

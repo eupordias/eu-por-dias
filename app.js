@@ -1482,7 +1482,7 @@ function renderTabAccessRestriction(container, tabKey) {
           <button 
             type="button" 
             onclick="openCpfLoginModal('${tabKey}')" 
-            class="text-xs fw-semibold text-indigo-600 text-decoration-none d-inline-flex align-items-center gap-1.5"
+            class="btn btn-sm btn-link text-xs fw-semibold text-indigo-600 text-decoration-none d-inline-flex align-items-center gap-1.5 p-0"
           >
             <i class="fa-solid fa-id-card"></i> Identificar-se com CPF cadastrado
           </button>
