@@ -1,253 +1,351 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-bs-theme="dark">
+<html lang="pt-BR" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Emprega Mais Alagoas - Plataforma de Gestão</title>
-  
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Eu Por Dias - Gestão de Alunos • Emprega Mais Alagoas</title>
+
   <!-- Bootstrap 5.3 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="bootstrap-custom.css?v=3.6.2">
-  
-  <style>
-    body { 
-      background-color: #0b0612; 
-      color: #f3f0f7;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .glass-nav {
-      background: rgba(21, 13, 30, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .glass-card {
-      background: rgba(44, 30, 58, 0.4);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .text-gradient {
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-image: linear-gradient(to right, #e879f9, #c026d3);
-    }
-    @keyframes blob {
-      0% { transform: translate(0px, 0px) scale(1); }
-      33% { transform: translate(30px, -50px) scale(1.1); }
-      66% { transform: translate(-20px, 20px) scale(0.9); }
-      100% { transform: translate(0px, 0px) scale(1); }
-    }
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .animate-blob { animation: blob 7s infinite; }
-    .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
-    .hover-lift:hover { transform: translateY(-4px); }
-  </style>
-</head>
-<body class="overflow-x-hidden">
 
-  <!-- Glow Backgrounds -->
-  <div class="position-fixed top-0 start-0 w-100 h-100" style="z-index: -1; overflow: hidden; pointer-events: none;">
-    <div class="position-absolute rounded-circle animate-blob" style="top: -10%; left: -10%; width: 24rem; height: 24rem; background: #c026d3; mix-blend-mode: screen; filter: blur(128px); opacity: 0.3;"></div>
-    <div class="position-absolute rounded-circle animate-blob" style="top: 20%; right: -10%; width: 24rem; height: 24rem; background: #7c3aed; mix-blend-mode: screen; filter: blur(128px); opacity: 0.2; animation-delay: 2s;"></div>
-    <div class="position-absolute rounded-circle animate-blob" style="bottom: -20%; left: 20%; width: 500px; height: 500px; background: #701a75; mix-blend-mode: screen; filter: blur(128px); opacity: 0.3; animation-delay: 4s;"></div>
+  <!-- FontAwesome 6 & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Custom Theme (Adminator & Indigo) -->
+  <link rel="stylesheet" href="bootstrap-custom.css?v=4.0.0">
+
+  <!-- Chart.js para Dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Google Identity Services (GIS) para Login Modo Deus -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Supabase JS Client Oficial via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Estilos Customizados -->
+  <link rel="stylesheet" href="styles.css?v=4.0.0">
+</head>
+
+<body class="h-100 bg-slate-50 text-slate-800 transition-colors duration-200">
+
+  <!-- ADMINATOR MAIN APPLICATION LAYOUT -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR (Navegação Lateral Adminator) -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-inner">
+        
+        <!-- Brand / Header da Barra Lateral -->
+        <div class="sidebar-logo">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="d-flex align-items-center gap-3">
+              <div class="logo-icon bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white shadow-sm">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <div class="logo-text">
+                <h5 class="logo-title">Eu Por Dias</h5>
+                <span class="logo-subtitle">Emprega Mais AL</span>
+              </div>
+            </div>
+            <!-- Botão Fechar no Mobile -->
+            <button type="button" class="btn btn-sm btn-light d-lg-none p-1 rounded-lg text-slate-500" onclick="toggleSidebar()" aria-label="Fechar menu">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Links e Menus da Barra Lateral -->
+        <div class="sidebar-menu-wrapper">
+          <ul class="sidebar-menu">
+            
+            <li class="sidebar-category">Visão Geral &amp; Métricas</li>
+            
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('dashboard')" class="sidebar-link nav-tab-btn" data-tab="dashboard">
+                <span class="icon-holder"><i class="fa-solid fa-chart-pie"></i></span>
+                <span class="title">Dashboard Geral</span>
+              </a>
+            </li>
+
+            <li class="sidebar-category">Gestão Acadêmica</li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('students')" class="sidebar-link nav-tab-btn active" data-tab="students">
+                <span class="icon-holder"><i class="fa-solid fa-users"></i></span>
+                <span class="title">Alunos &amp; Contatos</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('grades')" class="sidebar-link nav-tab-btn" data-tab="grades">
+                <span class="icon-holder"><i class="fa-solid fa-pen-nib"></i></span>
+                <span class="title">Notas dos Módulos</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('reports')" class="sidebar-link nav-tab-btn" data-tab="reports">
+                <span class="icon-holder"><i class="fa-solid fa-file-export"></i></span>
+                <span class="title">Relatórios &amp; Boletins</span>
+              </a>
+            </li>
+
+            <li class="sidebar-category">Comunicação &amp; Carreira</li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('forum')" class="sidebar-link nav-tab-btn" data-tab="forum">
+                <span class="icon-holder"><i class="fa-solid fa-comments"></i></span>
+                <span class="title">Fórum &amp; Chat ao Vivo</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('prompts')" class="sidebar-link nav-tab-btn" data-tab="prompts">
+                <span class="icon-holder"><i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i></span>
+                <span class="title">Biblioteca de Prompts IA</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('careers')" class="sidebar-link nav-tab-btn" data-tab="careers">
+                <span class="icon-holder"><i class="fa-solid fa-briefcase"></i></span>
+                <span class="title">Vagas &amp; Oportunidades</span>
+              </a>
+            </li>
+
+            <li class="sidebar-category">Institucional &amp; Apoio</li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('about')" class="sidebar-link nav-tab-btn" data-tab="about">
+                <span class="icon-holder"><i class="fa-solid fa-lightbulb"></i></span>
+                <span class="title">Sobre o Sistema</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+
+        <!-- Rodapé do Menu Lateral -->
+        <div class="sidebar-footer">
+          <div class="sidebar-footer-card">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="pulse-indicator bg-emerald-500"></span>
+              <strong class="text-xs text-slate-800">Sistema Operacional</strong>
+            </div>
+            <p class="text-[10px] text-slate-500 mb-0">LGPD Seguro • Versão 4.0.0</p>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- OVERLAY ESCURO PARA MOBILE -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- CONTAINER DA PÁGINA (Header Superior + Conteúdo Principal + Rodapé) -->
+    <div class="page-container">
+      
+      <!-- TOP NAVBAR SUPERIOR (Adminator Header) -->
+      <header class="adminator-header">
+        <div class="header-inner">
+          
+          <!-- Lado Esquerdo: Botão Menu + Busca Rápida -->
+          <div class="d-flex align-items-center gap-3 flex-grow-1 max-w-xl">
+            <!-- Botão de Recolher / Expandir Menu Lateral -->
+            <button 
+              type="button" 
+              id="sidebar-toggle-btn" 
+              onclick="toggleSidebar()" 
+              class="header-icon-btn" 
+              title="Recolher / Expandir Menu Lateral"
+              aria-label="Alternar Menu Lateral"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- Barra de Busca Global -->
+            <div class="header-search-box position-relative">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input 
+                type="text" 
+                id="global-header-search" 
+                placeholder="Pesquisar aluno por nome, CPF ou matrícula..." 
+                class="header-search-input"
+                oninput="handleGlobalHeaderSearch(this.value)"
+              />
+            </div>
+          </div>
+
+          <!-- Lado Direito: Estatísticas Rápidas + Conexões + Usuário + Tema -->
+          <div class="d-flex align-items-center gap-2 sm:gap-3 flex-shrink-0">
+            
+            <!-- Estatísticas Rápidas no Topo -->
+            <div id="header-quick-stats" class="d-none d-xl-flex align-items-center">
+              <!-- Preenchido via JavaScript -->
+            </div>
+
+            <!-- Submenu Conexões & Modo Deus (Google Sheets, Supabase, Modo Deus) -->
+            <div class="position-relative" id="integrations-submenu-container">
+              <button 
+                id="integrations-menu-btn"
+                onclick="toggleIntegrationsSubmenu(event)" 
+                class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-xl text-xs fw-bold bg-white text-slate-700 border border-slate-200/90 shadow-xs transition-all"
+                title="Menu de Conexões: Google Sheets, Supabase e Modo Deus"
+              >
+                <div class="d-flex align-items-center -space-x-1">
+                  <span class="w-5 h-5 rounded-circle bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-xs">
+                    <i class="fa-brands fa-google-drive"></i>
+                  </span>
+                  <span class="w-5 h-5 rounded-circle bg-teal-100 text-teal-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-xs">
+                    <i class="fa-solid fa-cloud"></i>
+                  </span>
+                  <span class="w-5 h-5 rounded-circle bg-amber-100 text-amber-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-xs">
+                    <i class="fa-solid fa-bolt"></i>
+                  </span>
+                </div>
+                <span class="d-none d-sm-inline fw-bold">Conexões</span>
+                <span id="integrations-badge-status" class="d-none d-md-inline-flex"></span>
+                <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
+              </button>
+
+              <!-- Dropdown do Submenu -->
+              <div 
+                id="integrations-dropdown-menu" class="hidden position-absolute end-0 mt-2 w-72 sm:w-80 p-2 bg-white rounded-2xl shadow-2xl border border-slate-200/90 z-50 text-xs fade-in space-y-1"
+              >
+                <div class="px-2.5 py-1.5 border-b border-slate-100 d-flex align-items-center justify-content-between">
+                  <span class="text-[10px] fw-bolder text-uppercase tracking-wider text-slate-400 d-flex align-items-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-indigo-500"></i> Conexões &amp; Modo Deus
+                  </span>
+                </div>
+
+                <!-- Item 1: Google Sheets API -->
+                <div class="p-2 rounded-xl transition-colors d-flex align-items-center justify-content-between gap-2 group">
+                  <div onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" class="d-flex align-items-center gap-2.5 flex-grow-1 cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-sm flex-shrink-0 transition-transform">
+                      <i class="fa-brands fa-google-drive"></i>
+                    </div>
+                    <div>
+                      <strong class="d-block fw-bold text-slate-800 transition-colors">Google Sheets API</strong>
+                      <span class="d-block text-[10px] text-slate-400">Planilha Oficial • Importar / Configurar</span>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center gap-1">
+                    <button 
+                      type="button" 
+                      onclick="closeIntegrationsSubmenu(); quickSyncGoogleSheets();" 
+                      class="px-2 py-1 rounded-lg text-[10px] fw-bold bg-emerald-600 text-white shadow-xs d-flex align-items-center gap-1 transition-all border-0"
+                      title="Sincronizar dados da planilha agora"
+                    >
+                      <i class="fa-solid fa-rotate text-[9px]"></i> Sincronizar
+                    </button>
+                    <button 
+                      type="button" 
+                      onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
+                      class="p-1.5 rounded-lg text-slate-400 border-0 bg-transparent"
+                      title="Configurações da planilha"
+                    >
+                      <i class="fa-solid fa-gear text-[11px]"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Item 2: Supabase Cloud -->
+                <div class="p-2 rounded-xl transition-colors d-flex align-items-center justify-content-between gap-2 group">
+                  <div onclick="closeIntegrationsSubmenu(); openSupabaseModal();" class="d-flex align-items-center gap-2.5 flex-grow-1 cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-600 d-flex align-items-center justify-content-center text-sm flex-shrink-0 transition-transform">
+                      <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    <div>
+                      <strong class="d-block fw-bold text-slate-800 transition-colors">Supabase Cloud</strong>
+                      <span class="d-block text-[10px] text-slate-400">Banco de Dados em Nuvem (PostgreSQL)</span>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
+                    class="px-2.5 py-1 rounded-lg text-[10px] fw-bold bg-teal-50 text-teal-700 border border-teal-200 transition-all d-flex align-items-center gap-1"
+                  >
+                    <i class="fa-solid fa-cloud-arrow-up text-[9px]"></i> Conectar
+                  </button>
+                </div>
+
+                <div class="border-t border-slate-100 my-1"></div>
+
+                <!-- Item 3: Modo Deus / LGPD -->
+                <div id="header-godmode-container" class="w-100"></div>
+              </div>
+            </div>
+
+            <!-- Perfil e Login por CPF do Usuário -->
+            <div id="header-user-container" class="d-flex align-items-center"></div>
+
+            <!-- Alternar Tema Claro/Escuro -->
+            <button 
+              id="theme-toggle-btn"
+              onclick="toggleTheme()" 
+              class="header-icon-btn"
+              title="Alternar Tema Claro / Escuro"
+              aria-label="Alternar Tema"
+            >
+              <i class="fa-solid fa-moon"></i>
+            </button>
+
+          </div>
+
+        </div>
+      </header>
+
+      <!-- ÁREA DE CONTEÚDO PRINCIPAL (DASHBOARD CONTENT) -->
+      <main class="main-content">
+        <div class="container-fluid px-3 px-sm-4 px-xl-5 py-4">
+          <div id="main-content-area">
+            <!-- Injetado dinamicamente pelo app.js -->
+          </div>
+        </div>
+      </main>
+
+      <!-- RODAPÉ ADMINATOR -->
+      <footer class="adminator-footer no-print">
+        <div class="d-flex flex-column sm:flex-row align-items-center justify-content-between gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-indigo-500"></i>
+            <span><strong>Eu Por Dias</strong> • Programa Emprega Mais Alagoas (Mídias Digitais)</span>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <button type="button" onclick="openAboutModal()" class="btn btn-sm btn-link p-0 text-indigo-600 fw-semibold text-decoration-none d-flex align-items-center gap-1">
+              <i class="fa-solid fa-circle-info"></i> Por que o sistema foi construído assim?
+            </button>
+            <span>•</span>
+            <span>Busca de CEP via <strong>ViaCEP</strong></span>
+            <span>•</span>
+            <span>Atalho direto para <strong>WhatsApp</strong></span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
   </div>
 
-  <!-- Navbar -->
-  <nav class="position-fixed w-100 glass-nav" style="z-index: 50;">
-    <div class="container-xl">
-      <div class="d-flex justify-content-between align-items-center py-3">
-        <div class="d-flex align-items-center gap-2">
-          <div class="d-flex align-items-center justify-content-center rounded-3 text-white shadow-lg" style="width: 40px; height: 40px; background: linear-gradient(135deg, #e879f9, #c026d3);">
-            <i class="fa-solid fa-graduation-cap fs-5"></i>
-          </div>
-          <span class="fw-bold fs-5">Emprega<span style="color: #e879f9;">Mais</span></span>
-        </div>
-        
-        <div class="d-none d-md-flex align-items-center gap-4">
-          <a href="#recursos" class="text-decoration-none text-light opacity-75" style="transition: opacity 0.2s;">Recursos</a>
-          <a href="#ia" class="text-decoration-none text-light opacity-75" style="transition: opacity 0.2s;">Inteligência Artificial</a>
-          <a href="#vagas" class="text-decoration-none text-light opacity-75" style="transition: opacity 0.2s;">Mural de Vagas</a>
-        </div>
+  <!-- CONTAINER DE TOASTS FLUTUANTES -->
+  <div id="toast-container" class="position-fixed bottom-6 right-6 z-50 d-flex flex-column gap-2 pointer-events-none max-w-sm w-100">
+    <!-- Injetado dinamicamente -->
+  </div>
 
-        <div class="d-flex align-items-center gap-3">
-          <a href="dashboard.html" class="d-none d-md-block text-decoration-none text-light opacity-75 small fw-semibold">Já sou aluno</a>
-          <a href="dashboard.html" class="btn btn-primary rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2" style="background: #c026d3; border-color: #c026d3;">
-            Acessar Plataforma <i class="fa-solid fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <!-- CONTAINER DE MODAIS -->
+  <div id="modal-container">
+    <!-- Injetado dinamicamente -->
+  </div>
 
-  <!-- Hero Section -->
-  <main style="padding-top: 8rem; padding-bottom: 4rem;">
-    <div class="container-xl text-center position-relative">
-      
-      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill border small fw-semibold text-uppercase mb-4 opacity-0 animate-fade-in-up" style="border-color: rgba(192, 38, 211, 0.3) !important; background: rgba(192, 38, 211, 0.1); color: #f0abfc; letter-spacing: 0.05em;">
-        <span class="rounded-circle bg-primary d-inline-block" style="width: 8px; height: 8px; background: #e879f9 !important;"></span>
-        Novo: Laboratório de Prompts de IA
-      </div>
-
-      <h1 class="display-3 fw-bolder mb-4 opacity-0 animate-fade-in-up" style="animation-delay: 0.1s; letter-spacing: -0.02em;">
-        Gestão educacional <br class="d-none d-sm-block" />
-        <span class="text-gradient">inteligente e moderna.</span>
-      </h1>
-      
-      <p class="mx-auto fs-5 opacity-0 animate-fade-in-up" style="max-width: 640px; animation-delay: 0.2s; color: #b6a1c8;">
-        Uma plataforma completa para gestão de mídias digitais. Centralize boletins, frequência, vagas de emprego e ferramentas de Inteligência Artificial em um só lugar.
-      </p>
-      
-      <div class="mt-4 d-flex flex-column flex-sm-row justify-content-center gap-3 opacity-0 animate-fade-in-up" style="animation-delay: 0.3s;">
-        <a href="dashboard.html" class="btn btn-lg rounded-4 px-5 py-3 fw-bold text-white" style="background: #c026d3; border-color: #c026d3;">
-          Entrar no Sistema
-        </a>
-        <a href="#recursos" class="btn btn-lg btn-outline-light rounded-4 px-5 py-3 fw-bold" style="border-color: #584368;">
-          Conhecer Recursos
-        </a>
-      </div>
-
-      <!-- Dashboard Mockup -->
-      <div class="mt-5 position-relative mx-auto opacity-0 animate-fade-in-up" style="max-width: 900px; animation-delay: 0.4s;">
-        <div class="position-absolute top-0 start-0 w-100 h-100 rounded-4" style="background: linear-gradient(to right, #c026d3, #7c3aed); filter: blur(20px); opacity: 0.2; margin: -4px;"></div>
-        <div class="position-relative rounded-4 border overflow-hidden d-flex align-items-center justify-content-center" style="border-color: rgba(106, 80, 125, 0.5) !important; background: #2c1e3a; aspect-ratio: 16/9;">
-          <i class="fa-solid fa-laptop-code display-1" style="color: #6a507d;"></i>
-          <p class="position-absolute bottom-0 mb-4 fw-medium" style="color: #997eb0;">Interface do Emprega Mais Alagoas</p>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Features Section -->
-  <section id="recursos" class="py-5 border-top" style="border-color: rgba(88, 67, 104, 0.5) !important; background: rgba(21, 13, 30, 0.5);">
-    <div class="container-xl py-5">
-      <div class="text-center mx-auto mb-5" style="max-width: 700px;">
-        <h2 class="display-6 fw-bold mb-3">Tudo que você precisa para decolar</h2>
-        <p class="fs-5" style="color: #b6a1c8;">Ferramentas desenhadas especificamente para o fluxo de turmas de marketing digital e tecnologia.</p>
-      </div>
-
-      <div class="row g-4">
-        <!-- Feature 1 -->
-        <div class="col-md-4">
-          <div class="glass-card p-4 rounded-4 h-100 hover-lift" style="transition: transform 0.3s;">
-            <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width: 48px; height: 48px; background: rgba(192, 38, 211, 0.2); color: #e879f9;">
-              <i class="fa-solid fa-chart-pie fs-5"></i>
-            </div>
-            <h3 class="fs-5 fw-bold text-white mb-2">Gestão Acadêmica</h3>
-            <p class="small" style="color: #b6a1c8;">
-              Boletins automáticos, controle de faltas e cálculo instantâneo de médias para os 7 módulos do curso. Tudo exportável em um clique.
-            </p>
-          </div>
-        </div>
-        
-        <!-- Feature 2 -->
-        <div class="col-md-4">
-          <div class="glass-card p-4 rounded-4 h-100 hover-lift" style="transition: transform 0.3s;">
-            <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.2); color: #34d399;">
-              <i class="fa-solid fa-briefcase fs-5"></i>
-            </div>
-            <h3 class="fs-5 fw-bold text-white mb-2">Mural de Vagas</h3>
-            <p class="small" style="color: #b6a1c8;">
-              Conecte alunos às oportunidades locais de Arapiraca, Maceió e região. Algoritmo integrado para match de habilidades.
-            </p>
-          </div>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="col-md-4">
-          <div class="glass-card p-4 rounded-4 h-100 hover-lift" style="transition: transform 0.3s;">
-            <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width: 48px; height: 48px; background: rgba(236, 72, 153, 0.2); color: #f472b6;">
-              <i class="fa-solid fa-comments fs-5"></i>
-            </div>
-            <h3 class="fs-5 fw-bold text-white mb-2">Fórum em Tempo Real</h3>
-            <p class="small" style="color: #b6a1c8;">
-              Chat integrado e sincronizado na nuvem para tirar dúvidas ao vivo, trocar experiências e criar networking com a turma.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- AI Section Highlight -->
-  <section id="ia" class="py-5">
-    <div class="container-xl py-5">
-      <div class="glass-card rounded-5 p-4 p-md-5 position-relative overflow-hidden" style="border-color: rgba(192, 38, 211, 0.2) !important;">
-        <div class="position-absolute rounded-circle" style="top: -80px; right: -80px; width: 320px; height: 320px; background: #c026d3; mix-blend-mode: screen; filter: blur(100px); opacity: 0.2;"></div>
-        
-        <div class="row g-5 align-items-center">
-          <div class="col-lg-6">
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill small fw-bold text-uppercase mb-4" style="background: rgba(192, 38, 211, 0.2); color: #f0abfc; letter-spacing: 0.05em;">
-              <i class="fa-solid fa-bolt"></i> IA Integrada
-            </div>
-            <h2 class="display-6 fw-bolder mb-4">Laboratório de Prompts <br/><span class="text-gradient">Inteligentes</span></h2>
-            <p class="fs-5 mb-4" style="color: #b6a1c8; line-height: 1.8;">
-              Dê superpoderes aos alunos com nosso repositório de personas. Copywriting, Tráfego Pago, Social Media e Criação de Conteúdo a um clique de distância.
-            </p>
-            <ul class="list-unstyled mb-4">
-              <li class="d-flex align-items-center gap-2 mb-3" style="color: #d0c3dd;"><i class="fa-solid fa-check" style="color: #e879f9;"></i> +20 Prompts validados de mercado</li>
-              <li class="d-flex align-items-center gap-2 mb-3" style="color: #d0c3dd;"><i class="fa-solid fa-check" style="color: #e879f9;"></i> Personalização interativa com IA</li>
-              <li class="d-flex align-items-center gap-2 mb-3" style="color: #d0c3dd;"><i class="fa-solid fa-check" style="color: #e879f9;"></i> Suporte para criação de campanhas Reais</li>
-            </ul>
-            <a href="dashboard.html" class="d-inline-flex align-items-center gap-2 fw-bold text-decoration-none" style="color: #e879f9;">
-              Explorar Laboratório <i class="fa-solid fa-arrow-right small"></i>
-            </a>
-          </div>
-          
-          <div class="col-lg-6">
-            <div class="border rounded-4 p-4 shadow-lg" style="background: #2c1e3a; border-color: #6a507d !important; transform: rotate(3deg); transition: transform 0.5s;">
-              <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom" style="border-color: #584368 !important;">
-                <div class="d-flex align-items-center justify-content-center rounded-circle text-white" style="width: 40px; height: 40px; background: linear-gradient(135deg, #2563eb, #06b6d4);">
-                  <i class="fa-solid fa-robot"></i>
-                </div>
-                <div>
-                  <h4 class="fw-bold text-white small mb-0">Gestor de Tráfego Pago</h4>
-                  <p class="mb-0" style="font-size: 0.75rem; color: #997eb0;">Meta Ads & Conversão</p>
-                </div>
-              </div>
-              <p class="small font-monospace mb-3" style="color: #b6a1c8;">
-                "Atue como Gestor de Tráfego especialista em Meta Ads para negócios locais. Estruture uma campanha para <span style="color: #e879f9;">[Hamburgueria em Maceió]</span> com orçamento de <span style="color: #e879f9;">[R$ 30/dia]</span>..."
-              </p>
-              <button class="btn w-100 py-2 rounded-3 small fw-bold" style="background: rgba(192, 38, 211, 0.2); color: #e879f9; border: 1px solid rgba(192, 38, 211, 0.3);">Copiar Prompt</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="py-5 border-top" style="border-color: rgba(88, 67, 104, 0.5) !important;">
-    <div class="container py-5 text-center" style="max-width: 700px;">
-      <h2 class="display-5 fw-bolder mb-4">Pronto para transformar sua sala de aula?</h2>
-      <p class="fs-5 mb-5" style="color: #b6a1c8;">Acesse a plataforma agora mesmo com seu CPF cadastrado.</p>
-      <a href="dashboard.html" class="btn btn-lg rounded-pill px-5 py-3 fw-bold text-white d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #c026d3, #7c3aed); border: none; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-        Acessar Plataforma Emprega Mais <i class="fa-solid fa-arrow-right"></i>
-      </a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="border-top py-5" style="border-color: rgba(88, 67, 104, 0.5) !important; background: rgba(21, 13, 30, 0.8);">
-    <div class="container-xl">
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-        <div class="d-flex align-items-center gap-2 opacity-50">
-          <i class="fa-solid fa-graduation-cap fs-4" style="color: #b6a1c8;"></i>
-          <span class="fw-bold fs-5" style="color: #b6a1c8;">Emprega<span style="color: #997eb0;">Mais</span></span>
-        </div>
-        <p class="mb-0 small" style="color: #997eb0;">
-          &copy; 2026 Programa Emprega Mais Alagoas. Todos os direitos reservados.
-        </p>
-      </div>
-    </div>
-  </footer>
-
+  <!-- SCRIPTS DO SISTEMA -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="mock-data.js?v=4.0.0"></script>
+  <script src="app.js?v=4.0.0"></script>
 </body>
 </html>

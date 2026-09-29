@@ -17,8 +17,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- Bootstrap Custom Theme (Fuchsia/Roxo) -->
-  <link rel="stylesheet" href="bootstrap-custom.css?v=3.6.2">
+  <!-- Bootstrap Custom Theme (Adminator & Indigo) -->
+  <link rel="stylesheet" href="bootstrap-custom.css?v=4.0.0">
 
   <!-- Chart.js para Dashboard -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,287 +30,308 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Estilos Customizados -->
-  <link rel="stylesheet" href="styles.css?v=3.6.2">
+  <link rel="stylesheet" href="styles.css?v=4.0.0">
 </head>
 
-<body class="h-100 bg-slate-50 text-slate-800 d-flex flex-column transition-colors duration-200">
+<body class="h-100 bg-slate-50 text-slate-800 transition-colors duration-200">
 
-  <!-- TOPO / HEADER DO EU POR DIAS -->
-  <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 position-sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="d-flex align-items-center justify-content-between h-16 gap-4">
+  <!-- ADMINATOR MAIN APPLICATION LAYOUT -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR (Navegação Lateral Adminator) -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-inner">
         
-        <!-- Logo e Nome do Sistema -->
-        <div class="d-flex align-items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 d-flex align-items-center justify-content-center text-white text-lg fw-bolder shadow-lg shadow-indigo-500/25 flex-shrink-0">
-            <i class="fa-solid fa-graduation-cap"></i>
-          </div>
-          <div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="fw-bolder text-base tracking-tight text-slate-900">Eu Por Dias</span>
-              <span class="px-2 py-0.5 rounded-circle text-[10px] fw-bolder bg-amber-400 text-slate-900 shadow-sm">
-                Emprega Mais AL
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-500 fw-medium d-none d-sm-block">
-              Gestão de Mídias Digitais • Notas, Contatos & Endereços
-            </p>
-          </div>
-        </div>
-
-        <!-- Estatísticas Rápidas no Topo -->
-        <div id="header-quick-stats" class="d-none d-md-flex align-items-center">
-          <!-- Preenchido via JavaScript -->
-        </div>
-
-        <!-- Ações do Cabeçalho -->
-        <div class="d-flex align-items-center gap-2">
-          
-          <!-- Submenu Conexões & Modo Deus (Google Sheets, Supabase, Modo Deus) -->
-          <div class="position-relative" id="integrations-submenu-container">
-            <button 
-              id="integrations-menu-btn"
-              onclick="toggleIntegrationsSubmenu(event)" 
-              class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-xl text-xs fw-bold bg-white text-slate-700 border border-slate-200/90 shadow-sm transition-all transform"
-              title="Menu de Conexões: Google Sheets, Supabase e Modo Deus"
-            >
-              <div class="d-flex align-items-center -space-x-1">
-                <span class="w-5 h-5 rounded-circle bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-sm">
-                  <i class="fa-brands fa-google-drive"></i>
-                </span>
-                <span class="w-5 h-5 rounded-circle bg-teal-100 text-teal-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-sm">
-                  <i class="fa-solid fa-cloud"></i>
-                </span>
-                <span class="w-5 h-5 rounded-circle bg-amber-100 text-amber-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-sm">
-                  <i class="fa-solid fa-bolt"></i>
-                </span>
+        <!-- Brand / Header da Barra Lateral -->
+        <div class="sidebar-logo">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="d-flex align-items-center gap-3">
+              <div class="logo-icon bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white shadow-sm">
+                <i class="fa-solid fa-graduation-cap"></i>
               </div>
-              <span class="d-none d-sm-inline fw-bold">Conexões</span>
-              <span id="integrations-badge-status" class="d-none d-md-inline-flex"></span>
-              <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
+              <div class="logo-text">
+                <h5 class="logo-title">Eu Por Dias</h5>
+                <span class="logo-subtitle">Emprega Mais AL</span>
+              </div>
+            </div>
+            <!-- Botão Fechar no Mobile -->
+            <button type="button" class="btn btn-sm btn-light d-lg-none p-1 rounded-lg text-slate-500" onclick="toggleSidebar()" aria-label="Fechar menu">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Links e Menus da Barra Lateral -->
+        <div class="sidebar-menu-wrapper">
+          <ul class="sidebar-menu">
+            
+            <li class="sidebar-category">Visão Geral &amp; Métricas</li>
+            
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('dashboard')" class="sidebar-link nav-tab-btn" data-tab="dashboard">
+                <span class="icon-holder"><i class="fa-solid fa-chart-pie"></i></span>
+                <span class="title">Dashboard Geral</span>
+              </a>
+            </li>
+
+            <li class="sidebar-category">Gestão Acadêmica</li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('students')" class="sidebar-link nav-tab-btn active" data-tab="students">
+                <span class="icon-holder"><i class="fa-solid fa-users"></i></span>
+                <span class="title">Alunos &amp; Contatos</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('grades')" class="sidebar-link nav-tab-btn" data-tab="grades">
+                <span class="icon-holder"><i class="fa-solid fa-pen-nib"></i></span>
+                <span class="title">Notas dos Módulos</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('reports')" class="sidebar-link nav-tab-btn" data-tab="reports">
+                <span class="icon-holder"><i class="fa-solid fa-file-export"></i></span>
+                <span class="title">Relatórios &amp; Boletins</span>
+              </a>
+            </li>
+
+            <li class="sidebar-category">Comunicação &amp; Carreira</li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('forum')" class="sidebar-link nav-tab-btn" data-tab="forum">
+                <span class="icon-holder"><i class="fa-solid fa-comments"></i></span>
+                <span class="title">Fórum &amp; Chat ao Vivo</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('prompts')" class="sidebar-link nav-tab-btn" data-tab="prompts">
+                <span class="icon-holder"><i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i></span>
+                <span class="title">Biblioteca de Prompts IA</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('careers')" class="sidebar-link nav-tab-btn" data-tab="careers">
+                <span class="icon-holder"><i class="fa-solid fa-briefcase"></i></span>
+                <span class="title">Vagas &amp; Oportunidades</span>
+              </a>
+            </li>
+
+            <li class="sidebar-category">Institucional &amp; Apoio</li>
+
+            <li class="sidebar-item">
+              <a href="javascript:void(0)" onclick="switchTab('about')" class="sidebar-link nav-tab-btn" data-tab="about">
+                <span class="icon-holder"><i class="fa-solid fa-lightbulb"></i></span>
+                <span class="title">Sobre o Sistema</span>
+              </a>
+            </li>
+
+          </ul>
+        </div>
+
+        <!-- Rodapé do Menu Lateral -->
+        <div class="sidebar-footer">
+          <div class="sidebar-footer-card">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="pulse-indicator bg-emerald-500"></span>
+              <strong class="text-xs text-slate-800">Sistema Operacional</strong>
+            </div>
+            <p class="text-[10px] text-slate-500 mb-0">LGPD Seguro • Versão 4.0.0</p>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- OVERLAY ESCURO PARA MOBILE -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- CONTAINER DA PÁGINA (Header Superior + Conteúdo Principal + Rodapé) -->
+    <div class="page-container">
+      
+      <!-- TOP NAVBAR SUPERIOR (Adminator Header) -->
+      <header class="adminator-header">
+        <div class="header-inner">
+          
+          <!-- Lado Esquerdo: Botão Menu + Busca Rápida -->
+          <div class="d-flex align-items-center gap-3 flex-grow-1 max-w-xl">
+            <!-- Botão de Recolher / Expandir Menu Lateral -->
+            <button 
+              type="button" 
+              id="sidebar-toggle-btn" 
+              onclick="toggleSidebar()" 
+              class="header-icon-btn" 
+              title="Recolher / Expandir Menu Lateral"
+              aria-label="Alternar Menu Lateral"
+            >
+              <i class="fa-solid fa-bars"></i>
             </button>
 
-            <!-- Dropdown do Submenu -->
-            <div 
-              id="integrations-dropdown-menu" class="hidden position-absolute end-0 mt-2 w-72 sm:w-80 p-2 bg-white rounded-2xl shadow-2xl border border-slate-200/90 z-50 text-xs fade-in space-y-1"
-            >
-              <div class="px-2.5 py-1.5 border-b border-slate-100 d-flex align-items-center justify-content-between">
-                <span class="text-[10px] fw-bolder text-uppercase tracking-wider text-slate-400 d-flex align-items-center gap-1.5">
-                  <i class="fa-solid fa-sliders text-indigo-500"></i> Conexões &amp; Modo Deus
-                </span>
-              </div>
-
-              <!-- Item 1: Google Sheets API -->
-              <div class="p-2 rounded-xl transition-colors d-flex align-items-center justify-content-between gap-2 group">
-                <div onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" class="d-flex align-items-center gap-2.5 flex-grow-1 cursor-pointer">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-sm flex-shrink-0 transition-transform">
-                    <i class="fa-brands fa-google-drive"></i>
-                  </div>
-                  <div>
-                    <strong class="d-block fw-bold text-slate-800 transition-colors">Google Sheets API</strong>
-                    <span class="d-block text-[10px] text-slate-400">Planilha Oficial • Importar / Configurar</span>
-                  </div>
-                </div>
-                <div class="d-flex align-items-center gap-1">
-                  <button 
-                    type="button" 
-                    onclick="closeIntegrationsSubmenu(); quickSyncGoogleSheets();" 
-                    class="px-2 py-1 rounded-lg text-[10px] fw-bold bg-emerald-600 text-white shadow-sm d-flex align-items-center gap-1 transition-all"
-                    title="Sincronizar dados da planilha agora"
-                  >
-                    <i class="fa-solid fa-rotate text-[9px]"></i> Sincronizar
-                  </button>
-                  <button 
-                    type="button" 
-                    onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
-                    class="p-1.5 rounded-lg text-slate-400"
-                    title="Configurações da planilha"
-                  >
-                    <i class="fa-solid fa-gear text-[11px]"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Item 2: Supabase Cloud -->
-              <div class="p-2 rounded-xl transition-colors d-flex align-items-center justify-content-between gap-2 group">
-                <div onclick="closeIntegrationsSubmenu(); openSupabaseModal();" class="d-flex align-items-center gap-2.5 flex-grow-1 cursor-pointer">
-                  <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-600 d-flex align-items-center justify-content-center text-sm flex-shrink-0 transition-transform">
-                    <i class="fa-solid fa-cloud"></i>
-                  </div>
-                  <div>
-                    <strong class="d-block fw-bold text-slate-800 transition-colors">Supabase Cloud</strong>
-                    <span class="d-block text-[10px] text-slate-400">Banco de Dados em Nuvem (PostgreSQL)</span>
-                  </div>
-                </div>
-                <button 
-                  type="button" 
-                  onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
-                  class="px-2.5 py-1 rounded-lg text-[10px] fw-bold bg-teal-50 text-teal-700 border border-teal-200 transition-all d-flex align-items-center gap-1"
-                >
-                  <i class="fa-solid fa-cloud-arrow-up text-[9px]"></i> Conectar
-                </button>
-              </div>
-
-              <div class="border-t border-slate-100 my-1"></div>
-
-              <!-- Item 3: Modo Deus / LGPD (Container do Modo Deus) -->
-              <div id="header-godmode-container" class="w-100"></div>
+            <!-- Barra de Busca Global -->
+            <div class="header-search-box position-relative">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input 
+                type="text" 
+                id="global-header-search" 
+                placeholder="Pesquisar aluno por nome, CPF ou matrícula..." 
+                class="header-search-input"
+                oninput="handleGlobalHeaderSearch(this.value)"
+              />
             </div>
           </div>
 
+          <!-- Lado Direito: Estatísticas Rápidas + Conexões + Usuário + Tema -->
+          <div class="d-flex align-items-center gap-2 sm:gap-3 flex-shrink-0">
+            
+            <!-- Estatísticas Rápidas no Topo -->
+            <div id="header-quick-stats" class="d-none d-xl-flex align-items-center">
+              <!-- Preenchido via JavaScript -->
+            </div>
 
+            <!-- Submenu Conexões & Modo Deus (Google Sheets, Supabase, Modo Deus) -->
+            <div class="position-relative" id="integrations-submenu-container">
+              <button 
+                id="integrations-menu-btn"
+                onclick="toggleIntegrationsSubmenu(event)" 
+                class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-xl text-xs fw-bold bg-white text-slate-700 border border-slate-200/90 shadow-xs transition-all"
+                title="Menu de Conexões: Google Sheets, Supabase e Modo Deus"
+              >
+                <div class="d-flex align-items-center -space-x-1">
+                  <span class="w-5 h-5 rounded-circle bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-xs">
+                    <i class="fa-brands fa-google-drive"></i>
+                  </span>
+                  <span class="w-5 h-5 rounded-circle bg-teal-100 text-teal-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-xs">
+                    <i class="fa-solid fa-cloud"></i>
+                  </span>
+                  <span class="w-5 h-5 rounded-circle bg-amber-100 text-amber-600 d-flex align-items-center justify-content-center text-[10px] ring-2 ring-white shadow-xs">
+                    <i class="fa-solid fa-bolt"></i>
+                  </span>
+                </div>
+                <span class="d-none d-sm-inline fw-bold">Conexões</span>
+                <span id="integrations-badge-status" class="d-none d-md-inline-flex"></span>
+                <i class="fa-solid fa-angle-down text-[10px] text-slate-400"></i>
+              </button>
 
-          <!-- Perfil e Login por CPF do Usuário -->
-          <div id="header-user-container" class="d-flex align-items-center"></div>
+              <!-- Dropdown do Submenu -->
+              <div 
+                id="integrations-dropdown-menu" class="hidden position-absolute end-0 mt-2 w-72 sm:w-80 p-2 bg-white rounded-2xl shadow-2xl border border-slate-200/90 z-50 text-xs fade-in space-y-1"
+              >
+                <div class="px-2.5 py-1.5 border-b border-slate-100 d-flex align-items-center justify-content-between">
+                  <span class="text-[10px] fw-bolder text-uppercase tracking-wider text-slate-400 d-flex align-items-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-indigo-500"></i> Conexões &amp; Modo Deus
+                  </span>
+                </div>
 
-          <!-- Alternar Tema Claro/Escuro -->
-          <button 
-            id="theme-toggle-btn"
-            onclick="toggleTheme()" 
-            class="p-2 w-9 h-9 rounded-xl text-slate-600 d-flex align-items-center justify-content-center transition-colors"
-            title="Alternar Tema"
-          >
-            <i class="fa-solid fa-moon"></i>
-          </button>
+                <!-- Item 1: Google Sheets API -->
+                <div class="p-2 rounded-xl transition-colors d-flex align-items-center justify-content-between gap-2 group">
+                  <div onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" class="d-flex align-items-center gap-2.5 flex-grow-1 cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 d-flex align-items-center justify-content-center text-sm flex-shrink-0 transition-transform">
+                      <i class="fa-brands fa-google-drive"></i>
+                    </div>
+                    <div>
+                      <strong class="d-block fw-bold text-slate-800 transition-colors">Google Sheets API</strong>
+                      <span class="d-block text-[10px] text-slate-400">Planilha Oficial • Importar / Configurar</span>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center gap-1">
+                    <button 
+                      type="button" 
+                      onclick="closeIntegrationsSubmenu(); quickSyncGoogleSheets();" 
+                      class="px-2 py-1 rounded-lg text-[10px] fw-bold bg-emerald-600 text-white shadow-xs d-flex align-items-center gap-1 transition-all border-0"
+                      title="Sincronizar dados da planilha agora"
+                    >
+                      <i class="fa-solid fa-rotate text-[9px]"></i> Sincronizar
+                    </button>
+                    <button 
+                      type="button" 
+                      onclick="closeIntegrationsSubmenu(); openGoogleSheetsImportModal();" 
+                      class="p-1.5 rounded-lg text-slate-400 border-0 bg-transparent"
+                      title="Configurações da planilha"
+                    >
+                      <i class="fa-solid fa-gear text-[11px]"></i>
+                    </button>
+                  </div>
+                </div>
 
-          <!-- Botão Sobre / Por que o sistema foi construído assim -->
-          <button type="button" onclick="openAboutModal()" class="btn btn-sm btn-link p-0 text-indigo-600 fw-semibold text-decoration-none d-flex align-items-center gap-1"
-            title="Sobre o Sistema • Por que foi construído assim?"
-          >
-            <i class="fa-solid fa-circle-question text-base"></i>
-          </button>
+                <!-- Item 2: Supabase Cloud -->
+                <div class="p-2 rounded-xl transition-colors d-flex align-items-center justify-content-between gap-2 group">
+                  <div onclick="closeIntegrationsSubmenu(); openSupabaseModal();" class="d-flex align-items-center gap-2.5 flex-grow-1 cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-600 d-flex align-items-center justify-content-center text-sm flex-shrink-0 transition-transform">
+                      <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    <div>
+                      <strong class="d-block fw-bold text-slate-800 transition-colors">Supabase Cloud</strong>
+                      <span class="d-block text-[10px] text-slate-400">Banco de Dados em Nuvem (PostgreSQL)</span>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    onclick="closeIntegrationsSubmenu(); openSupabaseModal();" 
+                    class="px-2.5 py-1 rounded-lg text-[10px] fw-bold bg-teal-50 text-teal-700 border border-teal-200 transition-all d-flex align-items-center gap-1"
+                  >
+                    <i class="fa-solid fa-cloud-arrow-up text-[9px]"></i> Conectar
+                  </button>
+                </div>
+
+                <div class="border-t border-slate-100 my-1"></div>
+
+                <!-- Item 3: Modo Deus / LGPD -->
+                <div id="header-godmode-container" class="w-100"></div>
+              </div>
+            </div>
+
+            <!-- Perfil e Login por CPF do Usuário -->
+            <div id="header-user-container" class="d-flex align-items-center"></div>
+
+            <!-- Alternar Tema Claro/Escuro -->
+            <button 
+              id="theme-toggle-btn"
+              onclick="toggleTheme()" 
+              class="header-icon-btn"
+              title="Alternar Tema Claro / Escuro"
+              aria-label="Alternar Tema"
+            >
+              <i class="fa-solid fa-moon"></i>
+            </button>
+
+          </div>
+
         </div>
+      </header>
 
-      </div>
+      <!-- ÁREA DE CONTEÚDO PRINCIPAL (DASHBOARD CONTENT) -->
+      <main class="main-content">
+        <div class="container-fluid px-3 px-sm-4 px-xl-5 py-4">
+          <div id="main-content-area">
+            <!-- Injetado dinamicamente pelo app.js -->
+          </div>
+        </div>
+      </main>
+
+      <!-- RODAPÉ ADMINATOR -->
+      <footer class="adminator-footer no-print">
+        <div class="d-flex flex-column sm:flex-row align-items-center justify-content-between gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-indigo-500"></i>
+            <span><strong>Eu Por Dias</strong> • Programa Emprega Mais Alagoas (Mídias Digitais)</span>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <button type="button" onclick="openAboutModal()" class="btn btn-sm btn-link p-0 text-indigo-600 fw-semibold text-decoration-none d-flex align-items-center gap-1">
+              <i class="fa-solid fa-circle-info"></i> Por que o sistema foi construído assim?
+            </button>
+            <span>•</span>
+            <span>Busca de CEP via <strong>ViaCEP</strong></span>
+            <span>•</span>
+            <span>Atalho direto para <strong>WhatsApp</strong></span>
+          </div>
+        </div>
+      </footer>
+
     </div>
-
-    <!-- Navegação de Abas com Rolagem Interativa & Alta Usabilidade -->
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 border-t border-slate-100 position-relative">
-      <div class="nav-carousel-wrapper position-relative py-2">
-        
-        <!-- Botão Rolagem Esquerda -->
-        <button 
-          id="nav-scroll-btn-left" 
-          type="button"
-          onclick="scrollNavTabs('left')" 
-          class="nav-scroll-arrow nav-scroll-left"
-          title="Rolar abas para a esquerda"
-          aria-label="Rolar para esquerda"
-        >
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
-        <!-- Container de rolagem das abas -->
-        <nav 
-          id="main-nav-tabs" 
-          class="nav-tabs-scroll-container d-flex align-items-center gap-2 overflow-x-auto no-scrollbar w-100"
-        >
-          <button 
-            data-tab="students"
-            class="nav-tab-btn active d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-bold"
-          >
-            <i class="fa-solid fa-users"></i>
-            <span>Alunos & Contatos</span>
-          </button>
-
-          <button 
-            data-tab="grades"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-pen-nib"></i>
-            <span>Notas dos Módulos</span>
-          </button>
-
-          <button 
-            data-tab="dashboard"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>Dashboard</span>
-          </button>
-
-          <button 
-            data-tab="forum"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-comments"></i>
-            <span>Fórum & Chat</span>
-          </button>
-
-          <button 
-            data-tab="prompts"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
-            <span>Prompts IA</span>
-          </button>
-
-          <button 
-            data-tab="careers"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-briefcase"></i>
-            <span>Vagas & Trilhas</span>
-          </button>
-
-          <button 
-            data-tab="reports"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-file-export"></i>
-            <span>Relatórios</span>
-          </button>
-
-          <button 
-            data-tab="about"
-            class="nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold"
-          >
-            <i class="fa-solid fa-lightbulb"></i>
-            <span>Sobre o Sistema</span>
-          </button>
-        </nav>
-
-        <!-- Botão Rolagem Direita -->
-        <button 
-          id="nav-scroll-btn-right" 
-          type="button"
-          onclick="scrollNavTabs('right')" 
-          class="nav-scroll-arrow nav-scroll-right"
-          title="Rolar abas para a direita"
-          aria-label="Rolar para direita"
-        >
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-
-      </div>
-    </div>
-  </header>
-
-  <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
-  <main class="flex-grow-1 max-w-7xl w-100 mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div id="main-content-area">
-      <!-- Injetado dinamicamente pelo app.js?v=3.6.2 -->
-    </div>
-  </main>
-
-  <!-- RODAPÉ DA PÁGINA -->
-  <footer class="bg-white border-t border-slate-200/80 py-4 mt-auto text-xs text-slate-500 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 d-flex flex-column sm:flex-row align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2">
-        <i class="fa-solid fa-shield-halved text-indigo-500"></i>
-        <span><strong>Eu Por Dias</strong> • Programa Emprega Mais Alagoas (Mídias Digitais)</span>
-      </div>
-      <div class="d-flex align-items-center gap-3">
-        <button type="button" onclick="openAboutModal()" class="btn btn-sm btn-link p-0 text-indigo-600 fw-semibold text-decoration-none d-flex align-items-center gap-1">
-          <i class="fa-solid fa-circle-info"></i> Por que o sistema foi construído assim?
-        </button>
-        <span>•</span>
-        <span>Busca de CEP via <strong>ViaCEP</strong></span>
-        <span>•</span>
-        <span>Atalho direto para <strong>WhatsApp</strong></span>
-      </div>
-    </div>
-  </footer>
+  </div>
 
   <!-- CONTAINER DE TOASTS FLUTUANTES -->
   <div id="toast-container" class="position-fixed bottom-6 right-6 z-50 d-flex flex-column gap-2 pointer-events-none max-w-sm w-100">
@@ -324,7 +345,7 @@
 
   <!-- SCRIPTS DO SISTEMA -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="mock-data.js?v=3.6.2"></script>
-  <script src="app.js?v=3.6.2"></script>
+  <script src="mock-data.js?v=4.0.0"></script>
+  <script src="app.js?v=4.0.0"></script>
 </body>
 </html>

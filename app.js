@@ -797,29 +797,75 @@ function updateNavActiveState() {
   const isAluno = AppState.currentUser && AppState.currentUser.role === "aluno";
   const alunoRestrictedTabs = ["dashboard", "reports", "students"];
 
-  document.querySelectorAll(".nav-tab-btn").forEach(btn => {
+  // Sincroniza tanto links da sidebar (Adminator) quanto botões de navegação
+  document.querySelectorAll(".sidebar-link, .nav-tab-btn").forEach(btn => {
     const tab = btn.getAttribute("data-tab");
+    if (!tab) return;
 
-    // Regra de autorização para alunos:
-    // Oculta completamente 'Dashboard & Estatísticas', 'Relatórios & Backup' e 'Alunos & Contatos'.
-    // O aluno interage apenas com 'Sobre o Sistema & Manifesto', 'Notas dos Módulos' e 'Fórum & Chat ao Vivo'.
     if (isAluno && alunoRestrictedTabs.includes(tab)) {
       btn.classList.add("hidden");
+      const parentItem = btn.closest(".sidebar-item");
+      if (parentItem) parentItem.classList.add("hidden");
       return;
     } else {
       btn.classList.remove("hidden");
+      const parentItem = btn.closest(".sidebar-item");
+      if (parentItem) parentItem.classList.remove("hidden");
     }
 
     if (tab === AppState.currentTab) {
-      btn.className = "nav-tab-btn active d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-bold";
+      btn.classList.add("active");
       try {
         btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
       } catch (err) {}
     } else {
-      btn.className = "nav-tab-btn d-flex align-items-center gap-2 px-3.5 py-2 rounded-2xl text-xs fw-semibold";
+      btn.classList.remove("active");
     }
   });
-  updateNavScrollButtons();
+
+  if (typeof updateNavScrollButtons === "function") {
+    try { updateNavScrollButtons(); } catch(e) {}
+  }
+}
+
+// Controles do Sidebar Retrátil (Adminator Layout)
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+  if (!sidebar) return;
+
+  if (window.innerWidth < 992) {
+    sidebar.classList.toggle("mobile-open");
+    if (overlay) overlay.classList.toggle("active");
+  } else {
+    sidebar.classList.toggle("collapsed");
+    const isCollapsed = sidebar.classList.contains("collapsed");
+    localStorage.setItem("eupordias_sidebar_collapsed", isCollapsed ? "1" : "0");
+  }
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+  if (sidebar && sidebar.classList.contains("mobile-open")) {
+    sidebar.classList.remove("mobile-open");
+  }
+  if (overlay && overlay.classList.contains("active")) {
+    overlay.classList.remove("active");
+  }
+}
+
+function handleGlobalHeaderSearch(query) {
+  AppState.searchTerm = (query || "").trim();
+  if (AppState.currentTab !== "students") {
+    switchTab("students");
+  } else {
+    const searchInputInTab = document.getElementById("student-search-input");
+    if (searchInputInTab) {
+      searchInputInTab.value = AppState.searchTerm;
+    }
+    renderApp();
+  }
 }
 
 function updateHeaderCounts() {
@@ -6148,11 +6194,13 @@ function switchTab(tab) {
   if (isAluno && alunoRestrictedTabs.includes(tab)) {
     showToast("Acesso restrito: este menu é exclusivo para docentes e coordenação.", "warning");
     AppState.currentTab = "grades";
+    closeMobileSidebar();
     renderApp();
     return;
   }
 
   AppState.currentTab = tab;
+  closeMobileSidebar();
   renderApp();
 }
 
