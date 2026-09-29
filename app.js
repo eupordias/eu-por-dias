@@ -11928,52 +11928,81 @@ async function executeLiveInstagramAudit(handle) {
 
 
 // ==========================================
-// GERADOR DE BIOS COM INTELIGÊNCIA ARTIFICIAL CONTEXTUAL
+// SINTETIZADOR DE BIOS COM IA GENERATIVA PROFUNDA
 // ==========================================
-function generateAIBios(studentName, location, cleanHandle, liveBio, nicheCategory, businessTitle) {
+function generateAIBios(studentName, location, cleanHandle, liveBio, nicheCategory, businessTitle, student) {
   const firstName = (studentName || cleanHandle.replace('@', '')).split(' ')[0];
-  const loc = location || "Alagoas";
+  const loc = location || (student && (student.unitCity || student.polo)) || "Alagoas";
+  const handlePure = cleanHandle.replace('@', '');
 
-  // Analisa se o perfil já tem alguma palavra-chave na bio pública
-  const rawBio = (liveBio || "").toLowerCase();
+  // 1. Extrai a atividade exata da pessoa
+  let profession = (student && student.profession) || "";
+  let tools = (student && student.tools) || "";
+  let interests = (student && student.interests) || (student && student.motivation) || "";
   
-  // Extrai especialidade ou foco
-  let specialty = businessTitle;
-  if (rawBio.includes('infantil')) specialty += " Infantil";
-  else if (rawBio.includes('plus size') || rawBio.includes('plussize')) specialty += " Plus Size";
-  else if (rawBio.includes('casamento') || rawBio.includes('noiva')) specialty += " para Noivas & Eventos";
-  else if (rawBio.includes('fitness') || rawBio.includes('treino')) specialty += " Fitness & Saúde";
-  else if (rawBio.includes('artesanal') || rawBio.includes('gourmet')) specialty += " Gourmet & Artesanal";
+  // Se não temos aluno cadastrado, deduz pelo handle e bio
+  const bioLower = (liveBio || "").toLowerCase();
+  const handleLower = handlePure.toLowerCase();
 
-  // Formato 1: Alta Conversão & Vendas Diretas (Mais Comercial)
-  const option1 = [
-    `📍 ${specialty} com entrega rápida em ${loc}`,
-    `✨ Produtos e serviços selecionados para valorizar você`,
-    `📦 Atendimento rápido • Frete seguro para todo o estado`,
-    `👇 Faça seu pedido ou tire dúvidas no WhatsApp:`
+  let activityCore = "";
+  let emojiTheme = "✨";
+
+  if (handleLower.includes('mkt') || handleLower.includes('social') || profession.toLowerCase().includes('social media') || bioLower.includes('social media')) {
+    activityCore = "Gestão de Redes Sociais & Estratégia Digital";
+    emojiTheme = "🚀";
+  } else if (handleLower.includes('design') || profession.toLowerCase().includes('design') || bioLower.includes('design') || bioLower.includes('arte')) {
+    activityCore = "Identidade Visual, Banners & Design Estratégico";
+    emojiTheme = "🎨";
+  } else if (handleLower.includes('brand') || profession.toLowerCase().includes('conteúdo') || bioLower.includes('criador')) {
+    activityCore = "Branding, Criação de Conteúdo & Posicionamento";
+    emojiTheme = "💡";
+  } else if (handleLower.includes('foto') || profession.toLowerCase().includes('fotóg') || bioLower.includes('foto') || bioLower.includes('ensaio')) {
+    activityCore = "Ensaios Fotográficos & Memórias Afetivas";
+    emojiTheme = "📸";
+  } else if (handleLower.includes('art') || profession.toLowerCase().includes('artes') || bioLower.includes('artesanato') || bioLower.includes('croch')) {
+    activityCore = "Artesanato Afetivo & Peças Feitas à Mão";
+    emojiTheme = "🧶";
+  } else if (handleLower.includes('dev') || profession.toLowerCase().includes('ti') || profession.toLowerCase().includes('suporte')) {
+    activityCore = "Tecnologia, Sites & Suporte Digital Especializado";
+    emojiTheme = "💻";
+  } else if (handleLower.includes('moda') || handleLower.includes('look') || bioLower.includes('vestu')) {
+    activityCore = "Looks & Moda Feminina com Caimento Perfeito";
+    emojiTheme = "👗";
+  } else if (handleLower.includes('doce') || handleLower.includes('bolo') || bioLower.includes('gastro')) {
+    activityCore = "Confeitaria Artesanal & Sobremesas Especiais";
+    emojiTheme = "🍰";
+  } else {
+    activityCore = businessTitle || "Serviços & Atendimento de Excelência";
+    emojiTheme = "💼";
+  }
+
+  // 3 Estruturas de Alta Conversão Geradas por IA
+  const commercial = [
+    `${emojiTheme} ${activityCore} em ${loc}`,
+    `⭐ Qualificação profissional certificada • Atendimento humanizado`,
+    `📦 Agendamentos rápidos e suporte dedicado para você`,
+    `👇 Toque no link abaixo para falar comigo no WhatsApp:`
   ];
 
-  // Formato 2: Autoridade & Posicionamento Pessoal (Personal Branding / Especialista)
-  const option2 = [
-    `💡 Ajudo você a conquistar o melhor resultado com ${specialty.toLowerCase()}`,
-    `⭐ Mais de centenas de clientes atendidos com nota máxima em ${loc}`,
-    `🎓 Formação profissional pelo Programa Emprega Mais Alagoas`,
-    `👇 Toque no link para agendar sua consultoria ou pedido:`
+  const authority = [
+    `💡 Ajudo marcas e clientes a se destacarem em ${loc}`,
+    `🎯 Especialista em ${activityCore.toLowerCase()}`,
+    `🎓 Formação Emprega Mais Alagoas • Resultados Comprovados`,
+    `👇 Solicite um orçamento sem compromisso:`
   ];
 
-  // Formato 3: Minimalista & Direto ao Ponto (Clean & Moderno)
-  const option3 = [
-    `🌿 ${specialty} | ${loc}`,
-    `📦 Encomendas & Atendimento Exclusivo`,
-    `💳 Cartão, Pix e Entrega Facilitada`,
-    `👉 Clique abaixo e fale direto comigo:`
+  const minimalist = [
+    `${emojiTheme} ${firstName} | ${activityCore}`,
+    `📍 Atendendo com amor em ${loc} e região`,
+    `💬 Orçamentos abertos no WhatsApp`,
+    `👉 Clique abaixo e converse direto comigo:`
   ];
 
   return {
-    commercial: option1,
-    authority: option2,
-    minimalist: option3,
-    activeOption: option1
+    commercial,
+    authority,
+    minimalist,
+    activityCore
   };
 }
 
