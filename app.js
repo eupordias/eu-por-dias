@@ -11424,32 +11424,35 @@ function renderInstagramAuditTab(container) {
           </div>
         </div>
 
-        <!-- BARRA DE BUSCA CENTRAL ELEGANTE -->
-        <form onsubmit="handleSingleAuditSubmit(event)" class="max-w-3xl">
-          <div class="p-1.5 rounded-xl border border-slate-200 bg-slate-50 d-flex flex-column sm:flex-row align-items-center gap-2">
-            <div class="position-relative flex-grow-1 w-100">
-              <span class="position-absolute start-0 top-50 translate-middle-y ps-3 text-slate-400 text-xs">
+        <!-- BARRA DE BUSCA CENTRAL AMPLA, ESPAÇOSA E CONFORTÁVEL -->
+        <form onsubmit="handleSingleAuditSubmit(event)" class="w-100" style="max-width: 780px;">
+          <div class="p-2 p-sm-2.5 rounded-2xl border-2 border-indigo-100 bg-white shadow-sm d-flex flex-column sm:flex-row align-items-stretch gap-2.5 transition-all">
+            <div class="position-relative flex-grow-1 d-flex align-items-center">
+              <span class="position-absolute start-0 top-50 translate-middle-y ps-3.5 text-indigo-500 fs-5 pointer-events-none">
                 <i class="fa-brands fa-instagram"></i>
               </span>
               <input 
                 type="text" 
                 id="insta-single-input" 
                 required 
-                placeholder="Digite o @ ou link do Instagram (ex: @anabeatriz.mkt)..." 
+                placeholder="Digite o @ ou link do Instagram (ex: @anabeatriz.mkt ou instagram.com/usuario)..." 
                 value="${instagramAuditState.handle}"
-                class="form-control form-control-sm border-0 bg-transparent text-slate-900 text-xs ps-5 py-2 shadow-none"
+                class="form-control form-control-lg border-0 bg-transparent text-slate-900 fs-6 fw-semibold ps-5 pe-3 py-3 shadow-none w-100"
+                style="height: 52px;"
               />
             </div>
             <button 
               type="submit" 
               ${instagramAuditState.loading ? 'disabled' : ''}
-              class="w-100 sm:w-auto btn btn-sm btn-primary px-4 py-2 rounded-lg text-xs fw-semibold d-inline-flex align-items-center justify-content-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-xs flex-shrink-0"
+              class="btn btn-primary px-4 px-sm-5 py-3 rounded-xl fs-6 fw-bold d-inline-flex align-items-center justify-content-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-sm flex-shrink-0"
+              style="min-height: 52px; font-size: 15px;"
             >
               ${instagramAuditState.loading ? `
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Lendo Perfil...
+                <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
+                <span>Lendo Perfil...</span>
               ` : `
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Analisar Perfil
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Analisar Perfil</span>
               `}
             </button>
           </div>
