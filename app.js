@@ -11602,18 +11602,32 @@ function renderInstagramAuditTab(container) {
                 </div>
               </div>
 
-              <!-- PLANO DE 72 HORAS -->
-              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="fa-solid fa-bolt text-indigo-600"></i>
-                  <h3 class="text-xs fw-bold text-slate-900 mb-0">Plano de Ação para as Próximas 72 Horas</h3>
+              <!-- PLANO DE RECUPERAÇÃO PASSO A PASSO (7 DIAS DE TRANSFORMAÇÃO) -->
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 d-flex align-items-center justify-content-center text-sm">
+                      <i class="fa-solid fa-road-circle-check"></i>
+                    </span>
+                    <div>
+                      <h3 class="text-xs fw-bold text-slate-900 mb-0">Plano de Recuperação &amp; Alavancagem (Passo a Passo em 7 Dias)</h3>
+                      <p class="text-[11px] text-slate-500 mb-0">Siga 1 ação por dia para transformar seguidores curiosos em clientes pagantes</p>
+                    </div>
+                  </div>
+                  <span class="badge bg-indigo-600 text-white rounded-pill px-3 py-1 text-[10px] fw-bold">Metodologia Emprega Mais AL</span>
                 </div>
                 
-                <div class="space-y-2">
+                <div class="space-y-2 pt-1">
                   ${res.shockPlan72h.map((step, idx) => `
-                    <div class="p-3 rounded-xl bg-white border border-slate-200 d-flex align-items-start gap-2.5 text-xs text-slate-700">
-                      <span class="w-5 h-5 rounded-circle bg-indigo-600 text-white d-flex align-items-center justify-content-center text-[10px] fw-bold flex-shrink-0 mt-0.5">${idx + 1}</span>
-                      <span>${step}</span>
+                    <div class="p-3.5 rounded-xl bg-white border border-slate-200 d-flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-3 text-xs transition-all hover:border-indigo-300">
+                      <div class="d-flex align-items-start gap-3">
+                        <span class="w-6 h-6 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 d-flex align-items-center justify-content-center text-xs fw-bold flex-shrink-0 mt-0.5 font-monospace">${idx + 1}</span>
+                        <div>
+                          <strong class="text-slate-900 d-block font-semibold mb-0.5">${step.day || ('Dia ' + (idx + 1))}</strong>
+                          <span class="text-slate-600 leading-relaxed">${step.action || step}</span>
+                        </div>
+                      </div>
+                      <span class="badge bg-slate-100 text-slate-600 border border-slate-200 rounded-pill px-2.5 py-1 text-[10px] flex-shrink-0 self-start sm:self-auto">Ação Prática</span>
                     </div>
                   `).join('')}
                 </div>
@@ -11803,181 +11817,286 @@ async function executeLiveInstagramAudit(handle) {
   showToast(`Diagnóstico de ${formattedHandle} pronto!`, "success");
 }
 
-function buildComprehensiveAuditReport(handle, liveData, student) {
+function generateEmpatheticAuditEngine(handle, liveData, student) {
   const cleanHandle = handle.startsWith('@') ? handle : ('@' + handle);
+  const rawHandle = cleanHandle.replace('@', '').trim();
   const location = student?.unitCity || student?.polo || "Alagoas";
-  const studentName = student?.name || liveData?.title || cleanHandle.replace('@', '');
+  const studentName = student?.name || liveData?.title || rawHandle;
+  const firstName = studentName.split(' ')[0] || "Criador(a)";
   const liveBio = liveData?.description || "";
   const profilePic = liveData?.image || student?.photoUrl || null;
 
-  let niche = "comercio";
-  const prof = ((student?.profession || "") + " " + liveBio + " " + cleanHandle).toLowerCase();
-  if (prof.includes('moda') || prof.includes('vestu') || prof.includes('look') || prof.includes('brech')) niche = "moda";
-  else if (prof.includes('foto') || prof.includes('design') || prof.includes('ti') || prof.includes('mkt') || prof.includes('social media')) niche = "servicos";
-  else if (prof.includes('arte') || prof.includes('artesan') || prof.includes('croch')) niche = "artesanato";
-  else if (prof.includes('gastro') || prof.includes('comida') || prof.includes('doce') || prof.includes('pizza') || prof.includes('bolo')) niche = "gastronomia";
+  // Simple string hash for deterministic variations per profile handle
+  let hash = 0;
+  for (let i = 0; i < rawHandle.length; i++) {
+    hash = (hash << 5) - hash + rawHandle.charCodeAt(i);
+    hash |= 0;
+  }
+  hash = Math.abs(hash);
 
-  const database = {
-    comercio: {
-      label: "Comércio Local & Varejo",
-      score: 84,
-      scoreLabel: "Potencial Alto • Falta Funil",
-      verdictHeadline: "Perfil Atrai Curiosos, mas Falta Clareza para Fechar no WhatsApp",
-      verdictSummary: `A análise de ${cleanHandle} indica boa presença visual, mas os visitantes têm atrito para saber rapidamente se você entrega na cidade deles (${location}) e como fazer pedidos imediatos.`,
-      pillars: [
-        { icon: "fa-signature", label: "Clareza na Bio", score: 75, critique: "A bio precisa destacar a cidade e o link direto para catálogo em 2 segundos." },
-        { icon: "fa-circle-dot", label: "Destaques & Prova", score: 70, critique: "Faltam prints de clientes satisfeitos e regras de entrega em Alagoas." },
-        { icon: "fa-video", label: "Reels & Retenção", score: 86, critique: "Vídeos de produtos funcionam melhor com legendas grandes para quem assiste mudo." },
-        { icon: "fa-comments-dollar", label: "Funil no Direct", score: 78, critique: "Tenha script de 2 mensagens para converter quem pergunta preço no direct." }
-      ],
-      realityChecks: [
-        { flaw: "Não ter a cidade no campo Nome do perfil.", fix: `Edite seu Nome para: '${studentName} | ${location}' para ser encontrado nas buscas.` },
-        { flaw: "Postar nos Stories sem preço visível.", fix: "Sempre coloque o valor com sticker de link para o WhatsApp." },
-        { flaw: "Demora para responder no direct.", fix: "Configure respostas rápidas no Instagram para responder em segundos." }
-      ],
-      suggestedBio: [
-        `🛍️ Produtos selecionados com entrega rápida em ${location}`,
-        "📦 Pronta entrega para todo o estado • Retirada facilitada",
-        "⭐ + de 500 clientes atendidos com nota máxima",
-        "👇 Peça no WhatsApp com desconto no Pix:"
-      ],
-      reelsScripts: [
-        { objective: "Novos Clientes", duration: "20s", theme: `Os 3 Queridinhos Mais Vendidos em ${location}`, hook: `Se você mora em ${location} e ainda não viu essa novidade, olha o que você está perdendo!`, body: "Apresente os 3 produtos com closes rápidos de 2 segundos e valores na tela.", cta: "Comente 'QUERO' que te envio o catálogo no direct!" },
-        { objective: "Confiança", duration: "30s", theme: "Bastidores: Embalando um Pedido Real com Carinho", hook: "Olha o cuidado que a gente tem ao preparar cada pedido hoje...", body: "Grave o pacote sendo montado, brinde e bilhete à mão.", cta: "Garanta o seu com entrega hoje no link da bio!" },
-        { objective: "Oferta Imediata", duration: "20s", theme: "Combinação da Semana com Preço Especial", hook: "Procurando o presente ideal que cabe no bolso?", body: "Demonstre a utilidade do item em uso prático.", cta: "Chame no WhatsApp antes que acabe o lote!" }
-      ],
-      salesDirectScript: `Olá! Que alegria ver seu interesse 😊\nSeparamos um desconto especial de 10% no Pix para o seu primeiro pedido hoje. Qual item mais chamou sua atenção?`,
-      shockPlan72h: [
-        `Adicione '${location}' no seu nome de exibição no Instagram.`,
-        "Crie 4 capas de destaques limpas no Canva (Como Comprar, Depoimentos, Novidades, Dúvidas).",
-        "Grave e poste 1 Reel mostrando os produtos mais pedidos com legenda na tela."
-      ]
-    },
+  // Deep Niche & Intent Detector
+  const combinedContext = [
+    rawHandle,
+    studentName,
+    student?.profession || "",
+    student?.interests || "",
+    student?.notes || "",
+    liveBio
+  ].join(' ').toLowerCase();
+
+  let category = "servicos_geral";
+  let nicheTitle = "Consultoria & Serviços";
+
+  if (combinedContext.includes('moda') || combinedContext.includes('vest') || combinedContext.includes('look') || combinedContext.includes('brecho') || combinedContext.includes('calcado') || combinedContext.includes('loja')) {
+    category = "moda";
+    nicheTitle = "Moda, Vestuário & Acessórios";
+  } else if (combinedContext.includes('foto') || combinedContext.includes('fotograf') || combinedContext.includes('video') || combinedContext.includes('filmmak')) {
+    category = "fotografia";
+    nicheTitle = "Fotografia & Produção Audiovisual";
+  } else if (combinedContext.includes('design') || combinedContext.includes('arte') || combinedContext.includes('social media') || combinedContext.includes('mkt') || combinedContext.includes('trafego') || combinedContext.includes('copy') || combinedContext.includes('dev')) {
+    category = "marketing_design";
+    nicheTitle = "Marketing Digital, Design & Mídias";
+  } else if (combinedContext.includes('comida') || combinedContext.includes('gastro') || combinedContext.includes('doce') || combinedContext.includes('bolo') || combinedContext.includes('pizza') || combinedContext.includes('hamburg') || combinedContext.includes('delicia') || combinedContext.includes('confeit')) {
+    category = "gastronomia";
+    nicheTitle = "Gastronomia & Confeitaria Artesanal";
+  } else if (combinedContext.includes('croche') || combinedContext.includes('artesan') || combinedContext.includes('feitoamao') || combinedContext.includes('costura') || combinedContext.includes('atelier')) {
+    category = "artesanato";
+    nicheTitle = "Artesanato Autoral & Peças Afetivas";
+  } else if (combinedContext.includes('beleza') || combinedContext.includes('estetic') || combinedContext.includes('cabelo') || combinedContext.includes('unha') || combinedContext.includes('make') || combinedContext.includes('lash') || combinedContext.includes('sobrancelha')) {
+    category = "beleza";
+    nicheTitle = "Estética, Beleza & Cuidados Pessoais";
+  } else if (combinedContext.includes('saude') || combinedContext.includes('nutri') || combinedContext.includes('psico') || combinedContext.includes('personal') || combinedContext.includes('treino') || combinedContext.includes('fisio')) {
+    category = "saude_fitness";
+    nicheTitle = "Saúde, Nutrição & Bem-Estar";
+  }
+
+  // Dynamic calculated scores (72 - 94) based on handle hash
+  const baseScore = 74 + (hash % 19);
+  
+  // Dynamic Human Feedback Generation
+  const bioLength = liveBio.length;
+  const hasLink = liveBio.includes('link') || liveBio.includes('wa.me') || liveBio.includes('http') || liveBio.includes('bit.ly') || liveBio.includes('api.whatsapp');
+  const hasLocationInBio = liveBio.toLowerCase().includes(location.toLowerCase()) || liveBio.toLowerCase().includes('alagoas') || liveBio.toLowerCase().includes('maceio') || liveBio.toLowerCase().includes('arapiraca');
+
+  let bioAuditStatus = "";
+  if (!liveBio) {
+    bioAuditStatus = `O perfil ${cleanHandle} está sem bio cadastrada ou com texto oculto. O visitante não tem como saber o que você faz em 2 segundos.`;
+  } else if (!hasLocationInBio) {
+    bioAuditStatus = `Você tem uma bio ativa ("${liveBio.slice(0, 60)}..."), mas não cita claramente sua atuação em ${location}. Isso afasta clientes locais.`;
+  } else {
+    bioAuditStatus = `Sua bio cita sua região, mas podemos transformar o texto em uma proposta irresistível de compra rápida.`;
+  }
+
+  // Empathetic Diagnósticos Personalizados
+  const nicheData = {
     moda: {
-      label: "Moda & Vestuário",
-      score: 86,
-      scoreLabel: "Visual Forte • Otimizar Provador",
-      verdictHeadline: "Fotos Bonitas, mas o Vídeo em Movimento Converte 4x Mais",
-      verdictSummary: `O perfil ${cleanHandle} tem bom apelo visual, mas peças em cabides geram dúvidas de caimento. O segredo no nicho de moda é mostrar o movimento no corpo real.`,
-      pillars: [
-        { icon: "fa-camera", label: "Estética Visual", score: 89, critique: "Boa iluminação, mas precisa de vídeos dinâmicos de provador." },
-        { icon: "fa-signature", label: "Grade de Tamanhos", score: 78, critique: "Deixe claro os tamanhos disponíveis (P ao GG) na bio e legendas." },
-        { icon: "fa-video", label: "Provador & Reels", score: 88, critique: "Vídeos no formato '1 peça, 3 looks' geram retenção máxima." },
-        { icon: "fa-comments-dollar", label: "Fechamento WhatsApp", score: 80, critique: "Link direto com mensagem pré-definida para agilizar a reserva." }
+      humanVerdict: `${firstName}, seu perfil tem um potencial gigantesco de vendas visuais, mas atualmente está agindo como uma vitrine estática em vez de uma loja que conversa. As pessoas compram roupas para se sentirem confiantes e bem-vestidas, não apenas pelo tecido. Quando você foca em vídeos de caimento e combinações para o dia a dia em ${location}, suas vendas no direct disparam.`,
+      scoreLabel: "Vitrine Bonita • Falta Conexão no Provador",
+      painPoints: [
+        { flaw: "Fotos isoladas de peças em cabide ou dobradas", fix: `Grave vídeos curtos de 5 a 10 segundos andando e mostrando o caimento no corpo sob luz natural de ${location}.` },
+        { flaw: "Preço e tamanho escondidos ou 'preço no direct'", fix: "Informe tamanho (P ao GG) e valor com transparência. Isso gera confiança imediata e elimina o atrito do cliente." },
+        { flaw: "Destaques confusos e desatualizados com peças esgotadas", fix: "Mantenha apenas 4 destaques vivos: 'Como Comprar', 'Provador Real', 'Depoimentos' e 'Novidades'." }
       ],
-      realityChecks: [
-        { flaw: "Fotos em cabide sem mostrar o caimento no corpo.", fix: "Grave vídeos de 5 segundos andando e girando para mostrar o caimento." },
-        { flaw: "Não informar o tecido e medidas.", fix: "Escreva na legenda: 'Tecido: Linho • Veste 38 ao 44'." },
-        { flaw: "Stories vazios no horário do almoço.", fix: "Poste provadores entre 11h e 13h30 quando as pessoas compram no intervalo." }
+      bioProposal: [
+        `👗 Looks e peças que valorizam sua melhor versão em ${location}`,
+        `✨ Modelagens confortáveis do P ao GG • Pronta entrega`,
+        `📦 Envio rápido e seguro para todo o estado de Alagoas`,
+        `👇 Escolha seu look no WhatsApp (atendimento humanizado):`
       ],
-      suggestedBio: [
-        `👗 Peças e looks exclusivos para você brilhar em ${location}`,
-        "✨ Tendências, conforto e caimento impecável (P ao GG)",
-        "📦 Envio rápido para todo o estado de Alagoas",
-        "👇 Garanta suas peças no link abaixo:"
+      recovery7Days: [
+        { day: "Dia 1 (Ajuste de Chave)", action: `Atualize a foto de perfil com boa iluminação e coloque a nova Bio com o nome: '${studentName} | Moda & Looks em ${location}'.` },
+        { day: "Dia 2 (Limpeza dos Destaques)", action: "Exclua destaques com mais de 3 meses. Crie 4 capas limpas: 'Provadores', 'Como Pedir', 'Clientes Felizes' e 'Dúvidas'." },
+        { day: "Dia 3 (Primeiro Reel de Atração)", action: "Grave o Reel '1 Peça, 3 Looks Diferentes'. Mostre versatilidade e coloque o gancho logo nos primeiros 2 segundos." },
+        { day: "Dia 4 (Stories com Enquete)", action: "Poste 4 stories nos horários das 12h às 13h: Mostre a textura do tecido e coloque caixinha de perguntas: 'Qual look é mais a sua cara?'" },
+        { day: "Dia 5 (Bastidores & Confiança)", action: "Mostre o processo de embalar uma peça, borrifando um cheirinho gostoso e escrevendo um bilhete à mão para o cliente." },
+        { day: "Dia 6 (Oferta Exclusiva 24h)", action: "Faça uma sequência de 5 stories apresentando 1 peça especial com brinde para quem fechar pelo WhatsApp nas próximas 24h." },
+        { day: "Dia 7 (Revisão & Contato Ativo)", action: "Responda todas as pessoas que curtiram ou visualizaram os stories com uma mensagem calorosa de boas-vindas no Direct." }
       ],
-      reelsScripts: [
-        { objective: "Viralização", duration: "20s", theme: "1 Peça, 3 Looks Completamente Diferentes", hook: "Você usa essa peça sempre do mesmo jeito? Olha como multiplicar seus looks!", body: "Transições no ritmo da música trocando calçados e sobreposições.", cta: "Qual look você usaria? 1, 2 ou 3? Comente aqui!" },
-        { objective: "Desejo", duration: "25s", theme: "Os Detalhes que Fazem Esse Look Ser Único", hook: "O segredo de uma peça elegante está nesses pequenos detalhes de costura...", body: "Aproxime a câmera da textura, tecido nobre e botões.", cta: "Clica no link da bio para conferir as cores restantes no estoque!" },
-        { objective: "Prova Social", duration: "30s", theme: "Nossas Clientes com os Looks da Semana", hook: "Veja a elegância das clientes incríveis que marcaram o perfil!", body: "Compilação dinâmica de fotos e vídeos de clientes autorizados.", cta: "Marque sua amiga que vai amar esse estilo!" }
+      reels: [
+        { objective: "Atração de Clientes", duration: "18s", theme: `Como multiplicar seus looks para o fim de semana em ${location}`, hook: "Você tem a sensação de que nunca tem roupa para sair? Olha esse truque com 1 única peça...", body: "Troque sobreposições rapidamente no ritmo de um áudio em alta.", cta: "Comente 'LOOK' que te mando os detalhes das peças no direct!" },
+        { objective: "Desejo & Caimento", duration: "25s", theme: "O Caimento Perfeito que Não Aperta e Valoriza o Corpo", hook: "Se você procura um vestido elegante e ultra confortável, você acabou de achar!", body: "Aproxime a câmera do acabamento das costuras e gire devagar.", cta: "Clique no link da bio para garantir sua numeração!" },
+        { objective: "Prova Social Real", duration: "30s", theme: "Clientes Reais usando nossos looks em Alagoas", hook: "Olha como nossas clientes brilharam nesta semana com essas combinações...", body: "Mostre fotos e vídeos enviados por clientes reais satisfeitas.", cta: "Qual foi sua favorita? Vote aqui nos comentários!" }
       ],
-      salesDirectScript: `Oi linda! Que bom que você gostou desse look 😍\nEle está fazendo o maior sucesso e temos apenas 2 unidades nessa cor no momento. Quer que eu separe o seu antes de esgotar?`,
-      shockPlan72h: [
-        "Grave um provador rápido em vídeo com a peça mais vendida.",
-        "Organize os destaques com nomes curtos de 1 palavra.",
-        "Poste uma enquete nos stories: 'Qual cor desse vestido você prefere?'."
-      ]
+      directScript: `Oi linda! Que bom que você gostou do nosso look 😍\nEle acabou de chegar e temos pouquíssimas unidades no seu tamanho. Quer que eu separe o seu para envio em ${location}?`
     },
-    servicos: {
-      label: "Prestação de Serviços & Freelancer",
-      score: 88,
-      scoreLabel: "Autoridade Sólida • Otimizar Prospecção",
-      verdictHeadline: "Venda a Transformação e Não Apenas Tarefas Técnicas",
-      verdictSummary: `O perfil ${cleanHandle} comunica competência, mas clientes compram faturamento e economia de tempo. Destaque o resultado final gerado para quem te contrata.`,
-      pillars: [
-        { icon: "fa-briefcase", label: "Autoridade Profissional", score: 91, critique: "Foto de rosto nítida e histórico comprovado geram confiança imediata." },
-        { icon: "fa-signature", label: "Proposta na Bio", score: 85, critique: "Substitua termos genéricos por: 'Ajudo marcas a aumentarem vendas com marketing'." },
-        { icon: "fa-video", label: "Conteúdo Técnico", score: 86, critique: "Carrosséis didáticos e tutoriais rápidos geram autoridade e salvamentos." },
-        { icon: "fa-comments-dollar", label: "Agendamento", score: 89, critique: "Link direto para agendamento de diagnóstico de 15 minutos sem compromisso." }
+    gastronomia: {
+      humanVerdict: `${firstName}, comida se vende com os olhos, o aroma visual e a sensação de aconchego. O seu perfil precisa fazer o seguidor salivar e sentir que fazer um pedido é tão simples quanto dar um clique no WhatsApp. Mostre o recheio escorrendo, a crocância e o amor colocado em cada receita.`,
+      scoreLabel: "Sabor Impecável • Otimizar Cardápio e Pedidos",
+      painPoints: [
+        { flaw: "Fotos com iluminação amarelada ou sem close nos detalhes", fix: "Fotografe próximo à janela com luz natural matinal, capturando a textura e o recheio." },
+        { flaw: "Falta de horários de atendimento e raio de entrega claros", fix: `Escreva claramente: 'Entregas em ${location} das 14h às 21h • Peça no cardápio online'.` },
+        { flaw: "Stories apagados nos picos de fome (11h-13h e 18h-20h)", fix: "Poste vídeos curtos de 3 segundos de comida saindo do forno exatamente nesses horários." }
       ],
-      realityChecks: [
-        { flaw: "Dizer apenas as ferramentas ('sei mexer no Canva').", fix: "Diga a transformação: 'Crio identidades visuais que valorizam seu negócio'." },
-        { flaw: "Não ter prints de clientes elogiando seu trabalho.", fix: "Crie o destaque 'Resultados' com prints de feedbacks reais." },
-        { flaw: "Não prospectar ativamente.", fix: "Envie 5 mensagens no direct toda semana oferecendo 1 dica gratuita para empresas locais." }
+      bioProposal: [
+        `🍰 Sabores irresistíveis e receitas feitas com amor em ${location}`,
+        `🍓 Ingredientes selecionados • Pronta entrega & Encomendas`,
+        `🛵 Delivery rápido para toda a sua região`,
+        `👇 Faça seu pedido hoje e aproveite no WhatsApp:`
       ],
-      suggestedBio: [
+      recovery7Days: [
+        { day: "Dia 1 (Bio & Cardápio)", action: `Atualize a bio com botão direto para o cardápio no WhatsApp e o texto de entregas em ${location}.` },
+        { day: "Dia 2 (Destaque Cardápio e Valores)", action: "Crie um destaque limpo com fotos reais e valores atualizados para que o cliente não precise esperar para saber o preço." },
+        { day: "Dia 3 (Reel Sensorial / ASMR)", action: "Grave um vídeo cortando o bolo ou abrindo a embalagem com som bem nítido da textura crocante/cremosa." },
+        { day: "Dia 4 (Bastidores da Cozinha)", action: "Mostre a higiene, os ingredientes de primeira qualidade e o carinho no preparo dos pedidos do dia." },
+        { day: "Dia 5 (Combo do Fim de Semana)", action: "Lance uma sobremesa ou prato especial com taxa de entrega reduzida para pedidos antecipados." },
+        { day: "Dia 6 (Depoimento em Vídeo)", action: "Compartilhe o print de um cliente elogiando o sabor ou grave a reação de alguém provando." },
+        { day: "Dia 7 (Lista VIP de Clientes)", action: "Convide os seguidores para entrarem na sua Lista VIP do WhatsApp para receberem promoções de primeira mão." }
+      ],
+      reels: [
+        { objective: "Desejo Incontrolável", duration: "15s", theme: "O Momento Exato em que o Recheio Escorre", hook: "Se você estiver de dieta, por favor não assista a esse vídeo...", body: "Corte em câmera lenta mostrando a maciez e cremosidade do produto.", cta: "Marca aqui a pessoa que vai te pagar esse doce hoje!" },
+        { objective: "Processo Artesanal", duration: "25s", theme: "Como Fazemos a Sobremesa Mais Pedida da Semana", hook: "Você sabe por que nossa receita fica tão fofinha e saborosa?", body: "Mostre 3 etapas do preparo com narração carinhosa e direta.", cta: "Peça a sua no link da bio antes que o lote do dia acabe!" },
+        { objective: "Momento da Entrega", duration: "20s", theme: "Saindo Quentinho para Entrega em Alagoas", hook: "Mais um pedido saindo caprichado com direito a mimo surpresa...", body: "Mostre o fechamento do pacote com lacre de segurança e cartãozinho.", cta: "Quer receber um pacote desse na sua casa? Chama no WhatsApp!" }
+      ],
+      directScript: `Olá! Que alegria ver seu interesse em nossas delícias 😋\nTemos fornada fresquinha saindo hoje para entrega em ${location}. Posso te enviar o cardápio com os especiais do dia?`
+    },
+    marketing_design: {
+      humanVerdict: `${firstName}, quem vende serviços digitais não pode vender apenas "posts bonitos" ou "edição de vídeo" — você precisa vender mais clientes, mais tempo livre e tranquilidade para o empresário. Quando seu perfil mostra como você resolve as dores dos negócios locais de ${location}, os clientes param de pedir desconto e começam a disputar sua agenda.`,
+      scoreLabel: "Talento Técnico • Precisa Vender Transformação",
+      painPoints: [
+        { flaw: "Bio focada em ferramentas ('sei mexer no Canva/Photoshop')", fix: "Mude para foco em resultados: 'Ajudo empresas de Alagoas a atraírem clientes qualificados no digital'." },
+        { flaw: "Não mostrar bastidores de reuniões e projetos reais", fix: "Compartilhe telas de trabalho, antes/depois de identidades visuais e gráficos de alcance gerados." },
+        { flaw: "Falta de um método claro de contratação em 3 passos", fix: "Crie um post fixado explicando: 1. Diagnóstico Gratuito, 2. Planejamento, 3. Execução." }
+      ],
+      bioProposal: [
         `🚀 Gestão digital estratégica para marcas e negócios em ${location}`,
-        "🎯 Conteúdo, tráfego e posicionamento focado em resultados reais",
-        "🎓 Qualificação profissional Emprega Mais Alagoas",
-        "👇 Solicite um orçamento ou diagnóstico no link:"
+        `🎯 Conteúdo, tráfego e posicionamento focado em faturamento`,
+        `🎓 Qualificação profissional certificada Emprega Mais Alagoas`,
+        `👇 Solicite uma análise gratuita do seu perfil:`
       ],
-      reelsScripts: [
-        { objective: "Autoridade", duration: "30s", theme: "O Erro que Empresas Cometem no Instagram Todos os Dias", hook: "Se a sua empresa ainda comete esse erro no Instagram, você está perdendo dinheiro...", body: "Explique o problema e entregue uma solução prática em 3 passos.", cta: "Salve este post para consultar depois e me siga para mais estratégias!" },
-        { objective: "Estudo de Caso", duration: "40s", theme: "Como Ajudamos um Negócio a Triplicar o Alcance", hook: "Olha o que aconteceu quando aplicamos essa estratégia de conteúdo...", body: "Mostre o print do antes e depois com explicação didática.", cta: "Quer um plano assim para o seu negócio? Mande uma mensagem no direct." },
-        { objective: "Tutorial", duration: "25s", theme: "3 Ferramentas Gratuitas que Agilizam sua Rotina", hook: "Economize 5 horas por semana usando essas 3 ferramentas gratuitas...", body: "Apresente Canva, CapCut e automação de forma direta.", cta: "Compartilhe com quem precisa saber disso!" }
+      recovery7Days: [
+        { day: "Dia 1 (Posicionamento de Autoridade)", action: `Mude sua foto para um retrato nítido de rosto e renove a bio com proposta clara de geração de valor.` },
+        { day: "Dia 2 (Fixar os 3 Posts Vitais)", action: "Fixe no topo: 1. Quem sou eu & Minha jornada, 2. Estudo de Caso (Antes/Depois), 3. Como funciona meu serviço." },
+        { day: "Dia 3 (Carrossel Didático)", action: "Publique o carrossel: '3 erros que empresas da sua cidade cometem no Instagram e perdem clientes'." },
+        { day: "Dia 4 (Bastidores de Produção)", action: "Grave um story trabalhando no computador, explicando por que você escolheu determinada estratégia para um cliente." },
+        { day: "Dia 5 (Prospecção Ativa Elegante)", action: "Envie 5 mensagens no direct para negócios locais oferecendo 1 melhoria prática e gratuita sem empurrar venda." },
+        { day: "Dia 6 (Reel de Quebra de Objeção)", action: "Grave: 'Por que postar todo dia sem estratégia não traz clientes?'. Entregue a solução em 3 passos." },
+        { day: "Dia 7 (Oferta de Diagnóstico)", action: "Abra caixinha de perguntas nos Stories: 'Envie seu @ que vou analisar os 3 primeiros gratuitamente hoje'." }
       ],
-      salesDirectScript: `Olá! Obrigado por acompanhar meu conteúdo 😊\nPercebi que você tem um negócio incrível aqui em Alagoas. Se quiser, posso analisar seu perfil e te dar 2 sugestões práticas sem custo algum. Topa?`,
-      shockPlan72h: [
-        "Ajuste sua foto de perfil para uma foto profissional de rosto.",
-        "Fixe 3 posts no topo: Quem Sou Eu, Depoimentos, Como Contratar.",
-        "Mande mensagem de contato para 5 negócios locais da sua cidade."
-      ]
+      reels: [
+        { objective: "Quebra de Mito", duration: "25s", theme: "O Erro que Negócios em Alagoas Cometem nas Redes", hook: "Se a sua empresa ainda posta 'bom dia' todo dia no feed, assista a este vídeo com urgência...", body: "Explique de forma simples por que o cliente quer ver soluções e ofertas, não posts genéricos.", cta: "Salve este post para aplicar no seu negócio e me siga para mais dicas!" },
+        { objective: "Estudo de Caso", duration: "35s", theme: "Como Reestruturamos uma Marca do Zero", hook: "Olha a transformação desse perfil antes e depois do nosso redesign visual...", body: "Mostre o slide de antes (poluído) e o depois (profissional e limpo).", cta: "Quer um visual profissional desse para a sua marca? Mande uma mensagem no direct." },
+        { objective: "Ferramenta Prática", duration: "20s", theme: "3 Sites Gratuitos que Salvam a Rotina de Qualquer Criador", hook: "Essas 3 ferramentas gratuitas vão economizar 10 horas da sua semana...", body: "Apresente banco de imagens, removedor de fundo e paleta de cores.", cta: "Compartilhe este vídeo com aquele amigo que tem um negócio próprio!" }
+      ],
+      directScript: `Olá! Estava acompanhando o trabalho de vocês aqui em ${location} e achei o produto incrível 👏\nNotei 2 ajustes rápidos no perfil que podem aumentar suas mensagens no WhatsApp. Posso te enviar um áudio de 1 minuto explicando?`
+    },
+    fotografia: {
+      humanVerdict: `${firstName}, fotografia é a arte de eternizar memórias e elevar o valor percebido de pessoas e marcas. O seu perfil deve transmitir sensibilidade, direção impecável e confiança. Mostre os bastidores das sessões, como você deixa as pessoas relaxadas e o resultado de tirar o fôlego.`,
+      scoreLabel: "Olhar Artístico Único • Otimizar Agenda de Ensaios",
+      painPoints: [
+        { flaw: "Postar apenas fotos finais sem contar a história da pessoa fotografada", fix: "Coloque legendas ricas contando o que aquele ensaio representou para a cliente." },
+        { flaw: "Dúvidas sobre locações e como se preparar para o ensaio", fix: "Crie destaques: 'Onde Fotografar em Alagoas', 'Guia de Roupas' e 'Depoimentos'." },
+        { flaw: "Não divulgar com clareza as datas livres na agenda do mês", fix: "Poste quinzenalmente o calendário com vagas restantes para ensaios e eventos." }
+      ],
+      bioProposal: [
+        `📸 Ensaios autorais e retratos que revelam sua essência em ${location}`,
+        `🌿 Momentos espontâneos, afeto e memórias eternizadas`,
+        `✨ Cobertura de eventos, marcas e ensaios pessoais`,
+        `👇 Consulte datas disponíveis e orçamentos no WhatsApp:`
+      ],
+      recovery7Days: [
+        { day: "Dia 1 (Bio & Proposta Afetiva)", action: `Renove a bio destacando sua área de atuação em ${location} e link direto de agendamento.` },
+        { day: "Dia 2 (Guia de Locações)", action: "Faça um post carrossel mostrando 5 lugares incríveis para fotografar na sua região." },
+        { day: "Dia 3 (Reel de Bastidores)", action: "Grave os bastidores: Mostre você orientando a pose, a cliente rindo e o resultado final da foto na tela." },
+        { day: "Dia 4 (Depoimento Emocionante)", action: "Poste a foto de uma cliente com o print do áudio dela emocionada ao receber a galeria." },
+        { day: "Dia 5 (Dicas de Look para Fotos)", action: "Crie um story explicando quais cores de roupas harmonizam melhor em fotos ao ar livre." },
+        { day: "Dia 6 (Abertura de Agenda)", action: "Divulgue nos Stories: 'Restam apenas 3 vagas para ensaios neste mês'. Gere senso de oportunidade." },
+        { day: "Dia 7 (Contato com Antigos Clientes)", action: "Mande uma mensagem carinhosa para clientes do ano passado lembrando de datas comemorativas." }
+      ],
+      reels: [
+        { objective: "Espontaneidade", duration: "20s", theme: "Você Acha que Não Sabe Posar para Fotos?", hook: "Toda cliente minha chega dizendo que é tímida... Olha o que acontece depois de 10 minutos!", body: "Mostre o momento descontraído da sessão e o clique final maravilhoso.", cta: "Qual foto ficou mais linda? Me conta aqui nos comentários!" },
+        { objective: "Sensibilidade", duration: "30s", theme: "A Emoção de Registrar Essa Família em Alagoas", hook: "Existem momentos na vida que merecem ser guardados para sempre...", body: "Transição suave de fotos com música emocionante e voz suave.", cta: "Agende seu ensaio afetivo no link da bio!" },
+        { objective: "Dica Rápida", duration: "18s", theme: "3 Poses Simples para Ficar Mais Fotogênica", hook: "Nunca mais saia dura ou sem graça nas fotos com essas 3 poses básicas...", body: "Demonstre a postura de ombro, queixo e mãos de forma prática.", cta: "Salve o vídeo para lembrar na próxima sessão de fotos!" }
+      ],
+      directScript: `Olá! Que alegria ver seu carinho pelo meu trabalho fotográfico 📸✨\nEstamos fechando as datas da agenda deste mês aqui em ${location}. Você tem alguma data especial em mente para o seu ensaio?`
     },
     artesanato: {
-      label: "Artesanato Regional & Arte",
-      score: 85,
-      scoreLabel: "Valor Cultural Alto • Otimizar Encomendas",
-      verdictHeadline: "Mostre o Processo Manual: A História é o que Agrega Valor",
-      verdictSummary: `O trabalho manual em ${cleanHandle} tem beleza única. Vídeos de bastidores mostrando o nascimento da peça ponto por ponto despertam admiração e valorizam o preço.`,
-      pillars: [
-        { icon: "fa-palette", label: "Valor Cultural", score: 95, critique: "Arte feita à mão em Alagoas com identidade afetiva." },
-        { icon: "fa-camera", label: "Fotografia das Peças", score: 82, critique: "Fotografe as peças em mesas e ambientes decorados da casa." },
-        { icon: "fa-video", label: "Bastidores & Timelapse", score: 88, critique: "Vídeos no formato timelapse do bordado ou corte são muito compartilhados." },
-        { icon: "fa-comments-dollar", label: "Canal de Encomendas", score: 76, critique: "Deixe claro os prazos de produção e opções para presente." }
+      humanVerdict: `${firstName}, cada peça que você cria carrega horas de dedicação, história e a alma da cultura alagoana. As pessoas não compram apenas um objeto de decoração; elas compram o carinho, a exclusividade e a energia das suas mãos. Quando você mostra o processo do fio ao acabamento, o valor da sua arte é reconhecido.`,
+      scoreLabel: "Riqueza Cultural • Valorizar Processo & Encomendas",
+      painPoints: [
+        { flaw: "Não mostrar o tempo real e os materiais nobres utilizados", fix: "Grave vídeos em timelapse mostrando as etapas manuais do início ao fim." },
+        { flaw: "Não ter opções prontas para presentes de última hora", fix: "Crie uma linha de 'Kits para Presente' com embalagens caprichadas e cartão afetivo." },
+        { flaw: "Falta de clareza sobre prazos de confecção e frete", fix: "Explique nos destaques como funcionam as encomendas personalizadas." }
       ],
-      realityChecks: [
-        { flaw: "Não contar a história e horas de dedicação da peça.", fix: "Grave vídeos mostrando o processo manual com som ambiente relaxante." },
-        { flaw: "Não ter opções prontas para presentes.", fix: "Crie kits temáticos de presentes com embalagem especial e cartão." },
-        { flaw: "Não ter fotos da peça em uso real na decoração.", fix: "Mostre a peça compondo um ambiente bonito de sala ou quarto." }
+      bioProposal: [
+        `🧶 Arte autêntica feita à mão com amor e afeto em ${location}`,
+        `🌿 Peças exclusivas para transformar sua casa ou presentear`,
+        `📦 Envio seguro e cuidadoso para todo o Brasil`,
+        `👇 Encomende sua peça exclusiva no WhatsApp:`
       ],
-      suggestedBio: [
-        `🧶 Arte e artesanato autêntico feito à mão com amor em ${location}`,
-        "🌿 Peças exclusivas para decoração, presentes e afeto",
-        "📦 Envio seguro para todo o Nordeste e Brasil",
-        "👇 Encomendas e catálogo no WhatsApp:"
+      recovery7Days: [
+        { day: "Dia 1 (História & Propósito)", action: `Atualize a bio com sua identidade afetiva e o selo de produção local em ${location}.` },
+        { day: "Dia 2 (Destaque 'Como Encomendar')", action: "Explique em 3 passos simples como o cliente escolhe as cores, medidas e confirma o pedido." },
+        { day: "Dia 3 (Reel Sensorial do Processo)", action: "Grave um vídeo aproximado das suas mãos tecendo ou esculpindo com o som natural dos materiais." },
+        { day: "Dia 4 (Mostre a Peça no Ambiente)", action: "Tire uma foto bem decorada da peça na sala ou quarto, valorizando a iluminação da casa." },
+        { day: "Dia 5 (Embalando com Carinho)", action: "Grave o momento de colocar o papel de seda, o bilhete manuscrito e o mimo da encomenda." },
+        { day: "Dia 6 (Depoimento do Cliente)", action: "Mostre a foto que o cliente mandou com a peça colocada na casa dele." },
+        { day: "Dia 7 (Lançamento de Peça Única)", action: "Apresente uma peça única pronta-entrega nos Stories com valor especial para o primeiro que responder." }
       ],
-      reelsScripts: [
-        { objective: "Sensorial / ASMR", duration: "20s", theme: "A Calmaria de Ver uma Peça Nascendo do Zero", hook: "Existe algo muito relaxante em ver uma peça nascendo ponto por ponto...", body: "Áudio focado no som dos materiais com cortes suaves das mãos trabalhando.", cta: "Se você ama peças feitas à mão, deixe seu coração nos comentários!" },
-        { objective: "Bastidores", duration: "30s", theme: "Quanto Tempo Leva para Fazer Esta Peça?", hook: "Muita gente acha que foi feito rápido, mas foram mais de 12 horas de dedicação...", body: "Timelapse acelerado de todas as etapas de produção e acabamento.", cta: "Valorize o artesanato local de Alagoas! Link para encomendas na bio." },
-        { objective: "Presente Afetivo", duration: "25s", theme: "Embalando um Presente Especial", hook: "Procurando um presente único que emociona de verdade?", body: "Mostre o bilhete feito à mão, laço e caixa protetora.", cta: "Encomende a sua pelo WhatsApp!" }
+      reels: [
+        { objective: "Valorização da Arte", duration: "25s", theme: "Quanto Tempo Leva para Fazer uma Peça Dessas?", hook: "Muita gente acha que artesanato é rápido, mas foram 14 horas de dedicação nessa peça...", body: "Timelapse acelerado com cortes artísticos do processo.", cta: "Valorize quem faz com as próprias mãos! Deixe um coração nos comentários ❤️" },
+        { objective: "Presente Perfeito", duration: "20s", theme: "O Presente que Ninguém Mais Vai Dar Igual", hook: "Cansado de dar presentes comuns e repetidos? Olha a exclusividade dessa peça...", body: "Apresentação em 360 graus da peça com foco no acabamento perfeito.", cta: "Encomende a sua no link da bio antes que feche a agenda do mês!" },
+        { objective: "Bastidores ASMR", duration: "18s", theme: "Sons Relaxantes de um Ateliê em Alagoas", hook: "Coloque seus fones de ouvido e relaxe comigo por 15 segundos...", body: "Áudio nítido do corte da tesoura, textura do fio e encaixe das peças.", cta: "Se você ama artesanato, compartilhe com alguém que também ama!" }
       ],
-      salesDirectScript: `Olá, que alegria te ver por aqui! 🌸\nCada peça nossa é feita à mão com muito carinho aqui em Alagoas. Gostaria de ver nosso catálogo de pronta entrega ou tem uma encomenda personalizada em mente?`,
-      shockPlan72h: [
-        "Grave um vídeo timelapse do processo manual da sua peça mais bonita.",
-        "Crie um destaque 'Bastidores' mostrando os materiais selecionados.",
-        "Divulgue a agenda de encomendas do mês nos Stories."
-      ]
+      directScript: `Olá! Que bom te ver por aqui 🌸\nCada peça é feita 100% à mão aqui em ${location}. Temos algumas opções de pronta entrega e também aceitamos encomendas personalizadas. O que você gostaria de criar hoje?`
+    },
+    servicos_geral: {
+      humanVerdict: `${firstName}, seu perfil tem excelente ponto de partida, mas os clientes precisam sentir segurança total de que você é a pessoa certa para resolver a necessidade deles em ${location}. Transforme sua presença em um canal consultivo, onde você educa seu público e demonstra resultados antes mesmo de cobrar.`,
+      scoreLabel: "Presença Ativa • Estruturar Funil de Atendimento",
+      painPoints: [
+        { flaw: "Comunicação genérica sem foco no cliente ideal", fix: "Defina claramente para quem você presta serviços e qual dor você elimina." },
+        { flaw: "Não ter canal direto e fácil de contato", fix: "Adicione link direto para o WhatsApp com mensagem pré-configurada." },
+        { flaw: "Pouca frequência de postagens informativas", fix: "Poste 2 a 3 vezes por semana conteúdos que tirem dúvidas reais dos seus clientes." }
+      ],
+      bioProposal: [
+        `💼 Soluções práticas e atendimento de excelência em ${location}`,
+        `⭐ Dedicação, transparência e resultados comprovados`,
+        `🎓 Qualificação profissional Emprega Mais Alagoas`,
+        `👇 Converse comigo no WhatsApp para um orçamento sem compromisso:`
+      ],
+      recovery7Days: [
+        { day: "Dia 1 (Otimização Completa da Bio)", action: `Adicione ${location} no seu nome de exibição e coloque a bio focada na solução do cliente.` },
+        { day: "Dia 2 (Criação de Destaques de Confiança)", action: "Crie: 'Sobre Mim', 'Serviços', 'Depoimentos' e 'Contatos'." },
+        { day: "Dia 3 (Post de Apresentação)", action: "Publique uma foto sua profissional contando sua trajetória e por que você ama o que faz." },
+        { day: "Dia 4 (Dica de Ouro Gratuita)", action: "Grave um Reel ou faça um carrossel ensinando algo valioso que ajuda seu cliente." },
+        { day: "Dia 5 (Story com Prova de Trabalho)", action: "Mostre o dia a dia, ferramentas e o cuidado no atendimento aos clientes." },
+        { day: "Dia 6 (Perguntas Frequentes)", action: "Abra caixinha de perguntas para esclarecer dúvidas sobre seus prazos e serviços." },
+        { day: "Dia 7 (Oferta da Semana)", action: "Divulgue uma condição especial para os primeiros 3 clientes que fecharem atendimento." }
+      ],
+      reels: [
+        { objective: "Autoridade", duration: "25s", theme: "O que Ninguém te Conta sobre Como Resolver Esse Problema", hook: "Se você mora em Alagoas e passa por isso, pare de cometer esse erro agora...", body: "Explique a solução com clareza e autoridade.", cta: "Gostou da orientação? Salve este post e me siga para mais dicas!" },
+        { objective: "Bastidores", duration: "20s", theme: "Um Dia na Minha Rotina de Atendimento", hook: "Vem comigo acompanhar como é um dia de trabalho focado em entregar o melhor...", body: "Takes dinâmicos do início ao fim da rotina de trabalho.", cta: "Precisa de ajuda com esse serviço? Chame no WhatsApp no link da bio!" },
+        { objective: "Depoimento", duration: "30s", theme: "A Satisfação de Mais um Cliente Atendido", hook: "Olha o resultado desse projeto que finalizamos nesta semana...", body: "Apresente o problema inicial e a solução final entregue com excelência.", cta: "Fale conosco e faça seu orçamento sem compromisso!" }
+      ],
+      directScript: `Olá! Obrigado por interagir com nosso conteúdo 😊\nAtendemos com muito carinho toda a região de ${location}. Como posso te ajudar hoje?`
     }
   };
 
-  const selectedData = database[niche] || database.comercio;
+  const selected = nicheData[category] || nicheData.servicos_geral;
 
   return {
     handle: cleanHandle,
     displayName: studentName,
     location: location,
     liveBio: liveBio,
+    bioAuditStatus: bioAuditStatus,
     profilePic: profilePic,
-    nicheLabel: selectedData.label,
-    score: selectedData.score,
-    scoreLabel: selectedData.scoreLabel,
-    verdictHeadline: selectedData.verdictHeadline,
-    verdictSummary: selectedData.verdictSummary,
-    pillars: selectedData.pillars,
-    realityChecks: selectedData.realityChecks,
-    suggestedBio: selectedData.suggestedBio,
-    reelsScripts: selectedData.reelsScripts,
-    salesDirectScript: selectedData.salesDirectScript,
-    shockPlan72h: selectedData.shockPlan72h
+    nicheLabel: nicheTitle,
+    score: baseScore,
+    scoreLabel: selected.scoreLabel,
+    verdictHeadline: `Diagnóstico Humanizado para ${firstName}`,
+    verdictSummary: selected.humanVerdict,
+    pillars: [
+      { icon: "fa-signature", label: "Clareza & Posicionamento", score: baseScore - 5, critique: bioAuditStatus },
+      { icon: "fa-camera", label: "Estética & Imagem Real", score: baseScore + 4 > 100 ? 96 : baseScore + 4, critique: `A imagem do perfil ${cleanHandle} precisa transmitir autoridade imediata sem ruídos visuais.` },
+      { icon: "fa-video", label: "Retenção de Reels & Vídeos", score: baseScore - 2, critique: "Vídeos com ganchos fortes nos 3 primeiros segundos aumentam o alcance em até 400%." },
+      { icon: "fa-comments-dollar", label: "Conversão no WhatsApp", score: baseScore + 2, critique: `Canal direto para clientes de ${location} com resposta rápida e script empático.` }
+    ],
+    realityChecks: selected.painPoints,
+    suggestedBio: selected.bioProposal,
+    reelsScripts: selected.reels,
+    salesDirectScript: selected.directScript,
+    shockPlan72h: selected.recovery7Days
   };
 }
+
+function buildComprehensiveAuditReport(handle, liveData, student) { return generateEmpatheticAuditEngine(handle, liveData, student); }
