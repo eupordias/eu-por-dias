@@ -11388,6 +11388,44 @@ function quickSelectInstagramAudit(handle) {
   executeLiveInstagramAudit(handle);
 }
 
+
+function switchActiveBioVariation(variationKey) {
+  if (!instagramAuditState.result || !instagramAuditState.result.aiBioVariations) return;
+  const vars = instagramAuditState.result.aiBioVariations;
+  if (vars[variationKey]) {
+    instagramAuditState.result.suggestedBio = vars[variationKey];
+    instagramAuditState.selectedBioVariation = variationKey;
+    renderApp();
+    showToast(`Bio alterada para o estilo ${variationKey.toUpperCase()}!`, 'info');
+  }
+}
+
+function regenerateAIBioCustom() {
+  if (!instagramAuditState.result) return;
+  const res = instagramAuditState.result;
+  const firstName = (res.displayName || res.handle).split(' ')[0];
+  const loc = res.location || 'Alagoas';
+  
+  const hooks = [
+    `✨ Transformando a experiência de clientes em ${loc}`,
+    `🚀 Excelência e dedicação em ${res.nicheTitle || 'serviços'}`,
+    `💎 Soluções exclusivas pensadas especialmente para você em ${loc}`,
+    `🎯 Praticidade, qualidade e atendimento humanizado`
+  ];
+  
+  const randomHook = hooks[Math.floor(Math.random() * hooks.length)];
+  const newBio = [
+    randomHook,
+    `⭐ Atendimento de primeira em ${loc} e região`,
+    `📦 Pronta entrega, encomendas e suporte direto`,
+    `👇 Fale com a equipe no WhatsApp com 1 clique:`
+  ];
+  
+  instagramAuditState.result.suggestedBio = newBio;
+  renderApp();
+  showToast('Nova bio personalizada gerada pela IA!', 'success');
+}
+
 function switchInstagramSubTab(tabName) {
   instagramAuditState.activeSubTab = tabName;
   renderApp();
@@ -11636,31 +11674,102 @@ function renderInstagramAuditTab(container) {
             </div>
           ` : ''}
 
-          <!-- CONTEÚDO DA ABA 2: BIO & DESTAQUES -->
+          <!-- CONTEÚDO DA ABA 2: BIO STUDIO COM IA GENERATIVA -->
           ${subTab === 'bio' ? `
             <div class="space-y-4 fade-in">
               
-              <!-- NOVA BIO RECOMENDADA COM 1-CLIQUE PARA COPIAR -->
-              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-signature text-indigo-600"></i>
-                    <h3 class="text-xs fw-bold text-slate-900 mb-0">Nova Bio Pronta de Alta Conversão</h3>
-                  </div>
-                  <button 
-                    type="button" 
-                    onclick="copyToClipboard('${res.suggestedBio.join('\n')}', 'Bio copiada com sucesso!')" 
-                    class="btn btn-sm btn-primary rounded-pill px-3.5 py-1 text-xs fw-semibold bg-indigo-600 hover:bg-indigo-700 text-white border-0 d-inline-flex align-items-center gap-1.5 shadow-xs"
-                  >
-                    <i class="fa-solid fa-copy"></i> Copiar Bio Pronta
-                  </button>
-                </div>
+              <!-- COMPARATIVO INTELIGENTE: BIO ATUAL VS BIO IA -->
+              <div class="row g-3">
                 
-                <p class="text-xs text-slate-500 mb-0">Fórmula validada de 4 linhas com proposta de valor, diferencial de Alagoas e chamada para ação:</p>
+                <!-- Card 1: Bio Atual Detectada -->
+                <div class="col-12 col-md-5">
+                  <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 h-100 d-flex flex-column justify-content-between space-y-3">
+                    <div>
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge bg-slate-200 text-slate-700 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">
+                          <i class="fa-brands fa-instagram mr-1"></i> Bio Atual no Perfil
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-monospace">${res.liveBio ? (res.liveBio.length + '/150 carac.') : 'Sem texto'}</span>
+                      </div>
+                      <div class="p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 font-monospace leading-relaxed min-h-[90px]">
+                        ${res.liveBio ? `"${res.liveBio}"` : '<em class="text-slate-400">Nenhuma bio pública encontrada ou perfil sem descrição configurada.</em>'}
+                      </div>
+                    </div>
 
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 font-monospace text-xs text-slate-900 space-y-1">
-                  ${res.suggestedBio.map(line => `<div>${line}</div>`).join('')}
+                    <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 space-y-1">
+                      <div class="d-flex align-items-center gap-1.5 fw-bold">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Análise Crítica da IA:
+                      </div>
+                      <div>${res.bioAuditStatus || 'Adicione a sua cidade e chamada clara para o WhatsApp para destravar vendas.'}</div>
+                    </div>
+                  </div>
                 </div>
+
+                <!-- Card 2: Bio de Alta Conversão Gerada pela IA -->
+                <div class="col-12 col-md-7">
+                  <div class="p-4 rounded-2xl bg-white border-2 border-indigo-200 shadow-sm h-100 d-flex flex-column justify-content-between space-y-3">
+                    <div>
+                      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="badge bg-indigo-600 text-white rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-300 mr-1"></i> Gerada por IA
+                          </span>
+                          <span class="text-xs fw-bold text-slate-800">Fórmula de Alta Conversão</span>
+                        </div>
+
+                        <!-- Variações de Estilo da Bio -->
+                        <div class="btn-group btn-group-sm" role="group">
+                          <button 
+                            type="button" 
+                            onclick="switchActiveBioVariation('commercial')" 
+                            class="btn btn-sm ${(instagramAuditState.selectedBioVariation || 'commercial') === 'commercial' ? 'btn-indigo text-white fw-bold' : 'btn-light text-slate-600'} text-[10px] py-0.5 px-2"
+                          >
+                            Comercial
+                          </button>
+                          <button 
+                            type="button" 
+                            onclick="switchActiveBioVariation('authority')" 
+                            class="btn btn-sm ${instagramAuditState.selectedBioVariation === 'authority' ? 'btn-indigo text-white fw-bold' : 'btn-light text-slate-600'} text-[10px] py-0.5 px-2"
+                          >
+                            Autoridade
+                          </button>
+                          <button 
+                            type="button" 
+                            onclick="switchActiveBioVariation('minimalist')" 
+                            class="btn btn-sm ${instagramAuditState.selectedBioVariation === 'minimalist' ? 'btn-indigo text-white fw-bold' : 'btn-light text-slate-600'} text-[10px] py-0.5 px-2"
+                          >
+                            Clean
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Caixa com a Bio Pronta -->
+                      <div class="p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100 font-monospace text-xs text-slate-900 space-y-1">
+                        ${res.suggestedBio.map(line => `<div class="d-flex align-items-start gap-1.5"><span class="text-indigo-600 select-none">•</span><span>${line}</span></div>`).join('')}
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top border-slate-100">
+                      <button 
+                        type="button" 
+                        onclick="regenerateAIBioCustom()" 
+                        class="btn btn-sm btn-light border border-slate-200 text-slate-600 text-xs rounded-xl px-3 py-1.5 d-inline-flex align-items-center gap-1.5 hover:border-indigo-300"
+                        title="Gerar nova sugestão com outro tom"
+                      >
+                        <i class="fa-solid fa-arrows-rotate text-indigo-500"></i> Nova Opção IA
+                      </button>
+
+                      <button 
+                        type="button" 
+                        onclick="copyToClipboard('${res.suggestedBio.join('\n')}', 'Bio pronta copiada para a área de transferência!')" 
+                        class="btn btn-primary rounded-xl px-4 py-1.5 text-xs fw-bold bg-indigo-600 hover:bg-indigo-700 text-white border-0 d-inline-flex align-items-center gap-2 shadow-sm"
+                      >
+                        <i class="fa-solid fa-copy text-amber-300"></i> Copiar Bio Pronta
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
               <!-- ESTRUTURA DOS 5 DESTAQUES -->
@@ -11815,6 +11924,57 @@ async function executeLiveInstagramAudit(handle) {
   instagramAuditState.loading = false;
   renderApp();
   showToast(`Diagnóstico de ${formattedHandle} pronto!`, "success");
+}
+
+
+// ==========================================
+// GERADOR DE BIOS COM INTELIGÊNCIA ARTIFICIAL CONTEXTUAL
+// ==========================================
+function generateAIBios(studentName, location, cleanHandle, liveBio, nicheCategory, businessTitle) {
+  const firstName = (studentName || cleanHandle.replace('@', '')).split(' ')[0];
+  const loc = location || "Alagoas";
+
+  // Analisa se o perfil já tem alguma palavra-chave na bio pública
+  const rawBio = (liveBio || "").toLowerCase();
+  
+  // Extrai especialidade ou foco
+  let specialty = businessTitle;
+  if (rawBio.includes('infantil')) specialty += " Infantil";
+  else if (rawBio.includes('plus size') || rawBio.includes('plussize')) specialty += " Plus Size";
+  else if (rawBio.includes('casamento') || rawBio.includes('noiva')) specialty += " para Noivas & Eventos";
+  else if (rawBio.includes('fitness') || rawBio.includes('treino')) specialty += " Fitness & Saúde";
+  else if (rawBio.includes('artesanal') || rawBio.includes('gourmet')) specialty += " Gourmet & Artesanal";
+
+  // Formato 1: Alta Conversão & Vendas Diretas (Mais Comercial)
+  const option1 = [
+    `📍 ${specialty} com entrega rápida em ${loc}`,
+    `✨ Produtos e serviços selecionados para valorizar você`,
+    `📦 Atendimento rápido • Frete seguro para todo o estado`,
+    `👇 Faça seu pedido ou tire dúvidas no WhatsApp:`
+  ];
+
+  // Formato 2: Autoridade & Posicionamento Pessoal (Personal Branding / Especialista)
+  const option2 = [
+    `💡 Ajudo você a conquistar o melhor resultado com ${specialty.toLowerCase()}`,
+    `⭐ Mais de centenas de clientes atendidos com nota máxima em ${loc}`,
+    `🎓 Formação profissional pelo Programa Emprega Mais Alagoas`,
+    `👇 Toque no link para agendar sua consultoria ou pedido:`
+  ];
+
+  // Formato 3: Minimalista & Direto ao Ponto (Clean & Moderno)
+  const option3 = [
+    `🌿 ${specialty} | ${loc}`,
+    `📦 Encomendas & Atendimento Exclusivo`,
+    `💳 Cartão, Pix e Entrega Facilitada`,
+    `👉 Clique abaixo e fale direto comigo:`
+  ];
+
+  return {
+    commercial: option1,
+    authority: option2,
+    minimalist: option3,
+    activeOption: option1
+  };
 }
 
 function generateEmpatheticAuditEngine(handle, liveData, student) {
@@ -12092,7 +12252,9 @@ function generateEmpatheticAuditEngine(handle, liveData, student) {
       { icon: "fa-comments-dollar", label: "Conversão no WhatsApp", score: baseScore + 2, critique: `Canal direto para clientes de ${location} com resposta rápida e script empático.` }
     ],
     realityChecks: selected.painPoints,
-    suggestedBio: selected.bioProposal,
+    suggestedBio: aiBios.commercial,
+    aiBioVariations: aiBios,
+    nicheTitle: nicheTitle,
     reelsScripts: selected.reels,
     salesDirectScript: selected.directScript,
     shockPlan72h: selected.recovery7Days
