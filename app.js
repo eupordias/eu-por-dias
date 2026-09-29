@@ -11424,37 +11424,41 @@ function renderInstagramAuditTab(container) {
           </div>
         </div>
 
-        <!-- BARRA DE BUSCA CENTRAL AMPLA, ESPAÇOSA E CONFORTÁVEL -->
-        <form onsubmit="handleSingleAuditSubmit(event)" class="w-100" style="max-width: 780px;">
-          <div class="p-2 p-sm-2.5 rounded-2xl border-2 border-indigo-100 bg-white shadow-sm d-flex flex-column sm:flex-row align-items-stretch gap-2.5 transition-all">
-            <div class="position-relative flex-grow-1 d-flex align-items-center">
-              <span class="position-absolute start-0 top-50 translate-middle-y ps-3.5 text-indigo-500 fs-5 pointer-events-none">
-                <i class="fa-brands fa-instagram"></i>
-              </span>
-              <input 
-                type="text" 
-                id="insta-single-input" 
-                required 
-                placeholder="Digite o @ ou link do Instagram (ex: @anabeatriz.mkt ou instagram.com/usuario)..." 
-                value="${instagramAuditState.handle}"
-                class="form-control form-control-lg border-0 bg-transparent text-slate-900 fs-6 fw-semibold ps-5 pe-3 py-3 shadow-none w-100"
-                style="height: 52px;"
-              />
+        <!-- BARRA DE BUSCA COM DIVISÃO EQUILIBRADA (50% INPUT / 50% BOTÃO) -->
+        <form onsubmit="handleSingleAuditSubmit(event)" class="w-100" style="max-width: 860px;">
+          <div class="row g-2 align-items-stretch">
+            <div class="col-12 col-md-6">
+              <div class="position-relative h-100 bg-white rounded-2xl border-2 border-indigo-200 shadow-sm d-flex align-items-center">
+                <span class="position-absolute start-0 top-50 translate-middle-y ps-3.5 text-indigo-600 fs-5 pointer-events-none">
+                  <i class="fa-brands fa-instagram"></i>
+                </span>
+                <input 
+                  type="text" 
+                  id="insta-single-input" 
+                  required 
+                  placeholder="Digite o @ ou link (ex: @anabeatriz.mkt)..." 
+                  value="${instagramAuditState.handle}"
+                  class="form-control form-control-lg border-0 bg-transparent text-slate-900 fs-6 fw-bold ps-5 pe-3 py-3 shadow-none w-100"
+                  style="height: 54px;"
+                />
+              </div>
             </div>
-            <button 
-              type="submit" 
-              ${instagramAuditState.loading ? 'disabled' : ''}
-              class="btn btn-primary px-4 px-sm-5 py-3 rounded-xl fs-6 fw-bold d-inline-flex align-items-center justify-content-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-sm flex-shrink-0"
-              style="min-height: 52px; font-size: 15px;"
-            >
-              ${instagramAuditState.loading ? `
-                <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
-                <span>Lendo Perfil...</span>
-              ` : `
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span>Analisar Perfil</span>
-              `}
-            </button>
+            <div class="col-12 col-md-6">
+              <button 
+                type="submit" 
+                ${instagramAuditState.loading ? 'disabled' : ''}
+                class="btn btn-primary w-100 h-100 px-4 py-3 rounded-2xl fs-6 fw-bold d-flex align-items-center justify-content-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-md transition-all"
+                style="min-height: 54px; font-size: 15px;"
+              >
+                ${instagramAuditState.loading ? `
+                  <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+                  <span>Lendo Metadados do Perfil...</span>
+                ` : `
+                  <i class="fa-solid fa-wand-magic-sparkles text-amber-300 fs-5"></i>
+                  <span>Analisar Perfil &amp; Gerar Raio-X</span>
+                `}
+              </button>
+            </div>
           </div>
         </form>
 
