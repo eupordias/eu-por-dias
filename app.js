@@ -786,7 +786,10 @@ function renderApp() {
     case "prompts":
       renderPromptsTab(contentArea);
       break;
-    default:
+        case "instagram":
+      renderInstagramAuditTab(contentArea);
+      break;
+default:
       renderAboutTab(contentArea);
   }
 
