@@ -11328,7 +11328,7 @@ function deleteCustomPrompt(promptId) {
 
 
 // -------------------------------------------------------------
-// AUDITOR DE INSTAGRAM & FEEDBACK PEDAGÓGICO IA (LEITURA RÁPIDA 1-CLIQUE)
+// AUDITOR DE INSTAGRAM & FEEDBACK PEDAGÓGICO IA (SISTEMA ORGANIZADO EM ABAS)
 // -------------------------------------------------------------
 
 function copyToClipboard(text, successMsg = "Copiado para a área de transferência!") {
@@ -11364,6 +11364,7 @@ let instagramAuditState = {
   handle: "",
   loading: false,
   loadingStep: "",
+  activeSubTab: "diagnostico", // 'diagnostico' | 'bio' | 'reels'
   result: null,
   completedTasks: new Set()
 };
@@ -11387,8 +11388,12 @@ function quickSelectInstagramAudit(handle) {
   executeLiveInstagramAudit(handle);
 }
 
+function switchInstagramSubTab(tabName) {
+  instagramAuditState.activeSubTab = tabName;
+  renderApp();
+}
+
 function renderInstagramAuditTab(container) {
-  // Se houver aluno logado e campo vazio, pré-preenche
   if (!instagramAuditState.handle && AppState.currentUser && AppState.currentUser.role === 'aluno') {
     const student = AppState.students.find(s => s.id === AppState.currentUser.id || (s.cpf && cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf)));
     if (student) {
@@ -11397,97 +11402,94 @@ function renderInstagramAuditTab(container) {
   }
 
   const res = instagramAuditState.result;
+  const subTab = instagramAuditState.activeSubTab || "diagnostico";
 
   container.innerHTML = `
-    <div class="space-y-6 fade-in pb-12">
+    <div class="space-y-5 fade-in pb-12">
       
-      <!-- HERO & CAIXA DE BUSCA SIMPLES (1-CLIQUE) -->
-      <div class="p-6 sm:p-10 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl position-relative overflow-hidden">
-        <div class="position-absolute end-0 top-0 w-96 h-96 bg-gradient-to-br from-rose-500/20 via-purple-500/20 to-transparent rounded-circle blur-3xl pointer-events-none"></div>
-        
-        <div class="position-relative z-10 max-w-2xl mx-auto text-center space-y-3">
-          <span class="badge bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3.5 py-1 rounded-pill text-xs fw-bold d-inline-flex align-items-center gap-1.5">
-            <i class="fa-brands fa-instagram"></i> Scanner &amp; Robô Influencer IA
-          </span>
-          
-          <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white mb-1">
-            Auditoria Crítica de Instagram
-          </h1>
-          
-          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
-            Basta digitar o <strong>@perfil</strong> ou colar o link para o robô ler a página, extrair os dados e gerar um raio-X com parecer de estrategista digital.
-          </p>
-
-          <!-- CAMPO ÚNICO DE ENTRADA -->
-          <form onsubmit="handleSingleAuditSubmit(event)" class="max-w-xl mx-auto">
-            <div class="p-1.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl d-flex flex-column sm:flex-row align-items-center gap-2">
-              <div class="position-relative flex-grow-1 w-100">
-                <span class="position-absolute start-0 top-50 translate-middle-y ps-3.5 text-rose-400 text-sm">
-                  <i class="fa-brands fa-instagram"></i>
-                </span>
-                <input 
-                  type="text" 
-                  id="insta-single-input" 
-                  required 
-                  placeholder="Ex: @seunome ou instagram.com/perfil" 
-                  value="${instagramAuditState.handle}"
-                  class="form-control border-0 bg-transparent text-white placeholder:text-slate-400 text-sm ps-5 py-2.5 shadow-none"
-                  style="color: #ffffff !important;"
-                />
-              </div>
-              <button 
-                type="submit" 
-                ${instagramAuditState.loading ? 'disabled' : ''}
-                class="w-100 sm:w-auto btn btn-primary px-5 py-2.5 rounded-xl text-xs fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm flex-shrink-0"
-                style="background: linear-gradient(135deg, #e11d48, #6366f1); border: none;"
-              >
-                ${instagramAuditState.loading ? `
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Lendo Perfil...
-                ` : `
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> Analisar com IA
-                `}
-              </button>
+      <!-- CABEÇALHO PRINCIPAL LIMPO & ORGANIZADO -->
+      <div class="p-6 sm:p-7 rounded-2xl bg-white border border-slate-200 shadow-sm">
+        <div class="d-flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-4 mb-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 text-white d-flex align-items-center justify-content-center text-lg shadow-sm flex-shrink-0">
+              <i class="fa-brands fa-instagram"></i>
             </div>
-          </form>
-
-          <!-- ATALHOS RÁPIDOS DE ALUNOS DA TURMA (1-CLIQUE) -->
-          <div class="pt-2 d-flex align-items-center justify-content-center gap-1.5 flex-wrap text-xs">
-            <span class="text-slate-400 text-[11px] mr-1">Exemplos rápidos da turma:</span>
-            ${AppState.students.slice(0, 5).map(s => `
-              <button 
-                type="button" 
-                onclick="quickSelectInstagramAudit('${s.socialMedia || ('@' + s.name.toLowerCase().replace(/\s+/g, '.'))}')"
-                class="badge bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 px-2.5 py-1 rounded-pill text-[11px] transition-all cursor-pointer"
-              >
-                ${s.socialMedia || ('@' + s.name.split(' ')[0].toLowerCase())}
-              </button>
-            `).join('')}
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <h1 class="text-base sm:text-lg font-bold text-slate-900 mb-0">Auditor &amp; Scanner de Instagram</h1>
+                <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2 py-0.5 text-[10px] fw-bold">IA Pedagógica</span>
+              </div>
+              <p class="text-xs text-slate-500 mb-0">Digite o @ do perfil para ler os dados e gerar um diagnóstico de posicionamento, bio e roteiros de vendas.</p>
+            </div>
           </div>
+        </div>
 
+        <!-- BARRA DE BUSCA CENTRAL ELEGANTE -->
+        <form onsubmit="handleSingleAuditSubmit(event)" class="max-w-3xl">
+          <div class="p-1.5 rounded-xl border border-slate-200 bg-slate-50 d-flex flex-column sm:flex-row align-items-center gap-2">
+            <div class="position-relative flex-grow-1 w-100">
+              <span class="position-absolute start-0 top-50 translate-middle-y ps-3 text-slate-400 text-xs">
+                <i class="fa-brands fa-instagram"></i>
+              </span>
+              <input 
+                type="text" 
+                id="insta-single-input" 
+                required 
+                placeholder="Digite o @ ou link do Instagram (ex: @anabeatriz.mkt)..." 
+                value="${instagramAuditState.handle}"
+                class="form-control form-control-sm border-0 bg-transparent text-slate-900 text-xs ps-5 py-2 shadow-none"
+              />
+            </div>
+            <button 
+              type="submit" 
+              ${instagramAuditState.loading ? 'disabled' : ''}
+              class="w-100 sm:w-auto btn btn-sm btn-primary px-4 py-2 rounded-lg text-xs fw-semibold d-inline-flex align-items-center justify-content-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-xs flex-shrink-0"
+            >
+              ${instagramAuditState.loading ? `
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Lendo Perfil...
+              ` : `
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Analisar Perfil
+              `}
+            </button>
+          </div>
+        </form>
+
+        <!-- ATALHOS RÁPIDOS DOS ALUNOS DA TURMA -->
+        <div class="pt-3 d-flex align-items-center gap-1.5 flex-wrap text-xs border-top border-slate-100 mt-3">
+          <span class="text-slate-400 text-[11px] mr-1"><i class="fa-solid fa-users text-slate-400 mr-1"></i>Alunos da turma:</span>
+          ${AppState.students.slice(0, 6).map(s => `
+            <button 
+              type="button" 
+              onclick="quickSelectInstagramAudit('${s.socialMedia || ('@' + s.name.toLowerCase().replace(/\s+/g, '.'))}')"
+              class="btn btn-sm btn-light border border-slate-200 hover:border-indigo-300 rounded-pill px-2.5 py-0.5 text-[11px] text-slate-600 font-monospace transition-all"
+            >
+              ${s.socialMedia || ('@' + s.name.split(' ')[0].toLowerCase())}
+            </button>
+          `).join('')}
         </div>
       </div>
 
-      <!-- STATUS DE CARREGAMENTO EM TEMPO REAL -->
+      <!-- STATUS DE CARREGAMENTO -->
       ${instagramAuditState.loading ? `
-        <div class="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm text-center space-y-3 max-w-lg mx-auto fade-in">
-          <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 d-flex align-items-center justify-content-center text-2xl mx-auto">
-            <span class="spinner-border" role="status" aria-hidden="true"></span>
+        <div class="p-8 rounded-2xl bg-white border border-slate-200 text-center space-y-3 max-w-md mx-auto fade-in">
+          <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-xl mx-auto">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           </div>
-          <h4 class="text-sm fw-bold text-slate-900 mb-0">${instagramAuditState.loadingStep || 'Conectando ao Instagram...'}</h4>
-          <p class="text-xs text-slate-500 mb-0">Extraindo metadados públicos e processando matriz de copywriting e engajamento...</p>
+          <h4 class="text-xs fw-bold text-slate-900 mb-0">${instagramAuditState.loadingStep || 'Conectando ao Instagram...'}</h4>
+          <p class="text-[11px] text-slate-500 mb-0">Extraindo metadados públicos e gerando parecer estratégico...</p>
         </div>
       ` : ''}
 
-      <!-- RESULTADO DO DIAGNÓSTICO -->
+      <!-- PAINEL DE RESULTADOS ORGANIZADO -->
       ${res && !instagramAuditState.loading ? `
-        <div class="space-y-4 max-w-5xl mx-auto" id="audit-printable-area">
+        <div class="space-y-4 fade-in" id="audit-printable-area">
           
-          <!-- CARTÃO DO PERFIL LIDO & SCORE GERAL -->
-          <div class="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm d-flex flex-column sm:flex-row align-items-center justify-content-between gap-4">
+          <!-- RESUMO DO PERFIL AUDITADO -->
+          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm d-flex flex-column sm:flex-row align-items-center justify-content-between gap-4">
             
-            <div class="d-flex align-items-center gap-3.5 text-center sm:text-start flex-column sm:flex-row">
-              <div class="w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-tr from-rose-500 to-purple-600 d-flex align-items-center justify-content-center text-white text-xl fw-bold shadow-sm flex-shrink-0">
+            <div class="d-flex align-items-center gap-3 text-center sm:text-start flex-column sm:flex-row">
+              <div class="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-tr from-rose-500 to-indigo-600 d-flex align-items-center justify-content-center text-white text-lg fw-bold shadow-xs flex-shrink-0">
                 ${res.profilePic ? `
                   <img src="${res.profilePic}" alt="${res.handle}" class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                   <div class="hidden w-100 h-100 align-items-center justify-content-center"><i class="fa-brands fa-instagram"></i></div>
@@ -11496,157 +11498,240 @@ function renderInstagramAuditTab(container) {
 
               <div>
                 <div class="d-flex align-items-center justify-content-center sm:justify-content-start gap-2 flex-wrap">
-                  <h2 class="text-lg fw-bold text-slate-900 mb-0">${res.displayName || res.handle}</h2>
-                  <span class="badge bg-slate-100 text-slate-700 border border-slate-200 rounded-pill px-2.5 py-0.5 text-[11px] font-monospace">${res.handle}</span>
-                  <span class="badge bg-rose-50 text-rose-700 border border-rose-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">${res.nicheLabel}</span>
+                  <h2 class="text-sm sm:text-base fw-bold text-slate-900 mb-0">${res.displayName || res.handle}</h2>
+                  <span class="badge bg-slate-100 text-slate-700 border border-slate-200 rounded-pill px-2 py-0.5 text-[10px] font-monospace">${res.handle}</span>
+                  <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2 py-0.5 text-[10px] fw-bold">${res.nicheLabel}</span>
                 </div>
-                <p class="text-xs text-slate-500 mt-1 mb-0">
-                  <span>📍 ${res.location}</span> • <span>🎓 Emprega Mais Alagoas</span>
-                  ${res.liveBio ? `<span class="d-block text-slate-700 mt-1 italic">" ${res.liveBio} "</span>` : ''}
+                <p class="text-xs text-slate-500 mt-0.5 mb-0">
+                  <span><i class="fa-solid fa-location-dot text-slate-400 mr-1 text-[10px]"></i>${res.location}</span> • 
+                  <span>Programa Emprega Mais Alagoas</span>
+                  ${res.liveBio ? `<span class="d-block text-slate-600 mt-1 italic">" ${res.liveBio} "</span>` : ''}
                 </p>
               </div>
             </div>
 
             <div class="d-flex align-items-center gap-3 flex-shrink-0">
-              <div class="text-center p-3 rounded-2xl bg-indigo-50/60 border border-indigo-100 min-w-[120px]">
-                <span class="text-[10px] text-indigo-600 text-uppercase fw-bold d-block">Score Geral</span>
-                <span class="text-2xl font-black text-indigo-700 font-monospace">${res.score}/100</span>
+              <div class="text-center p-2.5 rounded-xl bg-slate-50 border border-slate-200 min-w-[110px]">
+                <span class="text-[9px] text-slate-500 text-uppercase fw-bold d-block">Score Estratégico</span>
+                <span class="text-xl font-black text-indigo-600 font-monospace">${res.score}/100</span>
                 <span class="text-[9px] text-slate-500 d-block">${res.scoreLabel}</span>
               </div>
-              <button onclick="window.print()" class="btn btn-sm btn-outline-secondary rounded-xl px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 no-print" title="Salvar relatório em PDF">
+              <button onclick="window.print()" class="btn btn-sm btn-light border border-slate-200 rounded-lg px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 no-print" title="Salvar relatório em PDF">
                 <i class="fa-solid fa-print"></i> PDF
               </button>
             </div>
 
           </div>
 
-          <!-- VEREDITO DO ROBÔ ESTRATEGISTA -->
-          <div class="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg space-y-2">
-            <span class="badge bg-rose-500 text-white px-2.5 py-0.5 rounded-pill text-[10px] fw-bold text-uppercase">
-              <i class="fa-solid fa-bullhorn mr-1"></i> Parecer do Estrategista
-            </span>
-            <h3 class="text-base font-bold text-white mb-1">${res.verdictHeadline}</h3>
-            <p class="text-xs text-slate-300 leading-relaxed mb-0">${res.verdictSummary}</p>
+          <!-- NAVEGAÇÃO ENTRE AS 3 ABAS DE RESULTADO (SEM POLUIÇÃO) -->
+          <div class="d-flex p-1 rounded-xl bg-slate-100 border border-slate-200 gap-1 no-print">
+            <button 
+              type="button" 
+              onclick="switchInstagramSubTab('diagnostico')" 
+              class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${subTab === 'diagnostico' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+            >
+              <i class="fa-solid fa-chart-simple"></i> 1. Diagnóstico &amp; Raio-X
+            </button>
+
+            <button 
+              type="button" 
+              onclick="switchInstagramSubTab('bio')" 
+              class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${subTab === 'bio' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+            >
+              <i class="fa-solid fa-signature"></i> 2. Bio &amp; Destaques
+            </button>
+
+            <button 
+              type="button" 
+              onclick="switchInstagramSubTab('reels')" 
+              class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${subTab === 'reels' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+            >
+              <i class="fa-solid fa-clapperboard"></i> 3. Roteiros de Reels &amp; Vendas
+            </button>
           </div>
 
-          <!-- 4 PILARES AVALIADOS -->
-          <div class="row g-3">
-            ${res.pillars.map(p => `
-              <div class="col-12 col-sm-6">
-                <div class="p-4 rounded-2xl bg-white border border-slate-200 h-100 space-y-1.5">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <strong class="text-xs text-slate-900"><i class="fa-solid ${p.icon} text-indigo-600 mr-1.5"></i> ${p.label}</strong>
-                    <span class="badge ${p.score >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'} border rounded-pill px-2 py-0.5 text-[10px] font-monospace">${p.score}%</span>
+          <!-- CONTEÚDO DA ABA 1: DIAGNÓSTICO & RAIO-X -->
+          ${subTab === 'diagnostico' ? `
+            <div class="space-y-4 fade-in">
+              
+              <!-- VEREDITO DO ESTRATEGISTA -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+                <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold text-uppercase">
+                  <i class="fa-solid fa-bullhorn mr-1"></i> Parecer do Estrategista
+                </span>
+                <h3 class="text-sm font-bold text-slate-900 mb-1">${res.verdictHeadline}</h3>
+                <p class="text-xs text-slate-600 leading-relaxed mb-0">${res.verdictSummary}</p>
+              </div>
+
+              <!-- 4 PILARES AVALIADOS -->
+              <div class="row g-3">
+                ${res.pillars.map(p => `
+                  <div class="col-12 col-sm-6">
+                    <div class="p-4 rounded-2xl bg-white border border-slate-200 h-100 space-y-1.5">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <strong class="text-xs text-slate-900"><i class="fa-solid ${p.icon} text-indigo-600 mr-1.5"></i> ${p.label}</strong>
+                        <span class="badge ${p.score >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'} border rounded-pill px-2 py-0.5 text-[10px] font-monospace">${p.score}%</span>
+                      </div>
+                      <p class="text-xs text-slate-500 mb-0 leading-relaxed">${p.critique}</p>
+                    </div>
                   </div>
-                  <p class="text-xs text-slate-600 mb-0 leading-relaxed">${p.critique}</p>
+                `).join('')}
+              </div>
+
+              <!-- 3 PONTOS CEGOS / O QUE CORRIGIR -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                  <h3 class="text-xs fw-bold text-slate-900 mb-0">Pontos Críticos para Corrigir no Perfil</h3>
+                </div>
+
+                <div class="space-y-2 pt-1">
+                  ${res.realityChecks.map((check, idx) => `
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+                      <strong class="text-slate-900 d-block">⚠️ Ponto ${idx + 1}: ${check.flaw}</strong>
+                      <p class="text-slate-600 mb-0"><strong>💡 Recomendação:</strong> ${check.fix}</p>
+                    </div>
+                  `).join('')}
                 </div>
               </div>
-            `).join('')}
-          </div>
 
-          <!-- CHOQUE DE REALIDADE (3 ERROS CRÍTICOS IDENTIFICADOS) -->
-          <div class="p-5 rounded-3xl bg-rose-50/60 border border-rose-200 space-y-3">
-            <div class="d-flex align-items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-rose-600 text-white d-flex align-items-center justify-content-center text-xs shadow-xs">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-              </div>
-              <h3 class="text-sm fw-bold text-rose-950 mb-0">Choque de Realidade: O que precisa mudar imediatamente</h3>
-            </div>
-
-            <div class="space-y-2 pt-1">
-              ${res.realityChecks.map((check, idx) => `
-                <div class="p-3 rounded-2xl bg-white border border-rose-100 space-y-1 text-xs">
-                  <strong class="text-rose-900 d-block">❌ Erro ${idx + 1}: ${check.flaw}</strong>
-                  <p class="text-slate-700 mb-0"><strong>💡 Como consertar:</strong> ${check.fix}</p>
+              <!-- PLANO DE 72 HORAS -->
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-bolt text-indigo-600"></i>
+                  <h3 class="text-xs fw-bold text-slate-900 mb-0">Plano de Ação para as Próximas 72 Horas</h3>
                 </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- BIO REESCRITA COM 1-CLIQUE PARA COPIAR -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <div class="d-flex align-items-center gap-2">
-                <i class="fa-solid fa-signature text-indigo-600 text-base"></i>
-                <h3 class="text-sm fw-bold text-slate-900 mb-0">Nova Bio Pronta de Alta Conversão</h3>
+                
+                <div class="space-y-2">
+                  ${res.shockPlan72h.map((step, idx) => `
+                    <div class="p-3 rounded-xl bg-white border border-slate-200 d-flex align-items-start gap-2.5 text-xs text-slate-700">
+                      <span class="w-5 h-5 rounded-circle bg-indigo-600 text-white d-flex align-items-center justify-content-center text-[10px] fw-bold flex-shrink-0 mt-0.5">${idx + 1}</span>
+                      <span>${step}</span>
+                    </div>
+                  `).join('')}
+                </div>
               </div>
-              <button 
-                type="button" 
-                onclick="copyToClipboard('${res.suggestedBio.join('\n')}', 'Bio copiada com sucesso!')" 
-                class="btn btn-sm btn-light border border-slate-200 rounded-pill px-3.5 py-1 text-xs fw-semibold text-slate-700 d-inline-flex align-items-center gap-1.5 shadow-xs"
-              >
-                <i class="fa-solid fa-copy"></i> Copiar Bio Pronta
-              </button>
-            </div>
-            
-            <p class="text-xs text-slate-600">Copie e cole direto no seu perfil do Instagram:</p>
 
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 font-monospace text-xs text-slate-800 space-y-1">
-              ${res.suggestedBio.map(line => `<div>${line}</div>`).join('')}
             </div>
-          </div>
+          ` : ''}
 
-          <!-- 3 ROTEIROS DE REELS -->
-          <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="fa-solid fa-clapperboard text-purple-600 text-base"></i>
-              <h3 class="text-sm fw-bold text-slate-900 mb-0">3 Roteiros Prontos de Reels (Palavra por Palavra)</h3>
-            </div>
-
-            <div class="space-y-3">
-              ${res.reelsScripts.map((reel, idx) => `
-                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <span class="badge bg-purple-100 text-purple-800 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">Vídeo ${idx + 1} • ${reel.objective}</span>
-                    <span class="text-[10px] text-slate-400 font-monospace">${reel.duration}</span>
+          <!-- CONTEÚDO DA ABA 2: BIO & DESTAQUES -->
+          ${subTab === 'bio' ? `
+            <div class="space-y-4 fade-in">
+              
+              <!-- NOVA BIO RECOMENDADA COM 1-CLIQUE PARA COPIAR -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-signature text-indigo-600"></i>
+                    <h3 class="text-xs fw-bold text-slate-900 mb-0">Nova Bio Pronta de Alta Conversão</h3>
                   </div>
-                  <strong class="text-slate-900 d-block font-semibold">${reel.theme}</strong>
-                  <div class="p-3 rounded-xl bg-white border border-slate-200 space-y-1 text-slate-700">
-                    <div><strong class="text-rose-600">🎯 Gancho (0-3s):</strong> "${reel.hook}"</div>
-                    <div><strong class="text-indigo-600">🎬 Desenvolvimento:</strong> ${reel.body}</div>
-                    <div><strong class="text-emerald-600">📣 CTA:</strong> "${reel.cta}"</div>
+                  <button 
+                    type="button" 
+                    onclick="copyToClipboard('${res.suggestedBio.join('\n')}', 'Bio copiada com sucesso!')" 
+                    class="btn btn-sm btn-primary rounded-pill px-3.5 py-1 text-xs fw-semibold bg-indigo-600 hover:bg-indigo-700 text-white border-0 d-inline-flex align-items-center gap-1.5 shadow-xs"
+                  >
+                    <i class="fa-solid fa-copy"></i> Copiar Bio Pronta
+                  </button>
+                </div>
+                
+                <p class="text-xs text-slate-500 mb-0">Fórmula validada de 4 linhas com proposta de valor, diferencial de Alagoas e chamada para ação:</p>
+
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 font-monospace text-xs text-slate-900 space-y-1">
+                  ${res.suggestedBio.map(line => `<div>${line}</div>`).join('')}
+                </div>
+              </div>
+
+              <!-- ESTRUTURA DOS 5 DESTAQUES -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-circle-dot text-rose-500"></i>
+                  <h3 class="text-xs fw-bold text-slate-900 mb-0">Estrutura de Destaques (Highlights) Essenciais</h3>
+                </div>
+                <p class="text-xs text-slate-500 mb-0">Organize seus destaques nessa ordem para o visitante entender seu trabalho em 10 segundos:</p>
+
+                <div class="row g-2 pt-1">
+                  <div class="col-12 col-sm-6">
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <strong class="text-xs text-slate-900">📍 1. Como Comprar / Atendimento</strong>
+                      <p class="text-[11px] text-slate-500 mb-0">Passo a passo de como fazer pedidos, formas de pagamento e frete.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <strong class="text-xs text-slate-900">⭐ 2. Depoimentos / Clientes</strong>
+                      <p class="text-[11px] text-slate-500 mb-0">Prints reais de clientes elogiando a pontualidade e qualidade.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <strong class="text-xs text-slate-900">📦 3. Catálogo / Novidades</strong>
+                      <p class="text-[11px] text-slate-500 mb-0">Fotos e vídeos dos produtos e serviços mais procurados.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <strong class="text-xs text-slate-900">❓ 4. Dúvidas Frequentes</strong>
+                      <p class="text-[11px] text-slate-500 mb-0">Prazos de entrega, trocas e garantias.</p>
+                    </div>
                   </div>
                 </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- SCRIPT PARA FECHAR VENDAS NO DIRECT -->
-          <div class="p-5 rounded-3xl bg-emerald-50/60 border border-emerald-200 space-y-3">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <div class="d-flex align-items-center gap-2">
-                <i class="fa-solid fa-comments-dollar text-emerald-600 text-base"></i>
-                <h3 class="text-sm fw-bold text-emerald-950 mb-0">Script de Direct para Fechar Vendas no WhatsApp</h3>
               </div>
-              <button 
-                type="button" 
-                onclick="copyToClipboard('${res.salesDirectScript.replace(/'/g, "\\'")}', 'Script de Direct copiado!')" 
-                class="btn btn-sm btn-light border border-emerald-300 rounded-pill px-3 py-1 text-xs fw-semibold text-emerald-800 d-inline-flex align-items-center gap-1.5"
-              >
-                <i class="fa-solid fa-copy"></i> Copiar Script
-              </button>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 text-xs text-slate-800 font-monospace leading-relaxed">
-              ${res.salesDirectScript}
-            </div>
-          </div>
 
-          <!-- PLANO DE CHOQUE DE 72 HORAS -->
-          <div class="p-5 rounded-3xl bg-indigo-50/60 border border-indigo-200 space-y-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="fa-solid fa-bolt text-indigo-600 text-base"></i>
-              <h3 class="text-sm fw-bold text-indigo-950 mb-0">Plano de Choque de 72 Horas (3 Mudanças Urgentes)</h3>
             </div>
-            
-            <div class="space-y-2">
-              ${res.shockPlan72h.map((step, idx) => `
-                <div class="p-3 rounded-2xl bg-white border border-indigo-100 d-flex align-items-start gap-2.5 text-xs text-slate-800">
-                  <span class="w-5 h-5 rounded-circle bg-indigo-600 text-white d-flex align-items-center justify-content-center text-[10px] fw-bold flex-shrink-0 mt-0.5">${idx + 1}</span>
-                  <span>${step}</span>
+          ` : ''}
+
+          <!-- CONTEÚDO DA ABA 3: ROTEIROS DE REELS & VENDAS -->
+          ${subTab === 'reels' ? `
+            <div class="space-y-4 fade-in">
+              
+              <!-- 3 ROTEIROS DE REELS -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-clapperboard text-indigo-600"></i>
+                  <h3 class="text-xs fw-bold text-slate-900 mb-0">3 Roteiros Prontos de Reels (Palavra por Palavra)</h3>
                 </div>
-              `).join('')}
+
+                <div class="space-y-3 pt-1">
+                  ${res.reelsScripts.map((reel, idx) => `
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="badge bg-indigo-100 text-indigo-800 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">Vídeo ${idx + 1} • ${reel.objective}</span>
+                        <span class="text-[10px] text-slate-400 font-monospace">${reel.duration}</span>
+                      </div>
+                      <strong class="text-slate-900 d-block font-semibold">${reel.theme}</strong>
+                      <div class="p-3 rounded-lg bg-white border border-slate-200 space-y-1 text-slate-700">
+                        <div><strong class="text-rose-600">🎯 Gancho Inicial (0-3s):</strong> "${reel.hook}"</div>
+                        <div><strong class="text-indigo-600">🎬 Desenvolvimento:</strong> ${reel.body}</div>
+                        <div><strong class="text-emerald-600">📣 Chamada para Ação:</strong> "${reel.cta}"</div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- SCRIPT PARA FECHAR VENDAS NO DIRECT -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-comments-dollar text-emerald-600"></i>
+                    <h3 class="text-xs fw-bold text-slate-900 mb-0">Script de Direct para Fechar Vendas no WhatsApp</h3>
+                  </div>
+                  <button 
+                    type="button" 
+                    onclick="copyToClipboard('${res.salesDirectScript.replace(/'/g, "\\'")}', 'Script de Direct copiado!')" 
+                    class="btn btn-sm btn-light border border-slate-200 rounded-pill px-3 py-1 text-xs fw-semibold text-slate-700 d-inline-flex align-items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-copy"></i> Copiar Script
+                  </button>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-monospace leading-relaxed">
+                  ${res.salesDirectScript}
+                </div>
+              </div>
+
             </div>
-          </div>
+          ` : ''}
 
         </div>
       ` : ''}
@@ -11672,15 +11757,14 @@ async function executeLiveInstagramAudit(handle) {
   
   instagramAuditState.handle = formattedHandle;
   instagramAuditState.loading = true;
-  instagramAuditState.loadingStep = "Conectando ao Instagram via OpenGraph Scanner...";
+  instagramAuditState.loadingStep = "Conectando e lendo metadados do Instagram...";
   renderApp();
 
   let liveData = null;
 
-  // 1. Tenta extrair metadados públicos via API OpenGraph / Microlink
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
     const response = await fetch(`https://api.microlink.io?url=https://instagram.com/${encodeURIComponent(cleanHandle)}`, {
       signal: controller.signal
     });
@@ -11697,47 +11781,42 @@ async function executeLiveInstagramAudit(handle) {
       }
     }
   } catch (err) {
-    console.log("Microlink fetch fallback to local intelligence");
+    console.log("Scanner fallback to student database");
   }
 
-  // 2. Cruze com a base de alunos cadastrados
   const student = AppState.students.find(s => {
     const sName = (s.name || "").toLowerCase().replace(/\s+/g, '.');
     const sInsta = (s.socialMedia || "").toLowerCase().replace(/^@/, '');
     return sInsta === cleanHandle.toLowerCase() || sName === cleanHandle.toLowerCase() || (s.id && s.id.toLowerCase() === cleanHandle.toLowerCase());
   });
 
-  // 3. Monta o diagnóstico analítico com inteligência de influenciador
   instagramAuditState.result = buildComprehensiveAuditReport(formattedHandle, liveData, student);
   instagramAuditState.loading = false;
   renderApp();
-  showToast(`Diagnóstico de ${formattedHandle} concluído!`, "success");
+  showToast(`Diagnóstico de ${formattedHandle} pronto!`, "success");
 }
 
 function buildComprehensiveAuditReport(handle, liveData, student) {
   const cleanHandle = handle.startsWith('@') ? handle : ('@' + handle);
   const location = student?.unitCity || student?.polo || "Alagoas";
   const studentName = student?.name || liveData?.title || cleanHandle.replace('@', '');
-  const challenges = student?.challenges || "";
   const liveBio = liveData?.description || "";
   const profilePic = liveData?.image || student?.photoUrl || null;
 
-  // Detecção de nicho automática baseada em profissão ou nome
   let niche = "comercio";
   const prof = ((student?.profession || "") + " " + liveBio + " " + cleanHandle).toLowerCase();
   if (prof.includes('moda') || prof.includes('vestu') || prof.includes('look') || prof.includes('brech')) niche = "moda";
   else if (prof.includes('foto') || prof.includes('design') || prof.includes('ti') || prof.includes('mkt') || prof.includes('social media')) niche = "servicos";
   else if (prof.includes('arte') || prof.includes('artesan') || prof.includes('croch')) niche = "artesanato";
   else if (prof.includes('gastro') || prof.includes('comida') || prof.includes('doce') || prof.includes('pizza') || prof.includes('bolo')) niche = "gastronomia";
-  else if (prof.includes('beleza') || prof.includes('cabelo') || prof.includes('unha') || prof.includes('barber')) niche = "beleza";
 
   const database = {
     comercio: {
       label: "Comércio Local & Varejo",
-      score: 82,
+      score: 84,
       scoreLabel: "Potencial Alto • Falta Funil",
       verdictHeadline: "Perfil Atrai Curiosos, mas Falta Clareza para Fechar no WhatsApp",
-      verdictSummary: `A análise de ${cleanHandle} indica boa intenção visual, mas os visitantes têm atrito para saber se você entrega na cidade deles (${location}) e como comprar rapidamente.`,
+      verdictSummary: `A análise de ${cleanHandle} indica boa presença visual, mas os visitantes têm atrito para saber rapidamente se você entrega na cidade deles (${location}) e como fazer pedidos imediatos.`,
       pillars: [
         { icon: "fa-signature", label: "Clareza na Bio", score: 75, critique: "A bio precisa destacar a cidade e o link direto para catálogo em 2 segundos." },
         { icon: "fa-circle-dot", label: "Destaques & Prova", score: 70, critique: "Faltam prints de clientes satisfeitos e regras de entrega em Alagoas." },
@@ -11745,7 +11824,7 @@ function buildComprehensiveAuditReport(handle, liveData, student) {
         { icon: "fa-comments-dollar", label: "Funil no Direct", score: 78, critique: "Tenha script de 2 mensagens para converter quem pergunta preço no direct." }
       ],
       realityChecks: [
-        { flaw: "Não ter a cidade no campo Nome do perfil.", fix: `Edite seu Nome para: '${studentName} | ${location}' para aparecer nas buscas.` },
+        { flaw: "Não ter a cidade no campo Nome do perfil.", fix: `Edite seu Nome para: '${studentName} | ${location}' para ser encontrado nas buscas.` },
         { flaw: "Postar nos Stories sem preço visível.", fix: "Sempre coloque o valor com sticker de link para o WhatsApp." },
         { flaw: "Demora para responder no direct.", fix: "Configure respostas rápidas no Instagram para responder em segundos." }
       ],
