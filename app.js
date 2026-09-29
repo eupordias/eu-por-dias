@@ -11328,7 +11328,7 @@ function deleteCustomPrompt(promptId) {
 
 
 // -------------------------------------------------------------
-// AUDITOR DE INSTAGRAM & FEEDBACK PEDAGÓGICO IA (CRUZAMENTO 360°)
+// AUDITOR DE INSTAGRAM & FEEDBACK PEDAGÓGICO IA (ROBÔ ESTRATEGISTA & INFLUENCER)
 // -------------------------------------------------------------
 
 function copyToClipboard(text, successMsg = "Copiado para a área de transferência!") {
@@ -11366,6 +11366,8 @@ let instagramAuditState = {
   niche: "comercio",
   goal: "vendas",
   bio: "",
+  feedImagePreview: null,
+  robotTone: "estrategista", // 'estrategista' | 'influencer' | 'mentor'
   loading: false,
   result: null,
   completedTasks: new Set()
@@ -11379,7 +11381,6 @@ function runInstagramAuditForStudent(studentIdOrHandle, niche = 'comercio') {
     instagramAuditState.handle = foundStudent.socialMedia || ('@' + foundStudent.name.toLowerCase().replace(/\s+/g, '.'));
     instagramAuditState.bio = foundStudent.challenges ? `Profissão: ${foundStudent.profession || ''}. Desafios: ${foundStudent.challenges}` : '';
     
-    // Auto-detect niche
     const prof = (foundStudent.profession || "").toLowerCase();
     if (prof.includes('moda') || prof.includes('vestuário') || prof.includes('estilo')) instagramAuditState.niche = 'moda';
     else if (prof.includes('foto') || prof.includes('design') || prof.includes('ti') || prof.includes('social media')) instagramAuditState.niche = 'servicos';
@@ -11424,8 +11425,25 @@ function handleStudentSelectForAudit(studentId) {
   renderApp();
 }
 
+function handleFeedImageUpload(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    instagramAuditState.feedImagePreview = e.target.result;
+    renderApp();
+    showToast("Print do perfil anexado! O robô analisará a harmonia visual.", "info");
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeFeedImage() {
+  instagramAuditState.feedImagePreview = null;
+  renderApp();
+}
+
 function renderInstagramAuditTab(container) {
-  // Se houver aluno logado e nada selecionado, pré-seleciona ele
   if (!instagramAuditState.selectedStudentId && AppState.currentUser && AppState.currentUser.role === 'aluno') {
     const studentObj = AppState.students.find(s => s.id === AppState.currentUser.id || (s.cpf && cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf)));
     if (studentObj) {
@@ -11443,13 +11461,18 @@ function renderInstagramAuditTab(container) {
       <!-- HERO BANNER -->
       <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl position-relative overflow-hidden">
         <div class="position-absolute end-0 top-0 w-96 h-96 bg-gradient-to-br from-rose-500/15 via-purple-500/20 to-transparent rounded-circle blur-3xl pointer-events-none"></div>
-        <div class="position-relative z-10 max-w-2xl space-y-2.5">
-          <span class="badge bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1 rounded-pill text-xs fw-bold d-inline-flex align-items-center gap-1.5">
-            <i class="fa-brands fa-instagram"></i> Inteligência Pedagógica &amp; Cruzamento 360°
-          </span>
-          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-1">Auditor de Perfil do Instagram com IA</h1>
+        <div class="position-relative z-10 max-w-3xl space-y-2.5">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1 rounded-pill text-xs fw-bold d-inline-flex align-items-center gap-1.5">
+              <i class="fa-solid fa-robot"></i> Robô Estrategista &amp; Influencer IA
+            </span>
+            <span class="badge bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-1 rounded-pill text-xs fw-bold">
+              Leitura Crítica &amp; Choque de Realidade
+            </span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-1">Auditor Crítico de Instagram • Parecer de Influenciador</h1>
           <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-0">
-            Cruze o perfil do Instagram com o histórico pedagógico, desafios relatados e objetivos de carreira dos alunos do <strong>Emprega Mais Alagoas</strong>.
+            Um robô avaliador com visão de <strong>Top Creator &amp; Estrategista Digital</strong> que lê o perfil, cruza o histórico do aluno e entrega um raio-X cirúrgico: o que está amador, por que o algoritmo trava o alcance e o roteiro exato para monetizar.
           </p>
         </div>
       </div>
@@ -11463,11 +11486,11 @@ function renderInstagramAuditTab(container) {
             <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100">
               <div class="d-flex align-items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-purple-600 text-white d-flex align-items-center justify-content-center text-sm shadow-xs">
-                  <i class="fa-brands fa-instagram"></i>
+                  <i class="fa-solid fa-satellite-dish"></i>
                 </div>
                 <div>
-                  <h3 class="fw-bold text-sm text-slate-900 mb-0">Configurar Diagnóstico</h3>
-                  <span class="text-[11px] text-slate-500">Selecione o aluno ou digite o perfil</span>
+                  <h3 class="fw-bold text-sm text-slate-900 mb-0">Parâmetros do Robô</h3>
+                  <span class="text-[11px] text-slate-500">Dados do perfil &amp; modo de análise</span>
                 </div>
               </div>
             </div>
@@ -11512,7 +11535,7 @@ function renderInstagramAuditTab(container) {
               </div>
             ` : ''}
 
-            <form onsubmit="handleInstagramAuditSubmit(event)" class="space-y-3">
+            <form onsubmit="handleInstagramAuditSubmit(event)" class="space-y-3.5">
               
               <div class="space-y-1">
                 <label class="d-block text-xs fw-semibold text-slate-700">Link ou @ do Instagram</label>
@@ -11531,9 +11554,19 @@ function renderInstagramAuditTab(container) {
                 </div>
               </div>
 
+              <!-- PERSONALIDADE DO ROBÔ AVALIADOR -->
+              <div class="space-y-1">
+                <label class="d-block text-xs fw-semibold text-slate-700">Personalidade do Robô Avaliador</label>
+                <select id="insta-robot-tone-select" class="form-select text-xs py-2 rounded-xl border border-slate-200">
+                  <option value="estrategista" ${instagramAuditState.robotTone === 'estrategista' ? 'selected' : ''}>🎯 Estrategista Sênior (Crítico, Direto &amp; Focado em Vendas)</option>
+                  <option value="influencer" ${instagramAuditState.robotTone === 'influencer' ? 'selected' : ''}>🔥 Top Influencer (Foco em Viralização, Reels &amp; Estética)</option>
+                  <option value="mentor" ${instagramAuditState.robotTone === 'mentor' ? 'selected' : ''}>🎓 Mentor Pedagógico (Didático, Passo a Passo &amp; Construtivo)</option>
+                </select>
+              </div>
+
               <div class="space-y-1">
                 <label class="d-block text-xs fw-semibold text-slate-700">Nicho / Segmento</label>
-                <select id="insta-niche-select" class="form-select text-xs py-2 rounded-xl border border-slate-200">
+                <select id="insta-niche-select" class="form-select text-xs py-2.5 rounded-xl border border-slate-200">
                   <option value="comercio" ${instagramAuditState.niche === 'comercio' ? 'selected' : ''}>Comércio Local, Loja &amp; Varejo</option>
                   <option value="moda" ${instagramAuditState.niche === 'moda' ? 'selected' : ''}>Moda, Vestuário &amp; Brechó</option>
                   <option value="gastronomia" ${instagramAuditState.niche === 'gastronomia' ? 'selected' : ''}>Gastronomia, Doceria &amp; Delivery</option>
@@ -11545,8 +11578,8 @@ function renderInstagramAuditTab(container) {
               </div>
 
               <div class="space-y-1">
-                <label class="d-block text-xs fw-semibold text-slate-700">Objetivo Principal do Aluno</label>
-                <select id="insta-goal-select" class="form-select text-xs py-2 rounded-xl border border-slate-200">
+                <label class="d-block text-xs fw-semibold text-slate-700">Objetivo Principal</label>
+                <select id="insta-goal-select" class="form-select text-xs py-2.5 rounded-xl border border-slate-200">
                   <option value="vendas" ${instagramAuditState.goal === 'vendas' ? 'selected' : ''}>Atrair clientes e vender pelo WhatsApp / Direct</option>
                   <option value="engajamento" ${instagramAuditState.goal === 'engajamento' ? 'selected' : ''}>Aumentar alcance e engajamento orgânico</option>
                   <option value="autoridade" ${instagramAuditState.goal === 'autoridade' ? 'selected' : ''}>Construir autoridade e posicionamento profissional</option>
@@ -11554,12 +11587,40 @@ function renderInstagramAuditTab(container) {
                 </select>
               </div>
 
+              <!-- UPLOAD DE PRINT DO FEED (OPCIONAL) -->
+              <div class="space-y-1">
+                <label class="d-block text-xs fw-semibold text-slate-700 d-flex align-items-center justify-content-between">
+                  <span>📸 Print do Perfil / Feed (Opcional)</span>
+                  <span class="text-[10px] text-slate-400">Para análise estética</span>
+                </label>
+                
+                ${instagramAuditState.feedImagePreview ? `
+                  <div class="position-relative rounded-2xl overflow-hidden border border-slate-200 p-2 bg-slate-50 d-flex align-items-center gap-2">
+                    <img src="${instagramAuditState.feedImagePreview}" alt="Print do Feed" class="w-12 h-12 rounded-xl object-fit-cover shadow-xs" />
+                    <div class="flex-grow-1 overflow-hidden">
+                      <strong class="text-xs text-slate-800 d-block text-truncate">Print anexado com sucesso</strong>
+                      <span class="text-[10px] text-emerald-600"><i class="fa-solid fa-check mr-1"></i> Pronto para análise visual</span>
+                    </div>
+                    <button type="button" onclick="removeFeedImage()" class="btn btn-sm btn-light p-1 text-slate-400 hover:text-rose-600 rounded-lg" title="Remover imagem">
+                      <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                  </div>
+                ` : `
+                  <label class="d-flex flex-column align-items-center justify-content-center p-3 rounded-2xl border border-dashed border-slate-300 hover:border-indigo-400 bg-slate-50/60 hover:bg-indigo-50/30 transition-all cursor-pointer text-center">
+                    <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-base mb-1"></i>
+                    <span class="text-xs text-slate-600 fw-semibold">Clique para subir print do perfil</span>
+                    <span class="text-[10px] text-slate-400">PNG ou JPG (ou tire um print do celular)</span>
+                    <input type="file" accept="image/*" class="d-none" onchange="handleFeedImageUpload(event)" />
+                  </label>
+                `}
+              </div>
+
               <div class="space-y-1">
                 <label class="d-block text-xs fw-semibold text-slate-700">Bio Atual ou Proposta (Opcional)</label>
                 <textarea 
                   id="insta-bio-input" 
                   rows="2" 
-                  placeholder="Cole o texto da bio atual ou deixe em branco para a IA criar uma..."
+                  placeholder="Cole o texto da bio atual ou deixe em branco para o robô sugerir..."
                   class="form-control text-xs rounded-xl border border-slate-200 p-2"
                 >${instagramAuditState.bio}</textarea>
               </div>
@@ -11572,9 +11633,9 @@ function renderInstagramAuditTab(container) {
               >
                 ${instagramAuditState.loading ? `
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Processando Cruzamento Pedagógico...
+                  Robô Lendo Perfil &amp; Analisando Métricas...
                 ` : `
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> Executar Diagnóstico Pedagógico
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Parecer do Robô Influencer
                 `}
               </button>
 
@@ -11587,47 +11648,81 @@ function renderInstagramAuditTab(container) {
           ${res ? `
             <div class="space-y-4" id="audit-printable-area">
               
-              <!-- SCORE E CABEÇALHO DO DIAGNÓSTICO -->
-              <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm d-flex flex-column sm:flex-row align-items-center justify-content-between gap-4">
-                <div class="space-y-1 text-center sm:text-start">
-                  <div class="d-flex align-items-center justify-content-center sm:justify-content-start gap-2 flex-wrap">
-                    <h2 class="text-lg fw-bold text-slate-900 mb-0">${res.handle}</h2>
-                    <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">${res.nicheLabel}</span>
-                    ${res.studentName ? `<span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold"><i class="fa-solid fa-user-graduate mr-1"></i> ${res.studentName}</span>` : ''}
+              <!-- VEREDITO DO ROBÔ INFLUENCER -->
+              <div class="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl position-relative overflow-hidden">
+                <div class="d-flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-4 position-relative z-10">
+                  <div class="space-y-1.5">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="badge bg-rose-500 text-white px-2.5 py-0.5 rounded-pill text-[10px] fw-bold text-uppercase">
+                        <i class="fa-solid fa-bullhorn mr-1"></i> ${res.toneTitle}
+                      </span>
+                      <strong class="text-sm text-slate-200 font-monospace">${res.handle}</strong>
+                    </div>
+                    <h2 class="text-base sm:text-lg font-bold text-white mb-0">${res.verdictHeadline}</h2>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-0">${res.verdictSummary}</p>
                   </div>
-                  <p class="text-xs text-slate-500 mb-0">Avaliação alinhada aos módulos do Programa Emprega Mais Alagoas</p>
-                </div>
 
-                <div class="d-flex align-items-center gap-3">
-                  <div class="text-center p-3 rounded-2xl bg-indigo-50/50 border border-indigo-100 min-w-[120px]">
-                    <span class="text-[10px] text-indigo-600 text-uppercase fw-bold d-block">Score Estratégico</span>
-                    <span class="text-2xl font-black text-indigo-700 font-monospace">${res.score}/100</span>
+                  <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                    <div class="text-center p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 min-w-[110px]">
+                      <span class="text-[9px] text-slate-300 text-uppercase fw-bold d-block">Score Crítico</span>
+                      <span class="text-2xl font-black text-rose-400 font-monospace">${res.score}/100</span>
+                      <span class="text-[9px] text-slate-400 d-block">${res.scoreLabel}</span>
+                    </div>
+                    <button onclick="window.print()" class="btn btn-sm btn-light rounded-xl px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 no-print" title="Salvar relatório em PDF">
+                      <i class="fa-solid fa-print"></i> PDF
+                    </button>
                   </div>
-                  <button onclick="window.print()" class="btn btn-sm btn-outline-secondary rounded-xl px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 no-print" title="Salvar relatório em PDF">
-                    <i class="fa-solid fa-print"></i> PDF
-                  </button>
                 </div>
               </div>
 
-              <!-- PILARES DE PERFORMANCE -->
+              <!-- 4 PILARES DE AUDITORIA CRÍTICA -->
               <div class="row g-3">
                 ${res.pillars.map(p => `
-                  <div class="col-6 col-sm-3">
-                    <div class="p-3 rounded-2xl bg-white border border-slate-200 text-center space-y-1">
-                      <span class="text-[10px] text-slate-400 font-bold d-block">${p.label}</span>
-                      <strong class="text-sm font-bold ${p.score >= 85 ? 'text-emerald-600' : p.score >= 70 ? 'text-indigo-600' : 'text-amber-600'} font-monospace">${p.score}%</strong>
-                      <span class="text-[9px] text-slate-500 d-block">${p.status}</span>
+                  <div class="col-12 col-sm-6">
+                    <div class="p-4 rounded-2xl bg-white border border-slate-200 h-100 space-y-2">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="w-6 h-6 rounded-circle ${p.score >= 80 ? 'bg-emerald-100 text-emerald-600' : p.score >= 65 ? 'bg-indigo-100 text-indigo-600' : 'bg-rose-100 text-rose-600'} d-flex align-items-center justify-content-center text-xs">
+                            <i class="fa-solid ${p.icon}"></i>
+                          </span>
+                          <strong class="text-xs text-slate-900">${p.label}</strong>
+                        </div>
+                        <span class="badge ${p.score >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : p.score >= 65 ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-rose-50 text-rose-700 border-rose-200'} border rounded-pill px-2 py-0.5 text-[10px] font-monospace">${p.score}%</span>
+                      </div>
+                      <p class="text-xs text-slate-600 mb-0 leading-relaxed">${p.critique}</p>
                     </div>
                   </div>
                 `).join('')}
               </div>
 
-              <!-- SOLUÇÃO DO DESAFIO DO ALUNO -->
+              <!-- CHOQUE DE REALIDADE (O QUE ESTÁ AMADOR E PRECISA PARAR) -->
+              <div class="p-5 rounded-3xl bg-rose-50/50 border border-rose-200/80 space-y-3">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="w-8 h-8 rounded-xl bg-rose-600 text-white d-flex align-items-center justify-content-center text-sm shadow-xs">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm fw-bold text-rose-950 mb-0">Choque de Realidade: 3 Erros Críticos no Perfil</h3>
+                    <span class="text-[11px] text-rose-700">Pontos cegos que queimam autoridade e espantam clientes</span>
+                  </div>
+                </div>
+
+                <div class="space-y-2 pt-1">
+                  ${res.realityChecks.map((check, idx) => `
+                    <div class="p-3 rounded-2xl bg-white border border-rose-100 space-y-1">
+                      <strong class="text-xs text-rose-900 d-block">❌ Erro ${idx + 1}: ${check.flaw}</strong>
+                      <p class="text-xs text-slate-700 mb-0"><strong>💡 Como consertar:</strong> ${check.fix}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- SOLUÇÃO PEDAGÓGICA PARA O DESAFIO DECLARADO -->
               ${res.challengePrescription ? `
                 <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-xs space-y-2">
                   <div class="d-flex align-items-center gap-2 text-amber-900 fw-bold">
                     <i class="fa-solid fa-lightbulb text-amber-600"></i>
-                    <span>Solução para o Desafio Pedagógico do Aluno:</span>
+                    <span>Solução Cirúrgica para o Desafio Declarado pelo Aluno:</span>
                   </div>
                   <p class="text-slate-800 mb-0 leading-relaxed">${res.challengePrescription}</p>
                 </div>
@@ -11635,27 +11730,27 @@ function renderInstagramAuditTab(container) {
 
               <!-- BIO REESCRITA COM BOTÃO DE COPIAR -->
               <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-                <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                   <div class="d-flex align-items-center gap-2">
                     <i class="fa-solid fa-signature text-indigo-600 text-base"></i>
-                    <h3 class="text-sm fw-bold text-slate-900 mb-0">Bio de Alta Conversão Recomendada</h3>
+                    <h3 class="text-sm fw-bold text-slate-900 mb-0">Bio Otimizada pelo Estrategista</h3>
                   </div>
                   <button 
                     type="button" 
-                    onclick="copyToClipboard('${res.suggestedBio.join('\n')}', 'Bio copiada para a área de transferência!')" 
+                    onclick="copyToClipboard('${res.suggestedBio.join('\n')}', 'Bio copiada com sucesso!')" 
                     class="btn btn-sm btn-light border border-slate-200 rounded-pill px-3 py-1 text-[11px] fw-semibold text-slate-700 d-inline-flex align-items-center gap-1.5"
                   >
-                    <i class="fa-solid fa-copy"></i> Copiar Bio
+                    <i class="fa-solid fa-copy"></i> Copiar Bio Pronta
                   </button>
                 </div>
-                <p class="text-xs text-slate-600">Estruturada na fórmula: <em>[Transformação] + [Diferencial Local] + [Prova Social] + [CTA WhatsApp]</em>:</p>
+                <p class="text-xs text-slate-600">Fórmula validada de alta retenção: <em>[Transformação] + [Diferencial Local] + [Prova Social] + [CTA no WhatsApp]</em>:</p>
 
                 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 font-monospace text-xs text-slate-800 space-y-1">
                   ${res.suggestedBio.map(line => `<div>${line}</div>`).join('')}
                 </div>
 
                 <div class="p-3 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs text-indigo-900">
-                  <strong>💡 Dica do Docente:</strong> ${res.bioTip}
+                  <strong>💡 Dica do Mentor:</strong> ${res.bioTip}
                 </div>
               </div>
 
@@ -11663,7 +11758,7 @@ function renderInstagramAuditTab(container) {
               <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
                 <div class="d-flex align-items-center gap-2">
                   <i class="fa-solid fa-circle-dot text-rose-500 text-base"></i>
-                  <h3 class="text-sm fw-bold text-slate-900 mb-0">Arquitetura Estratégica de Destaques (Highlights)</h3>
+                  <h3 class="text-sm fw-bold text-slate-900 mb-0">Estrutura de Destaques (Highlights) de Alta Conversão</h3>
                 </div>
                 
                 <div class="row g-2">
@@ -11681,7 +11776,7 @@ function renderInstagramAuditTab(container) {
                 </div>
               </div>
 
-              <!-- 3 ROTEIROS DE REELS PERSONALIZADOS -->
+              <!-- 3 ROTEIROS DE REELS COM GANCHOS VIRAIS -->
               <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
                 <div class="d-flex align-items-center gap-2">
                   <i class="fa-solid fa-clapperboard text-purple-600 text-base"></i>
@@ -11701,6 +11796,45 @@ function renderInstagramAuditTab(container) {
                         <div><strong class="text-rose-600">🎯 Gancho Inicial (0-3s):</strong> "${reel.hook}"</div>
                         <div><strong class="text-indigo-600">🎬 Desenvolvimento:</strong> ${reel.body}</div>
                         <div><strong class="text-emerald-600">📣 Chamada para Ação (CTA):</strong> "${reel.cta}"</div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- SCRIPT PRONTO PARA FECHAR VENDAS NO DIRECT -->
+              <div class="p-5 rounded-3xl bg-emerald-50/50 border border-emerald-200 space-y-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-comments-dollar text-emerald-600 text-base"></i>
+                    <h3 class="text-sm fw-bold text-emerald-950 mb-0">Script de Abordagem no Direct (Gera Vendas em 2 Mensagens)</h3>
+                  </div>
+                  <button 
+                    type="button" 
+                    onclick="copyToClipboard('${res.salesDirectScript.replace(/'/g, "\\'")}', 'Script de Direct copiado!')" 
+                    class="btn btn-sm btn-light border border-emerald-300 rounded-pill px-3 py-1 text-[11px] fw-semibold text-emerald-800 d-inline-flex align-items-center gap-1.5"
+                  >
+                    <i class="fa-solid fa-copy"></i> Copiar Script
+                  </button>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 text-xs text-slate-800 font-monospace leading-relaxed">
+                  ${res.salesDirectScript}
+                </div>
+              </div>
+
+              <!-- PLANO DE CHOQUE DE 72 HORAS -->
+              <div class="p-5 rounded-3xl bg-indigo-50/50 border border-indigo-200 space-y-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-bolt text-indigo-600 text-base"></i>
+                  <h3 class="text-sm fw-bold text-indigo-950 mb-0">Plano de Choque de 72 Horas (As 3 Mudanças Imediatas)</h3>
+                </div>
+                
+                <div class="space-y-2">
+                  ${res.shockPlan72h.map((step, idx) => `
+                    <div class="p-3 rounded-2xl bg-white border border-indigo-100 d-flex align-items-start gap-2.5">
+                      <span class="w-6 h-6 rounded-circle bg-indigo-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold flex-shrink-0 mt-0.5">${idx + 1}</span>
+                      <div class="text-xs text-slate-800 leading-relaxed">
+                        ${step}
                       </div>
                     </div>
                   `).join('')}
@@ -11736,14 +11870,14 @@ function renderInstagramAuditTab(container) {
 
             </div>
           ` : `
-            <div class="h-100 min-h-[350px] p-8 rounded-3xl bg-white border border-dashed border-slate-200 d-flex flex-column align-items-center justify-content-center text-center space-y-3">
+            <div class="h-100 min-h-[400px] p-8 rounded-3xl bg-white border border-dashed border-slate-200 d-flex flex-column align-items-center justify-content-center text-center space-y-3">
               <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-500/10 to-purple-500/10 text-rose-500 d-flex align-items-center justify-content-center text-3xl">
-                <i class="fa-brands fa-instagram"></i>
+                <i class="fa-solid fa-robot"></i>
               </div>
               <div class="max-w-sm space-y-1">
-                <h4 class="text-sm fw-bold text-slate-800 mb-0">Pronto para Diagnosticar</h4>
+                <h4 class="text-sm fw-bold text-slate-800 mb-0">Robô Avaliador Pronto</h4>
                 <p class="text-xs text-slate-500 leading-relaxed mb-0">
-                  Selecione um aluno cadastrado ou digite o link de qualquer perfil para gerar uma análise com bio personalizada, destaques e roteiros de Reels.
+                  Selecione um aluno da turma ou digite o link de qualquer perfil do Instagram para gerar um raio-X crítico completo com análise de erros, ganchos e scripts de venda.
                 </p>
               </div>
               <button 
@@ -11751,7 +11885,7 @@ function renderInstagramAuditTab(container) {
                 onclick="document.getElementById('insta-handle-input')?.focus()" 
                 class="btn btn-sm btn-outline-primary rounded-pill px-4 py-1.5 text-xs fw-semibold"
               >
-                Começar Análise Agora
+                Configurar Perfil &amp; Analisar
               </button>
             </div>
           `}
@@ -11769,11 +11903,13 @@ function handleInstagramAuditSubmit(e) {
   const nicheSelect = document.getElementById("insta-niche-select");
   const goalSelect = document.getElementById("insta-goal-select");
   const bioInput = document.getElementById("insta-bio-input");
+  const robotToneSelect = document.getElementById("insta-robot-tone-select");
 
   instagramAuditState.handle = (handleInput?.value || "").trim();
   instagramAuditState.niche = nicheSelect?.value || "comercio";
   instagramAuditState.goal = goalSelect?.value || "vendas";
   instagramAuditState.bio = (bioInput?.value || "").trim();
+  instagramAuditState.robotTone = robotToneSelect?.value || "estrategista";
 
   executeInstagramAudit();
 }
@@ -11790,17 +11926,19 @@ function executeInstagramAudit() {
   setTimeout(() => {
     const student = instagramAuditState.selectedStudentId ? AppState.students.find(s => s.id === instagramAuditState.selectedStudentId) : null;
 
-    instagramAuditState.result = generatePedagogicalInstagramAudit(
+    instagramAuditState.result = generateCriticalRobotAudit(
       instagramAuditState.handle,
       instagramAuditState.niche,
       instagramAuditState.goal,
       instagramAuditState.bio,
-      student
+      student,
+      instagramAuditState.robotTone,
+      instagramAuditState.feedImagePreview
     );
     instagramAuditState.loading = false;
     renderApp();
-    showToast("Diagnóstico 360° gerado com sucesso!", "success");
-  }, 450);
+    showToast("Parecer crítico gerado pelo Robô Estrategista com sucesso!", "success");
+  }, 500);
 }
 
 function toggleInstagramChecklist(idx) {
@@ -11812,150 +11950,212 @@ function toggleInstagramChecklist(idx) {
   renderApp();
 }
 
-function generatePedagogicalInstagramAudit(handle, niche, goal, currentBio, student = null) {
+function generateCriticalRobotAudit(handle, niche, goal, currentBio, student = null, tone = "estrategista", hasImage = false) {
   const cleanHandle = handle.startsWith('@') ? handle : ('@' + handle.replace(/https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, ''));
   const location = student?.unitCity || student?.polo || "Alagoas";
   const studentName = student?.name || "";
   const challenges = student?.challenges || "";
   const tools = student?.tools || "Canva, CapCut";
 
+  const toneConfig = {
+    estrategista: {
+      title: "Parecer do Estrategista Sênior",
+      headline: "Diagnóstico Sem Filtro: Como Transformar Visualizações em Faturamento",
+      summary: `Análise focada em eliminação de gargalos no funil de ${cleanHandle}. O perfil possui potencial, mas está desperdiçando visitantes por falta de proposta de valor imediata e chamada de fechamento.`
+    },
+    influencer: {
+      title: "Visão do Top Creator",
+      headline: "Raio-X de Viralização: Ganchos de 3 Segundos e Estética de Alto Impacto",
+      summary: `Avaliação estética e dinâmica de ${cleanHandle}. Seu conteúdo precisa de mais dinamismo visual nos primeiros 3 segundos para que o algoritmo do Instagram entregue para não-seguidores.`
+    },
+    mentor: {
+      title: "Mentoria Pedagógica Emprega Mais",
+      headline: "Plano de Evolução Prática: Do Perfil Iniciante ao Profissional",
+      summary: `Acompanhamento individual para ${cleanHandle}. Alinhamento das técnicas de aula com a realidade do mercado local em ${location}.`
+    }
+  };
+
+  const selectedTone = toneConfig[tone] || toneConfig.estrategista;
+
   // Prescrição de Desafios Pedagógicos
   let challengePrescription = "";
   if (challenges.toLowerCase().includes("timidez") || challenges.toLowerCase().includes("gravar")) {
-    challengePrescription = "Para contornar a timidez de gravar diante da câmera: comece gravando em formato de 'Voiceover' (vídeos mostrando o produto ou processo com sua voz gravada por cima) e vídeos em plano detalhe das mãos trabalhando. Use o CapCut para legendas automáticas.";
+    challengePrescription = "🚨 Superando a Timidez para Gravar: Você NÃO precisa aparecer falando para a câmera desde o dia 1. Comece gravando vídeos no formato 'Voiceover' (filme apenas as mãos ou o produto enquanto grava a voz narrando depois pelo CapCut) e use cortes rápidos de 1.5 segundo. Quando for aparecer, use o teleprompter do CapCut.";
   } else if (challenges.toLowerCase().includes("tráfego") || challenges.toLowerCase().includes("anúncios")) {
-    challengePrescription = "Para destravar tráfego pago: antes de impulsionar, valide o post organicamente nos Stories e Reels. Quando um post tiver retenção acima de 40%, use o botão 'Turbinar' com raio de 5km em torno de " + location + " segmentando por interesse.";
+    challengePrescription = "🚨 Desbloqueando Tráfego Pago: Pare de queimar dinheiro impulsionando posts aleatórios. Primeiro publique 3 Reels organicamente; o que tiver melhor retenção, turbine por R$ 6/dia com raio de 4km em torno de " + location + " chamando direto para o WhatsApp.";
   } else if (challenges.toLowerCase().includes("tempo") || challenges.toLowerCase().includes("frequência")) {
-    challengePrescription = "Para manter consistência sem sobrecarga: aplique a técnica de 'Produção em Lote' (Batch Creation). Reserve 2 horas no sábado para gravar 4 vídeos da semana e programe as publicações pelo Meta Business Suite.";
+    challengePrescription = "🚨 Vencendo a Falta de Tempo: Trabalhe no método de 'Produção em Lote'. Reserve 2 horas no sábado para gravar 4 vídeos de uma só vez e agende todos pelo Meta Business Suite.";
   } else if (challenges) {
-    challengePrescription = "Foco de Mentoria: Utilize as ferramentas já dominadas (" + tools + ") aplicando templates repetíveis para reduzir atrito na criação diária.";
+    challengePrescription = "🚨 Mentoria Cirúrgica: Aplique as ferramentas que você já domina (" + tools + ") com foco em mensagens diretas de venda.";
   }
 
-  const nicheConfigs = {
+  const nicheDatabase = {
     comercio: {
       label: "Comércio Local & Varejo",
-      score: 86,
+      score: 79,
+      scoreLabel: "Potencial Alto • Falta Funil",
       pillars: [
-        { label: "Bio & Proposta", score: 88, status: "Forte" },
-        { label: "Destaques & FAQ", score: 82, status: "Aprimorar" },
-        { label: "Roteiros de Reels", score: 90, status: "Excelente" },
-        { label: "Conversão WhatsApp", score: 85, status: "Pronto" }
+        { icon: "fa-signature", label: "Proposta na Bio", score: 72, critique: "A bio precisa dizer exatamente o que você vende e para onde entrega nos primeiros 2 segundos." },
+        { icon: "fa-circle-dot", label: "Destaques & Prova", score: 68, critique: "Faltam prints de clientes elogiando a entrega e respostas às dúvidas de pagamento (Pix/Cartão)." },
+        { icon: "fa-video", label: "Reels & Retenção", score: 85, critique: "Vídeos com produtos têm bom apelo, mas precisam de textos grandes na tela para quem assiste no mudo." },
+        { icon: "fa-comments-dollar", label: "Funil no WhatsApp", score: 80, critique: "O link da bio deve abrir o WhatsApp com mensagem já preenchida para reduzir a desistência." }
+      ],
+      realityChecks: [
+        { flaw: "Não deixar claro a cidade/bairro de atendimento na bio.", fix: `Insira '📍 Entregas rápidas em ${location}' na 3ª linha da bio.` },
+        { flaw: "Postar foto de produto sem preço nos Stories.", fix: "Sempre coloque o valor e um sticker de link direto para o produto no WhatsApp." },
+        { flaw: "Não responder comentários em menos de 15 minutos.", fix: "Quem pergunta preço no direct quer comprar na hora. Responda com simpatia e áudio curto." }
       ],
       suggestedBio: [
-        `🛍️ Produtos selecionados com entrega rápida em ${location}`,
-        "📦 Pronta entrega • Retirada facilitada",
-        "⭐ Qualidade garantida & +500 clientes atendidos",
-        "👇 Peça no WhatsApp pelo link abaixo:"
+        `🛍️ As melhores opções com pronta entrega em ${location}`,
+        "📦 Enviamos para todo o estado • Retirada facilitada",
+        "⭐ + de 500 clientes satisfeitos em Alagoas",
+        "👇 Peça no WhatsApp com desconto no Pix:"
       ],
-      bioTip: `Destaque sua atuação local em ${location}. Clientes de bairro compram pela conveniência e rapidez na resposta.`,
+      bioTip: `Coloque o nome da sua cidade (${location}) no campo 'Nome' do perfil (não apenas no @) para você aparecer quando alguém pesquisar pelo segmento na barra de busca do Instagram.`,
       highlights: [
         { icon: "📍", title: "Como Comprar", desc: "Passo a passo simples de pedido, pagamento e envio." },
-        { icon: "⭐", title: "Depoimentos", desc: "Prints de clientes elogiando o atendimento e entrega." },
-        { icon: "📦", title: "Novidades", desc: "Produtos da semana em destaque." },
+        { icon: "⭐", title: "Depoimentos", desc: "Prints reais de clientes elogiando o atendimento." },
+        { icon: "📦", title: "Novidades", desc: "Produtos da semana em destaque com preços." },
         { icon: "❓", title: "Dúvidas / FAQ", desc: "Formas de pagamento, Pix, cartão e trocas." },
-        { icon: "💬", title: "WhatsApp", desc: "Link e horário de atendimento ao cliente." }
+        { icon: "💬", title: "WhatsApp", desc: "Link direto e horário de atendimento." }
       ],
       reelsScripts: [
-        { objective: "Atrair Novos Clientes", duration: "25s", theme: `3 Itens que Todo Morador de ${location} Precisa Conhecer`, hook: `Se você mora em ${location} e ainda não viu essa novidade, você está perdendo tempo!`, body: "Apresente os 3 produtos com closes rápidos e valores na tela.", cta: "Comente 'EU QUERO' que te envio o catálogo no direct!" },
-        { objective: "Gerar Confiança", duration: "30s", theme: "Bastidores: Embalando um Pedido Real com Carinho", hook: "Olha o cuidado que a gente tem ao preparar cada pedido aqui no ateliê...", body: "Mostre o pacote sendo montado, brinde e perfumação da embalagem.", cta: "Garanta o seu com entrega para hoje no link da bio!" },
-        { objective: "Venda Direta", duration: "20s", theme: "Combinação da Semana com Condição Especial", hook: "Procurando o presente ideal ou aquele mimo que cabe no bolso?", body: "Demonstre a versatilidade do produto em uso real.", cta: "Chame no WhatsApp antes que o estoque acabe!" }
+        { objective: "Atração de Novos Clientes", duration: "20s", theme: `Os 3 Produtos Mais Vendidos que Moradores de ${location} Amam`, hook: `Se você mora em ${location} e ainda não conhece esses 3 queridinhos, olha o que você tá perdendo!`, body: "Apresente os 3 produtos com closes rápidos de 2 segundos e preços na tela.", cta: "Comente 'QUERO' que te mando o catálogo com desconto no direct!" },
+        { objective: "Confiança & Humanização", duration: "30s", theme: "Bastidores: Embalando o Pedido de Hoje", hook: "Olha o carinho que a gente coloca em cada caixinha que sai daqui hoje...", body: "Grave o pacote sendo montado, borrifando essência e colocando bilhete à mão.", cta: "Garanta o seu hoje mesmo pelo link na bio!" },
+        { objective: "Oferta Imediata", duration: "20s", theme: "Combinação Perfeita da Semana", hook: "Procurando o presente ideal sem gastar muito? Essa combinação é perfeita!", body: "Demonstre a utilidade do produto na prática em menos de 15 segundos.", cta: "Chame agora no WhatsApp antes que acabe o lote!" }
+      ],
+      salesDirectScript: `Olá! Que alegria ver seu interesse por aqui 😊\nSeparamos um desconto especial de 10% no Pix para o seu primeiro pedido hoje. Qual item mais chamou sua atenção?`,
+      shockPlan72h: [
+        "Ajuste a Bio agora inserindo a localização e link do WhatsApp com mensagem pronta.",
+        "Crie 4 capas de destaques limpas no Canva (Como Comprar, Depoimentos, Novidades, Dúvidas).",
+        "Grave e publique 1 Reel de bastidores mostrando os produtos mais pedidos com legenda dinâmica."
       ],
       checklist: [
-        "Ajustar foto de perfil para uma logo ou rosto nítido em alta resolução.",
-        "Atualizar a Bio com a fórmula de 4 linhas e link direto para WhatsApp.",
-        "Criar capas padronizadas para os 5 destaques usando o Canva.",
-        "Fixar 3 posts estratégicos no topo do feed (Quem Somos, Produto Estrela, Depoimentos).",
-        "Gravar 3 Reels por semana focando nos horários de maior engajamento (12h e 19h)."
+        "Ajustar foto de perfil com iluminação e contraste limpo.",
+        "Atualizar a Bio com a fórmula de 4 linhas.",
+        "Padronizar as capas dos 5 destaques no Canva.",
+        "Fixar 3 posts estratégicos no topo do feed.",
+        "Gravar 3 Reels por semana com ganchos fortes nos 3 primeiros segundos."
       ]
     },
     moda: {
       label: "Moda, Vestuário & Brechó",
-      score: 89,
+      score: 84,
+      scoreLabel: "Visual Forte • Otimizar Conversão",
       pillars: [
-        { label: "Identidade Visual", score: 92, status: "Excelente" },
-        { label: "Bio & Posicionamento", score: 86, status: "Forte" },
-        { label: "Provador / Reels", score: 90, status: "Excelente" },
-        { label: "Grade de Tamanhos", score: 88, status: "Forte" }
+        { icon: "fa-camera", label: "Estética do Feed", score: 88, critique: "As fotos têm apelo, mas o vídeo em movimento no corpo converte 4x mais do que foto em cabide." },
+        { icon: "fa-signature", label: "Bio & Posicionamento", score: 78, critique: "Precisa destacar os tamanhos disponíveis (P ao GG) e facilidade de troca em Alagoas." },
+        { icon: "fa-video", label: "Provador & Reels", score: 86, critique: "Os Reels devem focar em 'como usar a mesma peça em 3 ocasiões' para gerar desejo." },
+        { icon: "fa-comments-dollar", label: "Fechamento de Vendas", score: 80, critique: "Coloque o link direto para o atendimento com aviso de 'Peças limitadas'." }
+      ],
+      realityChecks: [
+        { flaw: "Fotos estáticas em cabide sem mostrar caimento no corpo.", fix: "Grave vídeos de 5 segundos andando e girando para mostrar o movimento do tecido." },
+        { flaw: "Não responder se veste P, M ou G na legenda.", fix: "Sempre liste a grade de medidas na legenda de forma organizada." },
+        { flaw: "Demorar para responder directs de compra.", fix: "Tenha respostas automáticas configuradas no Direct com link do catálogo." }
       ],
       suggestedBio: [
-        `👗 Looks e peças exclusivas para realçar seu estilo em ${location}`,
-        "✨ Tendências, conforto e caimento impecável",
+        `👗 Peças exclusivas para realçar sua autenticidade em ${location}`,
+        "✨ Tendências, conforto e caimento impecável (P ao GG)",
         "📦 Envio rápido para todo o estado de Alagoas",
-        "👇 Garanta suas peças no link:"
+        "👇 Garanta seu look com desconto no link:"
       ],
-      bioTip: "No nicho de moda, o vídeo com movimento no corpo vende 4x mais do que foto estática em cabide. Foque no provador real.",
+      bioTip: "No nicho de moda, stories mostrando bastidores do provador entre 11h e 14h geram compras por impulso no horário do almoço.",
       highlights: [
         { icon: "👗", title: "Coleção", desc: "Looks da semana com tecidos e modelos explicados." },
-        { icon: "📏", title: "Medidas", desc: "Tabela clara de P, M, G, GG para evitar devoluções." },
+        { icon: "📏", title: "Medidas", desc: "Tabela clara de P, M, G, GG para evitar trocas." },
         { icon: "✨", title: "No Corpo", desc: "Vídeos curtos mostrando o caimento real." },
         { icon: "🚚", title: "Envios", desc: "Taxas de entrega e prazos para Alagoas." },
         { icon: "💳", title: "Pagamento", desc: "Pix com desconto e parcelamento no cartão." }
       ],
       reelsScripts: [
-        { objective: "Engajamento", duration: "20s", theme: "1 Peça, 3 Ocasiões Diferentes", hook: "Você usa essa peça sempre do mesmo jeito? Olha como transformar em 3 looks!", body: "Transições dinâmicas ao som de música em alta trocando acessórios.", cta: "Qual look foi seu preferido? 1, 2 ou 3? Comente aqui!" },
-        { objective: "Desejo Visual", duration: "25s", theme: "Detalhes de Costura e Tecido que Enriquecem o Look", hook: "O segredo de um look que dura anos está nesses detalhes...", body: "Aproxime a câmera da textura, botões e acabamento.", cta: "Clica no link da bio para conferir as cores disponíveis!" },
-        { objective: "Prova Social", duration: "30s", theme: "Clientes Reais Vestindo Nossas Peças", hook: "Veja a elegância dessas clientes incríveis que marcaram a gente essa semana!", body: "Sequência rápida de reposts autorizados com elogios.", cta: "Marque sua amiga que vai se apaixonar por esse modelo!" }
+        { objective: "Viralização & Alcance", duration: "20s", theme: "1 Peça, 3 Looks Completamente Diferentes", hook: "Você usa essa peça sempre do mesmo jeito? Olha como multiplicar seus looks!", body: "Transições no ritmo da música trocando acessórios, sapatos e sobreposições.", cta: "Qual look você usaria? 1, 2 ou 3? Comente aqui!" },
+        { objective: "Desejo & Detalhes", duration: "25s", theme: "O Caimento Perfeito que Você Estava Procurando", hook: "O segredo de uma peça elegante está nesses pequenos detalhes de costura...", body: "Aproxime a câmera da textura, tecido nobre e acabamento.", cta: "Clica no link da bio para conferir as cores restantes no estoque!" },
+        { objective: "Prova Social", duration: "30s", theme: "Clientes Reais Vestindo Nossa Marca", hook: "Veja a elegância das nossas clientes que marcaram o perfil essa semana!", body: "Sequência dinâmica de fotos e vídeos de clientes autorizados.", cta: "Marque aquela amiga que vai se apaixonar por esse modelo!" }
+      ],
+      salesDirectScript: `Oi linda! Que bom que você gostou dessa peça 😍\nEla está fazendo o maior sucesso e temos apenas 2 unidades nessa cor no momento. Quer que eu separe a sua antes de esgotar?`,
+      shockPlan72h: [
+        "Grave um provador rápido de 3 looks com a peça mais bonita do estoque.",
+        "Organize os destaques com capas minimalistas e nomes de 1 palavra.",
+        "Poste stories com caixinha de perguntas 'Qual ocasião você precisa de look esse mês?'."
       ],
       checklist: [
-        "Criar destaques com nomes curtos de 1 palavra.",
-        "Postar stories diários mostrando os detalhes de estoque das 10h às 14h.",
-        "Colocar o preço e tamanho de forma visível nos stories.",
-        "Fazer 1 provador dinâmico por semana no Reels.",
-        "Ter um link na bio que abre direto a conversa com mensagem pronta no WhatsApp."
+        "Criar paleta de cores consistente para o feed.",
+        "Publicar 3 provadores em vídeo por semana.",
+        "Colocar preço e tamanho de forma clara nos stories.",
+        "Responder avaliações de clientes repostando.",
+        "Manter link do WhatsApp sempre atualizado."
       ]
     },
     gastronomia: {
       label: "Gastronomia & Delivery",
-      score: 87,
+      score: 82,
+      scoreLabel: "Apetite Appeal Alto • Otimizar Pedido",
       pillars: [
-        { label: "Apetite Appeal", score: 92, status: "Excelente" },
-        { label: "Cardápio Online", score: 85, status: "Forte" },
-        { label: "Horários & Entrega", score: 88, status: "Forte" },
-        { label: "Prova Social", score: 84, status: "Aprimorar" }
+        { icon: "fa-utensils", label: "Apetite Appeal", score: 92, critique: "Fotos e vídeos dando água na boca são o ponto mais forte." },
+        { icon: "fa-clock", label: "Horários & Cardápio", score: 75, critique: "O horário de atendimento e cardápio precisam estar no topo da bio." },
+        { icon: "fa-motorcycle", label: "Facilidade de Entrega", score: 78, critique: "Deixe claro os bairros atendidos e taxa fixa de entrega para Alagoas." },
+        { icon: "fa-star", label: "Prova Social", score: 80, critique: "Reposte diariamente fotos de clientes recebendo o pedido em casa." }
+      ],
+      realityChecks: [
+        { flaw: "Não ter link do cardápio online na bio.", fix: "Insira link direto para o cardápio ou WhatsApp sem intermediários." },
+        { flaw: "Postar stories fora do horário de fome.", fix: "Concentre postagens às 11h30 (almoço) e às 18h00 (jantar)." },
+        { flaw: "Fotos escuras ou com luz artificial azulada.", fix: "Tire fotos com iluminação natural ou luz quente direcionada." }
       ],
       suggestedBio: [
         `🍕 O sabor autêntico e artesanal que você ama em ${location}`,
         "🔥 Ingredientes frescos, quentinhos e bem servidos",
-        "⏰ Terça a Domingo a partir das 18h",
+        "⏰ Terça a Domingo a partir das 18h • Delivery ágil",
         "👇 Cardápio online e pedidos no WhatsApp:"
       ],
-      bioTip: "O link do cardápio precisa abrir imediatamente sem exigir cadastro demorado. A fome exige rapidez!",
+      bioTip: "No delivery, 1 clique a mais faz o cliente desistir por fome. O link precisa abrir direto na tela de escolha do prato.",
       highlights: [
         { icon: "📋", title: "Cardápio", desc: "Combos, porções e valores atualizados." },
         { icon: "🛵", title: "Delivery", desc: "Bairros atendidos e taxa fixa de entrega." },
-        { icon: "⭐", title: "Clientes", desc: "Fotos de pratos recebidos em casa." },
+        { icon: "⭐", title: "Clientes", desc: "Fotos reais de clientes recebendo o prato." },
         { icon: "🎉", title: "Combos", desc: "Ofertas especiais para a família ou casal." },
-        { icon: "📍", title: "Retirada", desc: "Ponto físico de retirada e localização." }
+        { icon: "📍", title: "Retirada", desc: "Local físico de retirada para quem preferir." }
       ],
       reelsScripts: [
-        { objective: "Gatilho de Vontade", duration: "15s", theme: "Close em Câmera Lenta do Preparo", hook: "Se esse vídeo apareceu pra você às 19h, é o universo mandando você pedir!", body: "Áudio com som ambiente do queijo derretendo ou corte crocante.", cta: "Clica no link da bio e faça seu pedido antes que esgote a massa!" },
-        { objective: "Curiosidade", duration: "25s", theme: "Como Montamos o Item Campeão de Vendas", hook: "Você sabe por que esse é o prato mais pedido de toda a cidade?", body: "Passo a passo rápido da montagem generosa de ingredientes.", cta: "Marque a pessoa que vai pagar esse prato pra você hoje!" },
-        { objective: "Promoção", duration: "20s", theme: "Combo Especial de Terça a Quinta", hook: "Economize pedindo o combo oficial da semana...", body: "Apresente o combo completo com bebida inclusa.", cta: "Peça pelo WhatsApp com cupom exclusivo da bio." }
+        { objective: "Gatilho de Vontade Imensurável", duration: "15s", theme: "Câmera Lenta com Queijo Puxando / Molho Quente", hook: "Se esse vídeo apareceu pra você agora, é o sinal que você precisava para pedir!", body: "Áudio ASMR com som de fritura, queijo puxando ou corte crocante.", cta: "Clica no link da bio e faça seu pedido antes que a cozinha feche!" },
+        { objective: "Curiosidade & Bastidores", duration: "25s", theme: "Por Que Esse é o Item Mais Pedido da Casa?", hook: "O segredo por trás do prato que mais sai na nossa cozinha...", body: "Montagem ágil e higiênica mostrando a fartura de ingredientes.", cta: "Marque a pessoa que vai pagar esse prato pra você hoje!" },
+        { objective: "Promoção Relâmpago", duration: "20s", theme: "Combo da Terça a Quinta com Preço Especial", hook: "Quer jantar muito bem gastando pouco hoje?", body: "Apresente o combo completo com refrigerante ou sobremesa inclusa.", cta: "Peça pelo WhatsApp com cupom exclusivo da bio." }
+      ],
+      salesDirectScript: `Opa, boa noite! Tudo bem? 😋\nNossa cozinha acabou de abrir com ingredientes fresquinhos. Posso te enviar o cardápio de hoje com nosso cupom de primeira compra?`,
+      shockPlan72h: [
+        "Atualize o link da bio para o WhatsApp ou cardápio oficial.",
+        "Grave um vídeo ASMR em câmera lenta do prato mais suculento.",
+        "Crie uma promoção de combo para os dias de menor movimento."
       ],
       checklist: [
-        "Atualizar link do WhatsApp com mensagem pronta: 'Olá! Gostaria de fazer um pedido.'",
-        "Postar stories nos horários de pico de fome (11h às 13h e 17h às 20h).",
-        "Fotografar com luz natural ou iluminação quente direcionada.",
-        "Repostar diariamente clientes satisfeitos nos Stories.",
-        "Criar um destaque 'Promoções' sempre atualizado."
+        "Garantir link do WhatsApp funcionando com 1 clique.",
+        "Postar stories nos horários de pico de fome.",
+        "Tirar fotos com luz quente e apetitosa.",
+        "Repostar avaliações de clientes nos stories.",
+        "Criar um destaque 'Promoções' sempre ativo."
       ]
     },
     servicos: {
       label: "Prestação de Serviços, Freelancer & TI",
-      score: 91,
+      score: 87,
+      scoreLabel: "Autoridade Forte • Otimizar Prospecção",
       pillars: [
-        { label: "Autoridade Profissional", score: 94, status: "Excelente" },
-        { label: "Cases & Portfólio", score: 90, status: "Excelente" },
-        { label: "Copywriting de Vendas", score: 88, status: "Forte" },
-        { label: "Canal de Contratação", score: 92, status: "Excelente" }
+        { icon: "fa-briefcase", label: "Autoridade & Posicionamento", score: 90, critique: "Perfil profissional claro, mas precisa mostrar mais estudos de caso e números reais." },
+        { icon: "fa-signature", label: "Proposta de Valor", score: 85, critique: "Destaque a transformação financeira ou de tempo que seu serviço gera para o cliente." },
+        { icon: "fa-video", label: "Conteúdo Educativo", score: 84, critique: "Carrosséis técnicos e Reels resolvendo 1 dúvida pontual geram muitos salvamentos." },
+        { icon: "fa-comments-dollar", label: "Canal de Contratação", score: 88, critique: "O cliente precisa conseguir agendar uma reunião ou pedir orçamento em menos de 1 minuto." }
+      ],
+      realityChecks: [
+        { flaw: "Falar apenas de ferramentas técnicas (ex: 'sei usar Canva') em vez de resultados ('ajudo a dobrar vendas').", fix: "Mude a comunicação para foco no resultado de negócio do cliente." },
+        { flaw: "Não ter depoimentos em destaque.", fix: "Peça um print de WhatsApp a cada cliente atendido elogiando seu trabalho." },
+        { flaw: "Não postar carrosséis com dicas práticas.", fix: "Crie carrosséis no formato '3 passos para resolver o problema X'." }
       ],
       suggestedBio: [
         `🚀 Gestão digital estratégica para negócios e marcas em ${location}`,
-        "🎯 Soluções em marketing, conteúdo e tráfego com foco em ROI",
+        "🎯 Soluções em marketing, conteúdo e tráfego com foco em vendas",
         "🎓 Qualificação profissional Emprega Mais Alagoas",
         "👇 Solicite um diagnóstico ou orçamento no link:"
       ],
-      bioTip: "Venda a transformação e o resultado prático para o negócio do cliente, e não apenas tarefas operacionais.",
+      bioTip: "No mercado de serviços, o cliente compra confiança. Use foto de rosto nítida olhando para a câmera e mostre bastidores de projetos.",
       highlights: [
         { icon: "💼", title: "Serviços", desc: "Como funciona a consultoria e projetos mensais." },
         { icon: "📈", title: "Resultados", desc: "Métricas de alcance, vendas e cases de sucesso." },
@@ -11964,26 +12164,38 @@ function generatePedagogicalInstagramAudit(handle, niche, goal, currentBio, stud
         { icon: "📲", title: "Contato", desc: "Agendamento de reunião ou orçamento rápido." }
       ],
       reelsScripts: [
-        { objective: "Autoridade", duration: "30s", theme: "O Erro que Está Fazendo Pequenos Negócios Perderem Vendas", hook: "Se a sua empresa ainda comete esse erro no Instagram, você está deixando dinheiro na mesa...", body: "Aponte o erro e entregue a solução prática em 3 passos rápidos.", cta: "Salve este post para não esquecer e siga o perfil para mais estratégias!" },
-        { objective: "Estudo de Caso", duration: "40s", theme: "Como Ajudamos uma Marca Local a Triplicar o Alcance", hook: "Olha o que aconteceu quando aplicamos essa estratégia simples de conteúdo...", body: "Mostre o print do antes e depois com explicação didática.", cta: "Quer um plano assim para o seu negócio? Mande uma mensagem no direct." },
-        { objective: "Tutorial Prático", duration: "25s", theme: "3 Ferramentas Gratuitas que Agilizam sua Rotina", hook: "Economize 5 horas por semana usando essas 3 ferramentas que quase ninguém conhece...", body: "Apresente Canva, CapCut e automação de forma direta.", cta: "Compartilhe com um amigo empreendedor!" }
+        { objective: "Autoridade Imbatível", duration: "30s", theme: "O Maior Erro que Empresas Cometem no Instagram", hook: "Se a sua empresa ainda comete esse erro no Instagram, você está deixando dinheiro na mesa todos os dias...", body: "Explique o problema e entregue uma solução prática em 3 passos.", cta: "Salve este post para consultar depois e me siga para mais estratégias!" },
+        { objective: "Estudo de Caso", duration: "40s", theme: "Como Ajudamos um Negócio Local a Triplicar Resultados", hook: "Olha o que aconteceu quando aplicamos essa estratégia de conteúdo...", body: "Mostre o print do antes e depois com explicação didática.", cta: "Quer um plano assim para o seu caso? Mande uma mensagem no direct." },
+        { objective: "Tutorial Prático", duration: "25s", theme: "3 Ferramentas Gratuitas que Agilizam sua Rotina", hook: "Economize 5 horas por semana usando essas 3 ferramentas gratuitas...", body: "Apresente Canva, CapCut e automação de forma direta.", cta: "Compartilhe com quem precisa saber disso!" }
+      ],
+      salesDirectScript: `Olá! Obrigado por acompanhar meu conteúdo 😊\nPercebi que você atua no mercado e tem um projeto incrível. Se quiser, posso analisar seu perfil e te dar 2 sugestões práticas de melhoria sem custo algum. Topa?`,
+      shockPlan72h: [
+        "Atualize a foto de perfil para uma foto profissional de rosto com fundo limpo.",
+        "Fixe 3 posts: Quem Sou Eu, Case de Sucesso, Como Contratar.",
+        "Mande mensagem de prospecção para 5 empresas locais de Alagoas."
       ],
       checklist: [
-        "Usar foto de perfil profissional com fundo limpo e contato visual.",
+        "Usar foto de perfil nítida de rosto com olhar direto para a câmera.",
         "Link da bio direcionando para portfólio Notion ou WhatsApp profissional.",
-        "Fixar post de apresentação pessoal com histórico e especialidades.",
+        "Fixar post de apresentação pessoal com sua trajetória.",
         "Publicar 2 carrosséis didáticos e 2 Reels por semana.",
         "Solicitar depoimento formal em todo projeto entregue."
       ]
     },
     artesanato: {
       label: "Artesanato Regional, Bordado & Arte",
-      score: 88,
+      score: 85,
+      scoreLabel: "Valor Cultural Alto • Otimizar Encomendas",
       pillars: [
-        { label: "Valor Cultural", score: 95, status: "Excelente" },
-        { label: "Visual das Peças", score: 89, status: "Forte" },
-        { label: "Processo Manual", score: 86, status: "Forte" },
-        { label: "Canal de Encomendas", score: 83, status: "Aprimorar" }
+        { icon: "fa-palette", label: "Valor Cultural & Arte", score: 95, critique: "O trabalho manual tem história e emoção que encantam o público." },
+        { icon: "fa-camera", label: "Fotografia das Peças", score: 82, critique: "Fotografe as peças em ambientes reais (mesas decoradas, salas) para criar desejo." },
+        { icon: "fa-video", label: "Processo Manual & Bastidores", score: 88, critique: "Vídeos no formato timelapse mostrando o bordado nascendo são altamente compartilháveis." },
+        { icon: "fa-comments-dollar", label: "Canal de Encomendas", score: 76, critique: "Deixe claro os prazos de produção personalizada e valores médios." }
+      ],
+      realityChecks: [
+        { flaw: "Não contar a história e tempo que levou para criar a peça.", fix: "Mostre o processo manual e as horas de dedicação em cada detalhe." },
+        { flaw: "Não divulgar opções de presentes para datas comemorativas.", fix: "Crie combos temáticos de presentes afetivos com embalagem especial." },
+        { flaw: "Não ter canal rápido para tirar dúvidas de envio.", fix: "Tenha um destaque 'Envios & Prazos' explicando como a peça chega embalada." }
       ],
       suggestedBio: [
         `🧶 Arte e artesanato autêntico feito à mão com amor em ${location}`,
@@ -11991,18 +12203,24 @@ function generatePedagogicalInstagramAudit(handle, niche, goal, currentBio, stud
         "📦 Envio seguro para todo o Nordeste e Brasil",
         "👇 Encomendas e catálogo no link:"
       ],
-      bioTip: "O artesanato alagoano tem valor único. Mostre o tempo, dedicação e técnica manual empregada em cada detalhe.",
+      bioTip: "O artesanato alagoano é um patrimônio. Valorize a identidade regional em cada postagem.",
       highlights: [
         { icon: "🧶", title: "Peças", desc: "Modelos disponíveis para pronta entrega e catálogo." },
         { icon: "✂️", title: "Processo", desc: "Bastidores da confecção e materiais de alta qualidade." },
         { icon: "⭐", title: "Clientes", desc: "Peças decorando a casa de clientes reais." },
-        { icon: "📦", title: "Envios", desc: "Como as peças são embaladas com segurança." },
+        { icon: "📦", title: "Envios", desc: "Como as peças são embaladas com carinho." },
         { icon: "💌", title: "Encomendas", desc: "Prazos de produção personalizada e pagamentos." }
       ],
       reelsScripts: [
         { objective: "Sensorial / ASMR", duration: "20s", theme: "O Som e a Calmaria de Criar uma Peça do Zero", hook: "Existe algo muito terapêutico em ver uma peça nascendo ponto por ponto...", body: "Áudio focado no som dos materiais com cortes suaves das mãos trabalhando.", cta: "Se você ama peças feitas à mão, deixe seu coração nos comentários!" },
-        { objective: "Bastidores", duration: "30s", theme: "Quanto Tempo Real Leva para Fazer Esta Peça?", hook: "Muita gente acha que foi feito em 10 minutos, mas foram mais de 12 horas de dedicação...", body: "Timelapse acelerado de todas as etapas de produção e acabamento.", cta: "Valorize o artesanato local de Alagoas! Link para encomendas na bio." },
-        { objective: "Presente Perfeito", duration: "25s", theme: "Embalando um Presente Especial", hook: "Procurando um presente único que emociona de verdade?", body: "Mostre o bilhete feito à mão, laço e caixa protetora.", cta: "Encomende a sua pelo WhatsApp!" }
+        { objective: "Bastidores & Dedicação", duration: "30s", theme: "Quanto Tempo Real Leva para Fazer Esta Peça?", hook: "Muita gente acha que foi feito em 10 minutos, mas foram mais de 12 horas de dedicação...", body: "Timelapse acelerado de todas as etapas de produção e acabamento.", cta: "Valorize o artesanato local de Alagoas! Link para encomendas na bio." },
+        { objective: "Presente Afetivo", duration: "25s", theme: "Embalando um Presente Especial", hook: "Procurando um presente único que emociona de verdade?", body: "Mostre o bilhete feito à mão, laço e caixa protetora.", cta: "Encomende a sua pelo WhatsApp!" }
+      ],
+      salesDirectScript: `Olá, que alegria te ver por aqui! 🌸\nCada peça nossa é feita à mão com muito carinho aqui em Alagoas. Gostaria de ver nosso catálogo de pronta entrega ou tem uma ideia personalizada em mente?`,
+      shockPlan72h: [
+        "Grave um vídeo timelapse do processo manual da sua peça mais bonita.",
+        "Crie um destaque 'Bastidores' mostrando os materiais selecionados.",
+        "Ofereça uma condição de frete reduzido para encomendas da semana."
       ],
       checklist: [
         "Filmar o processo manual sob boa iluminação diurna.",
@@ -12014,19 +12232,26 @@ function generatePedagogicalInstagramAudit(handle, niche, goal, currentBio, stud
     }
   };
 
-  const selectedData = nicheConfigs[niche] || nicheConfigs.comercio;
+  const selectedData = nicheDatabase[niche] || nicheDatabase.comercio;
 
   return {
     handle: cleanHandle,
     studentName: studentName,
+    toneTitle: selectedTone.title,
+    verdictHeadline: selectedTone.headline,
+    verdictSummary: selectedTone.summary,
     nicheLabel: selectedData.label,
     score: selectedData.score,
+    scoreLabel: selectedData.scoreLabel,
     pillars: selectedData.pillars,
+    realityChecks: selectedData.realityChecks,
     challengePrescription: challengePrescription,
     suggestedBio: selectedData.suggestedBio,
     bioTip: selectedData.bioTip,
     highlights: selectedData.highlights,
     reelsScripts: selectedData.reelsScripts,
+    salesDirectScript: selectedData.salesDirectScript,
+    shockPlan72h: selectedData.shockPlan72h,
     checklist: selectedData.checklist
   };
 }
