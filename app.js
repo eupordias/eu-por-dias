@@ -6314,93 +6314,102 @@ function openCpfLoginModal(redirectTab = null) {
 
   modalContainer.innerHTML = `
     <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
+      <div class="modal-dialog modal-dialog-centered my-3" style="max-width: 440px;">
         <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
-          <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100">
-          <div class="d-flex align-items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
-              <i class="fa-solid fa-id-card"></i>
-            </div>
-            <div>
-              <h3 class="fw-bold text-sm text-slate-900 mb-0">Login de Acesso ao Sistema</h3>
-              <p class="text-[11px] text-slate-500 mb-0">Emprega Mais Alagoas • Mídias Digitais</p>
-            </div>
-          </div>
-          <button onclick="closeModal()" class="btn btn-sm btn-ghost p-1 text-slate-400 hover:text-slate-600 border-0">
-            <i class="fa-solid fa-xmark text-sm"></i>
-          </button>
-        </div>
-
-        <!-- Seletor de Perfil Aluno / Professor -->
-        <div class="p-1 rounded-xl bg-slate-100 d-flex align-items-center gap-1 text-xs fw-semibold">
-          <button 
-            type="button" 
-            id="role-tab-aluno" 
-            onclick="switchCpfLoginRole('aluno')" 
-            class="flex-grow-1 py-1.5 rounded-lg text-center fw-bold bg-white text-indigo-600 shadow-xs transition-all d-flex align-items-center justify-content-center gap-1.5 border-0"
-          >
-            <i class="fa-solid fa-graduation-cap"></i> Aluno
-          </button>
-          <button 
-            type="button" 
-            id="role-tab-professor" 
-            onclick="switchCpfLoginRole('professor')" 
-            class="flex-grow-1 py-1.5 rounded-lg text-center text-slate-600 transition-all d-flex align-items-center justify-content-center gap-1.5 border-0"
-          >
-            <i class="fa-solid fa-chalkboard-user"></i> Professor
-          </button>
-        </div>
-
-        <form onsubmit="handleCpfLoginSubmit(event)" class="space-y-3">
           
-          <div id="prof-name-container" class="hidden space-y-1">
-            <label class="d-block text-xs fw-semibold text-slate-700">Nome do Docente / Coordenador</label>
-            <input 
-              type="text" 
-              id="login-prof-name" 
-              value="Professor(a) • Coordenação Emprega Mais"
-              class="form-control form-control-sm text-xs rounded-xl border-slate-200"
-            />
-          </div>
-
-          <div class="space-y-1">
-            <label class="d-block text-xs fw-semibold text-slate-700">
-              <span id="login-cpf-label">CPF do Aluno Matriculado</span>
-            </label>
-            <div class="position-relative">
-              <input 
-                type="text" 
-                id="login-cpf-input" 
-                required 
-                maxlength="14"
-                placeholder="000.000.000-00" 
-                autocomplete="off"
-                class="form-control form-control-sm pl-8 text-xs font-monospace rounded-xl border-slate-200"
-                oninput="formatCpfInput(this)"
-              />
-              <i class="fa-solid fa-address-card position-absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <!-- Header -->
+          <div class="modal-header border-bottom py-3 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-sm shadow-xs flex-shrink-0">
+                <i class="fa-solid fa-id-card"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold text-sm text-slate-900 mb-0">Login de Acesso ao Sistema</h5>
+                <p class="text-[11px] text-slate-500 mb-0">Emprega Mais Alagoas • Mídias Digitais</p>
+              </div>
             </div>
-            <p id="login-hint" class="text-[10px] text-slate-400 mt-1 mb-0">
-              O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados.
-            </p>
+            <button type="button" class="btn-close" onclick="closeModal()" aria-label="Fechar"></button>
           </div>
 
-          <div class="pt-2 d-flex align-items-center justify-content-end gap-2 border-t border-slate-100">
-            <button 
-              type="button" 
-              onclick="closeModal()" 
-              class="btn btn-sm btn-light rounded-pill px-3 py-1.5 text-xs fw-semibold text-slate-600"
-            >
-              Cancelar
-            </button>
-            <button 
-              type="submit" 
-              class="btn btn-sm btn-primary rounded-pill px-4 py-1.5 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
-            >
-              <i class="fa-solid fa-right-to-bracket"></i> Acessar o Sistema
-            </button>
+          <!-- Body -->
+          <div class="modal-body p-4 space-y-4">
+            
+            <!-- Selector Aluno / Professor -->
+            <div class="d-flex p-1 rounded-xl bg-slate-100 border border-slate-200/80 gap-1">
+              <button 
+                type="button" 
+                id="role-tab-aluno" 
+                onclick="switchCpfLoginRole('aluno')" 
+                class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-bold transition-all d-flex align-items-center justify-content-center gap-2 border-0 bg-white text-indigo-600 shadow-sm"
+              >
+                <i class="fa-solid fa-user-graduate"></i> Aluno
+              </button>
+              <button 
+                type="button" 
+                id="role-tab-professor" 
+                onclick="switchCpfLoginRole('professor')" 
+                class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 bg-transparent text-slate-600 hover:text-slate-900"
+              >
+                <i class="fa-solid fa-chalkboard-user"></i> Professor
+              </button>
+            </div>
+
+            <form onsubmit="handleCpfLoginSubmit(event)" class="space-y-3.5">
+              
+              <div id="prof-name-container" class="hidden space-y-1.5">
+                <label class="d-block text-xs fw-semibold text-slate-700">Nome do Docente / Coordenador</label>
+                <input 
+                  type="text" 
+                  id="login-prof-name" 
+                  value="Professor(a) • Coordenação Emprega Mais"
+                  class="form-control text-xs px-3 py-2 rounded-xl border border-slate-200"
+                />
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="d-block text-xs fw-semibold text-slate-700">
+                  <span id="login-cpf-label">CPF do Aluno Matriculado</span>
+                </label>
+                <div class="position-relative">
+                  <span class="position-absolute start-0 top-50 translate-middle-y ps-3 text-slate-400 text-xs pointer-events-none">
+                    <i class="fa-solid fa-address-card"></i>
+                  </span>
+                  <input 
+                    type="text" 
+                    id="login-cpf-input" 
+                    required 
+                    maxlength="14"
+                    placeholder="000.000.000-00" 
+                    autocomplete="off"
+                    class="form-control text-xs font-monospace ps-5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    oninput="formatCpfInput(this)"
+                  />
+                </div>
+                <p id="login-hint" class="text-[11px] text-slate-500 mt-1 mb-0 d-flex align-items-center gap-1.5">
+                  <i class="fa-solid fa-circle-info text-indigo-500 text-[11px]"></i>
+                  <span>O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados.</span>
+                </p>
+              </div>
+
+              <div class="pt-3 d-flex align-items-center justify-content-end gap-2 border-top border-slate-100">
+                <button 
+                  type="button" 
+                  onclick="closeModal()" 
+                  class="btn btn-sm btn-light rounded-pill px-4 py-2 text-xs fw-semibold text-slate-600 border border-slate-200"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  class="btn btn-sm btn-primary rounded-pill px-4 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-sm"
+                >
+                  <i class="fa-solid fa-right-to-bracket"></i> Acessar o Sistema
+                </button>
+              </div>
+            </form>
+
           </div>
-        </form>
+
         </div>
       </div>
     </div>
@@ -6422,19 +6431,19 @@ function switchCpfLoginRole(role) {
   const cpfInput = document.getElementById("login-cpf-input");
 
   if (role === "professor") {
-    tabProf.className = "flex-1 py-2 rounded-xl text-center font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all flex items-center justify-center gap-1.5";
-    tabAluno.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
+    if (tabProf) tabProf.className = "flex-grow-1 py-2 px-3 rounded-lg text-xs fw-bold transition-all d-flex align-items-center justify-content-center gap-2 border-0 bg-white text-indigo-600 shadow-sm";
+    if (tabAluno) tabAluno.className = "flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 bg-transparent text-slate-600 hover:text-slate-900";
     if (profNameCont) profNameCont.classList.remove("hidden");
     if (cpfLabel) cpfLabel.textContent = "CPF do Professor / Docente";
-    if (loginHint) loginHint.textContent = "Docentes têm acesso irrestrito a relatórios, criação de tópicos com anexos e envios de e-mail.";
-    if (cpfInput) cpfInput.value = ""; // Limpa qualquer valor anterior ou do cache
+    if (loginHint) loginHint.innerHTML = '<i class="fa-solid fa-circle-info text-indigo-500 text-[11px]"></i> <span>Docentes têm acesso irrestrito a notas, relatórios e envios.</span>';
+    if (cpfInput) { cpfInput.value = ""; cpfInput.focus(); }
   } else {
-    tabAluno.className = "flex-1 py-2 rounded-xl text-center font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition-all flex items-center justify-center gap-1.5";
-    tabProf.className = "flex-1 py-2 rounded-xl text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-all flex items-center justify-center gap-1.5";
+    if (tabAluno) tabAluno.className = "flex-grow-1 py-2 px-3 rounded-lg text-xs fw-bold transition-all d-flex align-items-center justify-content-center gap-2 border-0 bg-white text-indigo-600 shadow-sm";
+    if (tabProf) tabProf.className = "flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 bg-transparent text-slate-600 hover:text-slate-900";
     if (profNameCont) profNameCont.classList.add("hidden");
     if (cpfLabel) cpfLabel.textContent = "CPF do Aluno Matriculado";
-    if (loginHint) loginHint.textContent = `O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados previamente.`;
-    if (cpfInput) cpfInput.value = ""; // Limpa qualquer valor anterior ou do cache
+    if (loginHint) loginHint.innerHTML = `<i class="fa-solid fa-circle-info text-indigo-500 text-[11px]"></i> <span>O CPF digitado será validado contra a base de ${AppState.students.length} alunos cadastrados.</span>`;
+    if (cpfInput) { cpfInput.value = ""; cpfInput.focus(); }
   }
 }
 
@@ -6552,31 +6561,27 @@ function openPromptUserPhotoModal() {
 
   modalContainer.innerHTML = `
     <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md my-3">
-        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
-          <div class="w-16 h-16 rounded-3xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-2xl mx-auto shadow-inner">
-          <i class="fa-solid fa-camera"></i>
-        </div>
-        <div class="space-y-1">
-          <h3 class="fw-bold text-base text-slate-900 ">Adicione sua Foto de Perfil</h3>
-          <p class="text-xs text-slate-500 ">
-            Regra da comunidade: para participar do <strong>Fórum & Chat ao vivo</strong> é necessário possuir foto de perfil.
+      <div class="modal-dialog modal-dialog-centered my-3" style="max-width: 420px;">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white text-center p-4">
+          
+          <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-2xl mx-auto shadow-xs mb-3">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+
+          <h5 class="fw-bold text-base text-slate-900 mb-1">Personalize seu Perfil</h5>
+          <p class="text-xs text-slate-500 leading-relaxed mb-4">
+            Adicione sua foto para interagir no Fórum de Dúvidas e ter seu avatar personalizado em toda a plataforma.
           </p>
-        </div>
-        <div class="space-y-2 pt-2">
-          <button 
-            onclick="openUserPhotoUploadModal()" 
-            class="w-100 py-3 rounded-2xl fw-bold text-xs bg-indigo-600 text-white shadow-md shadow-indigo-600/25 transition-all d-flex align-items-center justify-content-center gap-2"
-          >
-            <i class="fa-solid fa-camera-retro"></i> Tirar Foto com Webcam / Upload
-          </button>
-          <button 
-            onclick="closeModal()" 
-            class="w-100 py-2.5 rounded-2xl fw-semibold text-xs text-slate-500 "
-          >
-            Continuar sem Foto por Enquanto
-          </button>
-        </div>
+
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <button onclick="closeModal()" class="btn btn-sm btn-light rounded-pill px-4 py-2 text-xs fw-semibold text-slate-600 border border-slate-200">
+              Agora Não
+            </button>
+            <button onclick="openUserPhotoUploadModal()" class="btn btn-sm btn-primary rounded-pill px-4 py-2 text-xs fw-semibold bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-sm d-inline-flex align-items-center gap-1.5">
+              <i class="fa-solid fa-upload"></i> Escolher Foto
+            </button>
+          </div>
+
         </div>
       </div>
     </div>

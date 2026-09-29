@@ -1576,3 +1576,34 @@ body {
   color: #f8fafc !important;
   border-color: #334155 !important;
 }
+
+
+/* Modern Close Button Styling */
+.btn-close {
+  box-sizing: content-box;
+  width: 0.85em;
+  height: 0.85em;
+  padding: 0.35em;
+  color: #64748b;
+  background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2364748b'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/0.85em auto no-repeat;
+  border: 0;
+  border-radius: 0.5rem;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: opacity 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+.btn-close:hover {
+  opacity: 1;
+  background-color: #f1f5f9;
+}
+.btn-close:focus {
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  opacity: 1;
+}
+[data-bs-theme="dark"] .btn-close {
+  background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2394a3b8'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/0.85em auto no-repeat;
+}
+[data-bs-theme="dark"] .btn-close:hover {
+  background-color: #334155;
+}
