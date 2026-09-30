@@ -11641,6 +11641,311 @@ function switchInstagramSubTab(tabName) {
   renderApp();
 }
 
+
+function openMindMapModal() {
+  const res = instagramAuditState.result;
+  if (!res) {
+    showToast("Por favor, gere primeiro a análise de um perfil.", "warning");
+    return;
+  }
+
+  const modalContainer = document.getElementById("modal-container");
+  if (!modalContainer) return;
+
+  modalContainer.innerHTML = `
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(5px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl my-3">
+        <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
+          
+          <div class="modal-header border-bottom py-3 px-4 bg-slate-900 text-white d-flex align-items-center justify-content-between no-print">
+            <div class="d-flex align-items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white d-flex align-items-center justify-content-center text-sm shadow-sm">
+                <i class="fa-solid fa-brain"></i>
+              </span>
+              <div>
+                <h2 class="text-sm sm:text-base fw-bold text-white mb-0">Mapa Mental Estratégico do Aluno</h2>
+                <span class="text-[11px] text-indigo-300">Plano de Posicionamento, Monetização &amp; Execução</span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button 
+                onclick="window.print()" 
+                class="btn btn-sm btn-primary bg-indigo-600 hover:bg-indigo-700 border-0 rounded-xl px-3 py-1.5 text-xs fw-bold d-flex align-items-center gap-1.5 shadow-sm"
+              >
+                <i class="fa-solid fa-print text-amber-300"></i> Imprimir / Salvar PDF
+              </button>
+              <button onclick="closeModal()" class="btn-close btn-close-white" aria-label="Fechar"></button>
+            </div>
+          </div>
+
+          <div id="printable-content" class="modal-body p-4 p-sm-5 text-slate-900 bg-white space-y-5 overflow-y-auto">
+            
+            <!-- CABEÇALHO DO DOCUMENTO / PDF -->
+            <div class="border-b-2 border-slate-900 pb-3 text-center">
+              <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+                <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-0.5 text-xs fw-bold rounded-pill text-uppercase">Programa Emprega Mais Alagoas</span>
+                <span class="badge bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-0.5 text-xs font-monospace">Auditor &amp; Scanner IA</span>
+              </div>
+              <h1 class="text-lg sm:text-xl fw-black tracking-tight text-uppercase mb-0.5 text-slate-900">Mapa Mental de Posicionamento &amp; Monetização</h1>
+              <p class="text-xs text-slate-600 mb-0">Plano Estruturado de 90 Dias • TikTok &amp; Instagram • Regularização Fiscal</p>
+            </div>
+
+            <!-- DADOS DO PERFIL / ALUNO -->
+            <div class="row g-2 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+              <div class="col-12 col-sm-4">
+                <span class="text-slate-500">Perfil / Criador:</span> <strong class="text-slate-900">${res.displayName || res.handle}</strong>
+              </div>
+              <div class="col-6 col-sm-4">
+                <span class="text-slate-500">@Handle Oficial:</span> <strong class="font-monospace text-indigo-700">${res.handle}</strong>
+              </div>
+              <div class="col-6 col-sm-4">
+                <span class="text-slate-500">Nicho de Atuação:</span> <strong class="text-slate-900">${res.nicheLabel}</strong>
+              </div>
+              <div class="col-12 col-sm-4">
+                <span class="text-slate-500">Polo / Região:</span> <strong class="text-slate-900">${res.location || 'Alagoas'}</strong>
+              </div>
+              <div class="col-6 col-sm-4">
+                <span class="text-slate-500">Score de Prontidão:</span> <strong class="text-emerald-700">${res.score}/100 (${res.scoreLabel})</strong>
+              </div>
+              <div class="col-6 col-sm-4">
+                <span class="text-slate-500">Data de Emissão:</span> <strong class="text-slate-900">${new Date().toLocaleDateString('pt-BR')}</strong>
+              </div>
+            </div>
+
+            <!-- NÓ CENTRAL DO MAPA MENTAL -->
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white text-center shadow-sm space-y-1">
+              <span class="badge bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-pill text-uppercase">Nó Central do Mapa Mental</span>
+              <h2 class="text-base sm:text-lg font-black text-white mb-0">${res.displayName || res.handle} • ${res.nicheLabel}</h2>
+              <p class="text-xs text-indigo-200 mb-0">Habilidade Central: <strong>${res.personalBrand.coreSkill}</strong></p>
+            </div>
+
+            <!-- OS 5 RAMOS ESTRATÉGICOS DO MAPA MENTAL -->
+            <div class="space-y-4">
+              
+              <!-- RAMO 1: MARCA PESSOAL & 90 DIAS -->
+              <div class="p-4 rounded-2xl border-2 border-indigo-200 bg-indigo-50/20 space-y-2.5">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom border-indigo-100 pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold">1</span>
+                    <h3 class="text-xs sm:text-sm font-bold text-indigo-950 mb-0">Ramo 1: Marca Pessoal &amp; Método 90 Dias (Jay Harrington)</h3>
+                  </div>
+                  <span class="badge bg-indigo-100 text-indigo-800 text-[10px] font-monospace">Fundamento Estratégico</span>
+                </div>
+
+                <div class="row g-2 text-xs">
+                  <div class="col-12 col-md-6">
+                    <div class="p-3 bg-white rounded-xl border border-indigo-100 space-y-1">
+                      <strong class="text-indigo-900 d-block">🎯 Forças Reais vs Adjetivos Vazios:</strong>
+                      <p class="text-[11px] text-slate-600 mb-0">Foco prático em: <em>${res.personalBrand.coreSkill}</em>. Eliminou adjetivos clichês sem valor comercial.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="p-3 bg-white rounded-xl border border-indigo-100 space-y-1">
+                      <strong class="text-indigo-900 d-block">⭕ Intersecção dos 3 Círculos:</strong>
+                      <p class="text-[11px] text-slate-600 mb-0">Gosta + Faz com Excelência + Mercado Comprador em ${res.location}.</p>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="p-3 bg-white rounded-xl border border-indigo-100 space-y-1">
+                      <strong class="text-indigo-900 d-block">📜 Declaração de Marca em 5 Frases (Conversacional):</strong>
+                      <div class="text-[11px] text-slate-700 font-monospace space-y-0.5 ps-2 border-start border-indigo-300">
+                        ${res.personalBrand.brandDeclaration.map(s => `<p class="mb-0">• ${s}</p>`).join('')}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="p-3 bg-white rounded-xl border border-indigo-100 space-y-1">
+                      <strong class="text-indigo-900 d-block">🤝 Abordagem Cirúrgica de Networking 80/20 (Top 5 Conexões):</strong>
+                      <div class="row g-1 pt-1 text-[10px] text-slate-700">
+                        ${res.personalBrand.top5Networking.map((n, i) => `
+                          <div class="col-12 col-sm-6">
+                            <div class="p-1.5 rounded bg-slate-50 border border-slate-200">
+                              <strong>#${i+1} ${n.profile}:</strong> ${n.valueAction}
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RAMO 2: CONTEÚDO & EDIÇÃO TRANSFORMADORA -->
+              <div class="p-4 rounded-2xl border-2 border-rose-200 bg-rose-50/20 space-y-2.5">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom border-rose-100 pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-rose-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold">2</span>
+                    <h3 class="text-xs sm:text-sm font-bold text-rose-950 mb-0">Ramo 2: Máquina de Conteúdo &amp; Edição Transformadora</h3>
+                  </div>
+                  <span class="badge bg-rose-100 text-rose-800 text-[10px] font-monospace">Retenção &amp; Originalidade</span>
+                </div>
+
+                <div class="row g-2 text-xs">
+                  <div class="col-6 col-md-3">
+                    <div class="p-2.5 bg-white rounded-xl border border-rose-100 text-center">
+                      <strong class="text-rose-900 d-block">⏱️ Duração</strong>
+                      <span class="text-[11px] text-slate-600">&gt; 60 segundos</span>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="p-2.5 bg-white rounded-xl border border-rose-100 text-center">
+                      <strong class="text-rose-900 d-block">📱 Formato</strong>
+                      <span class="text-[11px] text-slate-600">Vertical 9:16 Total</span>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="p-2.5 bg-white rounded-xl border border-rose-100 text-center">
+                      <strong class="text-rose-900 d-block">🔍 Dinâmica</strong>
+                      <span class="text-[11px] text-slate-600">Zooms a cada 2-3s</span>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="p-2.5 bg-white rounded-xl border border-rose-100 text-center">
+                      <strong class="text-rose-900 d-block">🎙️ Áudio</strong>
+                      <span class="text-[11px] text-slate-600">Voz Própria + FX</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="p-3 bg-white rounded-xl border border-rose-100 space-y-1">
+                      <strong class="text-rose-900 d-block">🎬 3 Roteiros Estratégicos de Vídeos:</strong>
+                      <div class="row g-1.5 text-[11px] text-slate-700">
+                        ${res.reelsScripts.map((r, i) => `
+                          <div class="col-12 col-md-4">
+                            <div class="p-2 rounded-lg bg-slate-50 border border-slate-200 h-100">
+                              <span class="badge bg-rose-50 text-rose-700 text-[9px] mb-1">Vídeo ${i+1} • ${r.objective}</span>
+                              <strong class="d-block text-slate-900 text-[11px]">${r.theme}</strong>
+                              <p class="text-[10px] text-slate-500 mb-0 mt-1">Gancho: "${r.hook}"</p>
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RAMO 3: MONETIZAÇÃO TIKTOK & VENDAS -->
+              <div class="p-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50/20 space-y-2.5">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom border-emerald-100 pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold">3</span>
+                    <h3 class="text-xs sm:text-sm font-bold text-emerald-950 mb-0">Ramo 3: As 5 Formas de Monetização no TikTok &amp; Mídias</h3>
+                  </div>
+                  <span class="badge bg-emerald-100 text-emerald-800 text-[10px] font-monospace">Escala de Renda</span>
+                </div>
+
+                <div class="row g-2 text-xs">
+                  <div class="col-12 col-sm-6 col-md-4">
+                    <div class="p-2.5 bg-white rounded-xl border border-emerald-100 space-y-1">
+                      <strong class="text-emerald-900">1. Programa de Recompensas:</strong>
+                      <p class="text-[10px] text-slate-600 mb-0">10k seguidores, 100k views em 30d, <strong>Conta Pessoal</strong> obrigatória.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4">
+                    <div class="p-2.5 bg-white rounded-xl border border-emerald-100 space-y-1">
+                      <strong class="text-emerald-900">2. TikTok Shop (Afiliados):</strong>
+                      <p class="text-[10px] text-slate-600 mb-0">1k seguidores, CPF válido, comissões de <strong>5% a 30%</strong>.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-4">
+                    <div class="p-2.5 bg-white rounded-xl border border-emerald-100 space-y-1">
+                      <strong class="text-emerald-900">3. Parcerias &amp; Publis:</strong>
+                      <p class="text-[10px] text-slate-600 mb-0">Plataforma INFLU e acordos diretos a partir de 1k seguidores.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-6">
+                    <div class="p-2.5 bg-white rounded-xl border border-emerald-100 space-y-1">
+                      <strong class="text-emerald-900">4. Presentes de LIVE (Gifts):</strong>
+                      <p class="text-[10px] text-slate-600 mb-0">1k seguidores, diamantes com saque em dinheiro (50% taxa).</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6">
+                    <div class="p-2.5 bg-white rounded-xl border border-emerald-100 space-y-1">
+                      <strong class="text-emerald-900">5. Gorjetas Diretas (Tips):</strong>
+                      <p class="text-[10px] text-slate-600 mb-0">A partir de 100k seguidores para doações de fãs.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RAMO 4: SHADOWBAN & BLINDAGEM FISCAL -->
+              <div class="p-4 rounded-2xl border-2 border-amber-200 bg-amber-50/20 space-y-2.5">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom border-amber-100 pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-amber-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold">4</span>
+                    <h3 class="text-xs sm:text-sm font-bold text-amber-950 mb-0">Ramo 4: Blindagem Anti-Shadowban &amp; Formalização Fiscal</h3>
+                  </div>
+                  <span class="badge bg-amber-100 text-amber-800 text-[10px] font-monospace">Segurança &amp; Lucro</span>
+                </div>
+
+                <div class="row g-2 text-xs">
+                  <div class="col-12 col-md-6">
+                    <div class="p-3 bg-white rounded-xl border border-amber-100 space-y-1">
+                      <strong class="text-amber-900 d-block">🛡️ Protocolo Anti-Shadowban:</strong>
+                      <p class="text-[11px] text-slate-600 mb-0">Se views ficarem em 50-200 (FYP &lt; 5%), pause por <strong>48h a 72h</strong>. Retome com 1 a 2 posts/dia em horários fixos e use conexões isoladas.</p>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="p-3 bg-white rounded-xl border border-amber-100 space-y-1">
+                      <strong class="text-amber-900 d-block">💼 Planejamento Tributário no Brasil:</strong>
+                      <p class="text-[11px] text-slate-600 mb-0">Evite até <strong>27,5% no IRPF</strong> (acima de R$ 4.664,68). Abra CNPJ no <strong>Simples Nacional a partir de 6%</strong> com emissão de NF-e legalizada.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RAMO 5: PLANO DE AÇÃO SEMANAL DESTRAVADO -->
+              <div class="p-4 rounded-2xl border-2 border-cyan-200 bg-cyan-50/20 space-y-2.5">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom border-cyan-100 pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-cyan-700 text-white d-flex align-items-center justify-content-center text-xs fw-bold">5</span>
+                    <h3 class="text-xs sm:text-sm font-bold text-cyan-950 mb-0">Ramo 5: Plano de Ação Prática (Execução em 7 Dias)</h3>
+                  </div>
+                  <span class="badge bg-cyan-100 text-cyan-800 text-[10px] font-monospace">Passo a Passo</span>
+                </div>
+
+                <div class="row g-1.5 text-xs">
+                  ${res.shockPlan72h.map((step, idx) => `
+                    <div class="col-12 col-md-6">
+                      <div class="p-2.5 bg-white rounded-xl border border-cyan-100 d-flex align-items-start gap-2">
+                        <span class="badge bg-cyan-600 text-white rounded-circle p-1 text-[10px] flex-shrink-0 mt-0.5" style="width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center;">${idx+1}</span>
+                        <div>
+                          <strong class="text-slate-900 text-[11px] d-block">${step.day || ('Dia ' + (idx+1))}</strong>
+                          <span class="text-[10px] text-slate-600">${step.action || step}</span>
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RODAPÉ DO DOCUMENTO -->
+            <div class="pt-3 border-top border-slate-200 text-center text-[10px] text-slate-500">
+              <p class="mb-0">Documento pedagógico emitido pelo Sistema de Gestão &amp; Auditoria de Redes Sociais • Programa Emprega Mais Alagoas</p>
+            </div>
+
+          </div>
+
+          <div class="modal-footer border-top py-2.5 px-4 bg-slate-50 d-flex align-items-center justify-content-between no-print">
+            <span class="text-[11px] text-slate-500">Dica: Utilize a opção de "Salvar como PDF" no navegador.</span>
+            <div class="d-flex align-items-center gap-2">
+              <button onclick="closeModal()" class="btn btn-sm btn-light border border-slate-200 rounded-xl px-3 py-1.5 text-xs">Fechar</button>
+              <button onclick="window.print()" class="btn btn-sm btn-primary bg-indigo-600 hover:bg-indigo-700 border-0 rounded-xl px-4 py-1.5 text-xs fw-bold d-flex align-items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-pdf text-amber-300"></i> Baixar PDF
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
 function renderInstagramAuditTab(container) {
   if (!instagramAuditState.handle && AppState.currentUser && AppState.currentUser.role === 'aluno') {
     const student = AppState.students.find(s => s.id === AppState.currentUser.id || (s.cpf && cleanCpfDigits(s.cpf) === cleanCpfDigits(AppState.currentUser.cpf)));
@@ -11771,7 +12076,10 @@ function renderInstagramAuditTab(container) {
                 <span class="text-xl font-black text-indigo-600 font-monospace">${res.score}/100</span>
                 <span class="text-[9px] text-slate-500 d-block">${res.scoreLabel}</span>
               </div>
-              <button onclick="window.print()" class="btn btn-sm btn-light border border-slate-200 rounded-lg px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 no-print" title="Salvar relatório em PDF">
+              <button onclick="openMindMapModal()" class="btn btn-sm btn-primary bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-3 py-2 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm no-print" title="Gerar Mapa Mental Estratégico em PDF">
+                <i class="fa-solid fa-brain text-amber-300"></i> Mapa Mental PDF
+              </button>
+              <button onclick="window.print()" class="btn btn-sm btn-light border border-slate-200 rounded-xl px-3 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5 no-print" title="Imprimir Relatório Completo">
                 <i class="fa-solid fa-print"></i> PDF
               </button>
             </div>
@@ -12086,6 +12394,98 @@ function renderInstagramAuditTab(container) {
             <div class="space-y-4 fade-in">
               
               <!-- BANNER PRINCIPAL DE POSICIONAMENTO E INTRODUÇÃO -->
+              <!-- CARD DESTACADO: MAPA MENTAL ESTRATÉGICO COM EXPORTAÇÃO EM PDF -->
+              <div class="p-5 rounded-2xl bg-white border-2 border-indigo-200 shadow-sm space-y-4">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white d-flex align-items-center justify-content-center text-lg shadow-sm flex-shrink-0">
+                      <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                      <div class="d-flex align-items-center gap-2">
+                        <h3 class="text-sm sm:text-base font-bold text-slate-900 mb-0">Mapa Mental Estratégico do Aluno</h3>
+                        <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2 py-0.5 text-[10px] fw-bold">Plano Visual</span>
+                      </div>
+                      <p class="text-xs text-slate-500 mb-0">Árvore de ações conectadas: Marca Pessoal • Monetização TikTok • Shadowban • Regularização Fiscal</p>
+                    </div>
+                  </div>
+
+                  <button 
+                    type="button" 
+                    onclick="openMindMapModal()" 
+                    class="btn btn-primary bg-indigo-600 hover:bg-indigo-700 text-white fw-bold px-4 py-2.5 rounded-xl shadow-md d-inline-flex align-items-center gap-2 text-xs transition-all"
+                  >
+                    <i class="fa-solid fa-file-pdf text-amber-300 fs-6"></i>
+                    <span>Gerar &amp; Baixar Mapa Mental em PDF</span>
+                  </button>
+                </div>
+
+                <!-- DIAGRAMA VISUAL HIERÁRQUICO DO MAPA MENTAL -->
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div class="d-flex align-items-center justify-content-center">
+                    <div class="p-3 rounded-xl bg-slate-900 text-white text-center shadow-sm max-w-md w-100">
+                      <span class="badge bg-amber-400 text-slate-950 font-bold text-[9px] px-2 py-0.5 rounded-pill mb-1">HUB CENTRAL</span>
+                      <strong class="d-block text-xs sm:text-sm text-white">${res.displayName || res.handle} • ${res.nicheLabel}</strong>
+                      <span class="text-[10px] text-indigo-200">${res.personalBrand.coreSkill}</span>
+                    </div>
+                  </div>
+
+                  <div class="row g-2 pt-1 text-xs">
+                    <div class="col-12 col-md-6 col-lg-3">
+                      <div class="p-3 rounded-xl bg-white border border-indigo-200 h-100 space-y-1.5">
+                        <span class="badge bg-indigo-100 text-indigo-800 text-[9px] fw-bold">Ramo 1</span>
+                        <strong class="text-indigo-950 d-block font-semibold">🌟 Marca Pessoal 90D</strong>
+                        <ul class="mb-0 ps-3 text-[11px] text-slate-600 space-y-0.5">
+                          <li>Forças Reais sem clichês</li>
+                          <li>3 Círculos de Ouro</li>
+                          <li>Declaração em 5 Frases</li>
+                          <li>Networking 80/20</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                      <div class="p-3 rounded-xl bg-white border border-rose-200 h-100 space-y-1.5">
+                        <span class="badge bg-rose-100 text-rose-800 text-[9px] fw-bold">Ramo 2</span>
+                        <strong class="text-rose-950 d-block font-semibold">🎬 Edição Transformadora</strong>
+                        <ul class="mb-0 ps-3 text-[11px] text-slate-600 space-y-0.5">
+                          <li>Vídeos &gt; 60 segundos</li>
+                          <li>Vertical 9:16 tela cheia</li>
+                          <li>Zooms a cada 2-3s</li>
+                          <li>Áudio Original + FX</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                      <div class="p-3 rounded-xl bg-white border border-emerald-200 h-100 space-y-1.5">
+                        <span class="badge bg-emerald-100 text-emerald-800 text-[9px] fw-bold">Ramo 3</span>
+                        <strong class="text-emerald-950 d-block font-semibold">💰 5 Vias de Monetização</strong>
+                        <ul class="mb-0 ps-3 text-[11px] text-slate-600 space-y-0.5">
+                          <li>Programa Recompensas</li>
+                          <li>TikTok Shop (Afiliados)</li>
+                          <li>Publis &amp; INFLU</li>
+                          <li>Presentes de LIVE</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                      <div class="p-3 rounded-xl bg-white border border-amber-200 h-100 space-y-1.5">
+                        <span class="badge bg-amber-100 text-amber-800 text-[9px] fw-bold">Ramo 4</span>
+                        <strong class="text-amber-950 d-block font-semibold">🛡️ Blindagem &amp; Fiscal</strong>
+                        <ul class="mb-0 ps-3 text-[11px] text-slate-600 space-y-0.5">
+                          <li>Pausa 48-72h se travar</li>
+                          <li>Ambiente de IP limpo</li>
+                          <li>CNPJ Simples 6%</li>
+                          <li>Evitar IRPF 27,5%</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white shadow-sm space-y-3">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                   <div class="d-flex align-items-center gap-2">
