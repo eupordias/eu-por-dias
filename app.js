@@ -11713,7 +11713,7 @@ function openMindMapModal() {
             </div>
 
             <!-- NÓ CENTRAL DO MAPA MENTAL -->
-            <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white text-center shadow-sm space-y-1">
+            <div class="p-4 rounded-2xl bg-gradient-dark-brand text-white text-center shadow-sm space-y-1">
               <span class="badge bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-pill text-uppercase">Nó Central do Mapa Mental</span>
               <h2 class="text-base sm:text-lg font-black text-white mb-0">${res.displayName || res.handle} • ${res.nicheLabel}</h2>
               <p class="text-xs text-indigo-200 mb-0">Habilidade Central: <strong>${res.personalBrand.coreSkill}</strong></p>
@@ -12486,23 +12486,23 @@ function renderInstagramAuditTab(container) {
                 </div>
               </div>
 
-              <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white shadow-sm space-y-3">
+              <div class="p-5 sm:p-6 rounded-2xl shadow-md space-y-3" style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #1e1b4b 100%) !important; color: #ffffff !important; border: 1px solid #312e81 !important;">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                   <div class="d-flex align-items-center gap-2">
-                    <span class="w-9 h-9 rounded-xl bg-white/10 text-amber-300 d-flex align-items-center justify-content-center text-lg">
+                    <span class="w-9 h-9 rounded-xl bg-indigo-800 text-amber-300 d-flex align-items-center justify-content-center text-lg border border-indigo-700 shadow-sm">
                       <i class="fa-solid fa-crown"></i>
                     </span>
                     <div>
-                      <h2 class="text-sm sm:text-base font-bold text-white mb-0">Marca Pessoal Estratégica &amp; Monetização Digital</h2>
-                      <span class="text-[11px] text-indigo-200">Você não tem a opção de "não ter" uma marca: ela já existe através da sua reputação</span>
+                      <h2 class="text-sm sm:text-base font-bold mb-0" style="color: #ffffff !important;">Marca Pessoal Estratégica &amp; Monetização Digital</h2>
+                      <span class="text-[11px]" style="color: #c7d2fe !important;">Você não tem a opção de "não ter" uma marca: ela já existe através da sua reputação</span>
                     </div>
                   </div>
-                  <span class="badge bg-amber-400/20 text-amber-300 border border-amber-400/30 rounded-pill px-3 py-1 text-[11px] fw-bold">
+                  <span class="badge bg-amber-400 text-slate-950 font-bold px-3 py-1 text-[11px] rounded-pill shadow-xs">
                     Método Jay Harrington (90 Dias)
                   </span>
                 </div>
-                <p class="text-xs text-slate-300 leading-relaxed mb-0">
-                  A verdadeira questão para <strong>${res.displayName || res.handle}</strong> não é se você tem uma marca, mas se ela é poderosa e estratégica o suficiente para gerar negócios, lucros e escala segura no ecossistema digital (Instagram &amp; TikTok).
+                <p class="text-xs leading-relaxed mb-0" style="color: #e2e8f0 !important;">
+                  A verdadeira questão para <strong style="color: #ffffff !important;">${res.displayName || res.handle}</strong> não é se você tem uma marca, mas se ela é poderosa e estratégica o suficiente para gerar negócios, lucros e escala segura no ecossistema digital (Instagram &amp; TikTok).
                 </p>
               </div>
 

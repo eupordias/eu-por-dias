@@ -138,3 +138,20 @@ body {
     color: #111827 !important;
   }
 }
+
+
+/* Correção de Gradientes Escuros & Fundos de Banners */
+.bg-gradient-dark-brand,
+.bg-dark-hero,
+.bg-gradient-to-r.from-indigo-900.via-slate-900.to-indigo-950,
+.bg-gradient-to-r.from-indigo-900.to-indigo-950 {
+  background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #1e1b4b 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #312e81 !important;
+}
+
+.bg-gradient-hub {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #312e81 !important;
+}
