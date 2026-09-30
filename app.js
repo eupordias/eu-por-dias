@@ -12092,19 +12092,24 @@ function handleSingleAuditSubmit(e) {
 }
 
 async function executeLiveInstagramAudit(handle) {
-  const cleanHandle = handle.trim().replace(/^@/, '').replace(/https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '');
+  const cleanHandle = (handle || "").trim().replace(/^@/, '').replace(/https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '');
+  if (!cleanHandle) {
+    showToast("Por favor, digite o @ ou link do Instagram.", "warning");
+    return;
+  }
   const formattedHandle = '@' + cleanHandle;
   
   instagramAuditState.handle = formattedHandle;
   instagramAuditState.loading = true;
   instagramAuditState.loadingStep = "Conectando e lendo metadados do Instagram...";
+  if (!instagramAuditState.activeSubTab) instagramAuditState.activeSubTab = "diagnostico";
   renderApp();
 
   let liveData = null;
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const timeoutId = setTimeout(() => controller.abort(), 2800);
     const response = await fetch(`https://api.microlink.io?url=https://instagram.com/${encodeURIComponent(cleanHandle)}`, {
       signal: controller.signal
     });
@@ -12121,19 +12126,26 @@ async function executeLiveInstagramAudit(handle) {
       }
     }
   } catch (err) {
-    console.log("Scanner fallback to student database");
+    console.log("Scanner live fetch fallback to local engine");
+  } finally {
+    try {
+      const student = (AppState.students || []).find(s => {
+        const sName = (s.name || "").toLowerCase().replace(/\s+/g, '.');
+        const sInsta = (s.socialMedia || "").toLowerCase().replace(/^@/, '');
+        return sInsta === cleanHandle.toLowerCase() || sName === cleanHandle.toLowerCase() || (s.id && s.id.toLowerCase() === cleanHandle.toLowerCase());
+      });
+
+      instagramAuditState.result = buildComprehensiveAuditReport(formattedHandle, liveData, student);
+      instagramAuditState.loading = false;
+      renderApp();
+      showToast(`Diagnóstico de ${formattedHandle} pronto!`, "success");
+    } catch (auditErr) {
+      console.error("Erro no processamento da auditoria:", auditErr);
+      instagramAuditState.loading = false;
+      renderApp();
+      showToast("Não foi possível gerar a auditoria completa.", "error");
+    }
   }
-
-  const student = AppState.students.find(s => {
-    const sName = (s.name || "").toLowerCase().replace(/\s+/g, '.');
-    const sInsta = (s.socialMedia || "").toLowerCase().replace(/^@/, '');
-    return sInsta === cleanHandle.toLowerCase() || sName === cleanHandle.toLowerCase() || (s.id && s.id.toLowerCase() === cleanHandle.toLowerCase());
-  });
-
-  instagramAuditState.result = buildComprehensiveAuditReport(formattedHandle, liveData, student);
-  instagramAuditState.loading = false;
-  renderApp();
-  showToast(`Diagnóstico de ${formattedHandle} pronto!`, "success");
 }
 
 
@@ -12181,6 +12193,9 @@ function generateAIBios(studentName, location, cleanHandle, liveBio, nicheCatego
   } else if (handleLower.includes('doce') || handleLower.includes('bolo') || bioLower.includes('gastro')) {
     activityCore = "Confeitaria Artesanal & Sobremesas Especiais";
     emojiTheme = "🍰";
+  } else if (handleLower.includes('beleza') || handleLower.includes('cabelo') || handleLower.includes('unha') || handleLower.includes('estetic') || bioLower.includes('beleza')) {
+    activityCore = "Estética, Cuidados & Realce da Autoestima";
+    emojiTheme = "✨";
   } else {
     activityCore = businessTitle || "Serviços & Atendimento de Excelência";
     emojiTheme = "💼";
@@ -12438,6 +12453,66 @@ function generateEmpatheticAuditEngine(handle, liveData, student) {
       ],
       directScript: `Olá! Que bom te ver por aqui 🌸\nCada peça é feita 100% à mão aqui em ${location}. Temos algumas opções de pronta entrega e também aceitamos encomendas personalizadas. O que você gostaria de criar hoje?`
     },
+    beleza: {
+      humanVerdict: `${firstName}, no mercado de estética e beleza, as pessoas não compram apenas um procedimento; elas compram autoestima renovada e segurança. O seu perfil precisa mostrar antes e depois de muito bom gosto, depoimentos reais e higiene impecável. Quando a cliente vê a transformação e o cuidado nos detalhes em ${location}, o agendamento acontece naturalmente.`,
+      scoreLabel: "Autoestima & Cuidado • Facilitar Agendamento",
+      painPoints: [
+        { flaw: "Fotos de antes/depois com luzes e ângulos diferentes", fix: "Fotografe no mesmo ângulo e iluminação para evidenciar o resultado real do procedimento." },
+        { flaw: "Falta de explicação sobre durabilidade e cuidados pós-procedimento", fix: "Crie destaques explicando passo a passo os cuidados para o resultado durar mais." },
+        { flaw: "Dificuldade de encontrar link para agendamento direto", fix: "Coloque link direto para o WhatsApp de marcações na primeira linha da bio." }
+      ],
+      bioProposal: [
+        `✨ Realçando sua beleza e autoestima com naturalidade em ${location}`,
+        `🌸 Atendimento exclusivo e procedimentos personalizados`,
+        `🗓️ Horários flexíveis com agendamento facilitado`,
+        `👇 Clique abaixo para consultar vagas e agendar:`
+      ],
+      recovery7Days: [
+        { day: "Dia 1 (Bio & Link Direto)", action: `Atualize a bio com foco em autoestima, localização em ${location} e link de agendamento rápido.` },
+        { day: "Dia 2 (Destaques de Procedimentos)", action: "Organize destaques: 'Resultados Reais', 'Valores & Pacotes', 'Espaço/Higiene' e 'Dúvidas'." },
+        { day: "Dia 3 (Reel de Transformação)", action: "Grave o momento da cliente olhando o espelho após o atendimento com sorriso sincero." },
+        { day: "Dia 4 (Dica de Cuidados em Casa)", action: "Compartilhe 3 cuidados simples para manter o resultado impecável durante a semana." },
+        { day: "Dia 5 (Bastidores de Higienização)", action: "Mostre o preparo dos materiais esterilizados e a organização do espaço de atendimento." },
+        { day: "Dia 6 (Abertura de Encaixes)", action: "Poste nos Stories: 'Abrimos 2 encaixes para este sábado! Quem chamar primeiro garante'." },
+        { day: "Dia 7 (Depoimento em Áudio)", action: "Compartilhe com autorização o print do agradecimento carinhoso de uma cliente feliz." }
+      ],
+      reels: [
+        { objective: "Transformação", duration: "15s", theme: "A Reação da Cliente ao Olhar no Espelho", hook: "O melhor momento do meu dia é ver essa reação no espelho...", body: "Corte rápido do início do atendimento para o sorriso final da cliente.", cta: "Agende sua sessão e renove sua autoestima no link da bio!" },
+        { objective: "Mito vs Verdade", duration: "22s", theme: "O que Ninguém te Contou sobre Esse Procedimento", hook: "Você ainda tem medo de fazer esse procedimento? Olha a verdade aqui...", body: "Explique de forma acolhedora que não dói e o resultado fica supernatural.", cta: "Ficou com alguma dúvida? Me pergunta aqui nos comentários!" },
+        { objective: "Dica de Ouro", duration: "18s", theme: "O Segredo para Manter o Resultado Impecável", hook: "Quer que seu procedimento dure o dobro do tempo? Faça isso...", body: "Mostre 2 hábitos fáceis do dia a dia com demonstração prática.", cta: "Salve o vídeo para não esquecer!" }
+      ],
+      directScript: `Olá! Que bom receber sua mensagem ✨\nTemos alguns horários disponíveis para atendimento nesta semana aqui em ${location}. Gostaria de conhecer nossas opções e pacotes?`
+    },
+    saude_fitness: {
+      humanVerdict: `${firstName}, saúde e bem-estar exigem confiança máxima e constância. Seu perfil deve inspirar seus seguidores a darem o primeiro passo rumo a uma vida mais saudável sem neuras ou dietas malucas. Mostre que é possível ter resultados reais em ${location} com acompanhamento profissional e próximo.`,
+      scoreLabel: "Estilo de Vida Saudável • Fortalecer Acompanhamento",
+      painPoints: [
+        { flaw: "Linguagem técnica demais que afasta quem é iniciante", fix: "Explique conceitos complexos com metáforas simples do cotidiano." },
+        { flaw: "Não ter depoimentos e evolução de alunos reais", fix: "Mostre prints de feedback de pessoas comuns que melhoraram a saúde com seu método." },
+        { flaw: "Falta de clareza sobre como funciona a consultoria/atendimento", fix: "Crie um carrossel fixado com o passo a passo da primeira consulta/avaliação." }
+      ],
+      bioProposal: [
+        `💪 Transformando vidas e promovendo saúde real em ${location}`,
+        `🥗 Acompanhamento personalizado • Sem dietas restritivas`,
+        `🎯 Resultados sustentáveis para sua rotina e bem-estar`,
+        `👇 Inicie seu acompanhamento no WhatsApp:`
+      ],
+      recovery7Days: [
+        { day: "Dia 1 (Bio & Proposta Clara)", action: `Defina na bio quem você ajuda e qual benefício prático entrega em ${location}.` },
+        { day: "Dia 2 (Destaques de Resultados)", action: "Crie destaques com evoluções reais, receitas práticas e respostas a dúvidas." },
+        { day: "Dia 3 (Reel Educativo)", action: "Grave: '3 erros comuns que travam seus resultados mesmo comendo saudável'." },
+        { day: "Dia 4 (Rotina Real & Hábitos)", action: "Compartilhe sua própria refeição ou treino mostrando praticidade e equilíbrio." },
+        { day: "Dia 5 (Quebra de Mito)", action: "Faça um carrossel desmistificando uma crença popular sobre emagrecimento/treino." },
+        { day: "Dia 6 (Caixinha de Dúvidas)", action: "Abra caixinha nos stories para responder perguntas com vídeos de 15 segundos." },
+        { day: "Dia 7 (Vagas da Nova Turma)", action: "Abra 5 vagas para acompanhamento do mês com bônus de plano personalizado." }
+      ],
+      reels: [
+        { objective: "Educação", duration: "25s", theme: "Por que Você Não Consegue Manter a Dieta?", hook: "Se você começa na segunda e desiste na quinta, o problema não é você...", body: "Explique a importância da flexibilidade e metas realistas.", cta: "Se identificou? Comente 'EU' para receber uma dica prática no direct!" },
+        { objective: "Praticidade", duration: "20s", theme: "Opção Rápida e Saudável para o Jantar", hook: "Sem tempo para cozinhar à noite? Faça essa opção em 7 minutos...", body: "Montagem rápida e visual de um prato nutritivo e saboroso.", cta: "Salve para fazer hoje à noite!" },
+        { objective: "Motivação", duration: "18s", theme: "O Primeiro Passo é o Mais Importante", hook: "Você não precisa ser perfeito, só precisa começar hoje...", body: "Imagens motivacionais com mensagem direta e inspiradora.", cta: "Vamos juntos transformar sua saúde? Fale comigo no link da bio!" }
+      ],
+      directScript: `Olá! Que alegria ver seu compromisso com sua saúde 💪\nEstamos com inscrições abertas para a nova turma de acompanhamento em ${location}. Posso te explicar como funciona o nosso método?`
+    },
     servicos_geral: {
       humanVerdict: `${firstName}, seu perfil tem excelente ponto de partida, mas os clientes precisam sentir segurança total de que você é a pessoa certa para resolver a necessidade deles em ${location}. Transforme sua presença em um canal consultivo, onde você educa seu público e demonstra resultados antes mesmo de cobrar.`,
       scoreLabel: "Presença Ativa • Estruturar Funil de Atendimento",
@@ -12471,6 +12546,7 @@ function generateEmpatheticAuditEngine(handle, liveData, student) {
   };
 
   const selected = nicheData[category] || nicheData.servicos_geral;
+  const aiBios = generateAIBios(studentName, location, cleanHandle, liveBio, category, nicheTitle, student);
 
   return {
     handle: cleanHandle,
@@ -12485,13 +12561,13 @@ function generateEmpatheticAuditEngine(handle, liveData, student) {
     verdictHeadline: `Diagnóstico Humanizado para ${firstName}`,
     verdictSummary: selected.humanVerdict,
     pillars: [
-      { icon: "fa-signature", label: "Clareza & Posicionamento", score: baseScore - 5, critique: bioAuditStatus },
+      { icon: "fa-signature", label: "Clareza & Posicionamento", score: Math.max(60, baseScore - 5), critique: bioAuditStatus },
       { icon: "fa-camera", label: "Estética & Imagem Real", score: baseScore + 4 > 100 ? 96 : baseScore + 4, critique: `A imagem do perfil ${cleanHandle} precisa transmitir autoridade imediata sem ruídos visuais.` },
-      { icon: "fa-video", label: "Retenção de Reels & Vídeos", score: baseScore - 2, critique: "Vídeos com ganchos fortes nos 3 primeiros segundos aumentam o alcance em até 400%." },
-      { icon: "fa-comments-dollar", label: "Conversão no WhatsApp", score: baseScore + 2, critique: `Canal direto para clientes de ${location} com resposta rápida e script empático.` }
+      { icon: "fa-video", label: "Retenção de Reels & Vídeos", score: Math.max(60, baseScore - 2), critique: "Vídeos com ganchos fortes nos 3 primeiros segundos aumentam o alcance em até 400%." },
+      { icon: "fa-comments-dollar", label: "Conversão no WhatsApp", score: Math.min(98, baseScore + 2), critique: `Canal direto para clientes de ${location} com resposta rápida e script empático.` }
     ],
     realityChecks: selected.painPoints,
-    suggestedBio: aiBios.commercial,
+    suggestedBio: (aiBios && aiBios.commercial) || selected.bioProposal,
     aiBioVariations: aiBios,
     nicheTitle: nicheTitle,
     reelsScripts: selected.reels,
