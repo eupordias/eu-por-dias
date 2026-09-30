@@ -139,16 +139,40 @@ function renderVisualGalleryContent() {
                     <strong>Como usar:</strong> ${item.application}
                   </div>
 
-                  <!-- PROMPT CODE BOX -->
-                  <div class="space-y-1">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <span class="text-[10px] text-slate-400 text-uppercase fw-bold">Prompt de Engenharia:</span>
+                  <!-- PROMPT CODE BOX COM SELETOR DE IDIOMA PT-BR / ORIGINAL -->
+                  <div class="space-y-1.5">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                      <div class="d-flex align-items-center gap-1">
+                        <span class="text-[10px] text-slate-500 fw-bold">Idioma:</span>
+                        <div class="btn-group btn-group-xs" role="group">
+                          <button 
+                            type="button" 
+                            id="btn-lang-pt-${item.id}"
+                            onclick="toggleCaseLanguage('${item.id}', 'pt')" 
+                            class="btn btn-xs ${(visualGalleryState.activeLanguages[item.id] || 'pt') === 'pt' ? 'btn-primary bg-indigo-600 text-white fw-bold shadow-xs' : 'btn-light text-slate-500 border border-slate-200'} px-2 py-0.5 text-[10px] rounded-pill"
+                            title="Ver prompt traduzido para Português"
+                          >
+                            🇧🇷 PT-BR
+                          </button>
+                          <button 
+                            type="button" 
+                            id="btn-lang-orig-${item.id}"
+                            onclick="toggleCaseLanguage('${item.id}', 'orig')" 
+                            class="btn btn-xs ${visualGalleryState.activeLanguages[item.id] === 'orig' ? 'btn-primary bg-indigo-600 text-white fw-bold shadow-xs' : 'btn-light text-slate-500 border border-slate-200'} px-2 py-0.5 text-[10px] rounded-pill"
+                            title="Ver prompt no idioma original"
+                          >
+                            🌐 Original
+                          </button>
+                        </div>
+                      </div>
+
                       <span class="text-[10px] text-indigo-600 font-monospace cursor-pointer" onclick="openCustomizeVisualPromptModal('${item.id}')">
-                        <i class="fa-solid fa-sliders mr-1"></i> Personalizar
+                        <i class="fa-solid fa-sliders mr-1"></i> Adaptar
                       </span>
                     </div>
-                    <div class="p-2.5 rounded-xl bg-slate-900 text-slate-200 font-monospace text-[11px] leading-relaxed overflow-hidden" style="max-height: 85px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
-                      ${item.prompt}
+
+                    <div id="prompt-code-${item.id}" class="p-2.5 rounded-xl bg-slate-900 text-slate-200 font-monospace text-[11px] leading-relaxed overflow-hidden" style="max-height: 85px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                      ${(visualGalleryState.activeLanguages[item.id] === 'orig') ? (item.promptOriginal || item.prompt) : (item.promptPT || item.prompt)}
                     </div>
                   </div>
                 </div>
