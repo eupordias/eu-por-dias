@@ -3,7 +3,6 @@
 // NAVEGAÇÃO DIRETA PARA O CHAT AO VIVO
 // ==========================================
 function openLiveChatDirectly() {
-  AppState.forumTab = 'chat';
   switchTab('chat');
 }
 
@@ -771,6 +770,9 @@ function renderApp() {
   if (!contentArea) return;
 
   switch (AppState.currentTab) {
+    case "chat":
+      renderChatTab(contentArea);
+      break;
     case "dashboard":
       renderDashboard(contentArea);
       break;
@@ -7319,6 +7321,77 @@ function isUserEligibleToPost() {
     return { eligible: false, reason: "no_photo" };
   }
   return { eligible: true, reason: "ok" };
+}
+
+
+// ==========================================
+// ABA DEDICADA: CHAT AO VIVO DA TURMA (#CHAT-DA-TURMA)
+// ==========================================
+function renderChatTab(container) {
+  if (!container) return;
+  
+  // Se o usuário ainda não tiver perfil selecionado, define um aluno padrão para navegação sem travas
+  if (!AppState.currentUser) {
+    const defaultStudent = (AppState.students && AppState.students.length > 0) ? AppState.students[0] : {
+      id: "demo-1",
+      name: "Ana Beatriz Silva",
+      cpf: "11111111111",
+      email: "ana.silva@exemplo.com",
+      role: "aluno",
+      photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face"
+    };
+    AppState.currentUser = {
+      id: defaultStudent.id,
+      name: defaultStudent.name,
+      cpf: defaultStudent.cpf || "11111111111",
+      role: "aluno",
+      email: defaultStudent.email || "aluno@empregamais.com",
+      photo: defaultStudent.photoUrl || defaultStudent.photo || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face"
+    };
+  }
+
+  container.innerHTML = `
+    <div class="space-y-5 fade-in pb-10">
+      
+      <!-- Cabeçalho do Chat ao Vivo -->
+      <div class="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-4">
+        <div class="d-flex align-items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-600 text-white d-flex align-items-center justify-content-center text-xl shadow-sm flex-shrink-0">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h2 class="text-base sm:text-lg fw-bold text-slate-900 mb-0">Chat ao Vivo da Turma</h2>
+              <span class="d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
+                ONLINE
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-0 mt-0.5">Canal oficial em tempo real para alunos e docentes • Programa Emprega Mais Alagoas</p>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap text-xs">
+          <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+            <i class="fa-solid fa-user-check text-emerald-600"></i> ${escapeHtml(AppState.currentUser.name)}
+          </span>
+          <button 
+            type="button" 
+            onclick="switchTab('forum')" 
+            class="btn btn-sm btn-light border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
+          >
+            <i class="fa-solid fa-comments text-indigo-600"></i> Ver Tópicos dos 7 Módulos
+          </button>
+        </div>
+      </div>
+
+      <!-- Feed & Componente de Mensagens -->
+      ${renderForumChatContent()}
+
+    </div>
+  `;
+
+  setTimeout(scrollChatToBottom, 70);
 }
 
 function renderForumTab(container) {
