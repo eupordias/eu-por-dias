@@ -11778,30 +11778,38 @@ function renderInstagramAuditTab(container) {
 
           </div>
 
-          <!-- NAVEGAÇÃO ENTRE AS 3 ABAS DE RESULTADO (SEM POLUIÇÃO) -->
-          <div class="d-flex p-1 rounded-xl bg-slate-100 border border-slate-200 gap-1 no-print">
+          <!-- NAVEGAÇÃO ENTRE AS 4 ABAS DE RESULTADO ESTRATÉGICO -->
+          <div class="d-flex p-1 rounded-xl bg-slate-100 border border-slate-200 gap-1 flex-wrap no-print">
             <button 
               type="button" 
               onclick="switchInstagramSubTab('diagnostico')" 
-              class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${subTab === 'diagnostico' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+              class="flex-grow-1 py-2 px-2.5 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-1.5 border-0 ${subTab === 'diagnostico' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
             >
-              <i class="fa-solid fa-chart-simple"></i> 1. Diagnóstico &amp; Raio-X
+              <i class="fa-solid fa-chart-simple"></i> 1. Diagnóstico
             </button>
 
             <button 
               type="button" 
               onclick="switchInstagramSubTab('bio')" 
-              class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${subTab === 'bio' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+              class="flex-grow-1 py-2 px-2.5 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-1.5 border-0 ${subTab === 'bio' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
             >
-              <i class="fa-solid fa-signature"></i> 2. Bio &amp; Destaques
+              <i class="fa-solid fa-signature"></i> 2. Bio Studio
             </button>
 
             <button 
               type="button" 
               onclick="switchInstagramSubTab('reels')" 
-              class="flex-grow-1 py-2 px-3 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${subTab === 'reels' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+              class="flex-grow-1 py-2 px-2.5 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-1.5 border-0 ${subTab === 'reels' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
             >
-              <i class="fa-solid fa-clapperboard"></i> 3. Roteiros de Reels &amp; Vendas
+              <i class="fa-solid fa-clapperboard"></i> 3. Reels &amp; Vendas
+            </button>
+
+            <button 
+              type="button" 
+              onclick="switchInstagramSubTab('branding_monetizacao')" 
+              class="flex-grow-1 py-2 px-2.5 rounded-lg text-xs fw-semibold transition-all d-flex align-items-center justify-content-center gap-1.5 border-0 ${subTab === 'branding_monetizacao' ? 'bg-white text-indigo-600 fw-bold shadow-xs' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+            >
+              <i class="fa-solid fa-gem text-amber-500"></i> 4. Marca Pessoal &amp; Monetização 90D
             </button>
           </div>
 
@@ -12073,6 +12081,458 @@ function renderInstagramAuditTab(container) {
             </div>
           ` : ''}
 
+          <!-- CONTEÚDO DA ABA 4: MARCA PESSOAL, MONETIZAÇÃO TIKTOK/REELS & REGULARIZAÇÃO FISCAL -->
+          ${subTab === 'branding_monetizacao' ? `
+            <div class="space-y-4 fade-in">
+              
+              <!-- BANNER PRINCIPAL DE POSICIONAMENTO E INTRODUÇÃO -->
+              <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white shadow-sm space-y-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="w-9 h-9 rounded-xl bg-white/10 text-amber-300 d-flex align-items-center justify-content-center text-lg">
+                      <i class="fa-solid fa-crown"></i>
+                    </span>
+                    <div>
+                      <h2 class="text-sm sm:text-base font-bold text-white mb-0">Marca Pessoal Estratégica &amp; Monetização Digital</h2>
+                      <span class="text-[11px] text-indigo-200">Você não tem a opção de "não ter" uma marca: ela já existe através da sua reputação</span>
+                    </div>
+                  </div>
+                  <span class="badge bg-amber-400/20 text-amber-300 border border-amber-400/30 rounded-pill px-3 py-1 text-[11px] fw-bold">
+                    Método Jay Harrington (90 Dias)
+                  </span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed mb-0">
+                  A verdadeira questão para <strong>${res.displayName || res.handle}</strong> não é se você tem uma marca, mas se ela é poderosa e estratégica o suficiente para gerar negócios, lucros e escala segura no ecossistema digital (Instagram &amp; TikTok).
+                </p>
+              </div>
+
+              <!-- 1. MAPEAMENTO DE FORÇAS REAIS VS ADJETIVOS VAZIOS & A DECLARAÇÃO DE MARCA (5 A 6 FRASES) -->
+              <div class="row g-3">
+                
+                <div class="col-12 col-md-6">
+                  <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm h-100 space-y-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="fa-solid fa-bullseye text-indigo-600"></i>
+                      <h3 class="text-xs fw-bold text-slate-900 mb-0">1. Forças Reais Resolutivas (Sem Adjetivos Vazios)</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-0">
+                      Elimine termos genéricos como "dedicado" ou "honesto" que perderam o significado. Foque no problema prático que você resolve:
+                    </p>
+
+                    <div class="space-y-2 pt-1">
+                      <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                        <strong class="text-slate-900 d-block mb-1">🛠️ Habilidade Central de Alto Impacto:</strong>
+                        <span class="text-indigo-700 fw-semibold">${res.personalBrand.coreSkill}</span>
+                      </div>
+                      <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs">
+                        <strong class="text-emerald-950 d-block mb-1">🎯 Intersecção dos 3 Círculos de Ouro:</strong>
+                        <ul class="mb-0 ps-3 text-emerald-900 text-[11px] space-y-1">
+                          <li><strong>O que gosta:</strong> ${res.personalBrand.purpose3Circles.likes}</li>
+                          <li><strong>O que faz com maestria:</strong> ${res.personalBrand.purpose3Circles.excels}</li>
+                          <li><strong>Oportunidade de mercado:</strong> ${res.personalBrand.purpose3Circles.marketOpportunity}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <div class="p-5 rounded-2xl bg-white border-2 border-indigo-200 shadow-sm h-100 space-y-3 d-flex flex-column justify-content-between">
+                    <div>
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge bg-indigo-600 text-white rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">
+                          <i class="fa-solid fa-feather mr-1"></i> Declaração de Marca Pessoal
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-monospace">5 a 6 Frases Conversacionais</span>
+                      </div>
+                      <p class="text-[11px] text-slate-500 mb-2">Use este posicionamento na apresentação do seu trabalho, reuniões e propostas:</p>
+                      
+                      <div class="p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs text-slate-800 leading-relaxed font-monospace space-y-1.5">
+                        ${res.personalBrand.brandDeclaration.map(sentence => `<p class="mb-0">• ${sentence}</p>`).join('')}
+                      </div>
+                    </div>
+
+                    <button 
+                      type="button" 
+                      onclick="copyToClipboard('${res.personalBrand.brandDeclaration.join('\n')}', 'Declaração de Marca copiada!')"
+                      class="btn btn-sm btn-light border border-slate-200 text-indigo-600 fw-bold rounded-xl px-3 py-1.5 text-xs d-inline-flex align-items-center justify-content-center gap-1.5 mt-2 hover:bg-indigo-50"
+                    >
+                      <i class="fa-solid fa-copy"></i> Copiar Declaração de Marca
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- 2. MAPA DE 90 DIAS PARA CONSTRUÇÃO DA MARCA & NETWORKING 80/20 -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-indigo-600"></i>
+                    <h3 class="text-xs fw-bold text-slate-900 mb-0">O Mapa de 90 Dias de Jay Harrington para sua Marca Pessoal</h3>
+                  </div>
+                  <span class="badge bg-slate-100 text-slate-700 border border-slate-200 rounded-pill px-2.5 py-1 text-[10px] fw-bold">Autoconhecimento • Validação • Execução</span>
+                </div>
+
+                <div class="row g-3">
+                  <!-- Fase 1 -->
+                  <div class="col-12 col-md-4">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-2">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="badge bg-indigo-100 text-indigo-800 rounded-pill px-2 py-0.5 text-[10px] fw-bold">Dias 1 a 30</span>
+                        <span class="text-[10px] text-slate-400">Fase 1</span>
+                      </div>
+                      <strong class="text-xs text-slate-900 d-block">Autoconhecimento &amp; Forças Reais</strong>
+                      <p class="text-[11px] text-slate-600 leading-relaxed mb-0">
+                        Valide seus talentos naturais com 5 pessoas próximas para enxergar pontos cegos. Elimine adjetivos vazios e foque em habilidades práticas que as pessoas pagam para resolver.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Fase 2 -->
+                  <div class="col-12 col-md-4">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-2">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="badge bg-indigo-100 text-indigo-800 rounded-pill px-2 py-0.5 text-[10px] fw-bold">Dias 31 a 60</span>
+                        <span class="text-[10px] text-slate-400">Fase 2</span>
+                      </div>
+                      <strong class="text-xs text-slate-900 d-block">Validação de Nicho &amp; Conteúdo Prova</strong>
+                      <p class="text-[11px] text-slate-600 leading-relaxed mb-0">
+                        Consolide sua Declaração de Marca em 5 a 6 frases. Publique estudos de caso e provas visuais de competência em ${res.location || 'Alagoas'} que atraem o cliente ideal.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Fase 3 -->
+                  <div class="col-12 col-md-4">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-2">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="badge bg-indigo-100 text-indigo-800 rounded-pill px-2 py-0.5 text-[10px] fw-bold">Dias 61 a 90</span>
+                        <span class="text-[10px] text-slate-400">Fase 3</span>
+                      </div>
+                      <strong class="text-xs text-slate-900 d-block">Networking 80/20 &amp; Parcerias</strong>
+                      <p class="text-[11px] text-slate-600 leading-relaxed mb-0">
+                        Selecione as 5 principais conexões estratégicas de alto impacto. Foque em agregar valor real aos negócios delas primeiro, sem pedir favores, criando reciprocidade genuína.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 5 Conexões Estratégicas 80/20 -->
+                <div class="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-2">
+                  <strong class="text-xs text-indigo-900 d-block">
+                    <i class="fa-solid fa-handshake-simple text-indigo-600 mr-1.5"></i> 5 Conexões Estratégicas de Alto Impacto para ${res.displayName || res.handle}:
+                  </strong>
+                  <div class="row g-2 pt-1 text-[11px] text-slate-700">
+                    ${res.personalBrand.top5Networking.map((net, i) => `
+                      <div class="col-12 col-sm-6">
+                        <div class="p-2.5 rounded-lg bg-white border border-slate-200">
+                          <strong class="text-slate-900">#${i + 1} ${net.profile}:</strong> ${net.valueAction}
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. MONETIZAÇÃO TIKTOK & VÍDEOS VERTICAIS: AS 5 REGRAS DO JOGO -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-brands fa-tiktok text-slate-900 fs-5"></i>
+                    <h3 class="text-xs fw-bold text-slate-900 mb-0">As 5 Formas de Monetização no TikTok &amp; Redes Verticais</h3>
+                  </div>
+                  <span class="badge bg-rose-50 text-rose-700 border border-rose-200 rounded-pill px-2.5 py-1 text-[10px] fw-bold">Critérios &amp; Requisitos Oficiais</span>
+                </div>
+
+                <div class="row g-2.5 pt-1">
+                  
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-1.5">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <strong class="text-xs text-slate-900">1. Programa de Recompensas</strong>
+                        <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 text-[9px]">10k seguidores</span>
+                      </div>
+                      <p class="text-[11px] text-slate-600 mb-0">
+                        100k views em 30d, 18+ anos, <strong>Conta Pessoal</strong> obrigatória (para conformidade de direitos de áudio) e vídeos acima de 60 segundos.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-1.5">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <strong class="text-xs text-slate-900">2. Presentes de LIVE (Gifts)</strong>
+                        <span class="badge bg-amber-50 text-amber-700 border border-amber-200 text-[9px]">1k seguidores</span>
+                      </div>
+                      <p class="text-[11px] text-slate-600 mb-0">
+                        Espectadores enviam presentes virtuais em lives que se transformam em Diamantes sacáveis em dinheiro (TikTok retém ~50%).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-1.5">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <strong class="text-xs text-slate-900">3. TikTok Shop (Afiliados)</strong>
+                        <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px]">1k seguidores</span>
+                      </div>
+                      <p class="text-[11px] text-slate-600 mb-0">
+                        Divulgue produtos físicos nos vídeos e fature comissões de <strong>5% a 30%</strong> por venda com CPF válido e conta pessoal.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-6 col-lg-6">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-1.5">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <strong class="text-xs text-slate-900">4. Parcerias com Marcas (Publis)</strong>
+                        <span class="badge bg-purple-50 text-purple-700 border border-purple-200 text-[9px]">A partir de 1k seguidores</span>
+                      </div>
+                      <p class="text-[11px] text-slate-600 mb-0">
+                        Acordos diretos com empresas locais ou através de plataformas como a <strong>INFLU</strong> que conectam marcas a microcriadores com cachê fixo por vídeo.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-12 col-lg-6">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 h-100 space-y-1.5">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <strong class="text-xs text-slate-900">5. Gorjetas Diretas (Tips)</strong>
+                        <span class="badge bg-slate-200 text-slate-700 text-[9px]">100k seguidores</span>
+                      </div>
+                      <p class="text-[11px] text-slate-600 mb-0">
+                        Recebimento de doações financeiras espontâneas diretamente no perfil dos fãs mais fiéis.
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- 4. RAIO-X DE RPM & MANUAL DE EDIÇÃO TRANSFORMADORA -->
+              <div class="row g-3">
+                
+                <!-- Tabela de RPM por Nicho -->
+                <div class="col-12 col-md-5">
+                  <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm h-100 space-y-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="fa-solid fa-dollar-sign text-emerald-600"></i>
+                      <h3 class="text-xs fw-bold text-slate-900 mb-0">Faixa de RPM por Nicho</h3>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mb-0">A Receita por Mil Visualizações varia conforme o poder de compra do anunciante:</p>
+
+                    <div class="space-y-2 pt-1">
+                      <div class="p-2.5 rounded-xl ${res.personalBrand.rpmCategory === 'financas' ? 'bg-indigo-50 border-2 border-indigo-300' : 'bg-slate-50 border border-slate-200'} text-xs">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <strong class="text-slate-900">Finanças, Investimentos &amp; Negócios</strong>
+                          <span class="badge bg-emerald-100 text-emerald-800 fw-bold">US$ 0,80 - 2,50</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500">Alto RPM (Marcas financeiras)</span>
+                      </div>
+
+                      <div class="p-2.5 rounded-xl ${res.personalBrand.rpmCategory === 'tech' ? 'bg-indigo-50 border-2 border-indigo-300' : 'bg-slate-50 border border-slate-200'} text-xs">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <strong class="text-slate-900">Tecnologia, Gadgets &amp; Softwares</strong>
+                          <span class="badge bg-indigo-100 text-indigo-800 fw-bold">US$ 0,40 - 0,70</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500">RPM Intermediário</span>
+                      </div>
+
+                      <div class="p-2.5 rounded-xl ${res.personalBrand.rpmCategory === 'saude' ? 'bg-indigo-50 border-2 border-indigo-300' : 'bg-slate-50 border border-slate-200'} text-xs">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <strong class="text-slate-900">Saúde, Beleza &amp; Desenv. Pessoal</strong>
+                          <span class="badge bg-amber-100 text-amber-800 fw-bold">US$ 0,30 - 0,60</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500">RPM Bom • Alto volume e vendas</span>
+                      </div>
+
+                      <div class="p-2.5 rounded-xl ${res.personalBrand.rpmCategory === 'comedia' ? 'bg-indigo-50 border-2 border-indigo-300' : 'bg-slate-50 border border-slate-200'} text-xs">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <strong class="text-slate-900">Comédia &amp; Entretenimento Geral</strong>
+                          <span class="badge bg-slate-200 text-slate-700 fw-bold">US$ 0,05 - 0,15</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500">Baixo RPM</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Regras de Edição Transformadora -->
+                <div class="col-12 col-md-7">
+                  <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm h-100 space-y-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="fa-solid fa-wand-magic-sparkles text-indigo-600"></i>
+                      <h3 class="text-xs fw-bold text-slate-900 mb-0">Manual de Edição Transformadora (Driblar Penalidades)</h3>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mb-0">Para evitar que o algoritmo desqualifique seus vídeos por falta de originalidade:</p>
+
+                    <div class="row g-2 pt-1 text-xs">
+                      <div class="col-12 col-sm-6">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                          <strong class="text-slate-900 d-block">⏱️ Acima de 60 Segundos</strong>
+                          <span class="text-slate-600 text-[11px]">O programa de recompensas só remunera conteúdos com mais de 1 minuto.</span>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-6">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                          <strong class="text-slate-900 d-block">📱 Vertical Tela Cheia (9:16)</strong>
+                          <span class="text-slate-600 text-[11px]">Remova bordas estáticas ou layouts quadrados que reduzem retenção.</span>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-6">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                          <strong class="text-slate-900 d-block">🔍 Zooms a cada 2 a 3 Segundos</strong>
+                          <span class="text-slate-600 text-[11px]">Faça cortes rápidos e zooms in/out para manter a atenção nos olhos.</span>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-6">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                          <strong class="text-slate-900 d-block">🎙️ Voz Própria &amp; Sound FX</strong>
+                          <span class="text-slate-600 text-[11px]">Áudio original e efeitos sonoros nos respiros e pausas da narrativa.</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- 5. PREVENÇÃO DE SHADOWBAN & REGULARIZAÇÃO FISCAL NO BRASIL -->
+              <div class="row g-3">
+                
+                <!-- Shadowban Diagnostic -->
+                <div class="col-12 col-md-6">
+                  <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm h-100 space-y-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="fa-solid fa-shield-halved text-rose-600"></i>
+                      <h3 class="text-xs fw-bold text-slate-900 mb-0">Prevenção &amp; Cura de Shadowban</h3>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mb-0">Sintoma: Vídeos travados em 50-200 views e "Para Você" (FYP) abaixo de 5%.</p>
+
+                    <div class="space-y-2 pt-1 text-xs">
+                      <div class="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 space-y-1">
+                        <strong>⚠️ 3 Causas de Punição do Algoritmo:</strong>
+                        <ul class="mb-0 ps-3 text-[11px] space-y-0.5">
+                          <li><strong>Spam:</strong> Rajadas de postagens no mesmo dia ou seguir em massa.</li>
+                          <li><strong>Ambiente Técnico:</strong> Troca rápida de dispositivos ou IPs sujos.</li>
+                          <li><strong>Vinculação:</strong> Várias contas compartilhando o mesmo Wi-Fi residencial.</li>
+                        </ul>
+                      </div>
+
+                      <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px]">
+                        <strong>💡 Protocolo de Cura:</strong> Pause postagens por <strong>48 a 72 horas</strong>. Retome com 1 a 2 vídeos/dia em horários fixos e use proxies 4G/5G dedicados se operar múltiplas contas.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Regularização Fiscal & Impostos no Brasil -->
+                <div class="col-12 col-md-6">
+                  <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm h-100 space-y-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="fa-solid fa-file-invoice-dollar text-indigo-600"></i>
+                      <h3 class="text-xs fw-bold text-slate-900 mb-0">Profissionalização Fiscal no Brasil</h3>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mb-0">Evite perder lucros no IRPF e formalize sua renda como criador de conteúdo:</p>
+
+                    <div class="space-y-2 pt-1 text-xs">
+                      <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <span class="text-slate-600">Pessoa Física (IRPF):</span>
+                          <span class="badge bg-rose-100 text-rose-800 fw-bold">Até 27,5%</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mb-0">Ganhos acima de R$ 4.664,68/mês geram alta carga tributária se recebidos na conta PF.</p>
+                      </div>
+
+                      <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 space-y-1">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <strong>Pessoa Jurídica (Simples Nacional):</strong>
+                          <span class="badge bg-emerald-600 text-white fw-bold">A partir de 6%</span>
+                        </div>
+                        <p class="text-[11px] text-indigo-900 mb-0">Abra um CNPJ para influencers/infoprodutores, emita Notas Fiscais para marcas e economize milhares de reais em impostos legalmente.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- 6. QUIZ INTERATIVO DE FIXAÇÃO PEDAGÓGICA -->
+              <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-indigo-600"></i>
+                    <h3 class="text-xs fw-bold text-slate-900 mb-0">Quiz Rápido: Teste seus Conhecimentos em Branding &amp; Monetização</h3>
+                  </div>
+                  <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">Exercício Prático</span>
+                </div>
+
+                <div class="space-y-3 pt-1" id="branding-quiz-container">
+                  
+                  <!-- Pergunta 1 -->
+                  <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                    <strong class="text-slate-900 d-block">1. Qual tipo de conta é obrigatório para ser elegível ao Programa de Recompensas do TikTok?</strong>
+                    <div class="row g-2">
+                      <div class="col-12 col-sm-6">
+                        <button type="button" onclick="handleQuizAnswer(this, true, 'Correto! Contas corporativas possuem restrições em direitos autorais de áudio, por isso a conta Pessoal é exigida.')" class="btn btn-sm btn-light border border-slate-200 w-100 text-start py-2 px-3 text-[11px] hover:border-indigo-300">
+                          A) Conta Pessoal
+                        </button>
+                      </div>
+                      <div class="col-12 col-sm-6">
+                        <button type="button" onclick="handleQuizAnswer(this, false, 'Incorreto. Contas Business não qualificam devido a restrições de direitos de áudio.')" class="btn btn-sm btn-light border border-slate-200 w-100 text-start py-2 px-3 text-[11px] hover:border-indigo-300">
+                          B) Conta Corporativa / Business
+                        </button>
+                      </div>
+                    </div>
+                    <div class="quiz-feedback hidden text-[11px] p-2 rounded-lg font-semibold"></div>
+                  </div>
+
+                  <!-- Pergunta 2 -->
+                  <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                    <strong class="text-slate-900 d-block">2. O que fazer se seus vídeos entrarem em Shadowban (travados em 50-200 views)?</strong>
+                    <div class="row g-2">
+                      <div class="col-12 col-sm-6">
+                        <button type="button" onclick="handleQuizAnswer(this, true, 'Exato! A pausa de 48-72h reinicia os parâmetros algorítmicos para retorno seguro.')" class="btn btn-sm btn-light border border-slate-200 w-100 text-start py-2 px-3 text-[11px] hover:border-indigo-300">
+                          A) Pausar postagens por 48 a 72h e voltar com 1-2 posts/dia
+                        </button>
+                      </div>
+                      <div class="col-12 col-sm-6">
+                        <button type="button" onclick="handleQuizAnswer(this, false, 'Incorreto! Postar rajadas agrava o status de spam no sistema.')" class="btn btn-sm btn-light border border-slate-200 w-100 text-start py-2 px-3 text-[11px] hover:border-indigo-300">
+                          B) Postar 10 vídeos no mesmo dia para tentar viralizar
+                        </button>
+                      </div>
+                    </div>
+                    <div class="quiz-feedback hidden text-[11px] p-2 rounded-lg font-semibold"></div>
+                  </div>
+
+                  <!-- Pergunta 3 -->
+                  <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                    <strong class="text-slate-900 d-block">3. A partir de qual faixa de ganho mensal a tributação em Pessoa Física chega a 27,5% no Brasil?</strong>
+                    <div class="row g-2">
+                      <div class="col-12 col-sm-6">
+                        <button type="button" onclick="handleQuizAnswer(this, true, 'Perfeito! Acima de R$ 4.664,68, a abertura de CNPJ no Simples Nacional a partir de 6% gera grande economia.')" class="btn btn-sm btn-light border border-slate-200 w-100 text-start py-2 px-3 text-[11px] hover:border-indigo-300">
+                          A) Acima de R$ 4.664,68
+                        </button>
+                      </div>
+                      <div class="col-12 col-sm-6">
+                        <button type="button" onclick="handleQuizAnswer(this, false, 'Incorreto. A faixa máxima de 27,5% do IRPF se inicia a partir de R$ 4.664,68.')" class="btn btn-sm btn-light border border-slate-200 w-100 text-start py-2 px-3 text-[11px] hover:border-indigo-300">
+                          B) Apenas acima de R$ 50.000,00
+                        </button>
+                      </div>
+                    </div>
+                    <div class="quiz-feedback hidden text-[11px] p-2 rounded-lg font-semibold"></div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          ` : ''}
+
         </div>
       ` : ''}
 
@@ -12229,6 +12689,32 @@ function generateAIBios(studentName, location, cleanHandle, liveBio, nicheCatego
     minimalist,
     activityCore
   };
+}
+
+
+function handleQuizAnswer(btn, isCorrect, explanation) {
+  const parent = btn.closest('.p-3.5');
+  if (!parent) return;
+  const feedback = parent.querySelector('.quiz-feedback');
+  const allBtns = parent.querySelectorAll('button');
+  allBtns.forEach(b => {
+    b.disabled = true;
+    b.classList.remove('btn-indigo', 'btn-light');
+  });
+
+  if (isCorrect) {
+    btn.classList.add('btn-success', 'text-white');
+    if (feedback) {
+      feedback.className = 'quiz-feedback text-[11px] p-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 mt-2 d-block';
+      feedback.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> ' + explanation;
+    }
+  } else {
+    btn.classList.add('btn-danger', 'text-white');
+    if (feedback) {
+      feedback.className = 'quiz-feedback text-[11px] p-2.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 mt-2 d-block';
+      feedback.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600 mr-1.5"></i> ' + explanation;
+    }
+  }
 }
 
 function generateEmpatheticAuditEngine(handle, liveData, student) {
@@ -12548,7 +13034,52 @@ function generateEmpatheticAuditEngine(handle, liveData, student) {
   const selected = nicheData[category] || nicheData.servicos_geral;
   const aiBios = generateAIBios(studentName, location, cleanHandle, liveBio, category, nicheTitle, student);
 
+
+  // Brand & Monetization AI Engine (Harrington 90 Days + TikTok Guidelines)
+  let rpmCat = "saude";
+  if (category === "marketing_design" || category === "dev") rpmCat = "financas";
+  else if (category === "moda" || category === "beleza" || category === "gastronomia") rpmCat = "saude";
+  else rpmCat = "saude";
+
+  let coreSkill = "Estratégia de Posicionamento & Atendimento";
+  if (category === "moda") coreSkill = "Curadoria de Looks, Caimento & Consultoria de Imagem";
+  else if (category === "fotografia") coreSkill = "Direção de Ensaios Afetivos & Produção Audiovisual";
+  else if (category === "marketing_design") coreSkill = "Gestão Estratégica de Redes, Criativos & Captação de Clientes";
+  else if (category === "gastronomia") coreSkill = "Elaboração de Receitas Artesanais & Experiência Gastronômica";
+  else if (category === "artesanato") coreSkill = "Design Autoral Manual & Criação de Peças Exclusivas";
+  else if (category === "beleza") coreSkill = "Procedimentos de Alta Estética & Realce de Autoestima";
+  else if (category === "saude_fitness") coreSkill = "Prescrição de Hábitos Saudáveis & Acompanhamento Individualizado";
+
+  const brandDeclaration = [
+    `Meu nome é ${studentName} e atuo com ${nicheTitle.toLowerCase()} atendendo ${location} e região.`,
+    `Minha missão é entregar soluções de alta qualidade que eliminam atritos e geram transformação real para meus clientes.`,
+    `Não foco em promessas vazias, mas em método prático, pontualidade e atendimento humanizado.`,
+    `Ao longo da minha trajetória com o Programa Emprega Mais Alagoas, desenvolvi processos validados para garantir segurança e satisfação.`,
+    `Se você busca excelência e resultados consistentes sem complicações, você está no lugar certo.`
+  ];
+
+  const top5Networking = [
+    { profile: "Empresas & Negócios Locais em " + location, valueAction: "Oferecer um diagnóstico gratuito de 3 melhorias práticas sem cobrar nada primeiro." },
+    { profile: "Criadores e Profissionais Complementares", valueAction: "Propor colabs e lives conjuntas somando audiências sem disputar o mesmo produto." },
+    { profile: "Fornecedores e Parceiros de Insumos", valueAction: "Negociar descontos mútuos e divulgar a qualidade dos materiais com transparência." },
+    { profile: "Clientes Mais Fiéis e Antigos", valueAction: "Pedir depoimentos em vídeo em troca de brindes ou condições exclusivas de fidelidade." },
+    { profile: "Lideranças Comunitárias e Associações", valueAction: "Participar de eventos regionais e agregar valor em projetos locais de capacitação." }
+  ];
+
+  const personalBrand = {
+    coreSkill,
+    rpmCategory: rpmCat,
+    brandDeclaration,
+    top5Networking,
+    purpose3Circles: {
+      likes: `Atuar na área de ${nicheTitle} com liberdade e propósito autêntico`,
+      excels: coreSkill,
+      marketOpportunity: `Demanda aquecida por serviços de confiança em ${location} e vendas online no TikTok/Instagram`
+    }
+  };
+
   return {
+    personalBrand: personalBrand,
     handle: cleanHandle,
     displayName: studentName,
     location: location,
