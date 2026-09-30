@@ -1,4 +1,304 @@
 
+function renderVisualGalleryContent() {
+  const activeCat = visualGalleryState.activeCategory || 'all';
+  const query = (visualGalleryState.searchQuery || '').toLowerCase().trim();
+
+  const cases = typeof AWESOME_GPT_IMAGE_CASES !== 'undefined' ? AWESOME_GPT_IMAGE_CASES : [];
+  
+  const filtered = cases.filter(c => {
+    if (activeCat !== 'all' && c.category !== activeCat) return false;
+    if (query) {
+      const match = (c.title + ' ' + c.categoryLabel + ' ' + c.description + ' ' + c.prompt + ' ' + c.tags.join(' ')).toLowerCase();
+      if (!match.includes(query)) return false;
+    }
+    return true;
+  });
+
+  const categories = [
+    { key: 'all', label: 'Todos os Cases', icon: 'fa-layer-group', count: cases.length },
+    { key: 'infograficos', label: 'Infográficos & Diagramas', icon: 'fa-chart-pie' },
+    { key: 'social_mockup', label: 'Mockups de Redes', icon: 'fa-mobile-screen' },
+    { key: 'posters', label: 'Pôsteres & Identidade', icon: 'fa-palette' },
+    { key: 'produtos', label: 'Produtos & Gastronomia', icon: 'fa-camera' },
+    { key: 'ilustracao', label: 'Ilustração & 3D', icon: 'fa-cube' }
+  ];
+
+  return `
+    <div class="space-y-5 fade-in">
+      
+      <!-- HERO BANNER AWESOME GPT-IMAGE 2 -->
+      <div class="p-5 sm:p-7 rounded-3xl text-white shadow-xl space-y-3" style="background: linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #311042 100%) !important; color: #ffffff !important; border: 1px solid #4338ca !important;">
+        <div class="d-flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-4">
+          <div class="space-y-2 max-w-2xl">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <span class="badge bg-gradient-to-r from-amber-500 to-rose-500 text-slate-950 font-black px-3 py-1 text-[11px] rounded-pill text-uppercase shadow-sm">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Galeria Visual IA
+              </span>
+              <a href="https://github.com/freestylefly/awesome-gpt-image-2/blob/main/docs/gallery-part-1.md#case-130" target="_blank" rel="noopener noreferrer" class="badge bg-white/15 text-white border border-white/20 px-3 py-1 text-[11px] text-decoration-none rounded-pill d-inline-flex align-items-center gap-1.5 hover:bg-white/25 transition-all">
+                <i class="fa-brands fa-github"></i> awesome-gpt-image-2 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+              </a>
+              <span class="badge bg-emerald-500/80 text-white px-2.5 py-1 text-[11px] rounded-pill">
+                540+ Modelos Industriais
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-2xl font-black text-white mb-0">Estúdio de Imagens IA &amp; Engenharia de Prompts Visuais</h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-0">
+              Acervo de prompts visuais de alta fidelidade para <strong>GPT-4o (DALL-E 3), Midjourney, Bing Image Creator e Flux</strong>. Crie infográficos, mockups de redes sociais, fotografia de produtos comerciais e identidades visuais com 1 clique.
+            </p>
+          </div>
+
+          <div class="d-flex flex-row sm:flex-column align-items-stretch gap-2 flex-shrink-0 w-100 sm:w-auto">
+            <button onclick="switchPromptsSubTab('builder')" class="btn btn-primary bg-indigo-600 hover:bg-indigo-700 text-white fw-bold px-4 py-2.5 rounded-2xl text-xs d-inline-flex align-items-center justify-content-center gap-2 shadow-md border-0">
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Montar Prompt 6D
+            </button>
+            <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer" class="btn btn-dark bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-2 rounded-2xl text-xs d-inline-flex align-items-center justify-content-center gap-1.5">
+              <i class="fa-solid fa-robot text-emerald-400"></i> Abrir ChatGPT Plus
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BARRA DE BUSCA E FILTROS -->
+      <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-6">
+            <div class="position-relative">
+              <i class="fa-solid fa-magnifying-glass position-absolute start-0 top-50 translate-middle-y ps-3 text-slate-400"></i>
+              <input 
+                type="text" 
+                placeholder="Buscar por estilo, infográfico, produto, mockups, fotografia..." 
+                value="${visualGalleryState.searchQuery || ''}" 
+                oninput="handleVisualGallerySearch(event)"
+                class="form-control form-control-sm rounded-xl ps-5 py-2 text-xs border-slate-200 bg-slate-50"
+              />
+            </div>
+          </div>
+          <div class="col-12 col-md-6 text-end">
+            <span class="text-xs text-slate-500 font-monospace">Exibindo <strong>${filtered.length}</strong> de ${cases.length} modelos visuais</span>
+          </div>
+        </div>
+
+        <!-- CATEGORIAS EM CHIPS -->
+        <div class="d-flex align-items-center gap-1.5 flex-wrap pt-1 border-top border-slate-100">
+          ${categories.map(cat => `
+            <button 
+              type="button" 
+              onclick="filterVisualGalleryCategory('${cat.key}')" 
+              class="btn btn-sm ${activeCat === cat.key ? 'btn-primary bg-indigo-600 text-white fw-bold shadow-xs' : 'btn-light border border-slate-200 text-slate-600'} rounded-pill px-3 py-1 text-xs d-inline-flex align-items-center gap-1.5 transition-all"
+            >
+              <i class="fa-solid ${cat.icon}"></i> ${cat.label} ${cat.count !== undefined ? `(${cat.count})` : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- GRID DE CARDS VISUAIS -->
+      <div class="row g-3.5">
+        ${filtered.map(item => `
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="card h-100 border border-slate-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-md transition-all bg-white d-flex flex-column justify-content-between">
+              
+              <div>
+                <!-- PREVIEW DA IMAGEM -->
+                <div class="position-relative bg-slate-950 overflow-hidden" style="height: 220px;">
+                  <img 
+                    src="${item.image}" 
+                    alt="${item.title}" 
+                    class="w-100 h-100 object-fit-cover transition-transform hover:scale-105" 
+                    loading="lazy"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <div class="hidden w-100 h-100 align-items-center justify-content-center bg-slate-900 text-slate-400 p-4 text-center">
+                    <div class="space-y-1">
+                      <i class="fa-solid fa-image fs-1 text-indigo-400"></i>
+                      <span class="d-block text-xs fw-bold text-white">${item.title}</span>
+                      <span class="text-[10px] text-slate-400">Preview no repositório GitHub</span>
+                    </div>
+                  </div>
+
+                  <div class="position-absolute top-3 start-3 d-flex align-items-center gap-1.5">
+                    <span class="badge bg-slate-900/80 backdrop-blur-md text-amber-300 font-bold border border-white/20 rounded-pill px-2.5 py-1 text-[10px] shadow-sm">
+                      Case #${item.caseNumber}
+                    </span>
+                    <span class="badge bg-indigo-600/90 backdrop-blur-md text-white border border-white/20 rounded-pill px-2 py-1 text-[10px]">
+                      ${item.categoryLabel}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- CONTEÚDO DO CARD -->
+                <div class="p-4 space-y-2.5">
+                  <div>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 mb-1 leading-snug">${item.title}</h3>
+                    <p class="text-[11px] text-slate-500 leading-relaxed mb-0">${item.description}</p>
+                  </div>
+
+                  <!-- APLICAÇÃO PRÁTICA -->
+                  <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 text-[11px] text-emerald-900">
+                    <i class="fa-solid fa-bullseye text-emerald-600 mr-1"></i>
+                    <strong>Como usar:</strong> ${item.application}
+                  </div>
+
+                  <!-- PROMPT CODE BOX -->
+                  <div class="space-y-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <span class="text-[10px] text-slate-400 text-uppercase fw-bold">Prompt de Engenharia:</span>
+                      <span class="text-[10px] text-indigo-600 font-monospace cursor-pointer" onclick="openCustomizeVisualPromptModal('${item.id}')">
+                        <i class="fa-solid fa-sliders mr-1"></i> Personalizar
+                      </span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-900 text-slate-200 font-monospace text-[11px] leading-relaxed overflow-hidden" style="max-height: 85px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                      ${item.prompt}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AÇÕES DO CARD -->
+              <div class="p-3 border-top border-slate-100 bg-slate-50/60 d-flex align-items-center justify-content-between gap-2">
+                <button 
+                  type="button" 
+                  onclick="openCustomizeVisualPromptModal('${item.id}')" 
+                  class="btn btn-sm btn-light border border-slate-200 text-indigo-700 fw-bold rounded-xl px-2.5 py-1.5 text-xs d-inline-flex align-items-center gap-1.5 hover:border-indigo-300"
+                  title="Substituir produto, marca e cidade"
+                >
+                  <i class="fa-solid fa-sliders"></i> Adaptar
+                </button>
+
+                <div class="d-flex align-items-center gap-1.5">
+                  <a 
+                    href="https://github.com/freestylefly/awesome-gpt-image-2/blob/main/docs/gallery-part-1.md#${item.githubAnchor}" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="btn btn-sm btn-light border border-slate-200 text-slate-500 rounded-xl px-2 py-1.5 text-xs hover:text-slate-900"
+                    title="Ver case original no GitHub"
+                  >
+                    <i class="fa-brands fa-github"></i>
+                  </a>
+                  <button 
+                    type="button" 
+                    onclick="copyVisualPromptCase('${item.id}')" 
+                    class="btn btn-sm btn-primary bg-indigo-600 hover:bg-indigo-700 text-white fw-bold rounded-xl px-3 py-1.5 text-xs border-0 d-inline-flex align-items-center gap-1.5 shadow-xs"
+                  >
+                    <i class="fa-solid fa-copy text-amber-300"></i> Copiar
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+    </div>
+  `;
+}
+
+function renderPrompt6DBuilderContent() {
+  return `
+    <div class="space-y-5 fade-in">
+      
+      <!-- HERO CONSTRUTOR 6D -->
+      <div class="p-5 sm:p-7 rounded-3xl text-white shadow-xl space-y-3" style="background: linear-gradient(135deg, #090d16 0%, #064e3b 50%, #0f172a 100%) !important; color: #ffffff !important; border: 1px solid #059669 !important;">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-emerald-400 text-slate-950 font-bold px-3 py-1 text-[11px] rounded-pill">
+            Fórmula Industrial
+          </span>
+          <span class="badge bg-white/10 text-white px-2.5 py-1 text-[11px] rounded-pill">
+            Framework de 6 Dimensões
+          </span>
+        </div>
+        <h2 class="text-lg sm:text-2xl font-black text-white mb-0">Construtor Mestre de Prompts Visuais</h2>
+        <p class="text-xs sm:text-sm text-emerald-100 leading-relaxed mb-0">
+          Baseado no guia industrial do <strong>Awesome GPT-Image 2</strong>. Preencha os 6 pilares para gerar comandos infalíveis para fotos de produtos, ensaios de moda, posts e ilustrações comerciais.
+        </p>
+      </div>
+
+      <!-- FORMULÁRIO DE 6 DIMENSÕES -->
+      <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-xs fw-bold text-slate-900 text-uppercase tracking-wider mb-2">Configure as 6 Dimensões do seu Criativo:</h3>
+
+        <div class="row g-3">
+          
+          <div class="col-12 col-md-6">
+            <label class="form-label text-xs fw-bold text-slate-800 mb-1">1. Sujeito / Objeto Principal:</label>
+            <input type="text" id="p6-subject" class="form-control rounded-xl text-xs py-2" value="Bolo artesanal de chocolate belga vulcão com morangos frescos" />
+            <span class="text-[10px] text-slate-400">O que é o elemento principal da imagem</span>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label text-xs fw-bold text-slate-800 mb-1">2. Estilo Visual &amp; Meio:</label>
+            <select id="p6-style" class="form-select rounded-xl text-xs py-2">
+              <option value="Commercial Gourmet Food Photography 8K">Fotografia Publicitária Comercial 8K</option>
+              <option value="Vogue Fashion Editorial Portrait 85mm">Editorial de Moda &amp; Retrato Profissional</option>
+              <option value="Vertical 9:16 Isometric Infographic Cutaway Atlas">Infográfico Isométrico 9:16 com Cortes Técnicos</option>
+              <option value="Sleek 3D Glassmorphism Mobile UI Mockup">Mockup 3D de Celular &amp; Interface UI/UX</option>
+              <option value="Artisanal Packaging and Brand Touchpoints Moodboard">Moodboard de Embalagens &amp; Branding</option>
+              <option value="Minimalist Scandinavian Studio Photo">Minimalista Nórdico com Luz Suave</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label text-xs fw-bold text-slate-800 mb-1">3. Composição &amp; Ângulo:</label>
+            <input type="text" id="p6-comp" class="form-control rounded-xl text-xs py-2" value="Close-up macro shot with melted chocolate dripping, ingredients floating in zero gravity" />
+            <span class="text-[10px] text-slate-400">Ex: Close-up macro, Flat lay superior, Visão isométrica 45 graus</span>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label text-xs fw-bold text-slate-800 mb-1">4. Iluminação &amp; Atmosfera:</label>
+            <select id="p6-light" class="form-select rounded-xl text-xs py-2">
+              <option value="Dramatic commercial rim lighting with soft natural window fill">Luz de Estúdio com Rim Light e Preenchimento Natural</option>
+              <option value="Warm golden hour sunset backlight with lens flare">Golden Hour (Entardecer Quente Dourado)</option>
+              <option value="High-key clean beauty softbox lighting">Softbox Difusa de Beleza (Clean)</option>
+              <option value="Moody dark aesthetic with cyber glowing accents">Escuro Dramático com Detalhes Brilhantes</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label text-xs fw-bold text-slate-800 mb-1">5. Cores &amp; Texturas:</label>
+            <input type="text" id="p6-color" class="form-control rounded-xl text-xs py-2" value="Warm chocolate tones, deep ruby red berries, golden crust textures, clean slate background" />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label text-xs fw-bold text-slate-800 mb-1">6. Especificações Técnicas &amp; Proporção:</label>
+            <input type="text" id="p6-params" class="form-control rounded-xl text-xs py-2" value="8K resolution, octane render, photorealistic, sharp focus on details, no text distortion" />
+          </div>
+
+        </div>
+
+        <div class="pt-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <button type="button" onclick="buildPromptFrom6Dimensions()" class="btn btn-primary bg-emerald-600 hover:bg-emerald-700 text-white fw-bold px-5 py-2.5 rounded-2xl text-xs border-0 shadow-md d-inline-flex align-items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Gerar Prompt Mestre
+          </button>
+        </div>
+
+        <!-- SAÍDA DO PROMPT MESTRE -->
+        <div class="space-y-2 pt-2 border-top border-slate-100">
+          <div class="d-flex align-items-center justify-content-between">
+            <strong class="text-xs text-slate-900">Resultado do Prompt Mestre:</strong>
+            <button type="button" onclick="copyToClipboard(document.getElementById('p6-master-output').value, 'Prompt mestre copiado!')" class="btn btn-sm btn-light border border-slate-200 text-indigo-700 rounded-xl px-3 py-1 text-xs fw-bold">
+              <i class="fa-solid fa-copy"></i> Copiar Prompt
+            </button>
+          </div>
+          <textarea id="p6-master-output" rows="4" readonly class="form-control text-xs font-monospace bg-slate-900 text-slate-100 p-3 rounded-2xl border border-slate-700 shadow-inner">Commercial Gourmet Food Photography 8K. Bolo artesanal de chocolate belga vulcão com morangos frescos. Close-up macro shot with melted chocolate dripping, ingredients floating in zero gravity. Dramatic commercial rim lighting with soft natural window fill. Color palette: Warm chocolate tones, deep ruby red berries, golden crust textures, clean slate background. Specifications: 8K resolution, octane render, photorealistic, sharp focus on details, no text distortion.</textarea>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+function copyVisualPromptCase(caseId) {
+  const cases = typeof AWESOME_GPT_IMAGE_CASES !== 'undefined' ? AWESOME_GPT_IMAGE_CASES : [];
+  const item = cases.find(c => c.id === caseId);
+  if (item && item.prompt) {
+    copyToClipboard(item.prompt, 'Prompt visual copiado para a área de transferência!');
+  }
+}
+
+
+
 // ==========================================
 // NAVEGAÇÃO DIRETA PARA O CHAT AO VIVO
 // ==========================================
@@ -10724,38 +11024,7 @@ function savePromptsDataToStorage() {
 // -------------------------------------------------------------
 // RENDERIZAÇÃO DA ABA: LABORATÓRIO DE PROMPTS & IA
 // -------------------------------------------------------------
-function renderPromptsTab(container) {
-  // REGRA DE ACESSO: Exige autenticação por CPF
-  if (!AppState.currentUser) {
-    renderTabAccessRestriction(container, 'prompts');
-    return;
-  }
-
-  const isProf = AppState.currentUser.role === "professor";
-  const isAluno = AppState.currentUser.role === "aluno";
-  const activeCategory = AppState.promptsActiveCategory || "all";
-  const searchQuery = (AppState.promptsSearchQuery || "").toLowerCase().trim();
-  const favoriteIds = AppState.favoritePrompts || [];
-  const guideExpanded = AppState.promptsGuideExpanded !== false;
-
-  // Filtragem dos Prompts
-  const filteredPrompts = AppState.promptsLibrary.filter(p => {
-    // Filtro por Categoria
-    if (activeCategory === "favorites") {
-      if (!favoriteIds.includes(p.id)) return false;
-    } else if (activeCategory !== "all" && p.category !== activeCategory) {
-      return false;
-    }
-
-    // Filtro por Busca Textual
-    if (searchQuery) {
-      const matchText = `${p.title} ${p.act} ${p.categoryLabel} ${p.description} ${p.prompt} ${(p.tags || []).join(" ")}`.toLowerCase();
-      if (!matchText.includes(searchQuery)) return false;
-    }
-
-    return true;
-  });
-
+function renderTextPersonasContent(filteredPrompts, favoriteIds, isProf, guideExpanded) {
   const categories = [
     { key: "all", label: "Todos os Prompts", icon: "fa-layer-group" },
     { key: "marketing", label: "Marketing & Redes", icon: "fa-share-nodes" },
@@ -10767,11 +11036,9 @@ function renderPromptsTab(container) {
     { key: "favorites", label: "Favoritos", icon: "fa-star", count: favoriteIds.length }
   ];
 
-  container.innerHTML = `
-    <div class="space-y-6 fade-in">
-      
+  return `
       <!-- Banner Hero Principal do Repositório prompts.chat -->
-      <div class="position-relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white shadow-xl border border-indigo-500/30" style="background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%) !important; color: #ffffff !important;">
+      <div class="position-relative overflow-hidden p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-indigo-500/30" style="background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%) !important; color: #ffffff !important;">
         <div class="position-relative z-10 d-flex flex-column md:flex-row align-items-start md:items-center justify-content-between gap-6">
           <div class="space-y-2.5 max-w-2xl">
             <div class="d-flex flex-wrap align-items-center gap-2">
@@ -10793,7 +11060,7 @@ function renderPromptsTab(container) {
             </div>
 
             <h1 class="text-xl sm:text-3xl fw-bolder tracking-tight leading-tight">
-              Laboratório de Prompts & Personas de IA
+              Laboratório de Prompts &amp; Personas de IA
             </h1>
             <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Transforme o ChatGPT, Gemini e Claude em <strong>especialistas sêniores sob demanda</strong>. Esta página traz todo o acervo do repositório mundial <em>prompts.chat</em> traduzido e adaptado para mídias digitais, com personalizador dinâmico de variáveis.
@@ -10802,7 +11069,6 @@ function renderPromptsTab(container) {
 
           <!-- Métricas Rápidas & Ações de Docente/Discente -->
           <div class="d-flex flex-column align-items-stretch sm:align-items-end gap-3 flex-shrink-0">
-            <!-- Métricas em cápsula unificada -->
             <div class="d-flex align-items-center justify-content-center gap-3 text-center bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 shadow-sm">
               <div class="px-2">
                 <span class="d-block text-base sm:text-lg fw-bolder text-amber-400">${AppState.promptsLibrary.length}</span>
@@ -10858,265 +11124,224 @@ function renderPromptsTab(container) {
               <i class="fa-solid fa-graduation-cap"></i>
             </div>
             <div>
-              <h2 class="text-sm sm:text-base fw-bold text-slate-900 d-flex align-items-center gap-2">
-                Como Funciona este Repositório & Passo a Passo de Uso para o Aluno
+              <h2 class="text-sm sm:text-base fw-bold text-slate-900 d-flex align-items-center gap-2 mb-0">
+                Como Funciona este Repositório &amp; Passo a Passo de Uso para o Aluno
                 <span class="px-2 py-0.5 rounded-circle text-[10px] fw-bold bg-amber-100 text-amber-800 ">
                   Guia Didático Oficial
                 </span>
               </h2>
-              <p class="text-xs text-slate-500 ">
+              <p class="text-xs text-slate-500 mb-0">
                 Aprenda a metodologia de <strong>Role Prompting ("Aja como...")</strong> para obter resultados 10x melhores na Inteligência Artificial.
               </p>
             </div>
           </div>
-          <button class="p-2 rounded-xl text-slate-400 transition-colors">
+          <button class="p-2 rounded-xl text-slate-400 transition-colors btn btn-sm border-0">
             <i class="fa-solid ${guideExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
           </button>
         </div>
 
         ${guideExpanded ? `
           <div class="pt-4 border-t border-slate-100 space-y-6 text-xs text-slate-600 fade-in">
-            
-            <!-- Explicação do Repositório -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-1.5">
-                <strong class="text-indigo-900 fw-bold text-xs d-flex align-items-center gap-1.5">
-                  <i class="fa-solid fa-circle-question text-indigo-500"></i> O que é o repositório prompts.chat?
-                </strong>
-                <p class="text-[11px] text-slate-600 leading-relaxed">
-                  Criado pelo desenvolvedor Fatih Kadir Akın (<strong>@f</strong>), o <em>Awesome ChatGPT Prompts</em> tornou-se o repositório open-source mais famoso do mundo para inteligência artificial generativa, acumulando dezenas de milhares de estrelas no GitHub.
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold">1</div>
+                <h3 class="fw-bold text-slate-900 text-xs">O que é Role Prompting?</h3>
+                <p class="text-slate-500 leading-relaxed text-[11px] mb-0">
+                  Ao dizer à IA <em>"Aja como um Estrategista de Mídias Sociais Sênior"</em>, o modelo restringe seu vocabulário e padrões de probabilidade estatística para o domínio de um especialista de topo.
                 </p>
               </div>
 
-              <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-1.5">
-                <strong class="text-emerald-900 fw-bold text-xs d-flex align-items-center gap-1.5">
-                  <i class="fa-solid fa-bullseye text-emerald-500"></i> Para que ele serve no seu aprendizado?
-                </strong>
-                <p class="text-[11px] text-slate-600 leading-relaxed">
-                  Sem um prompt bem estruturado, o ChatGPT dá respostas genéricas e rasas. Ao utilizar o comando <strong>"Aja como [Persona]"</strong>, você ativa os parâmetros de um especialista no modelo, definindo limites, tom de voz e formato de entrega.
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <div class="w-8 h-8 rounded-xl bg-purple-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold">2</div>
+                <h3 class="fw-bold text-slate-900 text-xs">Personalização de Variáveis</h3>
+                <p class="text-slate-500 leading-relaxed text-[11px] mb-0">
+                  Nossos prompts possuem variáveis dinâmicas no formato <code>${'{Campo:Exemplo}'}</code>. Clique no botão <strong>"Personalizar"</strong> para preencher com os dados reais do seu cliente ou negócio de Alagoas.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white d-flex align-items-center justify-content-center text-xs fw-bold">3</div>
+                <h3 class="fw-bold text-slate-900 text-xs">1-Click Copy &amp; Open</h3>
+                <p class="text-slate-500 leading-relaxed text-[11px] mb-0">
+                  Copie com 1 clique para a área de transferência ou abra diretamente no ChatGPT/Gemini com o comando já pronto para colar.
                 </p>
               </div>
             </div>
-
-            <!-- 4 Passos Práticos do Aluno -->
-            <div class="space-y-3">
-              <h3 class="fw-bold text-xs text-uppercase tracking-wider text-slate-400 d-flex align-items-center gap-1.5">
-                <i class="fa-solid fa-route text-indigo-500"></i> Passo a Passo em 4 Fases para Usar Qualquer Prompt:
-              </h3>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white fw-bolder text-xs d-flex align-items-center justify-content-center">1</span>
-                  <h4 class="fw-bold text-slate-800 ">Escolha a Persona</h4>
-                  <p class="text-[11px] text-slate-500 leading-relaxed">Navegue pelas categorias abaixo e encontre a especialidade ideal para a sua tarefa.</p>
-                </div>
-
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white fw-bolder text-xs d-flex align-items-center justify-content-center">2</span>
-                  <h4 class="fw-bold text-slate-800 ">Personalize as Variáveis</h4>
-                  <p class="text-[11px] text-slate-500 leading-relaxed">Clique em <strong>"Personalizar"</strong> para preencher os campos com os dados do seu cliente real.</p>
-                </div>
-
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white fw-bolder text-xs d-flex align-items-center justify-content-center">3</span>
-                  <h4 class="fw-bold text-slate-800 ">Copie em 1 Clique</h4>
-                  <p class="text-[11px] text-slate-500 leading-relaxed">Clique no botão <strong>"Copiar Prompt"</strong> para transferir o texto formatado para a área de transferência.</p>
-                </div>
-
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                  <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white fw-bolder text-xs d-flex align-items-center justify-content-center">4</span>
-                  <h4 class="fw-bold text-slate-800 ">Cole na IA & Interaja</h4>
-                  <p class="text-[11px] text-slate-500 leading-relaxed">Abra o ChatGPT ou Gemini, cole o prompt e converse mantendo o especialista focado no objetivo.</p>
-                </div>
-              </div>
-            </div>
-
           </div>
         ` : ''}
       </div>
 
-      <!-- Barra de Filtros por Categoria & Busca em Tempo Real -->
-      <div class="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-        <div class="d-flex flex-column md:flex-row items-stretch md:items-center justify-content-between gap-3">
+      <!-- Barra de Filtros por Categoria & Busca Rápida -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+        <div class="d-flex flex-column md:flex-row align-items-stretch md:items-center justify-content-between gap-3">
           
-          <!-- Pílulas de Categorias -->
-          <div class="d-flex align-items-center gap-1.5 overflow-x-auto pb-1.5 md:pb-0 scrollbar-none">
-            ${categories.map(c => {
-              const isActive = activeCategory === c.key;
-              const countBadge = c.key === "all" ? AppState.promptsLibrary.length : (c.count !== undefined ? c.count : AppState.promptsLibrary.filter(p => p.category === c.key).length);
-
-              return `
-                <button 
-                  onclick="switchPromptsCategory('${c.key}')" 
-                  class="px-3.5 py-2 rounded-2xl text-xs fw-bold text-nowrap transition-all d-flex align-items-center gap-1.5 cursor-pointer ${isActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300'}"
-                >
-                  <i class="fa-solid ${c.icon}"></i>
-                  <span>${c.label}</span>
-                  <span class="px-1.5 py-0.2 rounded-circle text-[10px] ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'}">${countBadge}</span>
-                </button>
-              `;
-            }).join("")}
-          </div>
-
-          <!-- Campo de Busca Textual -->
-          <div class="w-100 md:w-72 position-relative flex-shrink-0">
-            <i class="fa-solid fa-magnifying-glass position-absolute left-3.5 top-3 text-xs text-slate-400"></i>
+          <div class="position-relative flex-grow-1 max-w-md">
+            <span class="position-absolute start-0 top-50 translate-middle-y ps-3.5 text-slate-400 pointer-events-none">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
             <input 
               type="text" 
-              value="${escapeHtml(AppState.promptsSearchQuery || '')}"
-              oninput="handlePromptsSearchInput(this.value)"
-              placeholder="Buscar persona, nicho ou ferramenta..." 
-              class="w-100 pl-9 pr-3.5 py-2 rounded-2xl border border-slate-200 bg-slate-50 text-xs text-slate-900 placeholder-slate-400 "
+              placeholder="Pesquisar por persona, cargo, nicho, palavra-chave..." 
+              value="${AppState.promptsSearchQuery || ''}" 
+              oninput="handlePromptsSearchInput(this.value)" 
+              class="w-100 ps-10 pe-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:border-indigo-500 transition-all outline-none"
             />
           </div>
 
+          <div class="d-flex align-items-center justify-content-between md:justify-content-end gap-3 text-xs text-slate-500 font-monospace">
+            <span>Mostrando: <strong class="text-slate-900">${filteredPrompts.length}</strong> de ${AppState.promptsLibrary.length} personas</span>
+          </div>
+        </div>
+
+        <!-- Chips de Categorias -->
+        <div class="d-flex align-items-center gap-1.5 flex-wrap pt-2 border-t border-slate-100">
+          ${categories.map(c => {
+            const isActive = (AppState.promptsActiveCategory || 'all') === c.key;
+            return `
+              <button 
+                type="button" 
+                onclick="switchPromptsCategory('${c.key}')" 
+                class="px-3.5 py-1.5 rounded-pill text-xs fw-semibold transition-all d-flex align-items-center gap-1.5 cursor-pointer border ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}"
+              >
+                <i class="fa-solid ${c.icon}"></i>
+                <span>${c.label}</span>
+                ${c.count !== undefined ? `<span class="px-1.5 py-0.2 rounded-circle text-[10px] ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}">${c.count}</span>` : ''}
+              </button>
+            `;
+          }).join('')}
         </div>
       </div>
 
-      <!-- Grid de Cards de Prompts -->
-      ${filteredPrompts.length === 0 ? `
-        <div class="p-12 text-center bg-white rounded-3xl border border-slate-200/80 text-slate-400 space-y-3">
-          <div class="w-14 h-14 rounded-2xl bg-slate-100 d-flex align-items-center justify-content-center text-2xl mx-auto text-slate-400">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-          </div>
-          <h3 class="fw-bold text-sm text-slate-700 ">Nenhum prompt encontrado para esta seleção</h3>
-          <p class="text-xs max-w-sm mx-auto">Tente selecionar outra categoria ou limpar os termos digitados na busca.</p>
-          <button onclick="switchPromptsCategory('all'); handlePromptsSearchInput('');" class="px-4 py-2 rounded-xl text-xs fw-bold bg-indigo-50 text-indigo-600 transition-colors">
-            Ver Todos os Prompts
-          </button>
-        </div>
-      ` : `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          ${filteredPrompts.map(p => {
-            const isFav = favoriteIds.includes(p.id);
-
-            return `
-              <div class="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm transition-all d-flex flex-column justify-content-between space-y-4">
-                
-                <div class="space-y-3">
-                  
-                  <!-- Header do Card: Ícone, Categoria & Favorito -->
-                  <div class="d-flex align-items-center justify-content-between gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${p.color || 'from-indigo-500 to-purple-600'} text-white d-flex align-items-center justify-content-center text-sm shadow-sm flex-shrink-0">
-                        <i class="fa-solid ${p.icon || 'fa-wand-magic-sparkles'}"></i>
-                      </div>
-                      <div>
-                        <span class="px-2 py-0.5 rounded-circle text-[10px] fw-bold bg-slate-100 text-slate-600 ">
-                          ${escapeHtml(p.categoryLabel || p.category)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <button 
-                      onclick="toggleFavoritePrompt('${p.id}')" 
-                      class="p-2 rounded-xl text-slate-400 transition-colors cursor-pointer"
-                      title="${isFav ? 'Remover dos favoritos' : 'Salvar nos favoritos'}"
-                    >
-                      <i class="fa-${isFav ? 'solid' : 'regular'} fa-star ${isFav ? 'text-amber-400' : ''}"></i>
-                    </button>
-                  </div>
-
-                  <!-- Título da Persona e Papel -->
-                  <div>
-                    <h3 class="fw-bold text-sm sm:text-base text-slate-900 leading-snug">
-                      ${escapeHtml(p.title)}
-                    </h3>
-                    <p class="text-[11px] text-indigo-600 fw-semibold mt-0.5 d-flex align-items-center gap-1">
-                      <i class="fa-solid fa-user-astronaut"></i> Persona: <code>${escapeHtml(p.act)}</code>
-                    </p>
-                  </div>
-
-                  <!-- Descrição Didática -->
-                  <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">
-                    ${escapeHtml(p.description)}
-                  </p>
-
-                  <!-- Preview do Prompt com Destaque de Variáveis -->
-                  <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 text-[11px] text-slate-700 font-monospace leading-relaxed line-clamp-4 position-relative group">
-                    ${escapeHtml(p.prompt)}
-                  </div>
-
-                  <!-- Tags do Prompt -->
-                  <div class="d-flex flex-wrap gap-1 pt-1">
-                    ${(p.tags || []).map(t => `
-                      <span class="px-2 py-0.5 rounded-lg text-[9px] fw-semibold bg-slate-100 text-slate-600 ">
-                        #${escapeHtml(t)}
-                      </span>
-                    `).join("")}
-                  </div>
-
+      <!-- Lista / Grid de Prompts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${filteredPrompts.map(prompt => {
+          const isFav = favoriteIds.includes(prompt.id);
+          return `
+            <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all d-flex flex-column justify-content-between space-y-4">
+              <div class="space-y-3">
+                <div class="d-flex align-items-start justify-content-between gap-2">
+                  <span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-pill px-2.5 py-0.5 text-[10px] fw-bold">
+                    ${prompt.categoryLabel}
+                  </span>
+                  <button 
+                    onclick="toggleFavoritePrompt('${prompt.id}')" 
+                    class="btn btn-sm btn-link p-0 text-slate-400 hover:text-amber-500"
+                    title="${isFav ? 'Remover dos favoritos' : 'Favoritar prompt'}"
+                  >
+                    <i class="fa-${isFav ? 'solid text-amber-400' : 'regular'} fa-star"></i>
+                  </button>
                 </div>
 
-                <!-- Footer de Ações do Card -->
-                <div class="pt-3 border-t border-slate-100 d-flex flex-column gap-2">
-                  <div class="d-flex align-items-center gap-1.5">
-                    
-                    <button 
-                      onclick="copyPromptText('${p.id}')" 
-                      class="flex-grow-1 px-3 py-2 rounded-xl fw-bold text-xs bg-indigo-600 text-white shadow-sm transition-all d-flex align-items-center justify-content-center gap-1.5 cursor-pointer active:scale-95"
-                      title="Copiar prompt pronto para colar no ChatGPT"
-                    >
-                      <i class="fa-solid fa-copy"></i> Copiar Prompt
-                    </button>
-
-                    <button 
-                      onclick="openPromptCustomizerModal('${p.id}')" 
-                      class="px-3 py-2 rounded-xl fw-bold text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 transition-all d-flex align-items-center gap-1 cursor-pointer"
-                      title="Preencher variáveis e personalizar"
-                    >
-                      <i class="fa-solid fa-sliders"></i> Personalizar
-                    </button>
-
-                  </div>
-
-                  <div class="d-flex align-items-center justify-content-between text-[10px] text-slate-400 pt-1">
-                    <span class="text-truncate max-w-[150px]"><i class="fa-solid fa-code-fork mr-1"></i>${escapeHtml(p.contributor || 'prompts.chat')}</span>
-                    
-                    <div class="d-flex align-items-center gap-1">
-                      <button 
-                        onclick="openInAiPlatform('${p.id}', 'chatgpt')" 
-                        class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[10px] fw-bold d-flex align-items-center gap-1"
-                        title="Copiar e abrir no ChatGPT"
-                      >
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i> ChatGPT
-                      </button>
-
-                      <button 
-                        onclick="openInAiPlatform('${p.id}', 'gemini')" 
-                        class="px-2 py-1 rounded-lg bg-blue-50 text-blue-700 text-[10px] fw-bold d-flex align-items-center gap-1"
-                        title="Copiar e abrir no Gemini"
-                      >
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i> Gemini
-                      </button>
-
-                      ${(isProf && p.isCustom) ? `
-                        <button 
-                          onclick="deleteCustomPrompt('${p.id}')" 
-                          class="p-1 rounded-lg text-rose-500 " 
-                          title="Excluir este prompt customizado"
-                        >
-                          <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                      ` : ''}
-                    </div>
-                  </div>
-
+                <div>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-900 mb-1">${prompt.title}</h3>
+                  <p class="text-[11px] text-slate-500 leading-relaxed mb-0">${prompt.description}</p>
                 </div>
 
+                <div class="p-2.5 rounded-xl bg-slate-900 text-slate-200 font-monospace text-[11px] leading-relaxed overflow-hidden" style="max-height: 80px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                  ${prompt.prompt}
+                </div>
               </div>
-            `;
-          }).join("")}
-        </div>
-      `}
+
+              <div class="d-flex align-items-center justify-content-between gap-2 pt-3 border-t border-slate-100">
+                <button 
+                  onclick="openPromptCustomizerModal('${prompt.id}')" 
+                  class="btn btn-sm btn-light border border-slate-200 text-indigo-600 rounded-xl px-2.5 py-1.5 text-xs fw-bold d-inline-flex align-items-center gap-1.5 hover:bg-indigo-50"
+                >
+                  <i class="fa-solid fa-sliders"></i> Personalizar
+                </button>
+
+                <div class="d-flex align-items-center gap-1.5">
+                  <button 
+                    onclick="copyPromptText('${prompt.id}')" 
+                    class="btn btn-sm btn-primary bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-3 py-1.5 text-xs fw-bold border-0 d-inline-flex align-items-center gap-1.5 shadow-xs"
+                  >
+                    <i class="fa-solid fa-copy text-amber-300"></i> Copiar
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+  `;
+}
+
+function renderPromptsTab(container) {
+  // REGRA DE ACESSO: Exige autenticação por CPF
+  if (!AppState.currentUser) {
+    renderTabAccessRestriction(container, 'prompts');
+    return;
+  }
+
+  const isProf = AppState.currentUser.role === "professor";
+  const activeCategory = AppState.promptsActiveCategory || "all";
+  const searchQuery = (AppState.promptsSearchQuery || "").toLowerCase().trim();
+  const favoriteIds = AppState.favoritePrompts || [];
+  const guideExpanded = AppState.promptsGuideExpanded !== false;
+  const currentSubTab = (typeof visualGalleryState !== "undefined" && visualGalleryState.activeView) ? visualGalleryState.activeView : 'personas';
+
+  // Filtragem dos Prompts
+  const filteredPrompts = AppState.promptsLibrary.filter(p => {
+    if (activeCategory === "favorites") {
+      if (!favoriteIds.includes(p.id)) return false;
+    } else if (activeCategory !== "all" && p.category !== activeCategory) {
+      return false;
+    }
+
+    if (searchQuery) {
+      const matchText = `${p.title} ${p.act} ${p.categoryLabel} ${p.description} ${p.prompt} ${(p.tags || []).join(" ")}`.toLowerCase();
+      if (!matchText.includes(searchQuery)) return false;
+    }
+
+    return true;
+  });
+
+  let subTabContent = '';
+  if (currentSubTab === 'visual_gallery') {
+    subTabContent = renderVisualGalleryContent();
+  } else if (currentSubTab === 'builder') {
+    subTabContent = renderPrompt6DBuilderContent();
+  } else {
+    subTabContent = renderTextPersonasContent(filteredPrompts, favoriteIds, isProf, guideExpanded);
+  }
+
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      
+      <!-- NAVEGAÇÃO DE SUB-ABAS DO IA STUDIO -->
+      <div class="d-flex p-1.5 rounded-2xl bg-slate-100 border border-slate-200 gap-1.5 flex-wrap">
+        <button 
+          type="button" 
+          onclick="switchPromptsSubTab('personas')" 
+          class="flex-grow-1 py-2.5 px-3 rounded-xl text-xs fw-bold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${currentSubTab === 'personas' ? 'bg-white text-indigo-600 shadow-sm' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+        >
+          <i class="fa-solid fa-brain"></i> 1. Personas &amp; Estratégia de Texto (prompts.chat)
+        </button>
+
+        <button 
+          type="button" 
+          onclick="switchPromptsSubTab('visual_gallery')" 
+          class="flex-grow-1 py-2.5 px-3 rounded-xl text-xs fw-bold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${currentSubTab === 'visual_gallery' ? 'bg-white text-indigo-600 shadow-sm' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+        >
+          <i class="fa-solid fa-palette text-amber-500"></i> 2. Galeria de Imagens IA (Awesome GPT-Image)
+        </button>
+
+        <button 
+          type="button" 
+          onclick="switchPromptsSubTab('builder')" 
+          class="flex-grow-1 py-2.5 px-3 rounded-xl text-xs fw-bold transition-all d-flex align-items-center justify-content-center gap-2 border-0 ${currentSubTab === 'builder' ? 'bg-white text-indigo-600 shadow-sm' : 'bg-transparent text-slate-600 hover:text-slate-900'}"
+        >
+          <i class="fa-solid fa-wand-magic-sparkles text-emerald-500"></i> 3. Construtor de Prompts 6D
+        </button>
+      </div>
+
+      ${subTabContent}
 
     </div>
   `;
 }
 
-// -------------------------------------------------------------
-// AÇÕES E INTERATIVIDADE DA ABA DE PROMPTS
-// -------------------------------------------------------------
+
 function switchPromptsCategory(category) {
   AppState.promptsActiveCategory = category;
   const contentArea = document.getElementById("main-content-area");
@@ -13508,3 +13733,11 @@ function generateEmpatheticAuditEngine(handle, liveData, student) {
 }
 
 function buildComprehensiveAuditReport(handle, liveData, student) { return generateEmpatheticAuditEngine(handle, liveData, student); }
+
+
+function openVisualGalleryDirectly() {
+  if (typeof visualGalleryState !== 'undefined') {
+    visualGalleryState.activeView = 'visual_gallery';
+  }
+  switchTab('prompts');
+}
