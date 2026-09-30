@@ -496,4 +496,34 @@ function buildPromptFrom6Dimensions() {
   }
 }
 
+function copyVisualPromptCase(caseId) {
+  const cases = typeof AWESOME_GPT_IMAGE_CASES !== 'undefined' ? AWESOME_GPT_IMAGE_CASES : [];
+  const item = cases.find(c => c.id === caseId);
+  if (item && item.prompt) {
+    copyToClipboard(item.prompt, 'Prompt visual copiado para a área de transferência!');
+  }
+}
+
+function openVisualGalleryDirectly() {
+  if (typeof visualGalleryState !== 'undefined') {
+    visualGalleryState.activeView = 'visual_gallery';
+  }
+  if (typeof closeMobileSidebar === 'function') {
+    try { closeMobileSidebar(); } catch(e) {}
+  }
+  if (typeof AppState !== 'undefined') {
+    AppState.currentTab = 'prompts';
+    if (typeof renderApp === 'function') renderApp();
+  } else if (typeof switchTab === 'function') {
+    switchTab('prompts');
+  }
+}
+
 console.log('[Page] Prompts module with Awesome GPT-Image 2 loaded successfully.');
+
+if (typeof window !== 'undefined') {
+  window.visualGalleryState = visualGalleryState;
+  window.AWESOME_GPT_IMAGE_CASES = AWESOME_GPT_IMAGE_CASES;
+  window.openVisualGalleryDirectly = openVisualGalleryDirectly;
+  window.copyVisualPromptCase = copyVisualPromptCase;
+}

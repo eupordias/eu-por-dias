@@ -322,7 +322,8 @@ function openLiveChatDirectly() {
  */
 
 // Estado Global da Aplicação
-const AppState = {
+const AppState = window.AppState || {
+
   appName: "Eu Por Dias",
   students: [],
   subjects: [],
@@ -1127,7 +1128,10 @@ function updateNavActiveState() {
       if (parentItem) parentItem.classList.remove("hidden");
     }
 
-    if (tab === AppState.currentTab) {
+    const isPromptsGallery = (tab === "prompts-gallery" && AppState.currentTab === "prompts" && typeof visualGalleryState !== "undefined" && visualGalleryState.activeView === "visual_gallery");
+    const isPromptsStandard = (tab === "prompts" && AppState.currentTab === "prompts" && (typeof visualGalleryState === "undefined" || visualGalleryState.activeView !== "visual_gallery"));
+
+    if (tab === AppState.currentTab || isPromptsGallery || isPromptsStandard) {
       btn.classList.add("active");
       try {
         btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
@@ -11267,13 +11271,8 @@ function renderTextPersonasContent(filteredPrompts, favoriteIds, isProf, guideEx
 }
 
 function renderPromptsTab(container) {
-  // REGRA DE ACESSO: Exige autenticação por CPF
-  if (!AppState.currentUser) {
-    renderTabAccessRestriction(container, 'prompts');
-    return;
-  }
-
-  const isProf = AppState.currentUser.role === "professor";
+  const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
+  const isAluno = AppState.currentUser && AppState.currentUser.role === "aluno";
   const activeCategory = AppState.promptsActiveCategory || "all";
   const searchQuery = (AppState.promptsSearchQuery || "").toLowerCase().trim();
   const favoriteIds = AppState.favoritePrompts || [];
@@ -13739,5 +13738,20 @@ function openVisualGalleryDirectly() {
   if (typeof visualGalleryState !== 'undefined') {
     visualGalleryState.activeView = 'visual_gallery';
   }
-  switchTab('prompts');
+  try { closeMobileSidebar(); } catch(e) {}
+  AppState.currentTab = 'prompts';
+  renderApp();
+}
+
+
+if (typeof window !== 'undefined') {
+  window.AppState = AppState;
+  window.switchTab = switchTab;
+  window.renderApp = renderApp;
+  window.openVisualGalleryDirectly = openVisualGalleryDirectly;
+  window.switchPromptsSubTab = switchPromptsSubTab;
+  window.openVisualGalleryDirectly = openVisualGalleryDirectly;
+  window.copyVisualPromptCase = copyVisualPromptCase;
+  window.renderVisualGalleryContent = renderVisualGalleryContent;
+  window.renderPrompt6DBuilderContent = renderPrompt6DBuilderContent;
 }
