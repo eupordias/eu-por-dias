@@ -1,3 +1,12 @@
+
+// ==========================================
+// NAVEGAÇÃO DIRETA PARA O CHAT AO VIVO
+// ==========================================
+function openLiveChatDirectly() {
+  AppState.forumTab = 'chat';
+  switchTab('chat');
+}
+
 /**
  * Eu Por Dias - Sistema de Gestão de Alunos, Notas, Contatos e Endereços
  * Programa Emprega Mais Alagoas • Curso de Gestão de Mídias Digitais
