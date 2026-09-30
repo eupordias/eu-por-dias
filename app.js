@@ -4730,16 +4730,18 @@ function renderAboutTab(container) {
             </div>
           </div>
 
-          <div class="pt-2 d-flex align-items-center gap-3 flex-wrap">
+          <div class="pt-4 pb-2 d-flex align-items-center gap-3 flex-wrap">
             <button 
               onclick="switchTab('students')" 
-              class="btn btn-primary rounded-pill px-5 py-2.5 text-xs fw-bold shadow-lg d-inline-flex align-items-center gap-2 bg-indigo-600 hover:bg-indigo-700 border-0 text-white"
+              class="btn btn-primary rounded-pill px-5 py-3 text-xs fw-bold shadow-lg d-inline-flex align-items-center gap-2 bg-indigo-600 hover:bg-indigo-700 border-0 text-white transition-all transform active:scale-95"
+              style="margin-bottom: 4px;"
             >
               <i class="fa-solid fa-users"></i> Ver Lista de Alunos
             </button>
             <button 
               onclick="openLiveChatDirectly()" 
-              class="btn btn-outline-light rounded-pill px-4 py-2.5 text-xs fw-semibold d-inline-flex align-items-center gap-2 border-white/30 hover:bg-white/10 text-white"
+              class="btn btn-outline-light rounded-pill px-5 py-3 text-xs fw-bold d-inline-flex align-items-center gap-2 border-white/40 hover:bg-white/15 text-white transition-all transform active:scale-95 shadow-sm"
+              style="margin-bottom: 4px;"
             >
               <i class="fa-solid fa-bolt text-amber-300"></i> Abrir Chat ao Vivo da Turma
             </button>
@@ -4972,9 +4974,9 @@ function openAboutModal() {
             </div>
           </div>
 
-          <div class="modal-footer border-top py-2.5 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between">
-            <span class="text-[11px] text-slate-500">Versão 3.6.0 • Plus Jakarta Sans & Indigo Theme</span>
-            <button onclick="closeModal()" class="btn btn-sm btn-primary rounded-pill px-4 py-1.5 text-xs fw-semibold">
+          <div class="modal-footer border-top py-3 px-4 bg-slate-50/80 d-flex align-items-center justify-content-between">
+            <span class="text-[11px] text-slate-500">Versão 5.1.0 • Plus Jakarta Sans & Indigo Theme</span>
+            <button onclick="closeModal()" class="btn btn-primary rounded-pill px-5 py-2 text-xs fw-bold bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-sm transition-all">
               Entendido
             </button>
           </div>
