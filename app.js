@@ -38,7 +38,7 @@ function renderVisualGalleryContent() {
                 <i class="fa-brands fa-github"></i> awesome-gpt-image-2 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
               </a>
               <span class="badge bg-emerald-500/80 text-white px-2.5 py-1 text-[11px] rounded-pill">
-                540+ Modelos Industriais
+                221+ Modelos de Imagem IA (Part 1 & 2)
               </span>
             </div>
             <h2 class="text-lg sm:text-2xl font-black text-white mb-0">Estúdio de Imagens IA &amp; Engenharia de Prompts Visuais</h2>
