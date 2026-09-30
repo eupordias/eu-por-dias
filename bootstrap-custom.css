@@ -113,6 +113,44 @@ body {
 .pt-1\.5 { padding-top: 0.375rem !important; } .pb-1\.5 { padding-bottom: 0.375rem !important; } .pl-1\.5 { padding-left: 0.375rem !important; } .pr-1\.5 { padding-right: 0.375rem !important; }
 .pt-2\.5 { padding-top: 0.625rem !important; } .pb-2\.5 { padding-bottom: 0.625rem !important; } .pl-2\.5 { padding-left: 0.625rem !important; } .pr-2\.5 { padding-right: 0.625rem !important; }
 
+
+/* Full Extended Padding Utilities */
+.p-4 { padding: 1rem !important; }
+.p-5 { padding: 1.25rem !important; }
+.p-6 { padding: 1.5rem !important; }
+.p-7 { padding: 1.75rem !important; }
+.p-8 { padding: 2rem !important; }
+.p-9 { padding: 2.25rem !important; }
+.p-10 { padding: 2.5rem !important; }
+.p-12 { padding: 3rem !important; }
+
+.px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-5 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+.px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+.px-7 { padding-left: 1.75rem !important; padding-right: 1.75rem !important; }
+.px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
+.px-10 { padding-left: 2.5rem !important; padding-right: 2.5rem !important; }
+
+.py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.py-5 { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+.py-6 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.py-7 { padding-top: 1.75rem !important; padding-bottom: 1.75rem !important; }
+.py-8 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+.py-10 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+
+.pt-4 { padding-top: 1rem !important; }
+.pt-5 { padding-top: 1.25rem !important; }
+.pt-6 { padding-top: 1.5rem !important; }
+.pt-8 { padding-top: 2rem !important; }
+.pb-4 { padding-bottom: 1rem !important; }
+.pb-5 { padding-bottom: 1.25rem !important; }
+.pb-6 { padding-bottom: 1.5rem !important; }
+.pb-8 { padding-bottom: 2rem !important; }
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem !important; }
+.space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem !important; }
+.space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem !important; }
+
 /* Sizing */
 .w-0 { width: 0px !important; } .w-px { width: 1px !important; } .w-0\.5 { width: 0.125rem !important; } .w-1 { width: 0.25rem !important; } .w-1\.5 { width: 0.375rem !important; }
 .w-2 { width: 0.5rem !important; } .w-2\.5 { width: 0.625rem !important; } .w-3 { width: 0.75rem !important; } .w-3\.5 { width: 0.875rem !important; }

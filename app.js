@@ -4667,83 +4667,91 @@ function renderAboutTab(container) {
     <div class="space-y-6 fade-in text-slate-800 pb-12">
       
       <!-- HERO HEADER PREMIUM (MANIFESTO PEDAGÓGICO) -->
-      <div class="p-6 sm:p-10 rounded-3xl text-white shadow-xl position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;">
+      <div class="rounded-3xl text-white shadow-xl position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important; padding: 2.5rem 2rem !important;">
         
         <!-- Glows Decorativos de Fundo -->
         <div class="position-absolute top-0 end-0 w-96 h-96 bg-indigo-500/20 rounded-circle blur-3xl pointer-events-none"></div>
         <div class="position-absolute bottom-0 start-0 w-80 h-80 bg-rose-500/15 rounded-circle blur-3xl pointer-events-none"></div>
 
-        <div class="position-relative z-10 max-w-4xl space-y-4">
+        <div class="position-relative z-10 max-w-4xl" style="display: flex; flex-direction: column; gap: 1.5rem;">
           
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="badge bg-white/10 text-white backdrop-blur-md px-3 py-1 rounded-pill text-[11px] fw-bold tracking-wider uppercase border border-white/20">
+          <!-- Badges de Cabeçalho -->
+          <div class="d-flex align-items-center gap-2 flex-wrap" style="gap: 0.5rem !important;">
+            <span class="badge bg-white/10 text-white backdrop-blur-md px-3 py-1.5 rounded-pill text-[11px] fw-bold tracking-wider uppercase border border-white/20">
               <i class="fa-solid fa-flag-checkered text-amber-400 mr-1.5"></i> Emprega Mais Alagoas
             </span>
-            <span class="badge bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 px-3 py-1 rounded-pill text-[11px] fw-semibold">
+            <span class="badge bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 px-3 py-1.5 rounded-pill text-[11px] fw-semibold">
               Curso de Gestão de Mídias Digitais
             </span>
-            <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-3 py-1 rounded-pill text-[11px] fw-bold">
+            <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-3 py-1.5 rounded-pill text-[11px] fw-bold">
               <i class="fa-solid fa-circle-check mr-1"></i> Metodologia Ativa Aplicada
             </span>
           </div>
 
-          <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-0">
-            Manifesto Pedagógico:<br/>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-indigo-200">
+          <!-- Título -->
+          <div>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2">
+              Manifesto Pedagógico:
+            </h1>
+            <h2 class="text-xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-indigo-200 mb-0">
               Da Planilha Fria ao Cuidado Humano Real
-            </span>
-          </h1>
+            </h2>
+          </div>
 
+          <!-- Descrição -->
           <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl mb-0">
             O <strong>Eu Por Dias</strong> não é um simples banco de dados. É uma plataforma educacional viva, desenhada dentro da sala de aula em Alagoas para resgatar a individualidade de cada aluno, acelerar a prática docente e transformar qualificação pública em renda e autonomia.
           </p>
 
           <!-- Métricas de Impacto em Tempo Real -->
-          <div class="row g-2 pt-3">
+          <div class="row g-3" style="margin-top: 0.25rem;">
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block">Estudantes Mapeados</span>
-                <strong class="text-lg sm:text-xl font-black text-amber-300">${totalStudents}</strong>
-                <span class="text-[10px] text-slate-400 d-block">em todo o estado</span>
+              <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block mb-1">Estudantes Mapeados</span>
+                <strong class="text-xl font-black text-amber-300">${totalStudents}</strong>
+                <span class="text-[10px] text-slate-400 d-block mt-0.5">em todo o estado</span>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block">Taxa de Sucesso</span>
-                <strong class="text-lg sm:text-xl font-black text-emerald-300">95.2%</strong>
-                <span class="text-[10px] text-slate-400 d-block">aprovação prática</span>
+              <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block mb-1">Taxa de Sucesso</span>
+                <strong class="text-xl font-black text-emerald-300">95.2%</strong>
+                <span class="text-[10px] text-slate-400 d-block mt-0.5">aprovação prática</span>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block">Polos em Alagoas</span>
-                <strong class="text-lg sm:text-xl font-black text-indigo-300">${classCount}</strong>
-                <span class="text-[10px] text-slate-400 d-block">Maceió a Penedo</span>
+              <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block mb-1">Polos em Alagoas</span>
+                <strong class="text-xl font-black text-indigo-300">${classCount}</strong>
+                <span class="text-[10px] text-slate-400 d-block mt-0.5">Maceió a Penedo</span>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block">Privacidade LGPD</span>
-                <strong class="text-lg sm:text-xl font-black text-purple-300">100%</strong>
-                <span class="text-[10px] text-slate-400 d-block">seguro p/ projeção</span>
+              <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <span class="text-[10px] text-slate-400 text-uppercase fw-bold d-block mb-1">Privacidade LGPD</span>
+                <strong class="text-xl font-black text-purple-300">100%</strong>
+                <span class="text-[10px] text-slate-400 d-block mt-0.5">seguro p/ projeção</span>
               </div>
             </div>
           </div>
 
-          <div class="pt-4 pb-2 d-flex align-items-center gap-3 flex-wrap">
+          <!-- Botões de Ação com Espaçamento Perfeito -->
+          <div class="d-flex align-items-center gap-3 flex-wrap" style="padding-top: 1rem; padding-bottom: 0.5rem; gap: 1rem !important;">
             <button 
               onclick="switchTab('students')" 
               class="btn btn-primary rounded-pill px-5 py-3 text-xs fw-bold shadow-lg d-inline-flex align-items-center gap-2 bg-indigo-600 hover:bg-indigo-700 border-0 text-white transition-all transform active:scale-95"
-              style="margin-bottom: 4px;"
+              style="min-height: 46px; font-size: 13px;"
             >
-              <i class="fa-solid fa-users"></i> Ver Lista de Alunos
+              <i class="fa-solid fa-users"></i>
+              <span>Ver Lista de Alunos</span>
             </button>
             <button 
               onclick="openLiveChatDirectly()" 
               class="btn btn-outline-light rounded-pill px-5 py-3 text-xs fw-bold d-inline-flex align-items-center gap-2 border-white/40 hover:bg-white/15 text-white transition-all transform active:scale-95 shadow-sm"
-              style="margin-bottom: 4px;"
+              style="min-height: 46px; font-size: 13px;"
             >
-              <i class="fa-solid fa-bolt text-amber-300"></i> Abrir Chat ao Vivo da Turma
+              <i class="fa-solid fa-bolt text-amber-300"></i>
+              <span>Abrir Chat ao Vivo da Turma</span>
             </button>
           </div>
 
