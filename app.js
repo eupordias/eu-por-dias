@@ -1130,6 +1130,11 @@ function renderApp() {
         renderDriveDePobreTab(contentArea);
       }
       break;
+    case "sap_abap":
+      if (typeof renderSapAbapTab === "function") {
+        renderSapAbapTab(contentArea);
+      }
+      break;
 default:
       renderAboutTab(contentArea);
   }

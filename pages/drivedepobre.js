@@ -335,29 +335,31 @@ function renderDriveDePobreTab(container) {
   let html = `
     <div class="space-y-6 pb-12 animate-fade-in">
       
-      <!-- HERO HEADER -->
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 text-white p-6 sm:p-8 shadow-xl">
-        <!-- Background Glow -->
-        <div class="absolute -right-12 -bottom-12 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-12 -top-12 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <!-- HERO HEADER COM CORES SÓLIDAS DE ALTO CONTRASTE (SEM TRANSPARÊNCIA INDESEJADA) -->
+      <div class="rounded-3xl p-6 sm:p-8 shadow-xl" style="background: linear-gradient(135deg, #090d16 0%, #171d2d 50%, #0c1222 100%) !important; color: #ffffff !important; border: 1px solid #1e293b !important; position: relative; overflow: hidden;">
+        
+        <!-- Decorative Glow Accents -->
+        <div style="position: absolute; right: -40px; bottom: -40px; width: 320px; height: 320px; background: rgba(245, 158, 11, 0.08); border-radius: 50%; filter: blur(50px); pointer-events: none;"></div>
+        <div style="position: absolute; left: -40px; top: -40px; width: 320px; height: 320px; background: rgba(99, 102, 241, 0.12); border-radius: 50%; filter: blur(50px); pointer-events: none;"></div>
 
-        <div class="relative z-10">
+        <div style="position: relative; z-index: 2;">
           <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
             <div class="space-y-2 max-w-2xl">
-              <div class="d-flex align-items-center gap-2 flex-wrap">
-                <span class="badge bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-pill px-3 py-1 text-xs fw-bold tracking-wide">
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                <span style="background: rgba(245, 158, 11, 0.2) !important; color: #fbbf24 !important; border: 1px solid rgba(245, 158, 11, 0.5) !important;" class="rounded-pill px-3 py-1 text-xs fw-bold tracking-wide">
                   <i class="fa-solid fa-cloud-arrow-down mr-1"></i> ACERVO LIVRE BRASIL
                 </span>
-                <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-pill px-2.5 py-1 text-xs fw-bold">
+                <span style="background: rgba(16, 185, 129, 0.2) !important; color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.5) !important;" class="rounded-pill px-2.5 py-1 text-xs fw-bold">
                   <i class="fa-solid fa-bolt mr-1"></i> SEM PAYWALL • SEM CADASTRO
                 </span>
               </div>
               
-              <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white m-0">
-                Central Drive de Pobre <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300">55 TB+</span>
+              <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight m-0" style="color: #ffffff !important;">
+                Central Drive de Pobre <span style="color: #fbbf24 !important; text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);">55 TB+</span>
               </h1>
               
-              <p class="text-slate-300 text-sm sm:text-base leading-relaxed m-0">
+              <p class="text-sm sm:text-base leading-relaxed m-0" style="color: #cbd5e1 !important;">
                 Organização estratégica e curadoria do maior acervo aberto de cursos, apostilas de cursinhos de elite, métodos de idiomas, livros e materiais de estudo do Brasil.
               </p>
             </div>
@@ -365,69 +367,76 @@ function renderDriveDePobreTab(container) {
             <!-- BOTÕES DE AÇÃO RÁPIDA -->
             <div class="d-flex flex-wrap flex-lg-column gap-2.5 shrink-0">
               <a href="https://drivedepobre.com" target="_blank" rel="noopener noreferrer" 
-                 class="btn btn-warning bg-amber-500 hover:bg-amber-400 text-slate-950 fw-bold px-4 py-2.5 rounded-xl shadow-lg border-0 d-flex align-items-center justify-content-center gap-2 text-sm transition-all">
+                 class="btn fw-bold px-4 py-2.5 rounded-xl shadow-lg border-0 d-flex align-items-center justify-content-center gap-2 text-sm transition-all"
+                 style="background-color: #f59e0b !important; color: #000000 !important; font-weight: 800 !important;">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Acessar drivedepobre.com
               </a>
               <button onclick="switchDriveTab('plans')" 
-                      class="btn btn-outline-light border-slate-700 text-slate-200 hover:bg-slate-800/80 px-4 py-2 rounded-xl text-xs fw-semibold d-flex align-items-center justify-content-center gap-2 transition-all">
-                <i class="fa-solid fa-route text-amber-400"></i> Planos de Estudo Guiados
+                      class="btn px-4 py-2 rounded-xl text-xs fw-semibold d-flex align-items-center justify-content-center gap-2 transition-all"
+                      style="background-color: rgba(255,255,255,0.08) !important; color: #f1f5f9 !important; border: 1px solid #334155 !important;">
+                <i class="fa-solid fa-route" style="color: #fbbf24;"></i> Planos de Estudo Guiados
               </button>
             </div>
           </div>
 
-          <!-- STATS BADGES -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-slate-800/80">
-            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Arquivos no Acervo</div>
-              <div class="text-xl sm:text-2xl font-black text-amber-400 mt-0.5">${DRIVE_DE_POBRE_DATA.stats.totalFiles}</div>
+          <!-- STATS BADGES COM CONTRASTE GARANTIDO -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 mt-5" style="border-top: 1px solid #1e293b;">
+            <div class="p-3 rounded-2xl" style="background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
+              <div class="text-[11px] uppercase tracking-wider font-semibold" style="color: #94a3b8 !important;">Arquivos no Acervo</div>
+              <div class="text-xl sm:text-2xl font-black mt-0.5" style="color: #fbbf24 !important;">${DRIVE_DE_POBRE_DATA.stats.totalFiles}</div>
             </div>
-            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Armazenamento</div>
-              <div class="text-xl sm:text-2xl font-black text-indigo-300 mt-0.5">${DRIVE_DE_POBRE_DATA.stats.totalStorage}</div>
+            <div class="p-3 rounded-2xl" style="background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
+              <div class="text-[11px] uppercase tracking-wider font-semibold" style="color: #94a3b8 !important;">Armazenamento</div>
+              <div class="text-xl sm:text-2xl font-black mt-0.5" style="color: #818cf8 !important;">${DRIVE_DE_POBRE_DATA.stats.totalStorage}</div>
             </div>
-            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Trilhas Temáticas</div>
-              <div class="text-xl sm:text-2xl font-black text-emerald-300 mt-0.5">7 Acervos</div>
+            <div class="p-3 rounded-2xl" style="background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
+              <div class="text-[11px] uppercase tracking-wider font-semibold" style="color: #94a3b8 !important;">Trilhas Temáticas</div>
+              <div class="text-xl sm:text-2xl font-black mt-0.5" style="color: #34d399 !important;">7 Acervos</div>
             </div>
-            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Acesso Aberto</div>
-              <div class="text-xl sm:text-2xl font-black text-rose-300 mt-0.5">100% Grátis</div>
+            <div class="p-3 rounded-2xl" style="background-color: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;">
+              <div class="text-[11px] uppercase tracking-wider font-semibold" style="color: #94a3b8 !important;">Acesso Aberto</div>
+              <div class="text-xl sm:text-2xl font-black mt-0.5" style="color: #f472b6 !important;">100% Grátis</div>
             </div>
           </div>
 
-          <!-- BARRA DE PESQUISA INTEGRADA -->
+          <!-- BARRA DE PESQUISA INTEGRADA CORRIGIDA (SEM SOBREPOSIÇÃO) -->
           <div class="mt-6">
-            <div class="relative d-flex align-items-center">
-              <i class="fa-solid fa-magnifying-glass position-absolute left-4 text-slate-400 text-sm"></i>
+            <div style="position: relative; display: flex; align-items: center; width: 100%;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1.1rem; color: #94a3b8; font-size: 0.95rem; pointer-events: none; z-index: 2;"></i>
               <input 
                 type="text" 
                 id="drive-global-search-input"
                 oninput="handleDriveSearchInput(this.value)"
-                placeholder="Pesquise por curso, professor, apostila, matéria ou formato (ex: Poliedro, Inglês, Python, Abbas, Vendas)..." 
-                class="form-control pl-10 pr-28 py-3 bg-slate-900/90 border-slate-700 text-white placeholder-slate-400 rounded-2xl text-sm shadow-inner focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                placeholder="Pesquise por curso, professor, apostila ou tecnologia (ex: Poliedro, Inglês, Python, SAP, Abbas)..." 
+                class="form-control"
+                style="padding-left: 2.85rem !important; padding-right: 9.5rem !important; height: 50px !important; background-color: #0b101c !important; color: #ffffff !important; border: 1px solid #334155 !important; border-radius: 1rem !important; font-size: 0.875rem !important; width: 100% !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.4) !important;"
                 value="${currentDriveSearch}"
               >
               <button 
                 onclick="openExternalDriveSearch()" 
-                class="position-absolute right-1.5 btn btn-sm bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 fw-bold rounded-xl px-3 py-1.5 text-xs shadow-sm hover:opacity-90 transition-opacity d-flex align-items-center gap-1.5"
+                class="btn btn-sm fw-bold transition-all d-flex align-items-center gap-1.5"
+                style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); height: 38px; padding: 0 14px; background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important; color: #000000 !important; border: none !important; border-radius: 0.75rem !important; font-size: 0.75rem !important; font-weight: 800 !important; z-index: 3;"
                 title="Buscar direto no servidor oficial do Drive de Pobre"
               >
                 <span>Buscar no Drive</span>
                 <i class="fa-solid fa-arrow-right"></i>
               </button>
             </div>
-            <div class="d-flex align-items-center gap-1.5 mt-2 flex-wrap text-xs text-slate-400">
-              <span class="fw-semibold text-slate-300">Sugestões rápidas:</span>
-              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Poliedro'; handleDriveSearchInput('Poliedro');" class="badge bg-slate-800 text-slate-300 hover:text-white border border-slate-700 rounded-pill px-2 py-0.5 cursor-pointer">Poliedro</button>
-              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Inglês 90 Dias'; handleDriveSearchInput('Inglês 90 Dias');" class="badge bg-slate-800 text-slate-300 hover:text-white border border-slate-700 rounded-pill px-2 py-0.5 cursor-pointer">Inglês 90 Dias</button>
-              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Python'; handleDriveSearchInput('Python');" class="badge bg-slate-800 text-slate-300 hover:text-white border border-slate-700 rounded-pill px-2 py-0.5 cursor-pointer">Python Fullstack</button>
-              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Abbas Imunologia'; handleDriveSearchInput('Abbas Imunologia');" class="badge bg-slate-800 text-slate-300 hover:text-white border border-slate-700 rounded-pill px-2 py-0.5 cursor-pointer">Abbas Imunologia</button>
-              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Copywriting'; handleDriveSearchInput('Copywriting');" class="badge bg-slate-800 text-slate-300 hover:text-white border border-slate-700 rounded-pill px-2 py-0.5 cursor-pointer">Copywriting</button>
+            
+            <div class="d-flex align-items-center gap-1.5 mt-2.5 flex-wrap text-xs" style="color: #94a3b8;">
+              <span class="fw-semibold" style="color: #e2e8f0;">Sugestões rápidas:</span>
+              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Poliedro'; handleDriveSearchInput('Poliedro');" class="badge rounded-pill px-2.5 py-1 cursor-pointer" style="background-color: #1e293b; color: #cbd5e1; border: 1px solid #334155;">Poliedro</button>
+              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Inglês 90 Dias'; handleDriveSearchInput('Inglês 90 Dias');" class="badge rounded-pill px-2.5 py-1 cursor-pointer" style="background-color: #1e293b; color: #cbd5e1; border: 1px solid #334155;">Inglês 90 Dias</button>
+              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Python'; handleDriveSearchInput('Python');" class="badge rounded-pill px-2.5 py-1 cursor-pointer" style="background-color: #1e293b; color: #cbd5e1; border: 1px solid #334155;">Python Fullstack</button>
+              <button type="button" onclick="document.getElementById('drive-global-search-input').value='SAP'; handleDriveSearchInput('SAP');" class="badge rounded-pill px-2.5 py-1 cursor-pointer" style="background-color: #1e293b; color: #fbbf24; border: 1px solid #d97706;">SAP / ABAP</button>
+              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Abbas Imunologia'; handleDriveSearchInput('Abbas Imunologia');" class="badge rounded-pill px-2.5 py-1 cursor-pointer" style="background-color: #1e293b; color: #cbd5e1; border: 1px solid #334155;">Abbas Imunologia</button>
+              <button type="button" onclick="document.getElementById('drive-global-search-input').value='Copywriting'; handleDriveSearchInput('Copywriting');" class="badge rounded-pill px-2.5 py-1 cursor-pointer" style="background-color: #1e293b; color: #cbd5e1; border: 1px solid #334155;">Copywriting</button>
             </div>
           </div>
 
         </div>
       </div>
+
 
       <!-- NAVEGAÇÃO DE SUB-ABAS -->
       <div class="d-flex align-items-center justify-content-between border-b border-slate-200 pb-3 flex-wrap gap-2">
