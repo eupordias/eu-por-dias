@@ -1125,6 +1125,11 @@ function renderApp() {
         case "instagram":
       renderInstagramAuditTab(contentArea);
       break;
+    case "drivedepobre":
+      if (typeof renderDriveDePobreTab === "function") {
+        renderDriveDePobreTab(contentArea);
+      }
+      break;
 default:
       renderAboutTab(contentArea);
   }
