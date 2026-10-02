@@ -7965,9 +7965,6 @@ function isUserEligibleToPost() {
   if (!AppState.currentUser) {
     return { eligible: false, reason: "unauthenticated" };
   }
-  if (!AppState.currentUser.photo || AppState.currentUser.photo.trim() === "") {
-    return { eligible: false, reason: "no_photo" };
-  }
   return { eligible: true, reason: "ok" };
 }
 
@@ -8827,19 +8824,23 @@ function handleLiveChatSubmit(e) {
   const text = input ? input.value.trim() : "";
   if (!text) return;
 
-  const eligibility = isUserEligibleToPost();
-  if (!eligibility.eligible) {
-    showToast("Para digitar no chat, faça login com seu CPF e adicione sua foto.", "warning");
+  if (!AppState.currentUser) {
+    showToast("Por favor, faça login com seu CPF para enviar mensagens.", "warning");
+    if (typeof openCpfLoginModal === 'function') openCpfLoginModal(AppState.currentTab);
     return;
   }
 
+  const isProf = AppState.currentUser.role === 'professor';
+  const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(AppState.currentUser.name || "U") + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
+
   const newMsg = {
-    id: `msg-${Date.now()}`,
-    authorName: AppState.currentUser.name,
-    authorRole: AppState.currentUser.role,
-    authorPhoto: AppState.currentUser.photo,
+    id: "msg-" + Date.now() + "-" + Math.random().toString(36).substr(2, 4),
+    authorId: AppState.currentUser.id || "user-1",
+    authorName: AppState.currentUser.name || "Aluno",
+    authorRole: AppState.currentUser.role || "aluno",
+    authorPhoto: AppState.currentUser.photo || AppState.currentUser.photoUrl || fallbackAvatar,
     createdAt: new Date().toISOString(),
-    text
+    text: text
   };
 
   AppState.forumMessages.push(newMsg);
@@ -8848,14 +8849,21 @@ function handleLiveChatSubmit(e) {
   // Sincroniza com Supabase Cloud
   const client = getSupabaseClient();
   if (client) {
-    client.from("forum_messages").insert([newMsg]).then(({error}) => {
-      if (error) console.error("Erro ao sincronizar mensagem do chat:", error);
-    });
+    client.from("forum_messages").insert([newMsg]).then(({ error }) => {
+      if (error) console.warn("Aviso ao salvar mensagem no Supabase:", error);
+    }).catch(err => console.warn("Erro ao salvar chat no Supabase:", err));
   }
 
   input.value = "";
+  
   const contentArea = document.getElementById("main-content-area");
-  if (contentArea) renderForumTab(contentArea);
+  if (contentArea) {
+    if (AppState.currentTab === "chat") {
+      renderChatTab(contentArea);
+    } else if (AppState.currentTab === "forum") {
+      renderForumTab(contentArea);
+    }
+  }
 
   setTimeout(scrollChatToBottom, 60);
 }
@@ -8872,32 +8880,29 @@ async function fetchLiveChatMessages() {
   try {
     const { data, error } = await client.from("forum_messages").select("*").order("createdAt", { ascending: true }).limit(500);
     if (error) return;
-    if (data) {
+    if (data && data.length > 0) {
       let hasChanges = false;
       
-      // Adicionar novas mensagens
+      // Adicionar novas mensagens que não existem localmente
       data.forEach(remoteMsg => {
         if (!AppState.forumMessages.find(m => m.id === remoteMsg.id)) {
           AppState.forumMessages.push(remoteMsg);
           hasChanges = true;
         }
       });
-      
-      // Remover mensagens que foram apagadas na nuvem
-      const beforeLen = AppState.forumMessages.length;
-      AppState.forumMessages = AppState.forumMessages.filter(localMsg => {
-         // Mantém se a mensagem do localStorage existir no banco da nuvem
-         return data.find(remoteMsg => remoteMsg.id === localMsg.id);
-      });
-      if (AppState.forumMessages.length !== beforeLen) hasChanges = true;
 
       if (hasChanges) {
         AppState.forumMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         saveForumDataToStorage();
         const contentArea = document.getElementById("main-content-area");
-        if (AppState.currentTab === "forum" && AppState.forumTab === "chat" && contentArea) {
-          renderForumTab(contentArea);
-          setTimeout(scrollChatToBottom, 60);
+        if (contentArea) {
+          if (AppState.currentTab === "chat") {
+            renderChatTab(contentArea);
+            setTimeout(scrollChatToBottom, 60);
+          } else if (AppState.currentTab === "forum" && AppState.forumTab === "chat") {
+            renderForumTab(contentArea);
+            setTimeout(scrollChatToBottom, 60);
+          }
         }
       }
     }
