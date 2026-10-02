@@ -3899,6 +3899,193 @@ USING (bucket_id = 'fotos-alunos')
 WITH CHECK (bucket_id = 'fotos-alunos');
 `;
 
+
+// =============================================================
+// ATIVAÇÃO LIVE & REALTIME DO SUPABASE DATABASE
+// =============================================================
+let supabaseRealtimeChannel = null;
+
+async function syncSingleStudentToSupabase(s) {
+  const client = getSupabaseClient();
+  if (!client) {
+    console.warn("Supabase não disponível para sync imediato.");
+    return;
+  }
+
+  try {
+    const cleanGrades = {};
+    Object.entries(s.grades || {}).forEach(([k, v]) => {
+      cleanGrades[normalizeSubjectName(k)] = v;
+    });
+
+    const row = {
+      id: String(s.id),
+      nome: s.name || "Aluno Sem Nome",
+      cpf: s.cpf || "",
+      whatsapp: s.contact?.phone || s.phone || s.whatsapp || "",
+      email: s.contact?.email || s.email || "",
+      cidade: s.address?.city || s.city || "",
+      bairro: s.address?.neighborhood || s.neighborhood || "",
+      unidade: s.classroom || s.unitCity || s.unit || "",
+      status: s.status || "Ativo",
+      profissao: s.profession || s.occupation || "",
+      foto_url: s.photoUrl || s.photo || "",
+      grades: cleanGrades,
+      presencas: s.attendance || {},
+      observacoes: s.notes || "",
+      dados_completos: { ...s, grades: cleanGrades },
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await client.from("alunos").upsert(row, { onConflict: "id" });
+    if (error) {
+      console.warn("Aviso ao salvar no Supabase (verifique permissões RLS ou schema):", error);
+    } else {
+      console.log("Aluno sincronizado instantaneamente com o Supabase Cloud:", s.name);
+      AppState.settings.lastSupabaseSync = new Date().toISOString();
+      AppState.settings.supabaseConnected = true;
+      saveSettings();
+      updateHeaderCounts();
+    }
+  } catch (err) {
+    console.error("Erro na sincronização em tempo real com Supabase:", err);
+  }
+}
+
+async function initSupabaseRealtimeAndAutoSync() {
+  const client = getSupabaseClient();
+  if (!client) return;
+
+  try {
+    // 1. Validação silenciosa de conexão
+    const isOk = await testSupabaseConnection(true);
+    if (!isOk) return;
+
+    // 2. Auto-pull de novos cadastros de alunos feitos remotamente
+    try {
+      const { data, error } = await client.from("alunos").select("*").order("updated_at", { ascending: false }).limit(1000);
+      if (!error && data && data.length > 0) {
+        let addedNew = false;
+        const existingIds = new Set(AppState.students.map(s => String(s.id)));
+        const existingCpfs = new Set(AppState.students.map(s => (s.cpf || "").replace(/\D/g, "")).filter(Boolean));
+
+        data.forEach(row => {
+          const rowId = String(row.id);
+          const rowCpf = (row.cpf || "").replace(/\D/g, "");
+
+          if (!existingIds.has(rowId) && (!rowCpf || !existingCpfs.has(rowCpf))) {
+            const studentObj = row.dados_completos && typeof row.dados_completos === "object" ? {
+              ...row.dados_completos,
+              id: rowId,
+              name: row.nome || row.dados_completos.name || "Novo Aluno",
+              photoUrl: row.foto_url || row.dados_completos.photoUrl || ""
+            } : {
+              id: rowId,
+              name: row.nome || "Novo Aluno",
+              cpf: row.cpf || "",
+              contact: { phone: row.whatsapp || "", email: row.email || "" },
+              address: { city: row.cidade || "Maceió", neighborhood: row.bairro || "" },
+              classroom: row.unidade || "Maceió",
+              status: row.status || "Ativo",
+              photoUrl: row.foto_url || "",
+              profession: row.profissao || "",
+              notes: row.observacoes || "",
+              grades: row.grades || {}
+            };
+            AppState.students.unshift(studentObj);
+            existingIds.add(rowId);
+            if (rowCpf) existingCpfs.add(rowCpf);
+            addedNew = true;
+          }
+        });
+
+        if (addedNew) {
+          saveDataToStorage();
+          updateHeaderCounts();
+          renderApp();
+          console.log("[Supabase] Novos alunos sincronizados da nuvem com sucesso.");
+        }
+      }
+    } catch (pullErr) {
+      console.warn("Auto-pull Supabase silencioso:", pullErr);
+    }
+
+    // 3. Inicia canal Realtime para escutar novos cadastros ao vivo
+    if (!supabaseRealtimeChannel && client.channel) {
+      supabaseRealtimeChannel = client
+        .channel('public:alunos')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'alunos' }, (payload) => {
+          console.log('[Supabase Realtime] Novo evento de banco de dados:', payload);
+          handleSupabaseRealtimeEvent(payload);
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('[Supabase Realtime] Canal ativo: escutando cadastros de alunos em tempo real.');
+            AppState.settings.supabaseConnected = true;
+            updateHeaderCounts();
+          }
+        });
+    }
+  } catch (e) {
+    console.warn("Erro ao inicializar Supabase Realtime:", e);
+  }
+}
+
+function handleSupabaseRealtimeEvent(payload) {
+  const row = payload.new;
+  if (!row || !row.id) return;
+
+  const rowId = String(row.id);
+  const existingIndex = AppState.students.findIndex(s => String(s.id) === rowId);
+
+  const studentObj = row.dados_completos && typeof row.dados_completos === "object" ? {
+    ...row.dados_completos,
+    id: rowId,
+    name: row.nome || row.dados_completos.name || "Novo Aluno",
+    photoUrl: row.foto_url || row.dados_completos.photoUrl || ""
+  } : {
+    id: rowId,
+    name: row.nome || "Novo Aluno",
+    cpf: row.cpf || "",
+    contact: { phone: row.whatsapp || "", email: row.email || "" },
+    address: { city: row.cidade || "Maceió", neighborhood: row.bairro || "" },
+    classroom: row.unidade || "Maceió",
+    status: row.status || "Ativo",
+    photoUrl: row.foto_url || "",
+    profession: row.profissao || "",
+    notes: row.observacoes || "",
+    grades: row.grades || {}
+  };
+
+  if (payload.eventType === 'INSERT') {
+    if (existingIndex === -1) {
+      AppState.students.unshift(studentObj);
+      saveDataToStorage();
+      updateHeaderCounts();
+      renderApp();
+      if (typeof showToast === 'function') {
+        showToast("Novo cadastro em tempo real: " + studentObj.name + " (" + (studentObj.classroom || "Geral") + ")!", "success", 6000);
+      }
+    }
+  } else if (payload.eventType === 'UPDATE') {
+    if (existingIndex !== -1) {
+      AppState.students[existingIndex] = studentObj;
+    } else {
+      AppState.students.unshift(studentObj);
+    }
+    saveDataToStorage();
+    updateHeaderCounts();
+    renderApp();
+  } else if (payload.eventType === 'DELETE') {
+    if (existingIndex !== -1) {
+      AppState.students.splice(existingIndex, 1);
+      saveDataToStorage();
+      updateHeaderCounts();
+      renderApp();
+    }
+  }
+}
+
 function getSupabaseClient() {
   if (typeof window.supabase === "undefined" || !window.supabase.createClient) {
     return null;
