@@ -7924,9 +7924,16 @@ function getDefaultForumTopics() {
 // =============================================================
 // =============================================================
 // =============================================================
-// MOTOR DE CHAT AO VIVO EM TEMPO REAL DE ALTA RESILIÊNCIA (SSE + CLOUD VAULT)
 // =============================================================
-// Garante 100% de persistência entre celulares/PCs e histórico seguro de mensagens.
+// =============================================================
+// =============================================================
+// =============================================================
+// MOTOR DE CHAT AO VIVO EM TEMPO REAL MULTI-CLOUD (SUPABASE + SSE + DUAL SYNC)
+// =============================================================
+// Garante 100% de sincronização em tempo real entre celulares (iOS/Android) e computadores.
+
+const LIVE_CHAT_SUPABASE_URL = "https://srnpqboizdnyvetyukhn.supabase.co";
+const LIVE_CHAT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNybnBxYm9pemRueXZldHl1a2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODQ5MzMsImV4cCI6MjEwNDM2MDkzM30.mntOEcW5EviNL7r7YaZW7APucWLzxNn6Px_SwlJ47IQ";
 
 const LIVE_CHAT_CHANNEL = "eupordias_turma_chat_oficial_alagoas_2026";
 const LIVE_CHAT_POST_URL = "https://ntfy.sh/" + LIVE_CHAT_CHANNEL;
@@ -7935,17 +7942,55 @@ const LIVE_CHAT_HISTORY_URL = "https://ntfy.sh/" + LIVE_CHAT_CHANNEL + "/json?po
 
 let liveChatEventSource = null;
 let liveChatReconnectTimer = null;
+let liveChatPollInterval = null;
 let liveChatConnected = false;
+let liveChatIsSyncing = false;
 
 function initLiveChatRealtimeEngine() {
   loadForumDataFromStorage();
+  
+  // 1. Sincronização inicial imediata com as nuvens
   fetchLiveChatHistoryFromCloud();
+
+  // 2. Conecta canal Server-Sent Events para notificações push instantâneas
   connectLiveChatSSE();
+
+  // 3. Loop contínuo de sincronização rápida (a cada 2.5 segundos) para garantir que celulares e PCs fiquem 100% iguais
+  if (!liveChatPollInterval) {
+    liveChatPollInterval = setInterval(() => {
+      fetchLiveChatHistoryFromCloud(true);
+    }, 2500);
+  }
+
+  // 4. Listeners de ciclo de vida para celulares (retorno de tela / app em primeiro plano)
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function" && !window._liveChatLifecycleSetup) {
+    window._liveChatLifecycleSetup = true;
+
+    window.addEventListener("focus", () => {
+      fetchLiveChatHistoryFromCloud();
+      if (!liveChatEventSource || liveChatEventSource.readyState === 2) {
+        connectLiveChatSSE();
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        fetchLiveChatHistoryFromCloud();
+        if (!liveChatEventSource || liveChatEventSource.readyState === 2) {
+          connectLiveChatSSE();
+        }
+      }
+    });
+
+    window.addEventListener("online", () => {
+      fetchLiveChatHistoryFromCloud();
+      connectLiveChatSSE();
+    });
+  }
 }
 
 function connectLiveChatSSE() {
   if (typeof window === "undefined" || typeof window.EventSource === "undefined") {
-    console.warn("[LiveChat] EventSource não suportado no navegador.");
     return;
   }
 
@@ -7959,7 +8004,6 @@ function connectLiveChatSSE() {
 
     liveChatEventSource.onopen = function () {
       liveChatConnected = true;
-      console.log("[LiveChat] Conectado ao canal de transmissão ao vivo da turma!");
       updateChatOnlineIndicator(true);
     };
 
@@ -7987,39 +8031,65 @@ function connectLiveChatSSE() {
         liveChatReconnectTimer = setTimeout(() => {
           liveChatReconnectTimer = null;
           connectLiveChatSSE();
-        }, 4000);
+        }, 3000);
       }
     };
   } catch (e) {
-    console.warn("[LiveChat] Erro ao instanciar EventSource:", e);
+    console.warn("[LiveChat] EventSource connection notice:", e);
   }
 }
 
-async function fetchLiveChatHistoryFromCloud() {
-  try {
-    const response = await fetch(LIVE_CHAT_HISTORY_URL, { cache: "no-store" });
-    if (!response.ok) return;
+async function fetchLiveChatHistoryFromCloud(isBackgroundPoll = false) {
+  if (liveChatIsSyncing) return;
+  liveChatIsSyncing = true;
 
-    const text = await response.text();
-    const lines = text.trim().split("\n").filter(Boolean);
-    let addedCount = 0;
+  try {
+    const allFetched = [];
+
+    // 1. Busca no Banco Supabase REST API
+    const supaPromise = fetch(LIVE_CHAT_SUPABASE_URL + "/rest/v1/forum_messages?select=*&order=createdAt.asc&limit=150", {
+      headers: {
+        "apikey": LIVE_CHAT_SUPABASE_KEY,
+        "Authorization": "Bearer " + LIVE_CHAT_SUPABASE_KEY
+      },
+      cache: "no-store"
+    }).then(async r => {
+      if (r.ok) {
+        const data = await r.json();
+        if (Array.isArray(data)) allFetched.push(...data);
+      }
+    }).catch(() => {});
+
+    // 2. Busca no Cloud Relay ntfy.sh
+    const ntfyPromise = fetch(LIVE_CHAT_HISTORY_URL, { cache: "no-store" }).then(async r => {
+      if (r.ok) {
+        const text = await r.text();
+        const lines = text.trim().split("\n").filter(Boolean);
+        lines.forEach(line => {
+          try {
+            const item = JSON.parse(line);
+            if (item.event === "message" && item.message) {
+              const m = typeof item.message === "string" ? JSON.parse(item.message) : item.message;
+              if (m && m.id && m.text) allFetched.push(m);
+            }
+          } catch (err) {}
+        });
+      }
+    }).catch(() => {});
+
+    await Promise.allSettled([supaPromise, ntfyPromise]);
 
     const existingMap = new Map();
     (AppState.forumMessages || []).forEach(m => {
       if (m && m.id) existingMap.set(String(m.id), m);
     });
 
-    lines.forEach(line => {
-      try {
-        const item = JSON.parse(line);
-        if (item.event === "message" && item.message) {
-          const m = typeof item.message === "string" ? JSON.parse(item.message) : item.message;
-          if (m && m.id && m.text && !existingMap.has(String(m.id))) {
-            existingMap.set(String(m.id), m);
-            addedCount++;
-          }
-        }
-      } catch (err) {}
+    let addedCount = 0;
+    allFetched.forEach(m => {
+      if (m && m.id && !existingMap.has(String(m.id))) {
+        existingMap.set(String(m.id), m);
+        addedCount++;
+      }
     });
 
     if (addedCount > 0 || !AppState.forumMessages || AppState.forumMessages.length === 0) {
@@ -8030,7 +8100,9 @@ async function fetchLiveChatHistoryFromCloud() {
       refreshActiveChatUI();
     }
   } catch (e) {
-    console.warn("[LiveChat] Aviso ao sincronizar histórico da nuvem:", e);
+    console.warn("[LiveChat] Sincronização cloud:", e);
+  } finally {
+    liveChatIsSyncing = false;
   }
 }
 
@@ -8062,10 +8134,10 @@ function updateChatOnlineIndicator(online) {
   badges.forEach(badge => {
     if (online) {
       badge.className = "chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30";
-      badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span> AO VIVO • CONECTADO';
+      badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span> AO VIVO • SINCRONIZADO';
     } else {
       badge.className = "chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-amber-100 text-amber-800 ring-1 ring-amber-500/30";
-      badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-circle bg-amber-500"></span> RECONECTANDO...';
+      badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-circle bg-amber-500"></span> SINCRONIZANDO NUVEM...';
     }
   });
 }
@@ -8074,14 +8146,15 @@ function refreshActiveChatUI() {
   const contentArea = document.getElementById("main-content-area");
   if (!contentArea) return;
 
+  const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
+
   if (AppState.currentTab === "chat") {
     const msgContainer = document.getElementById("live-chat-messages-container");
     const countEl = document.getElementById("chat-msg-counter");
     if (countEl) countEl.textContent = String((AppState.forumMessages || []).length);
     if (msgContainer) {
-      const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
       msgContainer.innerHTML = renderChatMessagesListHtml(isProf);
-      setTimeout(scrollChatToBottom, 40);
+      setTimeout(scrollChatToBottom, 30);
     } else {
       renderChatTab(contentArea);
     }
@@ -8090,9 +8163,8 @@ function refreshActiveChatUI() {
     const countEl = document.getElementById("chat-msg-counter");
     if (countEl) countEl.textContent = String((AppState.forumMessages || []).length);
     if (msgContainer) {
-      const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
       msgContainer.innerHTML = renderChatMessagesListHtml(isProf);
-      setTimeout(scrollChatToBottom, 40);
+      setTimeout(scrollChatToBottom, 30);
     } else {
       renderForumTab(contentArea);
     }
@@ -8223,6 +8295,110 @@ function renderChatMessagesListHtml(currentIsProf) {
   }).join("");
 }
 
+function renderForumChatContent() {
+  const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
+  const user = AppState.currentUser;
+
+  return `
+    <div class="p-5 sm:p-7 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+      
+      <!-- Cabeçalho do Canal Estilo Discord / Telegram -->
+      <div class="d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-3 pb-4 border-bottom border-slate-200/80">
+        <div class="d-flex align-items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 d-flex align-items-center justify-content-center fw-bolder text-lg shadow-sm flex-shrink-0">
+            <i class="fa-solid fa-hashtag"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h3 class="font-extrabold text-base text-slate-900 tracking-tight mb-0">chat-da-turma</h3>
+              <span class="chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
+                Ao Vivo
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-0">Canal interativo em tempo real para alunos e docentes • Celular & PC</p>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 self-start sm:self-auto text-xs text-slate-500 flex-wrap">
+          <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-flex align-items-center gap-1.5 shadow-xs">
+            <i class="fa-solid fa-comments text-indigo-500"></i> <span id="chat-msg-counter">${(AppState.forumMessages || []).length}</span> mensagens
+          </span>
+          ${user ? `
+            <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-circle bg-emerald-500"></span>
+              ${escapeHtml(user.name.split(' ')[0])} (${user.role === 'professor' ? 'Docente' : 'Aluno'})
+            </span>
+          ` : `
+            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-800 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs border border-amber-200/60 text-[11px]">
+              <i class="fa-solid fa-user-clock text-amber-600"></i> Modo Aberto
+            </span>
+          `}
+          ${isProf ? `
+            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 fw-bold d-inline-flex align-items-center gap-1.5 border border-amber-200/60 text-[11px] shadow-xs">
+              <i class="fa-solid fa-shield-halved text-amber-500"></i> Moderação Docente Ativa
+            </span>
+            ${(AppState.forumMessages || []).length > 0 ? `
+              <button 
+                type="button" 
+                onclick="clearAllChatMessages()" 
+                class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 text-[11px] fw-bold d-inline-flex align-items-center gap-1 border border-rose-200/60 transition-all cursor-pointer shadow-xs hover:bg-rose-100"
+                title="Limpar todas as mensagens do chat da turma (Exclusivo Docente)"
+              >
+                <i class="fa-solid fa-broom"></i> Limpar Chat
+              </button>
+            ` : ''}
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- Feed de Mensagens do Chat com Altura Fixa e Rolagem Interna -->
+      <div id="live-chat-messages-container" class="h-[460px] sm:h-[500px] overflow-y-auto space-y-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-slate-50/90 to-slate-100/60 border border-slate-200/80 scroll-smooth">
+        ${renderChatMessagesListHtml(isProf)}
+      </div>
+
+      <!-- Barra Rápida de Emojis -->
+      <div class="d-flex align-items-center gap-1 sm:gap-2 px-1 py-1 overflow-x-auto scrollbar-none">
+        <span class="text-[11px] fw-bold text-slate-400 mr-1 flex-shrink-0 d-none sm:inline">
+          <i class="fa-regular fa-face-smile"></i> Reações:
+        </span>
+        ${['👋', '💡', '🔥', '👏', '🚀', '✅', '📚', '🤔', '❤️', '🎯'].map(emoji => `
+          <button 
+            type="button" 
+            onclick="insertChatEmoji('${emoji}')" 
+            class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs transition-colors border border-slate-200/60 flex-shrink-0 cursor-pointer"
+          >
+            ${emoji}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Formulário de Envio de Mensagem -->
+      <form onsubmit="handleLiveChatSubmit(event)" class="d-flex items-center gap-2 pt-2 border-top border-slate-100">
+        <div class="position-relative flex-grow-1">
+          <input 
+            type="text" 
+            id="live-chat-input" 
+            placeholder="Conversar em #chat-da-turma (Enter para enviar)..." 
+            class="w-100 px-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-inner"
+            autocomplete="off"
+            required
+          />
+        </div>
+        <button 
+          type="submit" 
+          class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/20 d-flex align-items-center gap-2 transition-all cursor-pointer flex-shrink-0 border-0"
+          style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;"
+        >
+          <span>Enviar</span>
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+
+    </div>
+  `;
+}
+
 async function handleLiveChatSubmit(e) {
   if (e && e.preventDefault) e.preventDefault();
   
@@ -8241,12 +8417,11 @@ async function handleLiveChatSubmit(e) {
     authorId = String(AppState.currentUser.id || "user-1");
     authorPhoto = AppState.currentUser.photo || AppState.currentUser.photoUrl || "";
   } else {
-    // Permite identificação rápida sem travar
     const guestInput = document.getElementById("live-chat-guest-name");
     if (guestInput && guestInput.value.trim()) {
       authorName = guestInput.value.trim();
     } else {
-      const asked = prompt("Digite seu nome completo ou primeiro nome para enviar no chat:", "Aluno");
+      const asked = typeof prompt === "function" ? prompt("Digite seu nome completo ou primeiro nome para enviar no chat:", "Aluno") : "Aluno";
       if (asked && asked.trim()) {
         authorName = asked.trim();
       }
@@ -8274,26 +8449,33 @@ async function handleLiveChatSubmit(e) {
 
   if (input) input.value = "";
   refreshActiveChatUI();
-  setTimeout(scrollChatToBottom, 40);
+  setTimeout(scrollChatToBottom, 30);
 
-  // 2. Transmissão imediata via Cloud Relay (dispara SSE para todos os celulares e PCs)
+  // 2. Persistência no Banco de Dados Oficial Supabase REST API (Funciona 100% em celulares e PCs sem preflight issues)
+  try {
+    fetch(LIVE_CHAT_SUPABASE_URL + "/rest/v1/forum_messages", {
+      method: "POST",
+      headers: {
+        "apikey": LIVE_CHAT_SUPABASE_KEY,
+        "Authorization": "Bearer " + LIVE_CHAT_SUPABASE_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(newMsg)
+    }).catch(err => console.warn("[LiveChat] Supabase insert warning:", err));
+  } catch (supaErr) {}
+
+  // 3. Transmissão imediata via Cloud Relay ntfy.sh (dispara SSE push para todos os aparelhos)
   try {
     fetch(LIVE_CHAT_POST_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(newMsg)
-    }).catch(err => console.warn("[LiveChat] Erro na transmissão cloud:", err));
-  } catch (postErr) {
-    console.warn("[LiveChat] Erro ao enviar:", postErr);
-  }
+    }).catch(err => console.warn("[LiveChat] Cloud relay warning:", err));
+  } catch (postErr) {}
 
-  // 3. Backup no Supabase se disponível
-  try {
-    const client = getSupabaseClient();
-    if (client) {
-      client.from("forum_messages").insert([newMsg]).then(() => {}).catch(() => {});
-    }
-  } catch (supaErr) {}
+  // 4. Dispara sincronização em segundo plano após 600ms para confirmar entrega
+  setTimeout(() => fetchLiveChatHistoryFromCloud(true), 600);
 }
 
 function startLiveChatSync() {
@@ -8338,10 +8520,8 @@ function loadForumDataFromStorage() {
 function renderChatTab(container) {
   if (!container) return;
 
-  // Garante inicialização e conexão com transmissão SSE
-  if (!liveChatConnected) {
-    initLiveChatRealtimeEngine();
-  }
+  // Garante inicialização e conexão com transmissão SSE e multi-sync
+  initLiveChatRealtimeEngine();
 
   const user = AppState.currentUser;
 
@@ -8359,10 +8539,10 @@ function renderChatTab(container) {
               <h2 class="text-base sm:text-lg fw-bold text-slate-900 mb-0">Chat ao Vivo da Turma</h2>
               <span class="chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
                 <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
-                AO VIVO • CONECTADO
+                AO VIVO • SINCRONIZADO
               </span>
             </div>
-            <p class="text-xs text-slate-500 mb-0 mt-0.5">Canal oficial em tempo real para alunos e docentes • Programa Emprega Mais Alagoas</p>
+            <p class="text-xs text-slate-500 mb-0 mt-0.5">Canal oficial em tempo real para alunos e docentes • Celular & PC • Emprega Mais Alagoas</p>
           </div>
         </div>
 
@@ -8404,7 +8584,7 @@ function renderForumTab(container) {
   const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
 
   // Garante inicialização do chat ao vivo se a sub-aba for chat
-  if (AppState.forumTab === 'chat' && !liveChatConnected) {
+  if (AppState.forumTab === 'chat') {
     initLiveChatRealtimeEngine();
   }
 
@@ -8921,110 +9101,6 @@ function deleteForumTopic(topicId) {
   if (contentArea) renderForumTab(contentArea);
 }
 
-function renderForumChatContent() {
-  const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
-  const user = AppState.currentUser;
-
-  return `
-    <div class="p-5 sm:p-7 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
-      
-      <!-- Cabeçalho do Canal Estilo Discord / Telegram -->
-      <div class="d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-3 pb-4 border-b border-slate-200/80">
-        <div class="d-flex align-items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 d-flex align-items-center justify-content-center fw-bolder text-lg shadow-sm flex-shrink-0">
-            <i class="fa-solid fa-hashtag"></i>
-          </div>
-          <div>
-            <div class="d-flex align-items-center gap-2">
-              <h3 class="font-extrabold text-base text-slate-900 tracking-tight mb-0">chat-da-turma</h3>
-              <span class="chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
-                <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
-                Ao Vivo
-              </span>
-            </div>
-            <p class="text-xs text-slate-500 mb-0">Canal interativo em tempo real para alunos e docentes</p>
-          </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 self-start sm:self-auto text-xs text-slate-500 flex-wrap">
-          <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-flex align-items-center gap-1.5 shadow-xs">
-            <i class="fa-solid fa-comments text-indigo-500"></i> <span id="chat-msg-counter">${(AppState.forumMessages || []).length}</span> mensagens
-          </span>
-          ${user ? `
-            <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-flex align-items-center gap-1.5 shadow-xs">
-              <span class="w-2 h-2 rounded-circle bg-emerald-500"></span>
-              ${escapeHtml(user.name.split(' ')[0])} (${user.role === 'professor' ? 'Docente' : 'Aluno'})
-            </span>
-          ` : `
-            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-800 fw-semibold d-flex align-items-center gap-1.5 shadow-xs border border-amber-200/60 text-[11px]">
-              <i class="fa-solid fa-user-clock text-amber-600"></i> Modo Visitante / Aluno
-            </span>
-          `}
-          ${isProf ? `
-            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 fw-bold d-flex align-items-center gap-1.5 border border-amber-200/60 text-[11px] shadow-xs">
-              <i class="fa-solid fa-shield-halved text-amber-500"></i> Moderação Docente Ativa
-            </span>
-            ${(AppState.forumMessages || []).length > 0 ? `
-              <button 
-                type="button" 
-                onclick="clearAllChatMessages()" 
-                class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 text-[11px] fw-bold d-flex align-items-center gap-1 border border-rose-200/60 transition-all cursor-pointer shadow-xs hover:bg-rose-100"
-                title="Limpar todas as mensagens do chat da turma (Exclusivo Docente)"
-              >
-                <i class="fa-solid fa-broom"></i> Limpar Chat
-              </button>
-            ` : ''}
-          ` : ''}
-        </div>
-      </div>
-
-      <!-- Feed de Mensagens do Chat com Altura Fixa e Rolagem Interna -->
-      <div id="live-chat-messages-container" class="h-[460px] sm:h-[500px] overflow-y-auto space-y-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-slate-50/90 to-slate-100/60 border border-slate-200/80 scroll-smooth">
-        ${renderChatMessagesListHtml(isProf)}
-      </div>
-
-      <!-- Barra Rápida de Emojis -->
-      <div class="d-flex align-items-center gap-1 sm:gap-2 px-1 py-1 overflow-x-auto scrollbar-none">
-        <span class="text-[11px] fw-bold text-slate-400 mr-1 flex-shrink-0 d-none sm:inline">
-          <i class="fa-regular fa-face-smile"></i> Reações:
-        </span>
-        ${['👋', '💡', '🔥', '👏', '🚀', '✅', '📚', '🤔', '❤️', '🎯'].map(emoji => `
-          <button 
-            type="button" 
-            onclick="insertChatEmoji('${emoji}')" 
-            class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs transition-colors border border-slate-200/60 flex-shrink-0 cursor-pointer"
-          >
-            ${emoji}
-          </button>
-        `).join('')}
-      </div>
-
-      <!-- Formulário de Envio de Mensagem -->
-      <form onsubmit="handleLiveChatSubmit(event)" class="d-flex items-center gap-2 pt-2 border-top border-slate-100">
-        <div class="position-relative flex-grow-1">
-          <input 
-            type="text" 
-            id="live-chat-input" 
-            placeholder="Conversar em #chat-da-turma (Enter para enviar)..." 
-            class="w-100 px-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-inner"
-            autocomplete="off"
-            required
-          />
-        </div>
-        <button 
-          type="submit" 
-          class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/20 d-flex align-items-center gap-2 transition-all cursor-pointer flex-shrink-0 border-0"
-          style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;"
-        >
-          <span>Enviar</span>
-          <i class="fa-solid fa-paper-plane"></i>
-        </button>
-      </form>
-
-    </div>
-  `;
-}
-
 function deleteChatMessage(messageId) {
   if (!AppState.currentUser) {
     showToast("Você precisa estar logado para moderar mensagens.", "warning");
@@ -9058,13 +9134,16 @@ function deleteChatMessage(messageId) {
   AppState.forumMessages.splice(msgIndex, 1);
   saveForumDataToStorage();
 
-  // Deletar da nuvem Supabase se disponível
-  const client = getSupabaseClient();
-  if (client) {
-    client.from("forum_messages").delete().eq("id", messageId).then(({error}) => {
-      if (error) console.error("Erro ao deletar mensagem na nuvem:", error);
-    });
-  }
+  // Deletar da nuvem Supabase REST API
+  try {
+    fetch(LIVE_CHAT_SUPABASE_URL + "/rest/v1/forum_messages?id=eq." + encodeURIComponent(messageId), {
+      method: "DELETE",
+      headers: {
+        "apikey": LIVE_CHAT_SUPABASE_KEY,
+        "Authorization": "Bearer " + LIVE_CHAT_SUPABASE_KEY
+      }
+    }).catch(() => {});
+  } catch (e) {}
 
   showToast(isProf && !isAuthor ? "Mensagem moderada/excluída com sucesso." : "Mensagem apagada com sucesso.", "info");
   refreshActiveChatUI();
@@ -9088,12 +9167,16 @@ function clearAllChatMessages() {
   AppState.forumMessages = [];
   saveForumDataToStorage();
 
-  const client = getSupabaseClient();
-  if (client) {
-    client.from("forum_messages").delete().neq("id", "0").then(({error}) => {
-      if (error) console.error("Erro ao limpar chat na nuvem:", error);
-    });
-  }
+  // Limpar na nuvem Supabase REST API
+  try {
+    fetch(LIVE_CHAT_SUPABASE_URL + "/rest/v1/forum_messages?id=neq.0", {
+      method: "DELETE",
+      headers: {
+        "apikey": LIVE_CHAT_SUPABASE_KEY,
+        "Authorization": "Bearer " + LIVE_CHAT_SUPABASE_KEY
+      }
+    }).catch(() => {});
+  } catch (e) {}
 
   showToast("O chat da turma foi limpo.", "warning");
   refreshActiveChatUI();
@@ -14016,6 +14099,12 @@ if (typeof window !== 'undefined') {
   window.renderApp = typeof renderApp !== 'undefined' ? renderApp : window.renderApp;
   window.renderChatTab = typeof renderChatTab !== 'undefined' ? renderChatTab : window.renderChatTab;
   window.renderForumTab = typeof renderForumTab !== 'undefined' ? renderForumTab : window.renderForumTab;
+  window.handleLiveChatSubmit = typeof handleLiveChatSubmit !== 'undefined' ? handleLiveChatSubmit : window.handleLiveChatSubmit;
+  window.initLiveChatRealtimeEngine = typeof initLiveChatRealtimeEngine !== 'undefined' ? initLiveChatRealtimeEngine : window.initLiveChatRealtimeEngine;
+  window.fetchLiveChatHistoryFromCloud = typeof fetchLiveChatHistoryFromCloud !== 'undefined' ? fetchLiveChatHistoryFromCloud : window.fetchLiveChatHistoryFromCloud;
+  window.deleteChatMessage = typeof deleteChatMessage !== 'undefined' ? deleteChatMessage : window.deleteChatMessage;
+  window.clearAllChatMessages = typeof clearAllChatMessages !== 'undefined' ? clearAllChatMessages : window.clearAllChatMessages;
+  window.insertChatEmoji = typeof insertChatEmoji !== 'undefined' ? insertChatEmoji : window.insertChatEmoji;
   window.openLiveChatDirectly = typeof openLiveChatDirectly !== 'undefined' ? openLiveChatDirectly : function() { window.switchTab && window.switchTab('chat'); };
   if (typeof openVisualGalleryDirectly !== 'undefined') window.openVisualGalleryDirectly = openVisualGalleryDirectly;
   if (typeof switchPromptsSubTab !== 'undefined') window.switchPromptsSubTab = switchPromptsSubTab;
