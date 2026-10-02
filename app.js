@@ -5329,6 +5329,12 @@ function openAboutModal() {
   `;
 }
 
+
+function handleSidebarCreateStudent() {
+  try { closeMobileSidebar(); } catch(e) {}
+  openStudentModal();
+}
+
 function openStudentModal(studentId = null) {
   AppState.editingStudentId = studentId;
   const isEditing = !!studentId;
