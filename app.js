@@ -7923,6 +7923,7 @@ function getDefaultForumTopics() {
 
 // =============================================================
 // =============================================================
+// =============================================================
 // MOTOR DE CHAT AO VIVO EM TEMPO REAL DE ALTA RESILIÊNCIA (SSE + CLOUD VAULT)
 // =============================================================
 // Garante 100% de persistência entre celulares/PCs e histórico seguro de mensagens.
@@ -7943,7 +7944,7 @@ function initLiveChatRealtimeEngine() {
 }
 
 function connectLiveChatSSE() {
-  if (typeof window.EventSource === "undefined") {
+  if (typeof window === "undefined" || typeof window.EventSource === "undefined") {
     console.warn("[LiveChat] EventSource não suportado no navegador.");
     return;
   }
@@ -8229,21 +8230,39 @@ async function handleLiveChatSubmit(e) {
   const text = input ? input.value.trim() : "";
   if (!text) return;
 
-  if (!AppState.currentUser) {
-    showToast("Por favor, identifique-se com seu CPF para enviar mensagens.", "warning");
-    if (typeof openCpfLoginModal === 'function') openCpfLoginModal(AppState.currentTab);
-    return;
+  let authorName = "Aluno(a)";
+  let authorRole = "aluno";
+  let authorId = "user-" + Date.now();
+  let authorPhoto = "";
+
+  if (AppState.currentUser) {
+    authorName = AppState.currentUser.name || "Aluno(a)";
+    authorRole = AppState.currentUser.role || "aluno";
+    authorId = String(AppState.currentUser.id || "user-1");
+    authorPhoto = AppState.currentUser.photo || AppState.currentUser.photoUrl || "";
+  } else {
+    // Permite identificação rápida sem travar
+    const guestInput = document.getElementById("live-chat-guest-name");
+    if (guestInput && guestInput.value.trim()) {
+      authorName = guestInput.value.trim();
+    } else {
+      const asked = prompt("Digite seu nome completo ou primeiro nome para enviar no chat:", "Aluno");
+      if (asked && asked.trim()) {
+        authorName = asked.trim();
+      }
+    }
   }
 
-  const isProf = AppState.currentUser.role === "professor";
-  const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(AppState.currentUser.name || "U") + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
+  const isProf = authorRole === "professor";
+  const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(authorName) + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
+  if (!authorPhoto) authorPhoto = fallbackAvatar;
 
   const newMsg = {
     id: "msg-" + Date.now() + "-" + Math.random().toString(36).substr(2, 5),
-    authorId: String(AppState.currentUser.id || "user-1"),
-    authorName: String(AppState.currentUser.name || "Aluno"),
-    authorRole: String(AppState.currentUser.role || "aluno"),
-    authorPhoto: AppState.currentUser.photo || AppState.currentUser.photoUrl || fallbackAvatar,
+    authorId: authorId,
+    authorName: authorName,
+    authorRole: authorRole,
+    authorPhoto: authorPhoto,
     createdAt: new Date().toISOString(),
     text: text
   };
@@ -8282,8 +8301,10 @@ function startLiveChatSync() {
 }
 
 function saveForumDataToStorage() {
-  localStorage.setItem("eupordias_forum_topics", JSON.stringify(AppState.forumTopics || []));
-  localStorage.setItem("eupordias_forum_messages", JSON.stringify(AppState.forumMessages || []));
+  try {
+    localStorage.setItem("eupordias_forum_topics", JSON.stringify(AppState.forumTopics || []));
+    localStorage.setItem("eupordias_forum_messages", JSON.stringify(AppState.forumMessages || []));
+  } catch(e) {}
 }
 
 function loadForumDataFromStorage() {
@@ -8316,17 +8337,13 @@ function loadForumDataFromStorage() {
 // ==========================================
 function renderChatTab(container) {
   if (!container) return;
-  
-  // Exige que o usuário esteja autenticado com conta real cadastrada no banco
-  if (!AppState.currentUser) {
-    renderTabAccessRestriction(container, 'chat');
-    return;
-  }
 
   // Garante inicialização e conexão com transmissão SSE
   if (!liveChatConnected) {
     initLiveChatRealtimeEngine();
   }
+
+  const user = AppState.currentUser;
 
   container.innerHTML = `
     <div class="space-y-5 fade-in pb-10">
@@ -8350,9 +8367,19 @@ function renderChatTab(container) {
         </div>
 
         <div class="d-flex align-items-center gap-2 flex-wrap text-xs">
-          <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
-            <i class="fa-solid fa-user-check text-emerald-600"></i> ${escapeHtml(AppState.currentUser.name)} (${AppState.currentUser.role === 'professor' ? 'Docente' : 'Aluno'})
-          </span>
+          ${user ? `
+            <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+              <i class="fa-solid fa-user-check text-emerald-600"></i> ${escapeHtml(user.name)} (${user.role === 'professor' ? 'Docente' : 'Aluno'})
+            </span>
+          ` : `
+            <button 
+              type="button" 
+              onclick="openCpfLoginModal('chat')" 
+              class="btn btn-sm btn-outline-primary rounded-xl px-3 py-1.5 text-xs fw-bold d-inline-flex align-items-center gap-1.5"
+            >
+              <i class="fa-solid fa-id-card"></i> Identificar com CPF
+            </button>
+          `}
           <button 
             type="button" 
             onclick="switchTab('forum')" 
@@ -8373,13 +8400,7 @@ function renderChatTab(container) {
 }
 
 function renderForumTab(container) {
-  // REGRA DE ACESSO: Exige identificação por CPF
-  if (!AppState.currentUser) {
-    renderTabAccessRestriction(container, 'forum');
-    return;
-  }
-
-  const eligibility = isUserEligibleToPost();
+  const eligibility = typeof isUserEligibleToPost === 'function' ? isUserEligibleToPost() : { eligible: true };
   const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
 
   // Garante inicialização do chat ao vivo se a sub-aba for chat
@@ -8462,7 +8483,7 @@ function switchForumSubTab(tabName) {
 }
 
 function renderEligibilityBanner(actionName) {
-  const eligibility = isUserEligibleToPost();
+  const eligibility = typeof isUserEligibleToPost === 'function' ? isUserEligibleToPost() : { eligible: true };
   if (eligibility.eligible) return "";
 
   return `
@@ -8473,7 +8494,7 @@ function renderEligibilityBanner(actionName) {
         </div>
         <div>
           <p class="fw-bold mb-0">Identificação necessária para ${actionName}</p>
-          <p class="text-amber-800/80 mb-0 mt-0.5">${eligibility.reason}</p>
+          <p class="text-amber-800/80 mb-0 mt-0.5">${eligibility.reason || 'Identifique-se para continuar'}</p>
         </div>
       </div>
       <button 
@@ -8589,7 +8610,7 @@ function renderForumTopicDetail(topicId) {
   const topic = (AppState.forumTopics || []).find(t => t.id === topicId);
   if (!topic) return "<p>Tópico não encontrado.</p>";
 
-  const eligibility = isUserEligibleToPost();
+  const eligibility = typeof isUserEligibleToPost === 'function' ? isUserEligibleToPost() : { eligible: true };
 
   return `
     <div class="space-y-6">
@@ -8674,7 +8695,7 @@ function renderForumTopicDetail(topicId) {
           ${eligibility.eligible ? `
             <div class="d-flex items-center gap-2 text-xs text-slate-600">
               <span class="w-2 h-2 rounded-circle bg-emerald-500"></span>
-              Respondendo como <strong class="text-slate-800">${escapeHtml(AppState.currentUser.name)}</strong>
+              Respondendo como <strong class="text-slate-800">${escapeHtml(AppState.currentUser ? AppState.currentUser.name : 'Aluno(a)')}</strong>
             </div>
             <textarea 
               id="topic-comment-input" 
@@ -8693,7 +8714,7 @@ function renderForumTopicDetail(topicId) {
             </div>
           ` : `
             <div class="text-center py-4 space-y-2">
-              <p class="text-xs text-slate-500">${eligibility.reason}</p>
+              <p class="text-xs text-slate-500">${eligibility.reason || 'Identificação necessária'}</p>
               <button 
                 onclick="openCpfLoginModal('forum')" 
                 class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-sm cursor-pointer border-0"
@@ -8813,9 +8834,9 @@ function renderAttachmentCard(att) {
 }
 
 function submitTopicComment(topicId) {
-  const eligibility = isUserEligibleToPost();
+  const eligibility = typeof isUserEligibleToPost === 'function' ? isUserEligibleToPost() : { eligible: true };
   if (!eligibility.eligible) {
-    openCpfLoginModal('forum');
+    if (typeof openCpfLoginModal === 'function') openCpfLoginModal('forum');
     showToast("Identifique-se com seu CPF para comentar.", "warning");
     return;
   }
@@ -8832,12 +8853,16 @@ function submitTopicComment(topicId) {
 
   if (!topic.comments) topic.comments = [];
 
+  const authorName = AppState.currentUser ? AppState.currentUser.name : "Aluno(a)";
+  const authorRole = AppState.currentUser ? AppState.currentUser.role : "aluno";
+  const authorPhoto = AppState.currentUser ? (AppState.currentUser.photo || AppState.currentUser.photoUrl) : "";
+
   const newComment = {
     id: "com-" + Date.now(),
-    authorId: AppState.currentUser.id,
-    authorName: AppState.currentUser.name,
-    authorRole: AppState.currentUser.role,
-    authorPhoto: AppState.currentUser.photo || AppState.currentUser.photoUrl,
+    authorId: AppState.currentUser ? AppState.currentUser.id : "user-" + Date.now(),
+    authorName: authorName,
+    authorRole: authorRole,
+    authorPhoto: authorPhoto || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(authorName) + "&background=6366f1&color=fff"),
     createdAt: new Date().toISOString(),
     text
   };
@@ -8896,13 +8921,191 @@ function deleteForumTopic(topicId) {
   if (contentArea) renderForumTab(contentArea);
 }
 
+function renderForumChatContent() {
+  const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
+  const user = AppState.currentUser;
+
+  return `
+    <div class="p-5 sm:p-7 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+      
+      <!-- Cabeçalho do Canal Estilo Discord / Telegram -->
+      <div class="d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-3 pb-4 border-b border-slate-200/80">
+        <div class="d-flex align-items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 d-flex align-items-center justify-content-center fw-bolder text-lg shadow-sm flex-shrink-0">
+            <i class="fa-solid fa-hashtag"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h3 class="font-extrabold text-base text-slate-900 tracking-tight mb-0">chat-da-turma</h3>
+              <span class="chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
+                Ao Vivo
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-0">Canal interativo em tempo real para alunos e docentes</p>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 self-start sm:self-auto text-xs text-slate-500 flex-wrap">
+          <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-flex align-items-center gap-1.5 shadow-xs">
+            <i class="fa-solid fa-comments text-indigo-500"></i> <span id="chat-msg-counter">${(AppState.forumMessages || []).length}</span> mensagens
+          </span>
+          ${user ? `
+            <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-flex align-items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-circle bg-emerald-500"></span>
+              ${escapeHtml(user.name.split(' ')[0])} (${user.role === 'professor' ? 'Docente' : 'Aluno'})
+            </span>
+          ` : `
+            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-800 fw-semibold d-flex align-items-center gap-1.5 shadow-xs border border-amber-200/60 text-[11px]">
+              <i class="fa-solid fa-user-clock text-amber-600"></i> Modo Visitante / Aluno
+            </span>
+          `}
+          ${isProf ? `
+            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 fw-bold d-flex align-items-center gap-1.5 border border-amber-200/60 text-[11px] shadow-xs">
+              <i class="fa-solid fa-shield-halved text-amber-500"></i> Moderação Docente Ativa
+            </span>
+            ${(AppState.forumMessages || []).length > 0 ? `
+              <button 
+                type="button" 
+                onclick="clearAllChatMessages()" 
+                class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 text-[11px] fw-bold d-flex align-items-center gap-1 border border-rose-200/60 transition-all cursor-pointer shadow-xs hover:bg-rose-100"
+                title="Limpar todas as mensagens do chat da turma (Exclusivo Docente)"
+              >
+                <i class="fa-solid fa-broom"></i> Limpar Chat
+              </button>
+            ` : ''}
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- Feed de Mensagens do Chat com Altura Fixa e Rolagem Interna -->
+      <div id="live-chat-messages-container" class="h-[460px] sm:h-[500px] overflow-y-auto space-y-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-slate-50/90 to-slate-100/60 border border-slate-200/80 scroll-smooth">
+        ${renderChatMessagesListHtml(isProf)}
+      </div>
+
+      <!-- Barra Rápida de Emojis -->
+      <div class="d-flex align-items-center gap-1 sm:gap-2 px-1 py-1 overflow-x-auto scrollbar-none">
+        <span class="text-[11px] fw-bold text-slate-400 mr-1 flex-shrink-0 d-none sm:inline">
+          <i class="fa-regular fa-face-smile"></i> Reações:
+        </span>
+        ${['👋', '💡', '🔥', '👏', '🚀', '✅', '📚', '🤔', '❤️', '🎯'].map(emoji => `
+          <button 
+            type="button" 
+            onclick="insertChatEmoji('${emoji}')" 
+            class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs transition-colors border border-slate-200/60 flex-shrink-0 cursor-pointer"
+          >
+            ${emoji}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Formulário de Envio de Mensagem -->
+      <form onsubmit="handleLiveChatSubmit(event)" class="d-flex items-center gap-2 pt-2 border-top border-slate-100">
+        <div class="position-relative flex-grow-1">
+          <input 
+            type="text" 
+            id="live-chat-input" 
+            placeholder="Conversar em #chat-da-turma (Enter para enviar)..." 
+            class="w-100 px-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-inner"
+            autocomplete="off"
+            required
+          />
+        </div>
+        <button 
+          type="submit" 
+          class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/20 d-flex align-items-center gap-2 transition-all cursor-pointer flex-shrink-0 border-0"
+          style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;"
+        >
+          <span>Enviar</span>
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+
+    </div>
+  `;
+}
+
+function deleteChatMessage(messageId) {
+  if (!AppState.currentUser) {
+    showToast("Você precisa estar logado para moderar mensagens.", "warning");
+    return;
+  }
+
+  const msgIndex = (AppState.forumMessages || []).findIndex(m => m.id === messageId);
+  if (msgIndex === -1) {
+    showToast("Mensagem não encontrada.", "error");
+    return;
+  }
+
+  const msg = AppState.forumMessages[msgIndex];
+  const isProf = AppState.currentUser.role === "professor";
+  const isAuthor = (AppState.currentUser.name && AppState.currentUser.name === msg.authorName) ||
+                   (AppState.currentUser.id && AppState.currentUser.id === msg.authorId);
+
+  if (!isProf && !isAuthor) {
+    showToast("Apenas o docente ou o próprio autor podem moderar esta mensagem.", "error");
+    return;
+  }
+
+  const confirmMsg = isProf && !isAuthor
+    ? `[Moderação Docente]\nDeseja realmente excluir a mensagem de "${msg.authorName}" do chat da turma?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`
+    : `Deseja realmente apagar sua mensagem do chat?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`;
+
+  if (!confirm(confirmMsg)) {
+    return;
+  }
+
+  AppState.forumMessages.splice(msgIndex, 1);
+  saveForumDataToStorage();
+
+  // Deletar da nuvem Supabase se disponível
+  const client = getSupabaseClient();
+  if (client) {
+    client.from("forum_messages").delete().eq("id", messageId).then(({error}) => {
+      if (error) console.error("Erro ao deletar mensagem na nuvem:", error);
+    });
+  }
+
+  showToast(isProf && !isAuthor ? "Mensagem moderada/excluída com sucesso." : "Mensagem apagada com sucesso.", "info");
+  refreshActiveChatUI();
+}
+
+function clearAllChatMessages() {
+  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
+    showToast("Apenas o docente pode limpar o chat da turma.", "error");
+    return;
+  }
+
+  if (!AppState.forumMessages || AppState.forumMessages.length === 0) {
+    showToast("O chat já está vazio.", "info");
+    return;
+  }
+
+  if (!confirm(`Atenção Professor(a): Deseja realmente excluir TODAS as ${AppState.forumMessages.length} mensagens do chat da turma? Esta ação não pode ser desfeita.`)) {
+    return;
+  }
+
+  AppState.forumMessages = [];
+  saveForumDataToStorage();
+
+  const client = getSupabaseClient();
+  if (client) {
+    client.from("forum_messages").delete().neq("id", "0").then(({error}) => {
+      if (error) console.error("Erro ao limpar chat na nuvem:", error);
+    });
+  }
+
+  showToast("O chat da turma foi limpo.", "warning");
+  refreshActiveChatUI();
+}
+
 // Modal para Criação de Novo Tópico com 4 Tipos de Anexos
 let newTopicAttachments = [];
 
 function openCreateTopicModal() {
-  const eligibility = isUserEligibleToPost();
+  const eligibility = typeof isUserEligibleToPost === 'function' ? isUserEligibleToPost() : { eligible: true };
   if (!eligibility.eligible) {
-    openCpfLoginModal('forum');
+    if (typeof openCpfLoginModal === 'function') openCpfLoginModal('forum');
     showToast("Faça login com seu CPF para criar tópicos.", "warning");
     return;
   }
@@ -9055,17 +9258,17 @@ function saveNewTopicFromModal() {
   }
 
   const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
-  const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(AppState.currentUser.name || "U") + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
+  const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(AppState.currentUser ? AppState.currentUser.name : "Aluno") + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
 
   const newTopic = {
     id: "topic-" + Date.now(),
     title,
     description: desc,
     module,
-    authorId: AppState.currentUser.id,
-    authorName: AppState.currentUser.name,
-    authorRole: AppState.currentUser.role,
-    authorPhoto: AppState.currentUser.photo || AppState.currentUser.photoUrl || fallbackAvatar,
+    authorId: AppState.currentUser ? AppState.currentUser.id : "user-" + Date.now(),
+    authorName: AppState.currentUser ? AppState.currentUser.name : "Aluno(a)",
+    authorRole: AppState.currentUser ? AppState.currentUser.role : "aluno",
+    authorPhoto: AppState.currentUser ? (AppState.currentUser.photo || AppState.currentUser.photoUrl) : fallbackAvatar,
     createdAt: new Date().toISOString(),
     attachments: [...newTopicAttachments],
     comments: []
@@ -13808,13 +14011,15 @@ function openVisualGalleryDirectly() {
 
 
 if (typeof window !== 'undefined') {
-  window.AppState = AppState;
-  window.switchTab = switchTab;
-  window.renderApp = renderApp;
-  window.openVisualGalleryDirectly = openVisualGalleryDirectly;
-  window.switchPromptsSubTab = switchPromptsSubTab;
-  window.openVisualGalleryDirectly = openVisualGalleryDirectly;
-  window.copyVisualPromptCase = copyVisualPromptCase;
-  window.renderVisualGalleryContent = renderVisualGalleryContent;
-  window.renderPrompt6DBuilderContent = renderPrompt6DBuilderContent;
+  window.AppState = typeof AppState !== 'undefined' ? AppState : window.AppState;
+  window.switchTab = typeof switchTab !== 'undefined' ? switchTab : window.switchTab;
+  window.renderApp = typeof renderApp !== 'undefined' ? renderApp : window.renderApp;
+  window.renderChatTab = typeof renderChatTab !== 'undefined' ? renderChatTab : window.renderChatTab;
+  window.renderForumTab = typeof renderForumTab !== 'undefined' ? renderForumTab : window.renderForumTab;
+  window.openLiveChatDirectly = typeof openLiveChatDirectly !== 'undefined' ? openLiveChatDirectly : function() { window.switchTab && window.switchTab('chat'); };
+  if (typeof openVisualGalleryDirectly !== 'undefined') window.openVisualGalleryDirectly = openVisualGalleryDirectly;
+  if (typeof switchPromptsSubTab !== 'undefined') window.switchPromptsSubTab = switchPromptsSubTab;
+  if (typeof copyVisualPromptCase !== 'undefined') window.copyVisualPromptCase = copyVisualPromptCase;
+  if (typeof renderVisualGalleryContent !== 'undefined') window.renderVisualGalleryContent = renderVisualGalleryContent;
+  if (typeof renderPrompt6DBuilderContent !== 'undefined') window.renderPrompt6DBuilderContent = renderPrompt6DBuilderContent;
 }
