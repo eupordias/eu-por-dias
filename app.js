@@ -1816,10 +1816,15 @@ function renderTabAccessRestriction(container, tabKey) {
       badge: "Exportações & Atas Oficiais",
       description: "Acesse para emitir boletins escolares oficiais, atas de rendimento e backups na nuvem."
     },
+    chat: {
+      title: "Chat ao Vivo da Turma",
+      badge: "Canal Interativo em Tempo Real",
+      description: "Conecte-se com colegas e mentores para tirar dúvidas, debater aulas e trocar experiências."
+    },
     forum: {
-      title: "Fórum & Chat ao Vivo",
+      title: "Fórum & Dúvidas",
       badge: "Comunidade da Turma",
-      description: "Participe das discussões da turma, tire dúvidas e envie mensagens em tempo real com colegas e docentes."
+      description: "Participe das discussões da turma, tire dúvidas e envie mensagens com colegas e docentes."
     },
     careers: {
       title: "Vagas & Trilhas",
@@ -1833,7 +1838,7 @@ function renderTabAccessRestriction(container, tabKey) {
     }
   };
 
-  const config = tabConfigs[tabKey] || { title: "Área Restrita", badge: "Identificação", description: "Identifique-se para acessar." };
+  const config = tabConfigs[tabKey] || { title: "Área Restrita", badge: "Identificação", description: "Identifique-se com seu CPF cadastrado para acessar." };
 
   container.innerHTML = `
     <div class="fade-in max-w-xl mx-auto py-8 px-3">
@@ -1853,37 +1858,28 @@ function renderTabAccessRestriction(container, tabKey) {
           </p>
         </div>
 
-        <!-- Acesso Rápido de Demonstração (1-Clique) -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2.5">
-          <span class="d-block text-[11px] fw-semibold text-slate-600">Explore a plataforma imediatamente (1-clique):</span>
-          <div class="d-flex flex-wrap justify-content-center gap-2">
+        <!-- Login Direto com CPF do Banco -->
+        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3.5">
+          <div class="text-xs font-semibold text-slate-700 d-flex align-items-center justify-content-center gap-1.5">
+            <i class="fa-solid fa-id-card text-indigo-600"></i>
+            <span>Identifique-se com seu CPF cadastrado no banco:</span>
+          </div>
+
+          <form onsubmit="event.preventDefault(); const inp = document.getElementById('inline-cpf-${tabKey}'); if (inp) { document.getElementById('login-cpf-input') && (document.getElementById('login-cpf-input').value = inp.value); openCpfLoginModal('${tabKey}'); }" class="space-y-3">
             <button 
               type="button" 
-              onclick="quickLoginDemo('professor', '${tabKey}')" 
-              class="btn btn-sm btn-primary rounded-pill px-3.5 py-2 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
+              onclick="openCpfLoginModal('${tabKey}')" 
+              class="btn btn-primary rounded-xl px-5 py-2.5 text-xs fw-bold w-100 d-inline-flex align-items-center justify-content-center gap-2 shadow-sm"
               style="background: linear-gradient(135deg, #4f46e5, #6366f1); border: none;"
             >
-              <i class="fa-solid fa-chalkboard-user"></i> Entrar como Docente (Demo)
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+              <span>Entrar com CPF Cadastrado</span>
             </button>
-            <button 
-              type="button" 
-              onclick="quickLoginDemo('aluno', '${tabKey}')" 
-              class="btn btn-sm btn-outline-secondary rounded-pill px-3.5 py-2 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
-            >
-              <i class="fa-solid fa-graduation-cap"></i> Entrar como Aluno (Demo)
-            </button>
-          </div>
-        </div>
+          </form>
 
-        <!-- Ou digite seu CPF -->
-        <div class="pt-1">
-          <button 
-            type="button" 
-            onclick="openCpfLoginModal('${tabKey}')" 
-            class="btn btn-sm btn-link text-xs fw-semibold text-indigo-600 text-decoration-none d-inline-flex align-items-center gap-1.5 p-0"
-          >
-            <i class="fa-solid fa-id-card"></i> Identificar-se com CPF cadastrado
-          </button>
+          <p class="text-[11px] text-slate-400 m-0">
+            <i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> Apenas alunos matriculados e docentes autorizados têm acesso.
+          </p>
         </div>
 
       </div>
@@ -6827,15 +6823,8 @@ function renderHeaderUserBadge() {
     container.innerHTML = `
       <div class="d-flex align-items-center gap-1.5">
         <button 
-          onclick="quickLoginDemo('professor')" 
-          class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 text-xs fw-semibold d-none sm:inline-flex align-items-center gap-1"
-          title="Acessar instantaneamente em modo demonstração docente"
-        >
-          <i class="fa-solid fa-play"></i> Demo
-        </button>
-        <button 
           onclick="openCpfLoginModal()" 
-          class="btn btn-sm btn-primary rounded-pill px-3 py-1 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
+          class="btn btn-sm btn-primary rounded-pill px-3.5 py-1 text-xs fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
           style="background: linear-gradient(135deg, #4f46e5, #6366f1); border: none;"
           title="Entrar com CPF cadastrado"
         >
@@ -7796,24 +7785,10 @@ function isUserEligibleToPost() {
 function renderChatTab(container) {
   if (!container) return;
   
-  // Se o usuário ainda não tiver perfil selecionado, define um aluno padrão para navegação sem travas
+  // Exige que o usuário esteja autenticado com conta real cadastrada no banco
   if (!AppState.currentUser) {
-    const defaultStudent = (AppState.students && AppState.students.length > 0) ? AppState.students[0] : {
-      id: "demo-1",
-      name: "Ana Beatriz Silva",
-      cpf: "11111111111",
-      email: "ana.silva@exemplo.com",
-      role: "aluno",
-      photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face"
-    };
-    AppState.currentUser = {
-      id: defaultStudent.id,
-      name: defaultStudent.name,
-      cpf: defaultStudent.cpf || "11111111111",
-      role: "aluno",
-      email: defaultStudent.email || "aluno@empregamais.com",
-      photo: defaultStudent.photoUrl || defaultStudent.photo || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face"
-    };
+    renderTabAccessRestriction(container, 'chat');
+    return;
   }
 
   container.innerHTML = `
