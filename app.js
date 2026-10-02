@@ -7920,998 +7920,367 @@ function getDefaultForumTopics() {
   }));
 }
 
-function loadForumDataFromStorage() {
-  const savedTopics = localStorage.getItem("eupordias_forum_topics");
-  const savedMessages = localStorage.getItem("eupordias_forum_messages");
 
-  if (savedTopics) {
-    try {
-      AppState.forumTopics = JSON.parse(savedTopics);
-    } catch (e) {
-      AppState.forumTopics = getDefaultForumTopics();
-    }
-  } else {
-    AppState.forumTopics = getDefaultForumTopics();
-  }
+// =============================================================
+// MOTOR DE CHAT AO VIVO EM TEMPO REAL DE ALTA RESILIÊNCIA (SSE + CLOUD VAULT)
+// =============================================================
+// Garante 100% de persistência entre recargas de página, sincronização
+// instantânea entre celulares/PCs e histórico seguro de mensagens.
 
-  if (savedMessages) {
-    try {
-      AppState.forumMessages = JSON.parse(savedMessages);
-    } catch (e) {
-      AppState.forumMessages = [];
-    }
-  } else {
-    AppState.forumMessages = [
-      {
-        id: "msg-1",
-        authorName: "Professor Titular",
-        authorRole: "professor",
-        authorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        text: "Olá a todos! Sejam muito bem-vindos ao Fórum & Chat ao vivo do Programa Emprega Mais Alagoas."
-      }
-    ];
-  }
+const LIVE_CHAT_CHANNEL = "eupordias_turma_chat_oficial_alagoas_2026";
+const LIVE_CHAT_POST_URL = "https://ntfy.sh/" + LIVE_CHAT_CHANNEL;
+const LIVE_CHAT_SSE_URL = "https://ntfy.sh/" + LIVE_CHAT_CHANNEL + "/sse";
+const LIVE_CHAT_HISTORY_URL = "https://ntfy.sh/" + LIVE_CHAT_CHANNEL + "/json?poll=1&since=72h";
+
+let liveChatEventSource = null;
+let liveChatReconnectTimer = null;
+let liveChatConnected = false;
+
+function initLiveChatRealtimeEngine() {
+  // 1. Carrega histórico local de segurança
+  loadForumDataFromStorage();
+
+  // 2. Busca histórico completo na nuvem e mescla sem perda
+  fetchLiveChatHistoryFromCloud();
+
+  // 3. Conecta canal de transmissão ao vivo (Server-Sent Events)
+  connectLiveChatSSE();
 }
 
-function saveForumDataToStorage() {
+function connectLiveChatSSE() {
+  if (typeof window.EventSource === "undefined") {
+    console.warn("[LiveChat] EventSource não suportado no navegador.");
+    return;
+  }
+
+  if (liveChatEventSource) {
+    try { liveChatEventSource.close(); } catch (e) {}
+    liveChatEventSource = null;
+  }
+
   try {
-    localStorage.setItem("eupordias_forum_topics", JSON.stringify(AppState.forumTopics));
-    localStorage.setItem("eupordias_forum_messages", JSON.stringify(AppState.forumMessages));
-  } catch (e) {}
-}
-
-function isUserEligibleToPost() {
-  if (!AppState.currentUser) {
-    return { eligible: false, reason: "unauthenticated" };
-  }
-  return { eligible: true, reason: "ok" };
-}
-
-
-// ==========================================
-// ABA DEDICADA: CHAT AO VIVO DA TURMA (#CHAT-DA-TURMA)
-// ==========================================
-function renderChatTab(container) {
-  if (!container) return;
-  
-  // Exige que o usuário esteja autenticado com conta real cadastrada no banco
-  if (!AppState.currentUser) {
-    renderTabAccessRestriction(container, 'chat');
-    return;
-  }
-
-  container.innerHTML = `
-    <div class="space-y-5 fade-in pb-10">
-      
-      <!-- Cabeçalho do Chat ao Vivo -->
-      <div class="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-4">
-        <div class="d-flex align-items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-600 text-white d-flex align-items-center justify-content-center text-xl shadow-sm flex-shrink-0">
-            <i class="fa-solid fa-bolt"></i>
-          </div>
-          <div>
-            <div class="d-flex align-items-center gap-2">
-              <h2 class="text-base sm:text-lg fw-bold text-slate-900 mb-0">Chat ao Vivo da Turma</h2>
-              <span class="d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
-                <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
-                ONLINE
-              </span>
-            </div>
-            <p class="text-xs text-slate-500 mb-0 mt-0.5">Canal oficial em tempo real para alunos e docentes • Programa Emprega Mais Alagoas</p>
-          </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 flex-wrap text-xs">
-          <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
-            <i class="fa-solid fa-user-check text-emerald-600"></i> ${escapeHtml(AppState.currentUser.name)}
-          </span>
-          <button 
-            type="button" 
-            onclick="switchTab('forum')" 
-            class="btn btn-sm btn-light border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
-          >
-            <i class="fa-solid fa-comments text-indigo-600"></i> Ver Tópicos dos 7 Módulos
-          </button>
-        </div>
-      </div>
-
-      <!-- Feed & Componente de Mensagens -->
-      ${renderForumChatContent()}
-
-    </div>
-  `;
-
-  setTimeout(scrollChatToBottom, 70);
-}
-
-function renderForumTab(container) {
-  // REGRA DE ACESSO: Exige identificação por CPF
-  if (!AppState.currentUser) {
-    renderTabAccessRestriction(container, 'forum');
-    return;
-  }
-
-  const eligibility = isUserEligibleToPost();
-  const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
-
-  container.innerHTML = `
-    <div class="space-y-6 fade-in">
-      
-      <!-- Cabeçalho do Fórum & Chat -->
-      <div class="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-4">
-        <div>
-          <div class="d-flex align-items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-circle text-[10px] font-extrabold text-uppercase bg-purple-100 text-purple-700 ">
-              <i class="fa-solid fa-comments"></i> Comunidade Oficial
-            </span>
-            <span class="text-xs text-slate-400">• Emprega Mais Alagoas</span>
-          </div>
-          <h2 class="text-lg fw-bold text-slate-900 mt-1">Fórum & Chat ao Vivo</h2>
-          <p class="text-xs text-slate-500 ">
-            Tire dúvidas sobre os 7 módulos do curso e interaja em tempo real com colegas e docentes.
-          </p>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <!-- Botão para Criar Tópico com Anexos -->
-          ${isProf ? `
-            <button 
-              onclick="openCreateTopicModal()" 
-              class="px-4 py-2.5 rounded-2xl text-xs fw-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95 d-flex align-items-center gap-2"
-            >
-              <i class="fa-solid fa-plus"></i> Novo Tópico com Anexos
-            </button>
-          ` : `
-            <button 
-              onclick="openCreateTopicModal()" 
-              class="px-4 py-2.5 rounded-2xl text-xs fw-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/25 transition-all transform active:scale-95 d-flex align-items-center gap-2"
-            >
-              <i class="fa-solid fa-plus"></i> Criar Nova Dúvida
-            </button>
-          `}
-        </div>
-      </div>
-
-      <!-- Seletor de Sub-Abas: Tópicos dos Módulos vs Chat Geral -->
-      <div class="d-flex align-items-center justify-content-between border-b border-slate-200 pb-2">
-        <div class="d-flex align-items-center gap-2">
-          <button 
-            onclick="switchForumSubTab('topics')" 
-            id="subtab-forum-topics"
-            class="px-4 py-2 rounded-xl text-xs fw-bold ${AppState.forumTab === 'topics' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'} transition-all d-flex align-items-center gap-1.5"
-          >
-            <i class="fa-solid fa-list-check"></i> Tópicos dos 7 Módulos (${AppState.forumTopics.length})
-          </button>
-          <button 
-            onclick="switchForumSubTab('chat')" 
-            id="subtab-forum-chat"
-            class="px-4 py-2 rounded-xl text-xs fw-bold ${AppState.forumTab === 'chat' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'} transition-all d-flex align-items-center gap-1.5"
-          >
-            <i class="fa-solid fa-bolt text-amber-500"></i> Chat ao Vivo da Turma (${AppState.forumMessages.length})
-          </button>
-        </div>
-
-        <div class="d-none d-sm-flex align-items-center gap-2 text-xs">
-          ${eligibility.eligible ? `
-            <span class="text-emerald-600 fw-bold d-flex align-items-center gap-1.5 text-[11px]">
-              <i class="fa-solid fa-circle-check"></i> Habilitado para postar (${AppState.currentUser.name.split(' ')[0]})
-            </span>
-          ` : `
-            <span class="text-amber-600 fw-semibold d-flex align-items-center gap-1.5 text-[11px]">
-              <i class="fa-solid fa-lock"></i> Postagem restrita (exige CPF e foto)
-            </span>
-          `}
-        </div>
-      </div>
-
-      <!-- Conteúdo da Sub-Aba Ativa -->
-      <div id="forum-subtab-content">
-        ${AppState.forumTab === 'chat' ? renderForumChatContent() : renderForumTopicsContent()}
-      </div>
-
-    </div>
-  `;
-
-  if (AppState.forumTab === 'chat') {
-    setTimeout(scrollChatToBottom, 60);
-  }
-}
-
-function switchForumSubTab(tabName) {
-  AppState.forumTab = tabName;
-  AppState.activeForumTopicId = null;
-  const contentArea = document.getElementById("main-content-area");
-  if (contentArea) renderForumTab(contentArea);
-  if (tabName === 'chat') {
-    setTimeout(scrollChatToBottom, 80);
-  }
-}
-
-function renderEligibilityBanner(actionName = "postar") {
-  const eligibility = isUserEligibleToPost();
-  if (eligibility.eligible) return "";
-
-  if (eligibility.reason === "unauthenticated") {
-    return `
-      <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-3">
-        <div class="d-flex align-items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-amber-200 text-amber-800 d-flex align-items-center justify-content-center text-sm fw-bold flex-shrink-0">
-            <i class="fa-solid fa-lock"></i>
-          </div>
-          <div>
-            <strong class="d-block fw-bold">Regra da Comunidade: Identificação com CPF</strong>
-            <p class="text-[11px] text-amber-700 ">Para ${actionName} no Fórum e Chat, entre com seu perfil e CPF cadastrados previamente.</p>
-          </div>
-        </div>
-        <button 
-          onclick="openCpfLoginModal('forum')" 
-          class="px-4 py-2 rounded-xl text-xs fw-bold bg-amber-600 text-white shadow transition-all self-start sm:self-auto d-flex align-items-center gap-1.5"
-        >
-          <i class="fa-solid fa-id-card"></i> Fazer Login com CPF
-        </button>
-      </div>
-    `;
-  }
-
-  if (eligibility.reason === "no_photo") {
-    return `
-      <div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-950 d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-3">
-        <div class="d-flex align-items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-indigo-200 text-indigo-800 d-flex align-items-center justify-content-center text-sm fw-bold flex-shrink-0">
-            <i class="fa-solid fa-camera"></i>
-          </div>
-          <div>
-            <strong class="d-block fw-bold">Regra Estrita: Só digita quem estiver com foto!</strong>
-            <p class="text-[11px] text-indigo-700 ">Você está logado como <strong>${AppState.currentUser.name}</strong>, mas precisa cadastrar sua foto de perfil para liberar o envio de mensagens.</p>
-          </div>
-        </div>
-        <button 
-          onclick="openUserPhotoUploadModal()" 
-          class="px-4 py-2 rounded-xl text-xs fw-bold bg-indigo-600 text-white shadow transition-all self-start sm:self-auto d-flex align-items-center gap-1.5"
-        >
-          <i class="fa-solid fa-camera-retro"></i> Adicionar Minha Foto
-        </button>
-      </div>
-    `;
-  }
-
-  return "";
-}
-
-function renderForumTopicsContent() {
-  if (AppState.activeForumTopicId) {
-    return renderForumTopicDetail(AppState.activeForumTopicId);
-  }
-
-  return `
-    <div class="space-y-4">
-      
-      ${renderEligibilityBanner('criar tópicos')}
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        ${AppState.forumTopics.map(t => {
-          const commentsCount = t.comments ? t.comments.length : 0;
-          const hasPhoto = t.attachments?.some(a => a.type === 'photo');
-          const hasPdf = t.attachments?.some(a => a.type === 'pdf');
-          const hasVideo = t.attachments?.some(a => a.type === 'video');
-          const hasLink = t.attachments?.some(a => a.type === 'link');
-
-          return `
-            <div 
-              onclick="openForumTopic('${t.id}')" 
-              class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm transition-all cursor-pointer d-flex flex-column justify-content-between space-y-3 transform .5"
-            >
-              <div class="space-y-2">
-                <div class="d-flex align-items-center justify-content-between gap-2">
-                  <span class="px-2.5 py-0.5 rounded-circle text-[10px] font-monospace fw-bold bg-indigo-50 text-indigo-700 text-truncate max-w-[200px]">
-                    ${t.module || 'Geral'}
-                  </span>
-                  <span class="text-[10px] text-slate-400">
-                    <i class="fa-regular fa-clock"></i> ${new Date(t.createdAt).toLocaleDateString('pt-BR')}
-                  </span>
-                </div>
-
-                <h3 class="fw-bold text-sm text-slate-900 line-clamp-2 leading-snug">
-                  ${t.title}
-                </h3>
-
-                <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                  ${t.description}
-                </p>
-              </div>
-
-              <div class="pt-3 border-t border-slate-100 d-flex align-items-center justify-content-between text-xs">
-                
-                <!-- Indicadores de Anexos presentes -->
-                <div class="d-flex align-items-center gap-1.5 text-slate-400 text-[11px]">
-                  ${hasPhoto ? `<span title="Contém Foto"><i class="fa-solid fa-image text-emerald-500"></i></span>` : ''}
-                  ${hasPdf ? `<span title="Contém PDF"><i class="fa-solid fa-file-pdf text-rose-500"></i></span>` : ''}
-                  ${hasVideo ? `<span title="Contém Vídeo"><i class="fa-solid fa-video text-purple-500"></i></span>` : ''}
-                  ${hasLink ? `<span title="Contém Link"><i class="fa-solid fa-link text-blue-500"></i></span>` : ''}
-                  ${!hasPhoto && !hasPdf && !hasVideo && !hasLink ? `<span class="text-[10px] text-slate-400">Sem anexos</span>` : ''}
-                </div>
-
-                <div class="d-flex align-items-center gap-1 text-slate-500 fw-bold text-xs">
-                  <i class="fa-regular fa-comment-dots text-indigo-500"></i>
-                  <span>${commentsCount} ${commentsCount === 1 ? 'resposta' : 'respostas'}</span>
-                </div>
-              </div>
-
-            </div>
-          `;
-        }).join("")}
-      </div>
-
-    </div>
-  `;
-}
-
-function openForumTopic(topicId) {
-  AppState.activeForumTopicId = topicId;
-  const contentArea = document.getElementById("main-content-area");
-  if (contentArea) renderForumTab(contentArea);
-}
-
-function closeForumTopic() {
-  AppState.activeForumTopicId = null;
-  const contentArea = document.getElementById("main-content-area");
-  if (contentArea) renderForumTab(contentArea);
-}
-
-function renderForumTopicDetail(topicId) {
-  const topic = AppState.forumTopics.find(t => t.id === topicId);
-  if (!topic) return "<p>Tópico não encontrado.</p>";
-
-  const eligibility = isUserEligibleToPost();
-
-  return `
-    <div class="space-y-6">
-      
-      <!-- Botão Voltar -->
-      <button 
-        onclick="closeForumTopic()" 
-        class="d-inline-flex align-items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs fw-bold bg-slate-100 text-slate-700 transition-all"
-      >
-        <i class="fa-solid fa-arrow-left"></i> Voltar para a Lista de Tópicos
-      </button>
-
-      <!-- Cartão Principal do Tópico -->
-      <div class="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
-        
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-          <span class="px-3 py-1 rounded-circle text-xs fw-bold font-monospace bg-indigo-50 text-indigo-700 ">
-            ${topic.module || 'Módulo do Curso'}
-          </span>
-          <div class="d-flex align-items-center gap-2">
-            <span class="text-xs text-slate-400">
-              Criado em ${new Date(topic.createdAt).toLocaleString('pt-BR')}
-            </span>
-            ${AppState.currentUser && AppState.currentUser.role === 'professor' ? `
-              <button 
-                type="button" 
-                onclick="deleteForumTopic('${topic.id}')" 
-                class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 text-xs fw-bold border border-rose-200/60 d-flex align-items-center gap-1 transition-all shadow-xs cursor-pointer"
-                title="Moderação Docente: Excluir este tópico"
-              >
-                <i class="fa-solid fa-trash-can"></i> Excluir Tópico
-              </button>
-            ` : ''}
-          </div>
-        </div>
-
-        <h1 class="text-xl fw-bold text-slate-900 leading-snug">
-          ${topic.title}
-        </h1>
-
-        <!-- Autor do Tópico -->
-        <div class="d-flex align-items-center gap-3 py-2 border-y border-slate-100 ">
-          <div class="w-9 h-9 rounded-circle overflow-hidden bg-slate-200 flex-shrink-0">
-            <img src="${topic.author?.photo || 'https://via.placeholder.com/80'}" alt="Autor" class="w-100 h-100 object-fit-cover">
-          </div>
-          <div>
-            <span class="d-block fw-bold text-xs text-slate-900 ">${topic.author?.name || 'Coordenação'}</span>
-            <span class="text-[10px] text-slate-500 text-uppercase fw-semibold">${topic.author?.role === 'professor' ? 'Docente Titular' : 'Aluno'}</span>
-          </div>
-        </div>
-
-        <div class="text-xs text-slate-700 leading-relaxed whitespace-pre-line">
-          ${topic.description}
-        </div>
-
-        <!-- Renderização de Anexos (Foto, PDF, Link, Vídeo) -->
-        ${(topic.attachments && topic.attachments.length > 0) ? `
-          <div class="pt-3 border-t border-slate-100 space-y-3">
-            <h4 class="fw-bold text-xs text-slate-800 d-flex align-items-center gap-1.5">
-              <i class="fa-solid fa-paperclip text-indigo-600"></i> Anexos e Materiais de Apoio:
-            </h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              ${topic.attachments.map(att => renderAttachmentCard(att)).join("")}
-            </div>
-          </div>
-        ` : ''}
-
-      </div>
-
-      <!-- Seção de Comentários / Respostas -->
-      <div class="space-y-4">
-        <h3 class="fw-bold text-sm text-slate-900 d-flex align-items-center gap-2">
-          <i class="fa-solid fa-comments text-indigo-600"></i> Respostas e Comentários (${topic.comments?.length || 0})
-        </h3>
-
-        <!-- Formulário de Envio de Resposta -->
-        <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
-          ${eligibility.eligible ? `
-            <div class="d-flex align-items-start gap-3">
-              <div class="w-9 h-9 rounded-circle overflow-hidden ring-2 ring-indigo-500 bg-indigo-100 flex-shrink-0">
-                <img src="${AppState.currentUser.photo}" alt="Você" class="w-100 h-100 object-fit-cover">
-              </div>
-              <div class="flex-grow-1 space-y-2">
-                <textarea 
-                  id="topic-reply-input" 
-                  rows="3" 
-                  placeholder="Escreva sua dúvida ou resposta sobre este módulo..." 
-                  class="w-100 p-3 rounded-2xl border border-slate-200 bg-slate-50 text-xs text-slate-900 "
-                ></textarea>
-                <div class="d-flex align-items-center justify-content-between">
-                  <span class="text-[11px] text-slate-400">Postando como <strong>${AppState.currentUser.name}</strong></span>
-                  <button 
-                    onclick="submitTopicComment('${topic.id}')" 
-                    class="px-4 py-2 rounded-xl fw-bold text-xs bg-indigo-600 text-white shadow transition-all d-flex align-items-center gap-1.5"
-                  >
-                    <i class="fa-solid fa-paper-plane"></i> Responder
-                  </button>
-                </div>
-              </div>
-            </div>
-          ` : `
-            ${renderEligibilityBanner('responder a este tópico')}
-          `}
-        </div>
-
-        <!-- Lista de Comentários -->
-        <div class="space-y-3">
-          ${(!topic.comments || topic.comments.length === 0) ? `
-            <p class="text-xs text-slate-500 italic text-center py-6">
-              Nenhuma resposta postada ainda. Seja o primeiro a participar!
-            </p>
-          ` : topic.comments.map((c, cIdx) => {
-            const isMeComment = AppState.currentUser && (
-              (AppState.currentUser.name && AppState.currentUser.name === c.authorName) ||
-              (AppState.currentUser.id && AppState.currentUser.id === c.authorId)
-            );
-            const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
-            const canModerate = isProf || isMeComment;
-
-            return `
-              <div class="p-4 rounded-2xl bg-white border border-slate-200/70 d-flex align-items-start gap-3 text-xs group">
-                <div class="w-8 h-8 rounded-circle overflow-hidden bg-slate-200 flex-shrink-0">
-                  <img src="${c.authorPhoto || 'https://via.placeholder.com/80'}" alt="${c.authorName}" class="w-100 h-100 object-fit-cover">
-                </div>
-                <div class="flex-grow-1 space-y-1 min-w-0">
-                  <div class="d-flex align-items-center justify-content-between gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                      <span class="fw-bold text-slate-900 ">${c.authorName}</span>
-                      <span class="px-1.5 py-0.2 rounded text-[9px] fw-bold text-uppercase ${c.authorRole === 'professor' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
-                        ${c.authorRole === 'professor' ? 'Docente' : 'Aluno'}
-                      </span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                      <span class="text-[10px] text-slate-400">${new Date(c.createdAt).toLocaleString('pt-BR')}</span>
-                      ${canModerate ? `
-                        <button 
-                          type="button"
-                          onclick="deleteTopicComment('${topic.id}', ${cIdx})" 
-                          class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 text-slate-400 transition-all text-xs p-1 rounded-lg cursor-pointer"
-                          title="${isProf && !isMeComment ? 'Moderação Docente: Apagar comentário' : 'Apagar meu comentário'}"
-                        >
-                          <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                      ` : ''}
-                    </div>
-                  </div>
-                  <p class="text-slate-700 leading-relaxed whitespace-pre-line">
-                    ${c.text}
-                  </p>
-                </div>
-              </div>
-            `;
-          }).join("")}
-        </div>
-
-      </div>
-
-    </div>
-  `;
-}
-
-function renderAttachmentCard(att) {
-  if (att.type === "photo") {
-    return `
-      <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-        <span class="fw-bold text-[11px] text-emerald-600 d-flex align-items-center gap-1">
-          <i class="fa-solid fa-image"></i> Foto / Imagem: ${att.title || 'Anexo'}
-        </span>
-        <div class="rounded-xl overflow-hidden max-h-48 bg-slate-900 d-flex align-items-center justify-content-center">
-          <img src="${att.url}" alt="${att.title}" class="max-h-48 w-100 object-contain cursor-pointer" onclick="window.open('${att.url}', '_blank')">
-        </div>
-      </div>
-    `;
-  }
-  if (att.type === "pdf") {
-    return `
-      <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 d-flex align-items-center justify-content-between gap-2">
-        <div class="d-flex align-items-center gap-2 min-w-0">
-          <i class="fa-solid fa-file-pdf text-rose-600 text-xl flex-shrink-0"></i>
-          <div class="min-w-0">
-            <span class="fw-bold text-slate-800 d-block text-truncate">${att.title || 'Documento PDF'}</span>
-            <span class="text-[10px] text-slate-400">Arquivo PDF de apoio</span>
-          </div>
-        </div>
-        <a href="${att.url}" target="_blank" download class="px-3 py-1.5 rounded-xl fw-bold text-xs bg-rose-600 text-white d-flex align-items-center gap-1 flex-shrink-0">
-          <i class="fa-solid fa-download"></i> Baixar
-        </a>
-      </div>
-    `;
-  }
-  if (att.type === "video") {
-    let videoEmbed = "";
-    if (att.url.includes("youtube.com") || att.url.includes("youtu.be")) {
-      let ytId = "";
-      if (att.url.includes("v=")) ytId = att.url.split("v=")[1].split("&")[0];
-      else if (att.url.includes("youtu.be/")) ytId = att.url.split("youtu.be/")[1].split("?")[0];
-      if (ytId) {
-        videoEmbed = `<iframe class="w-100 aspect-video rounded-xl" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>`;
-      }
-    }
-    return `
-      <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 col-span-1 sm:col-span-2">
-        <span class="fw-bold text-[11px] text-purple-600 d-flex align-items-center gap-1">
-          <i class="fa-solid fa-video"></i> Vídeo: ${att.title || 'Vídeo de Apoio'}
-        </span>
-        ${videoEmbed ? videoEmbed : `
-          <a href="${att.url}" target="_blank" class="d-inline-flex align-items-center gap-1 text-xs text-indigo-600 ">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Assistir Vídeo (${att.url})
-          </a>
-        `}
-      </div>
-    `;
-  }
-  return `
-    <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 d-flex align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2 min-w-0">
-        <i class="fa-solid fa-link text-blue-600 text-base flex-shrink-0"></i>
-        <div class="min-w-0">
-          <span class="fw-bold text-slate-800 d-block text-truncate">${att.title || 'Link Externo'}</span>
-          <span class="text-[10px] text-slate-400 text-truncate d-block">${att.url}</span>
-        </div>
-      </div>
-      <a href="${att.url}" target="_blank" class="px-3 py-1.5 rounded-xl fw-bold text-xs bg-blue-50 text-blue-700 d-flex align-items-center gap-1 flex-shrink-0">
-        <i class="fa-solid fa-external-link"></i> Abrir
-      </a>
-    </div>
-  `;
-}
-
-function submitTopicComment(topicId) {
-  const eligibility = isUserEligibleToPost();
-  if (!eligibility.eligible) {
-    showToast("Para responder, faça login com seu CPF e adicione sua foto de perfil.", "warning");
-    return;
-  }
-
-  const input = document.getElementById("topic-reply-input");
-  const text = input ? input.value.trim() : "";
-  if (!text) {
-    showToast("Digite sua mensagem de resposta.", "warning");
-    return;
-  }
-
-  const topic = AppState.forumTopics.find(t => t.id === topicId);
-  if (!topic) return;
-
-  if (!topic.comments) topic.comments = [];
-
-  const newComment = {
-    id: `com-${Date.now()}`,
-    authorName: AppState.currentUser.name,
-    authorRole: AppState.currentUser.role,
-    authorPhoto: AppState.currentUser.photo,
-    createdAt: new Date().toISOString(),
-    text
-  };
-
-  topic.comments.push(newComment);
-  saveForumDataToStorage();
-
-  showToast("Resposta publicada com sucesso!", "success");
-  const contentArea = document.getElementById("main-content-area");
-  if (contentArea) renderForumTab(contentArea);
-}
-
-function deleteTopicComment(topicId, commentIndex) {
-  if (!AppState.currentUser) {
-    showToast("Você precisa estar logado para moderar comentários.", "warning");
-    return;
-  }
-
-  const topic = AppState.forumTopics.find(t => t.id === topicId);
-  if (!topic || !topic.comments || !topic.comments[commentIndex]) {
-    showToast("Comentário não encontrado.", "error");
-    return;
-  }
-
-  const comment = topic.comments[commentIndex];
-  const isProf = AppState.currentUser.role === "professor";
-  const isAuthor = (AppState.currentUser.name && AppState.currentUser.name === comment.authorName) ||
-                   (AppState.currentUser.id && AppState.currentUser.id === comment.authorId);
-
-  if (!isProf && !isAuthor) {
-    showToast("Apenas o docente ou o próprio autor podem moderar este comentário.", "error");
-    return;
-  }
-
-  const confirmMsg = isProf && !isAuthor
-    ? `[Moderação Docente]\nDeseja realmente excluir a resposta de "${comment.authorName}"?`
-    : `Deseja realmente apagar sua resposta?`;
-
-  if (!confirm(confirmMsg)) {
-    return;
-  }
-
-  topic.comments.splice(commentIndex, 1);
-  saveForumDataToStorage();
-
-  const contentArea = document.getElementById("main-content-area");
-  if (contentArea) renderForumTab(contentArea);
-
-  showToast(isProf && !isAuthor ? "Resposta moderada e excluída pelo docente." : "Resposta apagada com sucesso.", "success");
-}
-
-function deleteForumTopic(topicId) {
-  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
-    showToast("Apenas professores podem excluir tópicos do fórum.", "error");
-    return;
-  }
-
-  const topic = AppState.forumTopics.find(t => t.id === topicId);
-  if (!topic) {
-    showToast("Tópico não encontrado.", "error");
-    return;
-  }
-
-  if (!confirm(`[Moderação Docente]\nDeseja realmente excluir o tópico "${topic.title}" e todas as suas respostas? Esta ação não pode ser desfeita.`)) {
-    return;
-  }
-
-  AppState.forumTopics = AppState.forumTopics.filter(t => t.id !== topicId);
-  saveForumDataToStorage();
-
-  closeForumTopic();
-  showToast("Tópico excluído com sucesso pelo docente.", "success");
-}
-
-// Sub-aba: Chat ao Vivo da Turma (Design Moderno Discord / Telegram)
-function formatChatMessageTime(isoStr) {
-  try {
-    const d = new Date(isoStr);
-    if (isNaN(d.getTime())) return "";
-    const now = new Date();
-    const isToday = d.toDateString() === now.toDateString();
-    const timeStr = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    if (isToday) return timeStr;
-    return `${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} ${timeStr}`;
-  } catch (e) {
-    return "";
-  }
-}
-
-function scrollChatToBottom() {
-  const container = document.getElementById("live-chat-messages-container");
-  if (container) {
-    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-  }
-}
-
-function insertChatEmoji(emoji) {
-  const input = document.getElementById("live-chat-input");
-  if (input) {
-    input.value = (input.value ? input.value + " " : "") + emoji + " ";
-    input.focus();
-  }
-}
-
-function renderForumChatContent() {
-  const eligibility = isUserEligibleToPost();
-
-  return `
-    <div class="p-5 sm:p-7 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
-      
-      <!-- Cabeçalho do Canal Estilo Discord / Telegram -->
-      <div class="d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-3 pb-4 border-b border-slate-200/80 ">
-        <div class="d-flex align-items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 d-flex align-items-center justify-content-center fw-bolder text-lg shadow-sm flex-shrink-0">
-            <i class="fa-solid fa-hashtag"></i>
-          </div>
-          <div>
-            <div class="d-flex align-items-center gap-2">
-              <h3 class="font-extrabold text-base text-slate-900 tracking-tight">chat-da-turma</h3>
-              <span class="d-inline-flex align-items-center gap-1.5 px-2 py-0.5 rounded-circle text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
-                <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
-                Ao Vivo
-              </span>
-            </div>
-            <p class="text-xs text-slate-500 ">Canal interativo em tempo real para alunos e docentes</p>
-          </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 self-start sm:self-auto text-xs text-slate-500 flex-wrap">
-          <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-flex align-items-center gap-1.5 shadow-xs">
-            <i class="fa-solid fa-comments text-indigo-500"></i> ${AppState.forumMessages.length} mensagens
-          </span>
-          ${AppState.currentUser ? `
-            <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 fw-semibold d-flex align-items-center gap-1.5 shadow-xs">
-              <span class="w-2 h-2 rounded-circle bg-emerald-500"></span>
-              ${escapeHtml(AppState.currentUser.name.split(' ')[0])} (${AppState.currentUser.role === 'professor' ? 'Docente' : 'Aluno'})
-            </span>
-          ` : ''}
-          ${AppState.currentUser && AppState.currentUser.role === 'professor' ? `
-            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 fw-bold d-flex align-items-center gap-1.5 border border-amber-200/60 text-[11px] shadow-xs">
-              <i class="fa-solid fa-shield-halved text-amber-500"></i> Moderação Docente Ativa
-            </span>
-            ${AppState.forumMessages.length > 0 ? `
-              <button 
-                type="button" 
-                onclick="clearAllChatMessages()" 
-                class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 text-[11px] fw-bold d-flex align-items-center gap-1 border border-rose-200/60 transition-all cursor-pointer shadow-xs"
-                title="Limpar todas as mensagens do chat da turma (Exclusivo Docente)"
-              >
-                <i class="fa-solid fa-broom"></i> Limpar Chat
-              </button>
-            ` : ''}
-          ` : ''}
-        </div>
-      </div>
-
-      <!-- Feed de Mensagens do Chat com Altura Fixa e Rolagem Interna -->
-      <div id="live-chat-messages-container" class="h-[460px] sm:h-[500px] overflow-y-auto space-y-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-slate-50/90 to-slate-100/60 border border-slate-200/80 scroll-smooth">
-        ${AppState.forumMessages.length === 0 ? `
-          <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-8 text-slate-400 ">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 d-flex align-items-center justify-content-center text-2xl mb-3">
-              <i class="fa-solid fa-hashtag"></i>
-            </div>
-            <h4 class="fw-bold text-sm text-slate-700 ">Início do canal #chat-da-turma</h4>
-            <p class="text-xs max-w-sm mt-1">Este é o começo do canal de conversa da turma. Envie uma mensagem para iniciar o bate-papo!</p>
-          </div>
-        ` : AppState.forumMessages.map(m => {
-          const isMe = AppState.currentUser && (
-            (AppState.currentUser.name && AppState.currentUser.name === m.authorName) ||
-            (AppState.currentUser.id && AppState.currentUser.id === m.authorId)
-          );
-          const currentIsProf = AppState.currentUser && AppState.currentUser.role === 'professor';
-          const isProf = m.authorRole === 'professor';
-          const timeStr = formatChatMessageTime(m.createdAt);
-          const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.authorName || 'U')}&background=${isProf ? 'f59e0b' : '6366f1'}&color=fff`;
-          const photoUrl = m.authorPhoto && m.authorPhoto.trim() !== '' ? m.authorPhoto : fallbackAvatar;
-
-          if (isMe) {
-            return `
-              <div class="d-flex align-items-end justify-content-end gap-2 group transition-all position-relative">
-                <!-- Botão de Moderação / Apagar para o autor da mensagem (Aluno ou Professor) -->
-                <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity d-flex align-items-center align-self-center mr-1">
-                  <button 
-                    type="button" 
-                    onclick="deleteChatMessage('${m.id}')" 
-                    class="w-7 h-7 rounded-xl bg-white/90 text-slate-400 border border-slate-200/80 d-flex align-items-center justify-content-center text-xs shadow-xs cursor-pointer transition-colors" 
-                    title="Apagar minha mensagem do chat"
-                  >
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                </div>
-
-                <div class="d-flex flex-column align-items-end max-w-[85%] sm:max-w-[70%]">
-                  <div class="d-flex align-items-center gap-1.5 mb-1 px-1">
-                    <span class="text-[10px] text-slate-400 fw-medium">${timeStr}</span>
-                    <span class="px-1.5 py-0.5 rounded-circle text-[9px] fw-bold bg-indigo-100 text-indigo-700 ">Você</span>
-                  </div>
-                  <div class="px-4 py-3 rounded-2xl rounded-br-xs bg-gradient-to-br from-indigo-600 via-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-600/20 text-xs sm:text-sm fw-normal leading-relaxed break-words">
-                    ${escapeHtml(m.text)}
-                    <div class="d-flex align-items-center justify-content-end gap-1 mt-1 text-[10px] text-indigo-200">
-                      <span>${timeStr}</span>
-                      <i class="fa-solid fa-check-double text-[9px]"></i>
-                    </div>
-                  </div>
-                </div>
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-circle overflow-hidden ring-2 ring-indigo-500 ring-offset-2 flex-shrink-0 shadow-sm">
-                  <img src="${photoUrl}" alt="Você" onerror="this.src='${fallbackAvatar}'" class="w-100 h-100 object-fit-cover">
-                </div>
-              </div>
-            `;
-          } else {
-            return `
-              <div class="d-flex align-items-end justify-content-start gap-2 group transition-all position-relative">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-circle overflow-hidden ring-2 ${isProf ? 'ring-amber-500 ring-offset-2 dark:ring-offset-slate-900 shadow-amber-500/20' : 'ring-slate-300 dark:ring-slate-700 ring-offset-2 dark:ring-offset-slate-900'} flex-shrink-0 shadow-sm">
-                  <img src="${photoUrl}" alt="${escapeHtml(m.authorName)}" onerror="this.src='${fallbackAvatar}'" class="w-100 h-100 object-fit-cover">
-                </div>
-                <div class="d-flex flex-column align-items-start max-w-[85%] sm:max-w-[70%]">
-                  <div class="d-flex align-items-center gap-1.5 mb-1 px-1">
-                    <span class="fw-bold text-xs ${isProf ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-200'}">${escapeHtml(m.authorName)}</span>
-                    ${isProf ? `
-                      <span class="px-1.5 py-0.5 rounded-circle text-[9px] font-extrabold text-uppercase bg-amber-100 text-amber-800 ring-1 ring-amber-500/30 d-flex align-items-center gap-1">
-                        <i class="fa-solid fa-graduation-cap"></i> Docente
-                      </span>
-                    ` : `
-                      <span class="px-1.5 py-0.5 rounded-circle text-[9px] fw-bold bg-slate-200 text-slate-700 ">
-                        Aluno
-                      </span>
-                    `}
-                    <span class="text-[10px] text-slate-400 fw-medium">${timeStr}</span>
-                  </div>
-                  <div class="px-4 py-3 rounded-2xl rounded-bl-xs bg-white text-slate-800 border border-slate-200/80 shadow-sm text-xs sm:text-sm fw-normal leading-relaxed break-words">
-                    ${escapeHtml(m.text)}
-                  </div>
-                </div>
-
-                <!-- Botão de Moderação Exclusivo para Docente (quando a mensagem é de outro usuário) -->
-                ${currentIsProf ? `
-                  <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity d-flex align-items-center align-self-center ml-1">
-                    <button 
-                      type="button" 
-                      onclick="deleteChatMessage('${m.id}')" 
-                      class="px-2 py-1 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/80 d-flex align-items-center gap-1 text-[11px] fw-bold transition-all shadow-xs cursor-pointer" 
-                      title="Moderação Docente: Apagar mensagem da turma"
-                    >
-                      <i class="fa-solid fa-shield-xmark text-rose-500"></i>
-                      <span class="d-none sm:inline">Moderar</span>
-                    </button>
-                  </div>
-                ` : ''}
-              </div>
-            `;
+    liveChatEventSource = new EventSource(LIVE_CHAT_SSE_URL);
+
+    liveChatEventSource.onopen = function () {
+      liveChatConnected = true;
+      console.log("[LiveChat] Conectado ao canal de transmissão ao vivo da turma!");
+      updateChatOnlineIndicator(true);
+    };
+
+    liveChatEventSource.onmessage = function (event) {
+      try {
+        if (!event.data) return;
+        const payload = JSON.parse(event.data);
+        if (payload.event === "message" && payload.message) {
+          const rawMsg = typeof payload.message === "string" ? JSON.parse(payload.message) : payload.message;
+          if (rawMsg && rawMsg.id && rawMsg.text) {
+            handleIncomingLiveChatMessage(rawMsg);
           }
-        }).join("")}
-      </div>
+        }
+      } catch (err) {}
+    };
 
-      <!-- Barra de Digitação Elegante e Responsiva -->
-      ${eligibility.eligible ? `
-        <div class="space-y-2 pt-1">
-          <!-- Atalhos Rápidos de Reações e Emojis -->
-          <div class="d-flex align-items-center justify-content-between px-1 text-xs">
-            <div class="d-flex align-items-center gap-1.5">
-              <span class="text-[11px] text-slate-400 d-none sm:inline">Reações rápidas:</span>
-              <button type="button" onclick="insertChatEmoji('👍')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-xs transition-colors" title="Polegar">👍</button>
-              <button type="button" onclick="insertChatEmoji('👏')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-xs transition-colors" title="Palmas">👏</button>
-              <button type="button" onclick="insertChatEmoji('💡')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-xs transition-colors" title="Ideia">💡</button>
-              <button type="button" onclick="insertChatEmoji('❓')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-xs transition-colors" title="Dúvida">❓</button>
-              <button type="button" onclick="insertChatEmoji('🚀')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-xs transition-colors" title="Foguete">🚀</button>
-              <button type="button" onclick="insertChatEmoji('🎯')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-xs transition-colors" title="Alvo">🎯</button>
-            </div>
-            <span class="text-[10px] text-slate-400 d-none d-md-inline"><kbd class="px-1.5 py-0.5 rounded bg-slate-100 font-monospace text-[9px] border border-slate-200 ">Enter</kbd> para enviar</span>
-          </div>
-
-          <!-- Formulário com Campo Responsivo e Botão com Hover -->
-          <form onsubmit="handleLiveChatSubmit(event)" class="d-flex align-items-center gap-2 p-1.5 sm:p-2 rounded-2xl bg-slate-50 border border-slate-200/90 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent focus-within:bg-white shadow-sm transition-all">
-            <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 d-none d-sm-flex align-items-center justify-content-center flex-shrink-0 text-xs fw-bold">
-              <i class="fa-solid fa-message"></i>
-            </div>
-            <input 
-              type="text" 
-              id="live-chat-input" 
-              placeholder="Conversar em #chat-da-turma (Pressione Enter para enviar)..." 
-              autocomplete="off"
-              class="flex-grow-1 bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 "
-            />
-            <button 
-              type="submit" 
-              class="px-4 sm:px-5 py-2.5 rounded-xl fw-bold text-xs bg-indigo-600 active:scale-95 text-white shadow-md shadow-indigo-600/25 transition-all d-flex align-items-center gap-2 flex-shrink-0 cursor-pointer"
-            >
-              <i class="fa-solid fa-paper-plane"></i>
-              <span class="d-none sm:inline">Enviar</span>
-            </button>
-          </form>
-        </div>
-      ` : `
-        ${renderEligibilityBanner('enviar mensagens no chat ao vivo')}
-      `}
-
-    </div>
-  `;
+    liveChatEventSource.onerror = function () {
+      liveChatConnected = false;
+      updateChatOnlineIndicator(false);
+      if (liveChatEventSource) {
+        try { liveChatEventSource.close(); } catch (e) {}
+        liveChatEventSource = null;
+      }
+      if (!liveChatReconnectTimer) {
+        liveChatReconnectTimer = setTimeout(() => {
+          liveChatReconnectTimer = null;
+          connectLiveChatSSE();
+        }, 4000);
+      }
+    };
+  } catch (e) {
+    console.warn("[LiveChat] Erro ao instanciar EventSource:", e);
+  }
 }
 
-function handleLiveChatSubmit(e) {
-  e.preventDefault();
+async function fetchLiveChatHistoryFromCloud() {
+  try {
+    const response = await fetch(LIVE_CHAT_HISTORY_URL, { cache: "no-store" });
+    if (!response.ok) return;
+
+    const text = await response.text();
+    const lines = text.trim().split("\n").filter(Boolean);
+    let addedCount = 0;
+
+    const existingMap = new Map();
+    (AppState.forumMessages || []).forEach(m => {
+      if (m && m.id) existingMap.set(String(m.id), m);
+    });
+
+    lines.forEach(line => {
+      try {
+        const item = JSON.parse(line);
+        if (item.event === "message" && item.message) {
+          const m = typeof item.message === "string" ? JSON.parse(item.message) : item.message;
+          if (m && m.id && m.text && !existingMap.has(String(m.id))) {
+            existingMap.set(String(m.id), m);
+            addedCount++;
+          }
+        }
+      } catch (err) {}
+    });
+
+    if (addedCount > 0 || !AppState.forumMessages || AppState.forumMessages.length === 0) {
+      AppState.forumMessages = Array.from(existingMap.values()).sort(
+        (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+      );
+      saveForumDataToStorage();
+      refreshActiveChatUI();
+    }
+  } catch (e) {
+    console.warn("[LiveChat] Aviso ao sincronizar histórico da nuvem:", e);
+  }
+}
+
+function handleIncomingLiveChatMessage(msg) {
+  if (!msg || !msg.id) return;
+
+  const exists = AppState.forumMessages.some(m => String(m.id) === String(msg.id));
+  if (!exists) {
+    AppState.forumMessages.push(msg);
+    AppState.forumMessages.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    saveForumDataToStorage();
+    refreshActiveChatUI();
+
+    const isMe = AppState.currentUser && (
+      (AppState.currentUser.name && AppState.currentUser.name === msg.authorName) ||
+      (AppState.currentUser.id && AppState.currentUser.id === msg.authorId)
+    );
+    if (!isMe && AppState.currentTab !== "chat" && AppState.forumTab !== "chat") {
+      if (typeof showToast === "function") {
+        showToast("Nova mensagem no chat de " + (msg.authorName ? msg.authorName.split(" ")[0] : "Colega") + "!", "info", 4000);
+      }
+    }
+  }
+}
+
+function updateChatOnlineIndicator(online) {
+  const badges = document.querySelectorAll(".chat-live-status-indicator");
+  badges.forEach(badge => {
+    if (online) {
+      badge.className = "chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30";
+      badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span> AO VIVO • CONECTADO';
+    } else {
+      badge.className = "chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-amber-100 text-amber-800 ring-1 ring-amber-500/30";
+      badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-circle bg-amber-500"></span> RECONECTANDO...';
+    }
+  });
+}
+
+function refreshActiveChatUI() {
+  const contentArea = document.getElementById("main-content-area");
+  if (!contentArea) return;
+
+  if (AppState.currentTab === "chat") {
+    const msgContainer = document.getElementById("live-chat-messages-container");
+    if (msgContainer) {
+      const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
+      msgContainer.innerHTML = renderChatMessagesListHtml(isProf);
+      setTimeout(scrollChatToBottom, 40);
+    } else {
+      renderChatTab(contentArea);
+    }
+  } else if (AppState.currentTab === "forum" && AppState.forumTab === "chat") {
+    const msgContainer = document.getElementById("live-chat-messages-container");
+    if (msgContainer) {
+      const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
+      msgContainer.innerHTML = renderChatMessagesListHtml(isProf);
+      setTimeout(scrollChatToBottom, 40);
+    } else {
+      renderForumTab(contentArea);
+    }
+  }
+}
+
+function renderChatMessagesListHtml(currentIsProf) {
+  if (!AppState.forumMessages || AppState.forumMessages.length === 0) {
+    return `
+      <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-8 text-slate-400">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 d-flex align-items-center justify-content-center text-2xl mb-3">
+          <i class="fa-solid fa-comments"></i>
+        </div>
+        <h4 class="fw-bold text-sm text-slate-700">Início do canal #chat-da-turma</h4>
+        <p class="text-xs max-w-sm mt-1">Este é o começo do canal de conversa da turma. Envie sua primeira mensagem!</p>
+      </div>
+    `;
+  }
+
+  return AppState.forumMessages.map(m => {
+    const isMe = AppState.currentUser && (
+      (AppState.currentUser.name && AppState.currentUser.name === m.authorName) ||
+      (AppState.currentUser.id && AppState.currentUser.id === m.authorId)
+    );
+    const isProf = m.authorRole === "professor";
+    const timeStr = formatChatMessageTime(m.createdAt);
+    const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(m.authorName || "U") + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
+    const photoUrl = m.authorPhoto && m.authorPhoto.trim() !== "" ? m.authorPhoto : fallbackAvatar;
+
+    if (isMe) {
+      return `
+        <div class="d-flex align-items-end justify-content-end gap-2 group transition-all position-relative my-2">
+          <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity d-flex align-items-center align-self-center mr-1">
+            <button 
+              type="button" 
+              onclick="deleteChatMessage('${m.id}')" 
+              class="w-7 h-7 rounded-xl bg-white text-slate-400 border border-slate-200 d-flex align-items-center justify-content-center text-xs shadow-xs cursor-pointer hover:text-rose-600 transition-colors" 
+              title="Apagar minha mensagem"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+
+          <div class="d-flex flex-column align-items-end max-w-[85%] sm:max-w-[70%]">
+            <div class="d-flex align-items-center gap-1.5 mb-1 px-1">
+              <span class="text-[10px] text-slate-400 fw-medium">${timeStr}</span>
+              <span class="px-1.5 py-0.5 rounded-pill text-[9px] fw-bold bg-indigo-100 text-indigo-700">Você</span>
+            </div>
+            <div class="px-4 py-2.5 rounded-2xl rounded-br-xs bg-indigo-600 text-white shadow-sm text-xs sm:text-sm fw-normal leading-relaxed break-words" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;">
+              ${escapeHtml(m.text)}
+              <div class="d-flex align-items-center justify-content-end gap-1 mt-1 text-[10px] text-indigo-200">
+                <span>${timeStr}</span>
+                <i class="fa-solid fa-check-double text-[9px]"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-circle overflow-hidden ring-2 ring-indigo-500 ring-offset-2 flex-shrink-0 shadow-sm">
+            <img src="${photoUrl}" alt="Você" onerror="this.src='${fallbackAvatar}'" class="w-100 h-100 object-fit-cover">
+          </div>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="d-flex align-items-end justify-content-start gap-2 group transition-all position-relative my-2">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-circle overflow-hidden ring-2 ${isProf ? 'ring-amber-500 ring-offset-2 shadow-amber-500/20' : 'ring-slate-300 ring-offset-2'} flex-shrink-0 shadow-sm">
+            <img src="${photoUrl}" alt="${escapeHtml(m.authorName)}" onerror="this.src='${fallbackAvatar}'" class="w-100 h-100 object-fit-cover">
+          </div>
+          
+          <div class="d-flex flex-column align-items-start max-w-[85%] sm:max-w-[70%]">
+            <div class="d-flex align-items-center gap-1.5 mb-1 px-1">
+              <span class="fw-bold text-xs ${isProf ? 'text-amber-700' : 'text-slate-800'}">${escapeHtml(m.authorName)}</span>
+              ${isProf ? `
+                <span class="px-1.5 py-0.5 rounded-pill text-[9px] font-extrabold text-uppercase bg-amber-100 text-amber-800 ring-1 ring-amber-500/30 d-flex align-items-center gap-1">
+                  <i class="fa-solid fa-graduation-cap"></i> Docente
+                </span>
+              ` : `
+                <span class="px-1.5 py-0.5 rounded-pill text-[9px] fw-bold bg-slate-200 text-slate-700">Aluno</span>
+              `}
+              <span class="text-[10px] text-slate-400 fw-medium">${timeStr}</span>
+            </div>
+            <div class="px-4 py-2.5 rounded-2xl rounded-bl-xs bg-white text-slate-800 border border-slate-200/90 shadow-sm text-xs sm:text-sm fw-normal leading-relaxed break-words">
+              ${escapeHtml(m.text)}
+            </div>
+          </div>
+
+          ${currentIsProf ? `
+            <div class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity d-flex align-items-center align-self-center ml-1">
+              <button 
+                type="button" 
+                onclick="deleteChatMessage('${m.id}')" 
+                class="px-2 py-1 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 d-flex align-items-center gap-1 text-[11px] fw-bold transition-all shadow-xs cursor-pointer hover:bg-amber-100" 
+                title="Moderação Docente: Apagar mensagem da turma"
+              >
+                <i class="fa-solid fa-shield-xmark text-rose-500"></i>
+                <span class="d-none sm:inline">Moderar</span>
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+  }).join("");
+}
+
+async function handleLiveChatSubmit(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  
   const input = document.getElementById("live-chat-input");
   const text = input ? input.value.trim() : "";
   if (!text) return;
 
   if (!AppState.currentUser) {
-    showToast("Por favor, faça login com seu CPF para enviar mensagens.", "warning");
+    showToast("Por favor, identifique-se com seu CPF para enviar mensagens.", "warning");
     if (typeof openCpfLoginModal === 'function') openCpfLoginModal(AppState.currentTab);
     return;
   }
 
-  const isProf = AppState.currentUser.role === 'professor';
+  const isProf = AppState.currentUser.role === "professor";
   const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(AppState.currentUser.name || "U") + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
 
   const newMsg = {
-    id: "msg-" + Date.now() + "-" + Math.random().toString(36).substr(2, 4),
-    authorId: AppState.currentUser.id || "user-1",
-    authorName: AppState.currentUser.name || "Aluno",
-    authorRole: AppState.currentUser.role || "aluno",
+    id: "msg-" + Date.now() + "-" + Math.random().toString(36).substr(2, 5),
+    authorId: String(AppState.currentUser.id || "user-1"),
+    authorName: String(AppState.currentUser.name || "Aluno"),
+    authorRole: String(AppState.currentUser.role || "aluno"),
     authorPhoto: AppState.currentUser.photo || AppState.currentUser.photoUrl || fallbackAvatar,
     createdAt: new Date().toISOString(),
     text: text
   };
 
+  // 1. Otimista: Salva imediatamente na memória e no localStorage
   AppState.forumMessages.push(newMsg);
   saveForumDataToStorage();
 
-  // Sincroniza com Supabase Cloud
-  const client = getSupabaseClient();
-  if (client) {
-    client.from("forum_messages").insert([newMsg]).then(({ error }) => {
-      if (error) console.warn("Aviso ao salvar mensagem no Supabase:", error);
-    }).catch(err => console.warn("Erro ao salvar chat no Supabase:", err));
-  }
+  if (input) input.value = "";
+  refreshActiveChatUI();
+  setTimeout(scrollChatToBottom, 40);
 
-  input.value = "";
-  
-  const contentArea = document.getElementById("main-content-area");
-  if (contentArea) {
-    if (AppState.currentTab === "chat") {
-      renderChatTab(contentArea);
-    } else if (AppState.currentTab === "forum") {
-      renderForumTab(contentArea);
-    }
-  }
-
-  setTimeout(scrollChatToBottom, 60);
-}
-
-let chatSyncInterval = null;
-function startLiveChatSync() {
-  if (chatSyncInterval) clearInterval(chatSyncInterval);
-  chatSyncInterval = setInterval(fetchLiveChatMessages, 3000);
-}
-
-async function fetchLiveChatMessages() {
-  const client = getSupabaseClient();
-  if (!client) return;
+  // 2. Transmissão imediata via Cloud Relay (dispara SSE para todos os celulares e PCs)
   try {
-    const { data, error } = await client.from("forum_messages").select("*").order("createdAt", { ascending: true }).limit(500);
-    if (error) return;
-    if (data && data.length > 0) {
-      let hasChanges = false;
-      
-      // Adicionar novas mensagens que não existem localmente
-      data.forEach(remoteMsg => {
-        if (!AppState.forumMessages.find(m => m.id === remoteMsg.id)) {
-          AppState.forumMessages.push(remoteMsg);
-          hasChanges = true;
-        }
-      });
+    fetch(LIVE_CHAT_POST_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newMsg)
+    }).catch(err => console.warn("[LiveChat] Erro na transmissão cloud:", err));
+  } catch (postErr) {
+    console.warn("[LiveChat] Erro ao enviar:", postErr);
+  }
 
-      if (hasChanges) {
-        AppState.forumMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        saveForumDataToStorage();
-        const contentArea = document.getElementById("main-content-area");
-        if (contentArea) {
-          if (AppState.currentTab === "chat") {
-            renderChatTab(contentArea);
-            setTimeout(scrollChatToBottom, 60);
-          } else if (AppState.currentTab === "forum" && AppState.forumTab === "chat") {
-            renderForumTab(contentArea);
-            setTimeout(scrollChatToBottom, 60);
-          }
-        }
-      }
+  // 3. Backup no Supabase se disponível
+  try {
+    const client = getSupabaseClient();
+    if (client) {
+      client.from("forum_messages").insert([newMsg]).then(() => {}).catch(() => {});
     }
-  } catch (e) { }
+  } catch (supaErr) {}
 }
 
-// -------------------------------------------------------------
-// MODERAÇÃO DE MENSAGENS DO CHAT AO VIVO
-// -------------------------------------------------------------
+function startLiveChatSync() {
+  initLiveChatRealtimeEngine();
+}
+
+function loadForumDataFromStorage() {
+  try {
+    const savedTopics = localStorage.getItem("eupordias_forum_topics");
+    const savedMessages = localStorage.getItem("eupordias_forum_messages");
+
+    AppState.forumTopics = savedTopics ? JSON.parse(savedTopics) : [];
+    AppState.forumMessages = savedMessages ? JSON.parse(savedMessages) : [];
+
+    if (!AppState.forumMessages || AppState.forumMessages.length === 0) {
+      AppState.forumMessages = [
+        {
+          id: "msg-welcome-001",
+          authorName: "Professor Éverson Dias",
+          authorRole: "professor",
+          authorPhoto: "https://ui-avatars.com/api/?name=Professor+Everson&background=4f46e5&color=fff",
+          createdAt: new Date(Date.now() - 3600000).toISOString(),
+          text: "Olá a todos os alunos! Sejam muito bem-vindos ao Chat ao Vivo do Programa Emprega Mais Alagoas. Usem este canal livremente para tirar dúvidas, debater os 7 módulos e interagir!"
+        }
+      ];
+      saveForumDataToStorage();
+    }
+  } catch (e) {
+    console.warn("Erro ao carregar dados do fórum:", e);
+  }
+}
+
 function deleteChatMessage(messageId) {
   if (!AppState.currentUser) {
     showToast("Você precisa estar logado para moderar mensagens.", "warning");
