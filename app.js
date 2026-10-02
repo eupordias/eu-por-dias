@@ -5871,6 +5871,9 @@ function openStudentModal(studentId = null) {
                   placeholder="Maceió"
                   class="w-100 px-3.5 py-2.5 rounded-xl text-sm border border-slate-200 bg-slate-50 text-slate-900 "
                 >
+                <datalist id="alagoas-cities-datalist">
+                  ${classrooms.map(c => `<option value="${c}">`).join('')}
+                </datalist>
               </div>
 
               <div>
