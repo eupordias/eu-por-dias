@@ -7922,10 +7922,10 @@ function getDefaultForumTopics() {
 
 
 // =============================================================
+// =============================================================
 // MOTOR DE CHAT AO VIVO EM TEMPO REAL DE ALTA RESILIÊNCIA (SSE + CLOUD VAULT)
 // =============================================================
-// Garante 100% de persistência entre recargas de página, sincronização
-// instantânea entre celulares/PCs e histórico seguro de mensagens.
+// Garante 100% de persistência entre celulares/PCs e histórico seguro de mensagens.
 
 const LIVE_CHAT_CHANNEL = "eupordias_turma_chat_oficial_alagoas_2026";
 const LIVE_CHAT_POST_URL = "https://ntfy.sh/" + LIVE_CHAT_CHANNEL;
@@ -7937,13 +7937,8 @@ let liveChatReconnectTimer = null;
 let liveChatConnected = false;
 
 function initLiveChatRealtimeEngine() {
-  // 1. Carrega histórico local de segurança
   loadForumDataFromStorage();
-
-  // 2. Busca histórico completo na nuvem e mescla sem perda
   fetchLiveChatHistoryFromCloud();
-
-  // 3. Conecta canal de transmissão ao vivo (Server-Sent Events)
   connectLiveChatSSE();
 }
 
@@ -8041,8 +8036,9 @@ async function fetchLiveChatHistoryFromCloud() {
 function handleIncomingLiveChatMessage(msg) {
   if (!msg || !msg.id) return;
 
-  const exists = AppState.forumMessages.some(m => String(m.id) === String(msg.id));
+  const exists = (AppState.forumMessages || []).some(m => String(m.id) === String(msg.id));
   if (!exists) {
+    if (!AppState.forumMessages) AppState.forumMessages = [];
     AppState.forumMessages.push(msg);
     AppState.forumMessages.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
     saveForumDataToStorage();
@@ -8079,6 +8075,8 @@ function refreshActiveChatUI() {
 
   if (AppState.currentTab === "chat") {
     const msgContainer = document.getElementById("live-chat-messages-container");
+    const countEl = document.getElementById("chat-msg-counter");
+    if (countEl) countEl.textContent = String((AppState.forumMessages || []).length);
     if (msgContainer) {
       const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
       msgContainer.innerHTML = renderChatMessagesListHtml(isProf);
@@ -8088,6 +8086,8 @@ function refreshActiveChatUI() {
     }
   } else if (AppState.currentTab === "forum" && AppState.forumTab === "chat") {
     const msgContainer = document.getElementById("live-chat-messages-container");
+    const countEl = document.getElementById("chat-msg-counter");
+    if (countEl) countEl.textContent = String((AppState.forumMessages || []).length);
     if (msgContainer) {
       const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
       msgContainer.innerHTML = renderChatMessagesListHtml(isProf);
@@ -8095,6 +8095,31 @@ function refreshActiveChatUI() {
     } else {
       renderForumTab(contentArea);
     }
+  }
+}
+
+function scrollChatToBottom() {
+  const container = document.getElementById("live-chat-messages-container");
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+function formatChatMessageTime(dateStr) {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    return "";
+  }
+}
+
+function insertChatEmoji(emoji) {
+  const input = document.getElementById("live-chat-input");
+  if (input) {
+    input.value += emoji;
+    input.focus();
   }
 }
 
@@ -8224,6 +8249,7 @@ async function handleLiveChatSubmit(e) {
   };
 
   // 1. Otimista: Salva imediatamente na memória e no localStorage
+  if (!AppState.forumMessages) AppState.forumMessages = [];
   AppState.forumMessages.push(newMsg);
   saveForumDataToStorage();
 
@@ -8255,6 +8281,11 @@ function startLiveChatSync() {
   initLiveChatRealtimeEngine();
 }
 
+function saveForumDataToStorage() {
+  localStorage.setItem("eupordias_forum_topics", JSON.stringify(AppState.forumTopics || []));
+  localStorage.setItem("eupordias_forum_messages", JSON.stringify(AppState.forumMessages || []));
+}
+
 function loadForumDataFromStorage() {
   try {
     const savedTopics = localStorage.getItem("eupordias_forum_topics");
@@ -8281,83 +8312,586 @@ function loadForumDataFromStorage() {
   }
 }
 
-function deleteChatMessage(messageId) {
+// ABA DEDICADA: CHAT AO VIVO DA TURMA (#CHAT-DA-TURMA)
+// ==========================================
+function renderChatTab(container) {
+  if (!container) return;
+  
+  // Exige que o usuário esteja autenticado com conta real cadastrada no banco
   if (!AppState.currentUser) {
-    showToast("Você precisa estar logado para moderar mensagens.", "warning");
+    renderTabAccessRestriction(container, 'chat');
     return;
   }
 
-  const msgIndex = AppState.forumMessages.findIndex(m => m.id === messageId);
-  if (msgIndex === -1) {
-    showToast("Mensagem não encontrada.", "error");
+  // Garante inicialização e conexão com transmissão SSE
+  if (!liveChatConnected) {
+    initLiveChatRealtimeEngine();
+  }
+
+  container.innerHTML = `
+    <div class="space-y-5 fade-in pb-10">
+      
+      <!-- Cabeçalho do Chat ao Vivo -->
+      <div class="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-4">
+        <div class="d-flex align-items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-600 text-white d-flex align-items-center justify-content-center text-xl shadow-sm flex-shrink-0">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h2 class="text-base sm:text-lg fw-bold text-slate-900 mb-0">Chat ao Vivo da Turma</h2>
+              <span class="chat-live-status-indicator d-inline-flex align-items-center gap-1.5 px-2.5 py-0.5 rounded-pill text-[10px] fw-bold bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-circle bg-emerald-500 animate-pulse"></span>
+                AO VIVO • CONECTADO
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-0 mt-0.5">Canal oficial em tempo real para alunos e docentes • Programa Emprega Mais Alagoas</p>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap text-xs">
+          <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+            <i class="fa-solid fa-user-check text-emerald-600"></i> ${escapeHtml(AppState.currentUser.name)} (${AppState.currentUser.role === 'professor' ? 'Docente' : 'Aluno'})
+          </span>
+          <button 
+            type="button" 
+            onclick="switchTab('forum')" 
+            class="btn btn-sm btn-light border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5 text-xs fw-semibold d-inline-flex align-items-center gap-1.5"
+          >
+            <i class="fa-solid fa-comments text-indigo-600"></i> Ver Tópicos dos 7 Módulos
+          </button>
+        </div>
+      </div>
+
+      <!-- Feed & Componente de Mensagens -->
+      ${renderForumChatContent()}
+
+    </div>
+  `;
+
+  setTimeout(scrollChatToBottom, 60);
+}
+
+function renderForumTab(container) {
+  // REGRA DE ACESSO: Exige identificação por CPF
+  if (!AppState.currentUser) {
+    renderTabAccessRestriction(container, 'forum');
     return;
   }
 
-  const msg = AppState.forumMessages[msgIndex];
-  const isProf = AppState.currentUser.role === "professor";
-  const isAuthor = (AppState.currentUser.name && AppState.currentUser.name === msg.authorName) ||
-                   (AppState.currentUser.id && AppState.currentUser.id === msg.authorId);
+  const eligibility = isUserEligibleToPost();
+  const isProf = AppState.currentUser && AppState.currentUser.role === 'professor';
 
-  // Regra de Moderação:
-  // - O usuário 'professor' pode moderar e apagar qualquer mensagem do chat da turma.
-  // - O usuário 'aluno' pode moderar/apagar apenas o seu próprio post/mensagem no chat.
-  if (!isProf && !isAuthor) {
-    showToast("Apenas o docente ou o próprio autor podem moderar esta mensagem.", "error");
-    return;
+  // Garante inicialização do chat ao vivo se a sub-aba for chat
+  if (AppState.forumTab === 'chat' && !liveChatConnected) {
+    initLiveChatRealtimeEngine();
   }
 
-  const confirmMsg = isProf && !isAuthor
-    ? `[Moderação Docente]\nDeseja realmente excluir a mensagem de "${msg.authorName}" do chat da turma?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`
-    : `Deseja realmente apagar sua mensagem do chat?\n\n"${msg.text.substring(0, 60)}${msg.text.length > 60 ? '...' : ''}"`;
+  container.innerHTML = `
+    <div class="space-y-6 fade-in">
+      
+      <!-- Cabeçalho do Fórum & Chat -->
+      <div class="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm d-flex flex-column sm:flex-row sm:items-center justify-content-between gap-4">
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-pill text-[10px] font-extrabold text-uppercase bg-purple-100 text-purple-700">
+              <i class="fa-solid fa-comments"></i> Comunidade Oficial
+            </span>
+            <span class="text-xs text-slate-400">• Emprega Mais Alagoas</span>
+          </div>
+          <h2 class="text-lg fw-bold text-slate-900 mt-1 mb-0">Fórum & Chat ao Vivo</h2>
+          <p class="text-xs text-slate-500 mb-0 mt-0.5">
+            Tire dúvidas sobre os 7 módulos do curso e interaja em tempo real com colegas e docentes.
+          </p>
+        </div>
 
-  if (!confirm(confirmMsg)) {
-    return;
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <!-- Botão para Criar Tópico com Anexos -->
+          ${isProf ? `
+            <button 
+              onclick="openCreateTopicModal()" 
+              class="px-4 py-2.5 rounded-2xl text-xs fw-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-all d-flex align-items-center gap-2 shadow-sm"
+              style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;"
+            >
+              <i class="fa-solid fa-plus-circle"></i> Novo Tópico com Anexos
+            </button>
+          ` : `
+            <button 
+              onclick="${eligibility.eligible ? 'openCreateTopicModal()' : 'openCpfLoginModal(\'forum\')'}" 
+              class="px-4 py-2.5 rounded-2xl text-xs fw-bold ${eligibility.eligible ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-200 text-slate-600 cursor-not-allowed'} transition-all d-flex align-items-center gap-2 shadow-sm"
+            >
+              <i class="fa-solid fa-plus"></i> Criar Dúvida / Tópico
+            </button>
+          `}
+        </div>
+      </div>
+
+      <!-- Barra de Abas do Fórum (Tópicos vs Chat ao Vivo) -->
+      <div class="d-flex border-b border-slate-200 gap-6 text-sm fw-bold">
+        <button 
+          onclick="switchForumSubTab('topics')" 
+          class="pb-3 position-relative ${AppState.forumTab === 'topics' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800'}"
+        >
+          <i class="fa-solid fa-list-check mr-1.5"></i> Tópicos por Módulo (${(AppState.forumTopics || []).length})
+        </button>
+        <button 
+          onclick="switchForumSubTab('chat')" 
+          class="pb-3 position-relative ${AppState.forumTab === 'chat' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800'}"
+        >
+          <i class="fa-solid fa-bolt mr-1.5"></i> Chat ao Vivo (#chat-da-turma)
+          <span class="ms-1 px-1.5 py-0.5 rounded-pill text-[9px] bg-emerald-100 text-emerald-700">Ao Vivo</span>
+        </button>
+      </div>
+
+      <!-- Conteúdo da Sub-Aba Ativa -->
+      ${AppState.forumTab === 'topics' ? renderForumTopicsContent() : renderForumChatContent()}
+
+    </div>
+  `;
+
+  if (AppState.forumTab === 'chat') {
+    setTimeout(scrollChatToBottom, 60);
   }
+}
 
-  AppState.forumMessages.splice(msgIndex, 1);
-  saveForumDataToStorage();
-
-  // Deletar da nuvem Supabase
-  const client = getSupabaseClient();
-  if (client) {
-    client.from("forum_messages").delete().eq("id", messageId).then(({error}) => {
-      if (error) console.error("Erro ao deletar mensagem na nuvem:", error);
-    });
-  }
-
-  showToast(isProf && !isAuthor ? "Mensagem moderada/excluída com sucesso." : "Mensagem apagada com sucesso.", "info");
-
+function switchForumSubTab(tabName) {
+  AppState.forumTab = tabName;
+  AppState.activeForumTopicId = null;
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
 }
 
-function clearAllChatMessages() {
-  if (!AppState.currentUser || AppState.currentUser.role !== "professor") {
-    showToast("Apenas o docente pode limpar o chat da turma.", "error");
+function renderEligibilityBanner(actionName) {
+  const eligibility = isUserEligibleToPost();
+  if (eligibility.eligible) return "";
+
+  return `
+    <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 d-flex flex-column sm:flex-row items-start sm:items-center justify-content-between gap-3 text-amber-900 text-xs">
+      <div class="d-flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-amber-500 text-white d-flex items-center justify-content-center flex-shrink-0">
+          <i class="fa-solid fa-id-badge"></i>
+        </div>
+        <div>
+          <p class="fw-bold mb-0">Identificação necessária para ${actionName}</p>
+          <p class="text-amber-800/80 mb-0 mt-0.5">${eligibility.reason}</p>
+        </div>
+      </div>
+      <button 
+        onclick="openCpfLoginModal('forum')" 
+        class="px-3.5 py-2 rounded-xl bg-amber-500 text-white fw-bold text-xs hover:bg-amber-600 transition-all flex-shrink-0 shadow-sm"
+      >
+        Identificar com CPF
+      </button>
+    </div>
+  `;
+}
+
+function renderForumTopicsContent() {
+  if (AppState.activeForumTopicId) {
+    return renderForumTopicDetail(AppState.activeForumTopicId);
+  }
+
+  if (!AppState.forumTopics || AppState.forumTopics.length === 0) {
+    return `
+      <div class="space-y-4">
+        ${renderEligibilityBanner('criar tópicos')}
+        <div class="p-8 rounded-3xl bg-white border border-slate-200/80 text-center text-slate-400">
+          <i class="fa-solid fa-folder-open text-3xl text-indigo-400 mb-2"></i>
+          <h4 class="fw-bold text-sm text-slate-700">Nenhum tópico criado ainda</h4>
+          <p class="text-xs max-w-sm mx-auto mt-1">Crie o primeiro tópico de discussão para iniciar os debates dos 7 módulos do curso!</p>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="space-y-4">
+      
+      ${renderEligibilityBanner('criar tópicos')}
+
+      <div class="row g-3">
+        ${AppState.forumTopics.map(t => {
+          const commentsCount = t.comments ? t.comments.length : 0;
+          const hasPhoto = t.attachments?.some(a => a.type === 'photo');
+          const hasPdf = t.attachments?.some(a => a.type === 'pdf');
+          const hasVideo = t.attachments?.some(a => a.type === 'video');
+          const hasLink = t.attachments?.some(a => a.type === 'link');
+
+          return `
+            <div class="col-12 col-md-6 col-lg-4">
+              <div 
+                onclick="openForumTopic('${t.id}')" 
+                class="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-sm transition-all cursor-pointer d-flex flex-column justify-content-between h-100 hover:shadow-md hover:border-indigo-200"
+              >
+                <div class="space-y-2">
+                  <div class="d-flex align-items-center justify-content-between gap-2">
+                    <span class="px-2.5 py-0.5 rounded-pill text-[10px] font-monospace fw-bold bg-indigo-50 text-indigo-700 text-truncate max-w-[200px]">
+                      ${escapeHtml(t.module || 'Geral')}
+                    </span>
+                    <span class="text-[10px] text-slate-400">
+                      <i class="fa-regular fa-clock"></i> ${new Date(t.createdAt).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+
+                  <h3 class="fw-bold text-sm text-slate-900 line-clamp-2 leading-snug mb-1">
+                    ${escapeHtml(t.title)}
+                  </h3>
+
+                  <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-0">
+                    ${escapeHtml(t.description)}
+                  </p>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 d-flex align-items-center justify-content-between text-xs mt-3">
+                  
+                  <!-- Indicadores de Anexos presentes -->
+                  <div class="d-flex align-items-center gap-1.5 text-slate-400 text-[11px]">
+                    ${hasPhoto ? `<span title="Contém Foto"><i class="fa-solid fa-image text-emerald-500"></i></span>` : ''}
+                    ${hasPdf ? `<span title="Contém PDF"><i class="fa-solid fa-file-pdf text-rose-500"></i></span>` : ''}
+                    ${hasVideo ? `<span title="Contém Vídeo"><i class="fa-solid fa-video text-purple-500"></i></span>` : ''}
+                    ${hasLink ? `<span title="Contém Link"><i class="fa-solid fa-link text-blue-500"></i></span>` : ''}
+                    ${!hasPhoto && !hasPdf && !hasVideo && !hasLink ? `<span class="text-[10px]">Sem anexos</span>` : ''}
+                  </div>
+
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="d-flex align-items-center gap-1 text-slate-500 text-[11px] fw-semibold">
+                      <i class="fa-regular fa-comment text-indigo-500"></i> ${commentsCount}
+                    </span>
+                    <span class="text-indigo-600 text-xs fw-bold d-flex align-items-center gap-1">
+                      Ver <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+    </div>
+  `;
+}
+
+function openForumTopic(topicId) {
+  AppState.activeForumTopicId = topicId;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+function closeForumTopic() {
+  AppState.activeForumTopicId = null;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+function renderForumTopicDetail(topicId) {
+  const topic = (AppState.forumTopics || []).find(t => t.id === topicId);
+  if (!topic) return "<p>Tópico não encontrado.</p>";
+
+  const eligibility = isUserEligibleToPost();
+
+  return `
+    <div class="space-y-6">
+      
+      <!-- Botão Voltar -->
+      <button 
+        onclick="closeForumTopic()" 
+        class="d-inline-flex align-items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs fw-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all cursor-pointer border-0"
+      >
+        <i class="fa-solid fa-arrow-left"></i> Voltar para a Lista de Tópicos
+      </button>
+
+      <!-- Cartão Principal do Tópico -->
+      <div class="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+        
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <span class="px-3 py-1 rounded-pill text-xs fw-bold font-monospace bg-indigo-50 text-indigo-700">
+            ${escapeHtml(topic.module || 'Módulo do Curso')}
+          </span>
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-xs text-slate-400">
+              Criado em ${new Date(topic.createdAt).toLocaleString('pt-BR')}
+            </span>
+            ${AppState.currentUser && AppState.currentUser.role === 'professor' ? `
+              <button 
+                type="button" 
+                onclick="deleteForumTopic('${topic.id}')" 
+                class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 text-xs fw-bold border border-rose-200/60 d-flex align-items-center gap-1 transition-all shadow-xs cursor-pointer hover:bg-rose-100"
+                title="Moderação Docente: Excluir este tópico"
+              >
+                <i class="fa-solid fa-trash-can"></i> Excluir Tópico
+              </button>
+            ` : ''}
+          </div>
+        </div>
+
+        <h1 class="text-xl fw-bold text-slate-900 leading-snug mb-2">
+          ${escapeHtml(topic.title)}
+        </h1>
+
+        <!-- Autor do Tópico -->
+        <div class="d-flex align-items-center gap-3 py-2 border-top border-bottom border-slate-100">
+          <div class="w-9 h-9 rounded-circle overflow-hidden bg-slate-200 flex-shrink-0">
+            <img src="${topic.authorPhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(topic.authorName || 'U') + '&background=6366f1&color=fff'}" alt="${escapeHtml(topic.authorName)}" class="w-100 h-100 object-fit-cover">
+          </div>
+          <div>
+            <span class="fw-bold text-xs text-slate-800 d-block">${escapeHtml(topic.authorName)}</span>
+            <span class="text-[11px] text-slate-400">${topic.authorRole === 'professor' ? 'Professor / Instrutor' : 'Aluno da Turma'}</span>
+          </div>
+        </div>
+
+        <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+          ${escapeHtml(topic.description)}
+        </div>
+
+        <!-- Anexos do Tópico (4 Tipos: Foto, PDF, Vídeo, Link) -->
+        ${topic.attachments && topic.attachments.length > 0 ? `
+          <div class="pt-4 border-top border-slate-100 space-y-3">
+            <h4 class="text-xs font-extrabold text-uppercase text-slate-400 tracking-wider d-flex align-items-center gap-1.5">
+              <i class="fa-solid fa-paperclip text-indigo-500"></i> Anexos e Materiais de Apoio (${topic.attachments.length})
+            </h4>
+            <div class="row g-2">
+              ${topic.attachments.map(att => `
+                <div class="col-12 ${att.type === 'video' ? 'col-12' : 'col-12 col-md-6'}">
+                  ${renderAttachmentCard(att)}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+      </div>
+
+      <!-- Seção de Comentários / Respostas -->
+      <div class="space-y-4">
+        <h3 class="fw-bold text-base text-slate-900 d-flex align-items-center gap-2">
+          <i class="fa-solid fa-comments text-indigo-600"></i> Respostas e Contribuições (${(topic.comments || []).length})
+        </h3>
+
+        <!-- Formulário de Comentário -->
+        <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
+          ${eligibility.eligible ? `
+            <div class="d-flex items-center gap-2 text-xs text-slate-600">
+              <span class="w-2 h-2 rounded-circle bg-emerald-500"></span>
+              Respondendo como <strong class="text-slate-800">${escapeHtml(AppState.currentUser.name)}</strong>
+            </div>
+            <textarea 
+              id="topic-comment-input" 
+              rows="3" 
+              placeholder="Escreva sua resposta, dúvida ou contribuição sobre este tópico..." 
+              class="w-100 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-inner"
+            ></textarea>
+            <div class="d-flex justify-content-end">
+              <button 
+                onclick="submitTopicComment('${topic.id}')" 
+                class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-sm d-flex align-items-center gap-2 transition-all cursor-pointer border-0"
+                style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;"
+              >
+                <i class="fa-solid fa-paper-plane"></i> Publicar Resposta
+              </button>
+            </div>
+          ` : `
+            <div class="text-center py-4 space-y-2">
+              <p class="text-xs text-slate-500">${eligibility.reason}</p>
+              <button 
+                onclick="openCpfLoginModal('forum')" 
+                class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-sm cursor-pointer border-0"
+              >
+                Identificar com CPF para Responder
+              </button>
+            </div>
+          `}
+        </div>
+
+        <!-- Lista de Comentários -->
+        <div class="space-y-3">
+          ${(!topic.comments || topic.comments.length === 0) ? `
+            <p class="text-xs text-slate-400 italic p-4 text-center">Nenhuma resposta publicada ainda. Seja o primeiro a participar!</p>
+          ` : topic.comments.map((c, idx) => `
+            <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-circle overflow-hidden bg-slate-200 flex-shrink-0">
+                    <img src="${c.authorPhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(c.authorName || 'U') + '&background=6366f1&color=fff'}" alt="${escapeHtml(c.authorName)}" class="w-100 h-100 object-fit-cover">
+                  </div>
+                  <div>
+                    <span class="fw-bold text-xs text-slate-800">${escapeHtml(c.authorName)}</span>
+                    <span class="text-[10px] text-slate-400 ms-1.5">• ${new Date(c.createdAt).toLocaleString('pt-BR')}</span>
+                  </div>
+                </div>
+
+                ${AppState.currentUser && (AppState.currentUser.role === 'professor' || AppState.currentUser.id === c.authorId) ? `
+                  <button 
+                    onclick="deleteTopicComment('${topic.id}', ${idx})" 
+                    class="text-slate-400 hover:text-rose-600 text-xs p-1 transition-colors border-0 bg-transparent cursor-pointer" 
+                    title="Excluir Comentário"
+                  >
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                ` : ''}
+              </div>
+              <p class="text-xs sm:text-sm text-slate-700 leading-relaxed ps-10 mb-0">
+                ${escapeHtml(c.text)}
+              </p>
+            </div>
+          `).join('')}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+function renderAttachmentCard(att) {
+  if (att.type === "photo") {
+    return `
+      <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+        <span class="fw-bold text-[11px] text-emerald-600 d-flex align-items-center gap-1">
+          <i class="fa-solid fa-image"></i> Foto / Imagem: ${escapeHtml(att.title || 'Anexo')}
+        </span>
+        <div class="rounded-xl overflow-hidden max-h-48 bg-slate-900 d-flex align-items-center justify-content-center">
+          <img src="${att.url}" alt="${escapeHtml(att.title)}" class="max-h-48 w-100 object-contain cursor-pointer" onclick="window.open('${att.url}', '_blank')">
+        </div>
+      </div>
+    `;
+  }
+  if (att.type === "pdf") {
+    return `
+      <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 d-flex align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2 min-w-0">
+          <i class="fa-solid fa-file-pdf text-rose-600 text-xl flex-shrink-0"></i>
+          <div class="min-w-0">
+            <span class="fw-bold text-slate-800 d-block text-truncate">${escapeHtml(att.title || 'Documento PDF')}</span>
+            <span class="text-[10px] text-slate-400">Arquivo PDF de apoio</span>
+          </div>
+        </div>
+        <a href="${att.url}" target="_blank" download class="px-3 py-1.5 rounded-xl fw-bold text-xs bg-rose-600 text-white d-flex align-items-center gap-1 flex-shrink-0 text-decoration-none">
+          <i class="fa-solid fa-download"></i> Baixar
+        </a>
+      </div>
+    `;
+  }
+  if (att.type === "video") {
+    let videoEmbed = "";
+    if (att.url.includes("youtube.com") || att.url.includes("youtu.be")) {
+      let ytId = "";
+      if (att.url.includes("v=")) ytId = att.url.split("v=")[1].split("&")[0];
+      else if (att.url.includes("youtu.be/")) ytId = att.url.split("youtu.be/")[1].split("?")[0];
+      if (ytId) {
+        videoEmbed = `<iframe class="w-100 aspect-video rounded-xl" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>`;
+      }
+    }
+    return `
+      <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+        <span class="fw-bold text-[11px] text-purple-600 d-flex align-items-center gap-1">
+          <i class="fa-solid fa-video"></i> Vídeo: ${escapeHtml(att.title || 'Vídeo de Apoio')}
+        </span>
+        ${videoEmbed ? videoEmbed : `
+          <a href="${att.url}" target="_blank" class="d-inline-flex align-items-center gap-1 text-xs text-indigo-600 text-decoration-none">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Assistir Vídeo (${escapeHtml(att.url)})
+          </a>
+        `}
+      </div>
+    `;
+  }
+  return `
+    <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 d-flex align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2 min-w-0">
+        <i class="fa-solid fa-link text-blue-600 text-base flex-shrink-0"></i>
+        <div class="min-w-0">
+          <span class="fw-bold text-slate-800 d-block text-truncate">${escapeHtml(att.title || 'Link Externo')}</span>
+          <span class="text-[10px] text-slate-400 text-truncate d-block">${escapeHtml(att.url)}</span>
+        </div>
+      </div>
+      <a href="${att.url}" target="_blank" class="px-3 py-1.5 rounded-xl fw-bold text-xs bg-blue-50 text-blue-700 d-flex align-items-center gap-1 flex-shrink-0 text-decoration-none">
+        <i class="fa-solid fa-external-link"></i> Abrir
+      </a>
+    </div>
+  `;
+}
+
+function submitTopicComment(topicId) {
+  const eligibility = isUserEligibleToPost();
+  if (!eligibility.eligible) {
+    openCpfLoginModal('forum');
+    showToast("Identifique-se com seu CPF para comentar.", "warning");
     return;
   }
 
-  if (AppState.forumMessages.length === 0) {
-    showToast("O chat já está vazio.", "info");
+  const input = document.getElementById("topic-comment-input");
+  const text = input ? input.value.trim() : "";
+  if (!text) {
+    showToast("Por favor, digite seu comentário.", "warning");
     return;
   }
 
-  if (!confirm(`Atenção Professor(a): Deseja realmente excluir TODAS as ${AppState.forumMessages.length} mensagens do chat da turma? Esta ação não pode ser desfeita.`)) {
-    return;
-  }
+  const topic = (AppState.forumTopics || []).find(t => t.id === topicId);
+  if (!topic) return;
 
-  AppState.forumMessages = [];
+  if (!topic.comments) topic.comments = [];
+
+  const newComment = {
+    id: "com-" + Date.now(),
+    authorId: AppState.currentUser.id,
+    authorName: AppState.currentUser.name,
+    authorRole: AppState.currentUser.role,
+    authorPhoto: AppState.currentUser.photo || AppState.currentUser.photoUrl,
+    createdAt: new Date().toISOString(),
+    text
+  };
+
+  topic.comments.push(newComment);
   saveForumDataToStorage();
 
-  const client = getSupabaseClient();
-  if (client) {
-    // Para truncar, deletar tudo enviando um match vazio não é suportado pelo .delete(), precisa passar id neq
-    client.from("forum_messages").delete().neq("id", "0").then(({error}) => {
-      if (error) console.error("Erro ao limpar chat na nuvem:", error);
-    });
+  showToast("Resposta publicada com sucesso!", "success");
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+function deleteTopicComment(topicId, commentIndex) {
+  if (!AppState.currentUser) {
+    showToast("Você precisa estar logado para moderar comentários.", "warning");
+    return;
   }
 
-  showToast("O chat da turma foi limpo.", "warning");
+  const topic = (AppState.forumTopics || []).find(t => t.id === topicId);
+  if (!topic || !topic.comments || !topic.comments[commentIndex]) return;
+
+  const isProf = AppState.currentUser.role === 'professor';
+  const isAuthor = AppState.currentUser.id === topic.comments[commentIndex].authorId;
+
+  if (!isProf && !isAuthor) {
+    showToast("Apenas o docente ou o autor podem excluir este comentário.", "error");
+    return;
+  }
+
+  if (!confirm("Deseja realmente excluir este comentário?")) return;
+
+  topic.comments.splice(commentIndex, 1);
+  saveForumDataToStorage();
+
+  showToast("Comentário excluído.", "info");
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
+}
+
+function deleteForumTopic(topicId) {
+  if (!AppState.currentUser || AppState.currentUser.role !== 'professor') {
+    showToast("Apenas o docente pode excluir tópicos do fórum.", "error");
+    return;
+  }
+
+  if (!confirm("Atenção Docente: Deseja realmente excluir este tópico e todas as suas respostas permanentemente?")) {
+    return;
+  }
+
+  AppState.forumTopics = (AppState.forumTopics || []).filter(t => t.id !== topicId);
+  saveForumDataToStorage();
+  AppState.activeForumTopicId = null;
+
+  showToast("Tópico excluído pelo docente.", "info");
   const contentArea = document.getElementById("main-content-area");
   if (contentArea) renderForumTab(contentArea);
 }
@@ -8369,7 +8903,7 @@ function openCreateTopicModal() {
   const eligibility = isUserEligibleToPost();
   if (!eligibility.eligible) {
     openCpfLoginModal('forum');
-    showToast("Faça login com seu CPF e cadastre sua foto para criar tópicos.", "warning");
+    showToast("Faça login com seu CPF para criar tópicos.", "warning");
     return;
   }
 
@@ -8382,146 +8916,101 @@ function openCreateTopicModal() {
     <div class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); overflow-y: auto;" onclick="if(event.target === this) closeModal()">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg my-3">
         <div class="modal-content border-0 rounded-2xl shadow-2xl overflow-hidden bg-white">
-          <div class="d-flex align-items-center justify-content-between pb-2 border-b border-slate-100 ">
-          <div class="d-flex align-items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 d-flex align-items-center justify-content-center text-sm fw-bold">
-              <i class="fa-solid fa-folder-plus"></i>
+          <div class="d-flex align-items-center justify-content-between p-4 border-bottom border-slate-100">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 d-flex align-items-center justify-content-center text-lg flex-shrink-0">
+                <i class="fa-solid fa-plus-circle"></i>
+              </div>
+              <div>
+                <h3 class="fw-bold text-base text-slate-900 mb-0">Novo Tópico de Discussão</h3>
+                <p class="text-xs text-slate-500 mb-0">Compartilhe dúvidas, projetos e materiais com a turma</p>
+              </div>
             </div>
+            <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-lg p-2 border-0 bg-transparent cursor-pointer">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="modal-body p-4 space-y-4">
             <div>
-              <h3 class="fw-bold text-sm text-slate-900 ">Criar Novo Tópico no Fórum</h3>
-              <p class="text-[11px] text-slate-500 ">Postagem com suporte a Foto, PDF, Link e Vídeo</p>
-            </div>
-          </div>
-          <button onclick="closeModal()" class="text-slate-400 ">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <div class="flex-grow-1 overflow-y-auto space-y-3 pr-1 text-xs">
-          
-          <div>
-            <label class="d-block fw-semibold text-slate-700 mb-1">Título do Tópico</label>
-            <input 
-              type="text" 
-              id="new-topic-title" 
-              placeholder="Ex: Dúvida prática sobre criação de reels com gancho forte" 
-              class="w-100 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 fw-medium text-slate-900 "
-            />
-          </div>
-
-          <div>
-            <label class="d-block fw-semibold text-slate-700 mb-1">Módulo Relacionado</label>
-            <select 
-              id="new-topic-module" 
-              class="w-100 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 fw-medium text-slate-900 "
-            >
-              ${AppState.subjects.map(s => `<option value="${s}">${s}</option>`).join("")}
-              <option value="Geral">Dúvidas Gerais & Avisos</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="d-block fw-semibold text-slate-700 mb-1">Conteúdo / Descrição da Dúvida ou Orientação</label>
-            <textarea 
-              id="new-topic-desc" 
-              rows="3" 
-              placeholder="Descreva detalhadamente o questionamento ou a orientação pedagógica para a turma..." 
-              class="w-100 p-3 rounded-xl border border-slate-200 bg-slate-50 leading-relaxed text-slate-900 "
-            ></textarea>
-          </div>
-
-          <!-- Seção de Anexos (Foto, PDF, Link e Vídeo) -->
-          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-            <label class="d-block fw-bold text-slate-800 ">Adicionar Anexos ao Tópico:</label>
-            
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <button 
-                type="button" 
-                onclick="promptAddAttachment('photo')" 
-                class="p-2 rounded-xl border border-slate-200 bg-white text-center fw-bold text-[11px] text-slate-700 d-flex flex-column align-items-center gap-1 transition-all"
-              >
-                <i class="fa-solid fa-image text-emerald-600 text-base"></i> Foto / Imagem
-              </button>
-              <button 
-                type="button" 
-                onclick="promptAddAttachment('pdf')" 
-                class="p-2 rounded-xl border border-slate-200 bg-white text-center fw-bold text-[11px] text-slate-700 d-flex flex-column align-items-center gap-1 transition-all"
-              >
-                <i class="fa-solid fa-file-pdf text-rose-600 text-base"></i> Documento PDF
-              </button>
-              <button 
-                type="button" 
-                onclick="promptAddAttachment('link')" 
-                class="p-2 rounded-xl border border-slate-200 bg-white text-center fw-bold text-[11px] text-slate-700 d-flex flex-column align-items-center gap-1 transition-all"
-              >
-                <i class="fa-solid fa-link text-blue-600 text-base"></i> Link Externo
-              </button>
-              <button 
-                type="button" 
-                onclick="promptAddAttachment('video')" 
-                class="p-2 rounded-xl border border-slate-200 bg-white text-center fw-bold text-[11px] text-slate-700 d-flex flex-column align-items-center gap-1 transition-all"
-              >
-                <i class="fa-solid fa-video text-purple-600 text-base"></i> Vídeo
-              </button>
+              <label class="form-label text-xs fw-bold text-slate-700">Módulo Relacionado</label>
+              <select id="new-topic-module" class="form-select form-select-sm rounded-xl border-slate-200">
+                <option value="Módulo 1: Introdução à IA & Algoritmos">Módulo 1: Introdução à IA & Algoritmos</option>
+                <option value="Módulo 2: Engenharia de Prompts & LLMs">Módulo 2: Engenharia de Prompts & LLMs</option>
+                <option value="Módulo 3: Visão Computacional & Imagens">Módulo 3: Visão Computacional & Imagens</option>
+                <option value="Módulo 4: SAP / ABAP & ERP Corporativo">Módulo 4: SAP / ABAP & ERP Corporativo</option>
+                <option value="Módulo 5: Automação & No-Code / Low-Code">Módulo 5: Automação & No-Code / Low-Code</option>
+                <option value="Módulo 6: Ética, Segurança & LGPD">Módulo 6: Ética, Segurança & LGPD</option>
+                <option value="Módulo 7: Projeto Prático & Carreira">Módulo 7: Projeto Prático & Carreira</option>
+                <option value="Dúvidas Gerais & Comunidade">Dúvidas Gerais & Comunidade</option>
+              </select>
             </div>
 
-            <!-- Lista de Anexos Adicionados -->
-            <div id="new-topic-attachments-list" class="space-y-1.5 pt-1"></div>
+            <div>
+              <label class="form-label text-xs fw-bold text-slate-700">Título do Tópico</label>
+              <input type="text" id="new-topic-title" class="form-control form-control-sm rounded-xl border-slate-200" placeholder="Ex: Dúvida no Módulo 2 sobre Chain-of-Thought" required>
+            </div>
+
+            <div>
+              <label class="form-label text-xs fw-bold text-slate-700">Descrição Detalhada</label>
+              <textarea id="new-topic-desc" rows="4" class="form-control form-control-sm rounded-xl border-slate-200" placeholder="Descreva sua dúvida, reflexão ou compartilhamento em detalhes..." required></textarea>
+            </div>
+
+            <!-- Adicionar Anexos -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="text-xs fw-bold text-slate-700 d-flex align-items-center gap-1.5">
+                  <i class="fa-solid fa-paperclip text-indigo-500"></i> Anexar Materiais (Foto, PDF, Vídeo, Link)
+                </span>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-light border border-slate-200 rounded-xl text-xs fw-semibold dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown">
+                    <i class="fa-solid fa-plus text-indigo-600"></i> Adicionar Anexo
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-lg rounded-2xl border-0 p-1 text-xs">
+                    <li><a class="dropdown-item rounded-xl py-1.5 d-flex align-items-center gap-2 cursor-pointer" onclick="promptAddAttachment('photo')"><i class="fa-solid fa-image text-emerald-500"></i> Imagem / Foto (URL)</a></li>
+                    <li><a class="dropdown-item rounded-xl py-1.5 d-flex align-items-center gap-2 cursor-pointer" onclick="promptAddAttachment('pdf')"><i class="fa-solid fa-file-pdf text-rose-500"></i> Documento PDF (URL)</a></li>
+                    <li><a class="dropdown-item rounded-xl py-1.5 d-flex align-items-center gap-2 cursor-pointer" onclick="promptAddAttachment('video')"><i class="fa-solid fa-video text-purple-500"></i> Vídeo YouTube (URL)</a></li>
+                    <li><a class="dropdown-item rounded-xl py-1.5 d-flex align-items-center gap-2 cursor-pointer" onclick="promptAddAttachment('link')"><i class="fa-solid fa-link text-blue-500"></i> Link Externo / Site</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div id="new-topic-attachments-list" class="space-y-1.5">
+                <!-- Itens anexados dinamicamente -->
+              </div>
+            </div>
           </div>
 
-        </div>
-
-        <div class="pt-3 border-t border-slate-100 d-flex justify-content-end gap-2">
-          <button 
-            type="button" 
-            onclick="closeModal()" 
-            class="px-4 py-2 rounded-xl text-xs fw-semibold text-slate-600 "
-          >
-            Cancelar
-          </button>
-          <button 
-            type="button" 
-            onclick="saveNewTopicFromModal()" 
-            class="px-5 py-2.5 rounded-xl text-xs fw-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/25 transition-all d-flex align-items-center gap-2"
-          >
-            <i class="fa-solid fa-check"></i> Publicar Tópico
-          </button>
-        </div>
+          <div class="modal-footer p-4 border-top border-slate-100 d-flex justify-content-between">
+            <button type="button" onclick="closeModal()" class="btn btn-light rounded-xl px-4 py-2 text-xs fw-semibold">Cancelar</button>
+            <button type="button" onclick="saveNewTopicFromModal()" class="btn btn-primary rounded-xl px-4 py-2 text-xs fw-bold" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;">Publicar Tópico</button>
+          </div>
         </div>
       </div>
     </div>
   `;
+
+  renderNewTopicAttachmentsList();
 }
 
 function promptAddAttachment(type) {
-  if (type === "photo") {
-    const url = prompt("Cole a URL da imagem ou link (ou insira link público):", "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600");
-    if (url) {
-      newTopicAttachments.push({ type: "photo", url, title: "Foto / Print explicativo" });
-      renderNewTopicAttachmentsList();
-    }
-  } else if (type === "pdf") {
-    const url = prompt("Cole o link do arquivo PDF ou material de leitura:", "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf");
-    const title = prompt("Título do documento PDF:", "Material Complementar em PDF");
-    if (url) {
-      newTopicAttachments.push({ type: "pdf", url, title: title || "Material em PDF" });
-      renderNewTopicAttachmentsList();
-    }
-  } else if (type === "link") {
-    const url = prompt("Cole a URL do link externo:", "https://instagram.com");
-    const title = prompt("Título do link:", "Referência de Estudo");
-    if (url) {
-      newTopicAttachments.push({ type: "link", url, title: title || url });
-      renderNewTopicAttachmentsList();
-    }
-  } else if (type === "video") {
-    const url = prompt("Cole o link do vídeo do YouTube ou vídeo mp4:", "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-    const title = prompt("Título do vídeo:", "Aula Gravada / Exemplo em Vídeo");
-    if (url) {
-      newTopicAttachments.push({ type: "video", url, title: title || "Vídeo" });
-      renderNewTopicAttachmentsList();
-    }
+  const titles = { photo: 'Foto / Imagem', pdf: 'Documento PDF', video: 'Vídeo do YouTube', link: 'Link Externo' };
+  const placeholders = {
+    photo: 'https://exemplo.com/imagem.jpg',
+    pdf: 'https://exemplo.com/material.pdf',
+    video: 'https://www.youtube.com/watch?v=...',
+    link: 'https://exemplo.com/recurso'
+  };
+
+  const url = prompt(`Digite a URL do ${titles[type]}:`, placeholders[type] || 'https://');
+  if (!url || !url.startsWith('http')) {
+    if (url) showToast("URL inválida. Comece com http:// ou https://", "warning");
+    return;
   }
+
+  const title = prompt(`Digite um título/descrição para este ${titles[type]} (opcional):`, titles[type]);
+  newTopicAttachments.push({ type, url: url.trim(), title: (title || titles[type]).trim() });
+  renderNewTopicAttachmentsList();
 }
 
 function renderNewTopicAttachmentsList() {
@@ -8529,73 +9018,71 @@ function renderNewTopicAttachmentsList() {
   if (!container) return;
 
   if (newTopicAttachments.length === 0) {
-    container.innerHTML = "";
+    container.innerHTML = '<p class="text-[11px] text-slate-400 italic mb-0">Nenhum anexo adicionado ainda.</p>';
     return;
   }
 
   container.innerHTML = newTopicAttachments.map((att, idx) => `
-    <div class="d-flex align-items-center justify-content-between p-2 rounded-xl bg-white border border-slate-200 text-[11px]">
-      <div class="d-flex align-items-center gap-1.5 text-truncate">
-        <i class="fa-solid ${att.type === 'photo' ? 'fa-image text-emerald-500' : (att.type === 'pdf' ? 'fa-file-pdf text-rose-500' : (att.type === 'video' ? 'fa-video text-purple-500' : 'fa-link text-blue-500'))}"></i>
-        <span class="fw-bold text-truncate">${att.title}</span>
+    <div class="d-flex align-items-center justify-content-between p-2 rounded-xl bg-white border border-slate-200 text-xs">
+      <div class="d-flex align-items-center gap-2 min-w-0">
+        <i class="fa-solid ${att.type === 'photo' ? 'fa-image text-emerald-500' : att.type === 'pdf' ? 'fa-file-pdf text-rose-500' : att.type === 'video' ? 'fa-video text-purple-500' : 'fa-link text-blue-500'}"></i>
+        <span class="fw-semibold text-slate-800 text-truncate max-w-[280px]">${escapeHtml(att.title)}</span>
       </div>
-      <button type="button" onclick="removeTopicAttachment(${idx})" class="text-rose-500 ml-2">
+      <button type="button" onclick="removeTopicAttachment(${idx})" class="text-slate-400 hover:text-rose-600 text-xs border-0 bg-transparent cursor-pointer p-1">
         <i class="fa-solid fa-trash-can"></i>
       </button>
     </div>
-  `).join("");
+  `).join('');
 }
 
-function removeTopicAttachment(idx) {
-  newTopicAttachments.splice(idx, 1);
+function removeTopicAttachment(index) {
+  newTopicAttachments.splice(index, 1);
   renderNewTopicAttachmentsList();
 }
 
 function saveNewTopicFromModal() {
-  const titleInput = document.getElementById("new-topic-title");
-  const moduleSelect = document.getElementById("new-topic-module");
-  const descInput = document.getElementById("new-topic-desc");
+  const moduleEl = document.getElementById("new-topic-module");
+  const titleEl = document.getElementById("new-topic-title");
+  const descEl = document.getElementById("new-topic-desc");
 
-  const title = titleInput ? titleInput.value.trim() : "";
-  const moduleName = moduleSelect ? moduleSelect.value : "Geral";
-  const description = descInput ? descInput.value.trim() : "";
+  const module = moduleEl ? moduleEl.value : "Geral";
+  const title = titleEl ? titleEl.value.trim() : "";
+  const desc = descEl ? descEl.value.trim() : "";
 
-  if (!title) {
-    showToast("Por favor, informe o título do tópico.", "warning");
+  if (!title || !desc) {
+    showToast("Por favor, preencha o título e a descrição do tópico.", "warning");
     return;
   }
-  if (!description) {
-    showToast("Por favor, descreva a dúvida ou orientação pedagógica.", "warning");
-    return;
-  }
+
+  const isProf = AppState.currentUser && AppState.currentUser.role === "professor";
+  const fallbackAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(AppState.currentUser.name || "U") + "&background=" + (isProf ? "f59e0b" : "6366f1") + "&color=fff";
 
   const newTopic = {
-    id: `topico-${Date.now()}`,
-    module: moduleName,
+    id: "topic-" + Date.now(),
     title,
-    description,
-    author: {
-      name: AppState.currentUser.name,
-      role: AppState.currentUser.role,
-      photo: AppState.currentUser.photo
-    },
+    description: desc,
+    module,
+    authorId: AppState.currentUser.id,
+    authorName: AppState.currentUser.name,
+    authorRole: AppState.currentUser.role,
+    authorPhoto: AppState.currentUser.photo || AppState.currentUser.photoUrl || fallbackAvatar,
     createdAt: new Date().toISOString(),
     attachments: [...newTopicAttachments],
     comments: []
   };
 
+  if (!AppState.forumTopics) AppState.forumTopics = [];
   AppState.forumTopics.unshift(newTopic);
   saveForumDataToStorage();
 
   closeModal();
-  showToast("Novo tópico publicado com sucesso no Fórum!", "success");
+  showToast("Tópico publicado com sucesso!", "success");
 
-  openForumTopic(newTopic.id);
+  AppState.forumTab = "topics";
+  AppState.activeForumTopicId = newTopic.id;
+  const contentArea = document.getElementById("main-content-area");
+  if (contentArea) renderForumTab(contentArea);
 }
-
-// =============================================================
-// ABA 7: OPORTUNIDADES, VAGAS & TRILHAS (MATCH DE CURRÍCULO)
-// =============================================================
 
 function getDefaultJobVacancies() {
   return [
